@@ -48,6 +48,10 @@ def test_v4_lease_dump(backend):
 
     srv_control.start_srv('DHCP', 'started')
 
+    # parameters for added leases
+    valid_lifetime = 7777
+    expire = int(time.time()) + valid_lifetime
+
     # add 5 leases
     for i in range(5):
         cmd = {"command": "lease4-add",
@@ -56,9 +60,9 @@ def test_v4_lease_dump(backend):
                              "hw-address": f"1a:1b:1c:1d:1e:{i+1:02}",
                              "fqdn-fwd": True,
                              "fqdn-rev": True,
-                             "valid-lft": 7777,
+                             "valid-lft": valid_lifetime,
                              "state": 1,
-                             "expire": int(time.time()) + 7000,
+                             "expire": expire,
                              "hostname": f"my.host.some.name{i+1}",
                              "client-id": f"aa:bb:cc:dd:11:{i+1:02}",
                              "user-context": {"value": 1},
@@ -70,19 +74,17 @@ def test_v4_lease_dump(backend):
            "arguments": {"subnets": [1]}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
-    cltt = []
     all_leases = resp["arguments"]["leases"]
     all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
 
     for lease_nbr, _ in enumerate(all_leases):
-        cltt.append(all_leases[lease_nbr]["cltt"])
-        del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"subnet-id": 1,
+                                         "cltt": expire - valid_lifetime,
                                          "ip-address": f"192.168.50.{lease_nbr+1}",
                                          "hw-address": f"1a:1b:1c:1d:1e:{lease_nbr+1:02}",
                                          "fqdn-fwd": True,
                                          "fqdn-rev": True,
-                                         "valid-lft": 7777,
+                                         "valid-lft": valid_lifetime,
                                          "state": 1,
                                          "hostname": f"my.host.some.name{lease_nbr+1}",
                                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr+1:02}",
@@ -101,8 +103,8 @@ def test_v4_lease_dump(backend):
 
     # Check CSV file for all added leases
     for i in range(5):
-        line = f'192.168.50.{i+1},1a:1b:1c:1d:1e:{i+1:02},aa:bb:cc:dd:11:{i+1:02},7777,' \
-               f'{cltt[i]+7777},1,1,1,my.host.some.name{i+1},1,{{ "value": 1 }}'
+        line = f'192.168.50.{i+1},1a:1b:1c:1d:1e:{i+1:02},aa:bb:cc:dd:11:{i+1:02},{valid_lifetime},' \
+               f'{expire},1,1,1,my.host.some.name{i+1},1,{{ "value": 1 }}'
         srv_msg.file_contains_line(dump_file_path, None, line, singlequotes=True)
 
     # delete assigned lease
@@ -138,13 +140,13 @@ def test_v4_lease_dump(backend):
     all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
 
     for lease_nbr, _ in enumerate(all_leases):
-        del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"subnet-id": 1,
+                                         "cltt": expire - valid_lifetime,
                                          "ip-address": f"192.168.50.{lease_nbr+1}",
                                          "hw-address": f"1a:1b:1c:1d:1e:{lease_nbr+1:02}",
                                          "fqdn-fwd": True,
                                          "fqdn-rev": True,
-                                         "valid-lft": 7777,
+                                         "valid-lft": valid_lifetime,
                                          "state": 1,
                                          "hostname": f"my.host.some.name{lease_nbr+1}",
                                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr+1:02}",
@@ -174,6 +176,10 @@ def test_v4_lease_upload(backend):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # parameters for added leases
+    valid_lifetime = 7777
+    expire = int(time.time()) + valid_lifetime
+
     # add 5 leases
     for i in range(5):
         cmd = {"command": "lease4-add",
@@ -182,9 +188,9 @@ def test_v4_lease_upload(backend):
                              "hw-address": f"1a:1b:1c:1d:1e:{i+1:02}",
                              "fqdn-fwd": True,
                              "fqdn-rev": True,
-                             "valid-lft": 7777,
+                             "valid-lft": valid_lifetime,
                              "state": 1,
-                             "expire": int(time.time()) + 7000,
+                             "expire": expire,
                              "hostname": f"my.host.some.name{i+1}",
                              "client-id": f"aa:bb:cc:dd:11:{i+1:02}",
                              "user-context": {"value": 1},
@@ -219,13 +225,13 @@ def test_v4_lease_upload(backend):
     all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
 
     for lease_nbr, _ in enumerate(all_leases):
-        del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"subnet-id": 1,
+                                         "cltt": expire - valid_lifetime,
                                          "ip-address": f"192.168.50.{lease_nbr+1}",
                                          "hw-address": f"1a:1b:1c:1d:1e:{lease_nbr+1:02}",
                                          "fqdn-fwd": True,
                                          "fqdn-rev": True,
-                                         "valid-lft": 7777,
+                                         "valid-lft": valid_lifetime,
                                          "state": 1,
                                          "hostname": f"my.host.some.name{lease_nbr+1}",
                                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr+1:02}",
@@ -256,7 +262,10 @@ def test_v4_lease_upload_duplicate(backend):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    expire = int(time.time()) + 7000
+    # parameters for added leases
+    valid_lifetime = 7777
+    expire = int(time.time()) + valid_lifetime
+
     # add 5 leases
     for i in range(5):
         cmd = {"command": "lease4-add",
@@ -265,7 +274,7 @@ def test_v4_lease_upload_duplicate(backend):
                              "hw-address": f"1a:1b:1c:1d:1e:{i+1:02}",
                              "fqdn-fwd": True,
                              "fqdn-rev": True,
-                             "valid-lft": 7777,
+                             "valid-lft": valid_lifetime,
                              "state": 1,
                              "expire": expire,
                              "hostname": f"my.host.some.name{i+1}",
@@ -288,7 +297,7 @@ def test_v4_lease_upload_duplicate(backend):
                              "hw-address": f"1a:1b:1c:1d:1e:{i + 1:02}",
                              "fqdn-fwd": True,
                              "fqdn-rev": True,
-                             "valid-lft": 7777,
+                             "valid-lft": valid_lifetime,
                              "state": 1,
                              "expire": expire,
                              "hostname": f"my.host.some.name{i + 1}",
@@ -325,13 +334,13 @@ def test_v4_lease_upload_duplicate(backend):
     all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
 
     for lease_nbr, _ in enumerate(all_leases):
-        del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"subnet-id": 1,
+                                         "cltt": expire - valid_lifetime,
                                          "ip-address": f"192.168.50.{lease_nbr+1}",
                                          "hw-address": f"1a:1b:1c:1d:1e:{lease_nbr+1:02}",
                                          "fqdn-fwd": True,
                                          "fqdn-rev": True,
-                                         "valid-lft": 7777,
+                                         "valid-lft": valid_lifetime,
                                          "state": 1,
                                          "hostname": f"my.host.some.name{lease_nbr+1}",
                                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr+1:02}",
@@ -365,6 +374,10 @@ def test_v6_lease_dump(backend):
 
     srv_control.start_srv('DHCP', 'started')
 
+    # parameters for added leases
+    valid_lifetime = 7777
+    expire = int(time.time()) + valid_lifetime
+
     # add 5 leases
     for i in range(5):
         cmd = {"command": "lease6-add",
@@ -374,7 +387,8 @@ def test_v6_lease_dump(backend):
                              "iaid": 1230 + i,
                              "hw-address": f"1a:2b:3c:4d:5e:6f:{i+1:02}",
                              "preferred-lft": 7777,
-                             "valid-lft": 11111,
+                             "valid-lft": valid_lifetime,
+                             "expire": expire,
                              "fqdn-fwd": True,
                              "fqdn-rev": True,
                              "hostname": f"urania.example.org{i+1}"}}
@@ -385,14 +399,12 @@ def test_v6_lease_dump(backend):
            "arguments": {"subnets": [1]}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
-    cltt = []
     all_leases = resp["arguments"]["leases"]
     all_leases = sorted(all_leases, key=lambda d: d['duid'])
 
     for lease_nbr, _ in enumerate(all_leases):
-        cltt.append(all_leases[lease_nbr]["cltt"])
-        del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{lease_nbr+1:02}",
+                                         "cltt": expire - valid_lifetime,
                                          "fqdn-fwd": True,
                                          "fqdn-rev": True,
                                          "hostname": f"urania.example.org{lease_nbr+1}",
@@ -403,7 +415,7 @@ def test_v6_lease_dump(backend):
                                          "state": 0,
                                          "subnet-id": 1,
                                          "type": "IA_NA",
-                                         "valid-lft": 11111
+                                         "valid-lft": valid_lifetime
                                          }
         # Check if lease is in database
         srv_msg.check_leases({"address": f"2001:db8:1::{lease_nbr+1}"}, backend=backend)
@@ -502,7 +514,7 @@ def test_v6_lease_dump(backend):
 
     # Check CSV file for all subnet 1 added leases
     for i in range(5):
-        line = f'2001:db8:1::{i+1},1a:1b:1c:1d:1e:1f:20:21:22:23:{i+1:02},11111,{cltt[i]+11111},' \
+        line = f'2001:db8:1::{i+1},1a:1b:1c:1d:1e:1f:20:21:22:23:{i+1:02},{valid_lifetime},{expire},' \
                f'1,7777,0,123{i},128,1,1,urania.example.org{i+1},1a:2b:3c:4d:5e:6f:{i+1:02},0,,1,0'
         srv_msg.file_contains_line(dump_file_path, None, line, singlequotes=True)
 
@@ -558,8 +570,8 @@ def test_v6_lease_dump(backend):
     all_leases = sorted(all_leases, key=lambda d: d['duid'])
 
     for lease_nbr, _ in enumerate(all_leases):
-        del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{lease_nbr+1:02}",
+                                         "cltt": expire - valid_lifetime,
                                          "fqdn-fwd": True,
                                          "fqdn-rev": True,
                                          "hostname": f"urania.example.org{lease_nbr+1}",
@@ -570,7 +582,7 @@ def test_v6_lease_dump(backend):
                                          "state": 0,
                                          "subnet-id": 1,
                                          "type": "IA_NA",
-                                         "valid-lft": 11111
+                                         "valid-lft": valid_lifetime
                                          }
         # Check if lease is in database
         srv_msg.check_leases({"address": f"2001:db8:1::{lease_nbr+1}"}, backend='memfile')
@@ -584,9 +596,9 @@ def test_v6_lease_dump(backend):
     resp = srv_msg.send_ctrl_cmd(cmd)
 
     assert resp["text"] == "IPv6 lease found."
-    del resp["arguments"]["cltt"]  # this value is dynamic
     # check the response for user-context added by Kea server.
     assert resp["arguments"] == {"duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+                                 "cltt": cltt2,
                                  "fqdn-fwd": False,
                                  "fqdn-rev": False,
                                  "hostname": "",
@@ -638,6 +650,10 @@ def test_v6_lease_upload(backend):
 
     srv_control.start_srv('DHCP', 'started')
 
+    # parameters for added leases
+    valid_lifetime = 7777
+    expire = int(time.time()) + valid_lifetime
+
     # add 5 leases
     for i in range(5):
         cmd = {"command": "lease6-add",
@@ -647,7 +663,8 @@ def test_v6_lease_upload(backend):
                              "iaid": 1230 + i,
                              "hw-address": f"1a:2b:3c:4d:5e:6f:{i+1:02}",
                              "preferred-lft": 7777,
-                             "valid-lft": 11111,
+                             "valid-lft": valid_lifetime,
+                             "expire": expire,
                              "fqdn-fwd": True,
                              "fqdn-rev": True,
                              "hostname": f"urania.example.org{i+1}"}}
@@ -727,8 +744,8 @@ def test_v6_lease_upload(backend):
     all_leases = sorted(all_leases, key=lambda d: d['duid'])
 
     for lease_nbr, _ in enumerate(all_leases):
-        del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{lease_nbr+1:02}",
+                                         "cltt": expire - valid_lifetime,
                                          "fqdn-fwd": True,
                                          "fqdn-rev": True,
                                          "hostname": f"urania.example.org{lease_nbr+1}",
@@ -739,7 +756,7 @@ def test_v6_lease_upload(backend):
                                          "state": 0,
                                          "subnet-id": 1,
                                          "type": "IA_NA",
-                                         "valid-lft": 11111
+                                         "valid-lft": valid_lifetime
                                          }
         # Check if lease is in database
         srv_msg.check_leases({"address": f"2001:db8:1::{lease_nbr+1}"}, backend=backend)
@@ -806,7 +823,10 @@ def test_v6_lease_upload_duplicate(backend):
 
     srv_control.start_srv('DHCP', 'started')
 
-    expire = int(time.time()) + 7000
+    # parameters for added leases
+    valid_lifetime = 7777
+    expire = int(time.time()) + valid_lifetime
+
     # add 5 leases
     for i in range(5):
         cmd = {"command": "lease6-add",
@@ -816,7 +836,7 @@ def test_v6_lease_upload_duplicate(backend):
                              "iaid": 1230 + i,
                              "hw-address": f"1a:2b:3c:4d:5e:6f:{i+1:02}",
                              "preferred-lft": 7777,
-                             "valid-lft": 11111,
+                             "valid-lft": valid_lifetime,
                              "expire": expire,
                              "fqdn-fwd": True,
                              "fqdn-rev": True,
@@ -841,7 +861,7 @@ def test_v6_lease_upload_duplicate(backend):
                              "iaid": 1230 + i,
                              "hw-address": f"1a:2b:3c:4d:5e:6f:{i+1:02}",
                              "preferred-lft": 7777,
-                             "valid-lft": 11111,
+                             "valid-lft": valid_lifetime,
                              "expire": expire,
                              "fqdn-fwd": True,
                              "fqdn-rev": True,
@@ -877,8 +897,8 @@ def test_v6_lease_upload_duplicate(backend):
     all_leases = sorted(all_leases, key=lambda d: d['duid'])
 
     for lease_nbr, _ in enumerate(all_leases):
-        del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
         assert all_leases[lease_nbr] == {"duid": f"1a:1b:1c:1d:1e:1f:20:21:22:23:{lease_nbr+1:02}",
+                                         "cltt": expire - valid_lifetime,
                                          "fqdn-fwd": True,
                                          "fqdn-rev": True,
                                          "hostname": f"urania.example.org{lease_nbr+1}",
@@ -889,7 +909,7 @@ def test_v6_lease_upload_duplicate(backend):
                                          "state": 0,
                                          "subnet-id": 1,
                                          "type": "IA_NA",
-                                         "valid-lft": 11111
+                                         "valid-lft": valid_lifetime
                                          }
         # Check if lease is in database
         srv_msg.check_leases({"address": f"2001:db8:1::{lease_nbr+1}"}, backend=backend)
