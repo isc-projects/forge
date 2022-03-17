@@ -8,7 +8,7 @@ import misc
 import srv_control
 import srv_msg
 from forge_cfg import world
-from HA.steps import send_command, HOT_STANDBY, LOAD_BALANCING, wait_until_ha_state, send_heartbeat
+from HA.steps import send_command, HOT_STANDBY, LOAD_BALANCING, wait_until_ha_state, send_heartbeat, get_status_HA
 # TODO add checking logs in all those tests
 
 WAIT_TIME = 3
@@ -47,68 +47,6 @@ def _send_message(dhcp='v6', expect_answer=True):
             srv_msg.send_wait_for_message('MUST', 'OFFER')
         else:
             srv_msg.send_dont_wait_for_message()
-
-
-def _get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str, secondary_state: str, primary_role: str,
-                   secondary_role: str, primary_scopes: list, secondary_scopes: list,
-                   comm_interrupt: bool, in_touch=True, channel='http'):
-    """Check HA dependent status returned by 'status-get' command according to parameters.
-    This function checks 2 servers in HA pair.
-
-    :param server1: Should server1 be checked?
-    :param server2: Should server2 be checked?
-    :param ha_mode: HA mode that servers are in. ('load-balancing', 'hot-standby')
-    :param primary_state: HA mode server1 is in. ('hot-standby', 'load-balancing', 'syncing', 'ready', 'waiting' etc.)
-    :param secondary_state: HA mode server2 is in. ('hot-standby', 'load-balancing', 'syncing', 'ready', 'waiting' etc.)
-    :param primary_role: HA role server1 is in. ('primary', 'secondary', 'standby' etc.)
-    :param secondary_role: HA role server2 is in. ('primary', 'secondary', 'standby' etc.)
-    :param primary_scopes: Server1 scopes
-    :param secondary_scopes: Server2 scopes
-    :param comm_interrupt: Is communication interrupted on any server.
-    :param in_touch: Are servers in 'in touch' state.
-    :param channel: Communication channel for 'status-get' command ('http', 'socket')
-    :return:
-    """
-    if server1:
-        # Get status from Server1 and test the response
-        cmd = {"command": "status-get", "arguments": {}}
-        response = srv_msg.send_ctrl_cmd(cmd, channel=channel,
-                                         address=world.f_cfg.mgmt_address)['arguments']['high-availability'][0]
-
-        assert response['ha-mode'] == ha_mode
-        assert response['ha-servers']['local']['role'] == primary_role
-        assert response['ha-servers']['local']['scopes'] == primary_scopes
-        assert response['ha-servers']['local']['state'] == primary_state
-        assert response['ha-servers']['remote']['age'] >= 0
-        assert response['ha-servers']['remote']['analyzed-packets'] >= 0
-        assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
-        assert response['ha-servers']['remote']['connecting-clients'] >= 0
-        assert response['ha-servers']['remote']['in-touch'] == in_touch
-        assert response['ha-servers']['remote']['last-scopes'] == secondary_scopes
-        assert response['ha-servers']['remote']['last-state'] == secondary_state
-        assert response['ha-servers']['remote']['role'] == secondary_role
-        assert response['ha-servers']['remote']['unacked-clients'] >= 0
-        assert response['ha-servers']['remote']['unacked-clients-left'] >= 0
-    if server2:
-        # Get status from Server2 and test the response
-        cmd = {"command": "status-get", "arguments": {}}
-        response = srv_msg.send_ctrl_cmd(cmd, channel=channel,
-                                         address=world.f_cfg.mgmt_address_2)['arguments']['high-availability'][0]
-
-        assert response['ha-mode'] == ha_mode
-        assert response['ha-servers']['local']['role'] == secondary_role
-        assert response['ha-servers']['local']['scopes'] == secondary_scopes
-        assert response['ha-servers']['local']['state'] == secondary_state
-        assert response['ha-servers']['remote']['age'] >= 0
-        assert response['ha-servers']['remote']['analyzed-packets'] >= 0
-        assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
-        assert response['ha-servers']['remote']['connecting-clients'] >= 0
-        assert response['ha-servers']['remote']['in-touch'] == in_touch
-        assert response['ha-servers']['remote']['last-scopes'] == primary_scopes
-        assert response['ha-servers']['remote']['last-state'] == primary_state
-        assert response['ha-servers']['remote']['role'] == primary_role
-        assert response['ha-servers']['remote']['unacked-clients'] >= 0
-        assert response['ha-servers']['remote']['unacked-clients-left'] >= 0
 
 
 @pytest.mark.v6
@@ -178,10 +116,10 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
     assert send_heartbeat(dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)["arguments"]["state"] == "waiting"
 
     # Check status-get output on both servers - WAITING
-    _get_status_HA(True, True, ha_mode='load-balancing', primary_state='waiting', secondary_state='waiting',
-                   primary_role='primary', secondary_role='secondary',
-                   primary_scopes=[], secondary_scopes=[],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+    get_status_HA(True, True, ha_mode='load-balancing', primary_state='waiting', secondary_state='waiting',
+                  primary_role='primary', secondary_role='secondary',
+                  primary_scopes=[], secondary_scopes=[],
+                  comm_interrupt=False, in_touch=True, channel=channel)
 
     # continue server1 from WAITING
     assert send_command(dhcp_version=dhcp_version, cmd={"command": "ha-continue"})["text"] == 'HA state machine continues.'
@@ -190,10 +128,10 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
     assert send_heartbeat(dhcp_version=dhcp_version)["arguments"]["state"] == "syncing"
 
     # Check status-get output on both servers - SYNCING/WAITING
-    _get_status_HA(True, True, ha_mode='load-balancing', primary_state='syncing', secondary_state='waiting',
-                   primary_role='primary', secondary_role='secondary',
-                   primary_scopes=[], secondary_scopes=[],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+    get_status_HA(True, True, ha_mode='load-balancing', primary_state='syncing', secondary_state='waiting',
+                  primary_role='primary', secondary_role='secondary',
+                  primary_scopes=[], secondary_scopes=[],
+                  comm_interrupt=False, in_touch=True, channel=channel)
 
     # continue server1 from SYNCING
     assert send_command(dhcp_version=dhcp_version, cmd={"command": "ha-continue"})["text"] == 'HA state machine continues.'
@@ -204,10 +142,10 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
     _send_message(dhcp=dhcp_version, expect_answer=False)
 
     # Check status-get output on both servers - READY
-    _get_status_HA(True, True, ha_mode='load-balancing', primary_state='ready', secondary_state='ready',
-                   primary_role='primary', secondary_role='secondary',
-                   primary_scopes=[], secondary_scopes=[],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+    get_status_HA(True, True, ha_mode='load-balancing', primary_state='ready', secondary_state='ready',
+                  primary_role='primary', secondary_role='secondary',
+                  primary_scopes=[], secondary_scopes=[],
+                  comm_interrupt=False, in_touch=True, channel=channel)
 
     # continue server1 from READY
     assert send_command(dhcp_version=dhcp_version, cmd={"command": "ha-continue"})["text"] == 'HA state machine continues.'
@@ -218,10 +156,10 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
     _send_message(dhcp=dhcp_version)
 
     # Check status-get output on both servers - load-balancing
-    _get_status_HA(True, True, ha_mode='load-balancing', primary_state='load-balancing', secondary_state='load-balancing',
-                   primary_role='primary', secondary_role='secondary',
-                   primary_scopes=['server1'], secondary_scopes=['server2'],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+    get_status_HA(True, True, ha_mode='load-balancing', primary_state='load-balancing', secondary_state='load-balancing',
+                  primary_role='primary', secondary_role='secondary',
+                  primary_scopes=['server1'], secondary_scopes=['server2'],
+                  comm_interrupt=False, in_touch=True, channel=channel)
 
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
     srv_msg.forge_sleep(WAIT_TIME, 'seconds')
@@ -232,10 +170,10 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
     assert send_heartbeat(dhcp_version=dhcp_version)["arguments"]["state"] == "load-balancing"
 
     # Check status-get output on server1 - load-balancing
-    _get_status_HA(True, False, ha_mode='load-balancing', primary_state='load-balancing', secondary_state='unavailable',
-                   primary_role='primary', secondary_role='secondary',
-                   primary_scopes=['server1'], secondary_scopes=['server2'],
-                   comm_interrupt=True, in_touch=True, channel=channel)
+    get_status_HA(True, False, ha_mode='load-balancing', primary_state='load-balancing', secondary_state='unavailable',
+                  primary_role='primary', secondary_role='secondary',
+                  primary_scopes=['server1'], secondary_scopes=['server2'],
+                  comm_interrupt=True, in_touch=True, channel=channel)
 
     # continue server1 from load-balancing
     assert send_command(dhcp_version=dhcp_version, cmd={"command": "ha-continue"})["text"] == 'HA state machine continues.'
@@ -244,10 +182,10 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
     _send_message(dhcp=dhcp_version)
 
     # Check status-get output on server1 - load-balancing/partner-down
-    _get_status_HA(True, False, ha_mode='load-balancing', primary_state='partner-down', secondary_state='unavailable',
-                   primary_role='primary', secondary_role='secondary',
-                   primary_scopes=["server1", "server2"], secondary_scopes=["server2"],
-                   comm_interrupt=True, in_touch=True, channel=channel)
+    get_status_HA(True, False, ha_mode='load-balancing', primary_state='partner-down', secondary_state='unavailable',
+                  primary_role='primary', secondary_role='secondary',
+                  primary_scopes=["server1", "server2"], secondary_scopes=["server2"],
+                  comm_interrupt=True, in_touch=True, channel=channel)
 
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
@@ -515,10 +453,10 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
     assert send_heartbeat(dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)["arguments"]["state"] == "waiting"
 
     # Check status-get output on both servers - WAITING
-    _get_status_HA(True, True, ha_mode='hot-standby', primary_state='waiting', secondary_state='waiting',
-                   primary_role='primary', secondary_role='standby',
-                   primary_scopes=[], secondary_scopes=[],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+    get_status_HA(True, True, ha_mode='hot-standby', primary_state='waiting', secondary_state='waiting',
+                  primary_role='primary', secondary_role='standby',
+                  primary_scopes=[], secondary_scopes=[],
+                  comm_interrupt=False, in_touch=True, channel=channel)
 
     # continue server1 from WAITING
     assert send_command(dhcp_version=dhcp_version, cmd={"command": "ha-continue"})["text"] == 'HA state machine continues.'
@@ -529,10 +467,10 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
     srv_msg.forge_sleep(WAIT_TIME, 'seconds')
 
     # Check status-get output on both servers - syncing/waiting
-    _get_status_HA(True, True, ha_mode='hot-standby', primary_state='syncing', secondary_state='waiting',
-                   primary_role='primary', secondary_role='standby',
-                   primary_scopes=[], secondary_scopes=[],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+    get_status_HA(True, True, ha_mode='hot-standby', primary_state='syncing', secondary_state='waiting',
+                  primary_role='primary', secondary_role='standby',
+                  primary_scopes=[], secondary_scopes=[],
+                  comm_interrupt=False, in_touch=True, channel=channel)
 
     # continue server1 from SYNCING
     assert send_command(dhcp_version=dhcp_version, cmd={"command": "ha-continue"})["text"] == 'HA state machine continues.'
@@ -545,10 +483,10 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
     _send_message(dhcp=dhcp_version, expect_answer=False)
 
     # Check status-get output on both servers - ready
-    _get_status_HA(True, True, ha_mode='hot-standby', primary_state='ready', secondary_state='ready',
-                   primary_role='primary', secondary_role='standby',
-                   primary_scopes=[], secondary_scopes=[],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+    get_status_HA(True, True, ha_mode='hot-standby', primary_state='ready', secondary_state='ready',
+                  primary_role='primary', secondary_role='standby',
+                  primary_scopes=[], secondary_scopes=[],
+                  comm_interrupt=False, in_touch=True, channel=channel)
 
     # continue server1 from READY
     assert send_command(dhcp_version=dhcp_version, cmd={"command": "ha-continue"})["text"] == 'HA state machine continues.'
@@ -559,10 +497,10 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
 
     srv_msg.forge_sleep(WAIT_TIME, 'seconds')
     # Check status-get output on both servers - hot-standby
-    _get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
-                   primary_role='primary', secondary_role='standby',
-                   primary_scopes=['server1'], secondary_scopes=[],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+    get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
+                  primary_role='primary', secondary_role='standby',
+                  primary_scopes=['server1'], secondary_scopes=[],
+                  comm_interrupt=False, in_touch=True, channel=channel)
 
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
     srv_msg.forge_sleep(WAIT_TIME, 'seconds')
@@ -573,10 +511,10 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
     assert send_heartbeat(dhcp_version=dhcp_version)["arguments"]["state"] == "hot-standby"
 
     # Check status-get output on server1 - hot-standby/unavailable
-    _get_status_HA(True, False, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='unavailable',
-                   primary_role='primary', secondary_role='standby',
-                   primary_scopes=['server1'], secondary_scopes=[],
-                   comm_interrupt=True, in_touch=True, channel=channel)
+    get_status_HA(True, False, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='unavailable',
+                  primary_role='primary', secondary_role='standby',
+                  primary_scopes=['server1'], secondary_scopes=[],
+                  comm_interrupt=True, in_touch=True, channel=channel)
 
     # continue server1 from hot-standby
     assert send_command(dhcp_version=dhcp_version, cmd={"command": "ha-continue"})["text"] == 'HA state machine continues.'
@@ -586,10 +524,10 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
     _send_message(dhcp=dhcp_version)
 
     # Check status-get output on server1 - partner-down/unavailable
-    _get_status_HA(True, False, ha_mode='hot-standby', primary_state='partner-down', secondary_state='unavailable',
-                   primary_role='primary', secondary_role='standby',
-                   primary_scopes=['server1'], secondary_scopes=[],
-                   comm_interrupt=True, in_touch=True, channel=channel)
+    get_status_HA(True, False, ha_mode='hot-standby', primary_state='partner-down', secondary_state='unavailable',
+                  primary_role='primary', secondary_role='standby',
+                  primary_scopes=['server1'], secondary_scopes=[],
+                  comm_interrupt=True, in_touch=True, channel=channel)
 
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
     srv_msg.forge_sleep(WAIT_TIME, 'seconds')
@@ -599,10 +537,10 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
     assert send_heartbeat(dhcp_version=dhcp_version)["arguments"]["state"] == "partner-down"
 
     # Check status-get output on both servers - partner-down/ready
-    _get_status_HA(True, True, ha_mode='hot-standby', primary_state='partner-down', secondary_state='ready',
-                   primary_role='primary', secondary_role='standby',
-                   primary_scopes=['server1'], secondary_scopes=[],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+    get_status_HA(True, True, ha_mode='hot-standby', primary_state='partner-down', secondary_state='ready',
+                  primary_role='primary', secondary_role='standby',
+                  primary_scopes=['server1'], secondary_scopes=[],
+                  comm_interrupt=False, in_touch=True, channel=channel)
 
     # continue from partner-down
     assert send_command(dhcp_version=dhcp_version, cmd={"command": "ha-continue"})["text"] == 'HA state machine continues.'
@@ -611,10 +549,10 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
     srv_msg.forge_sleep(WAIT_TIME, 'seconds')
 
     # Check status-get output on both servers - hot-standby
-    _get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
-                   primary_role='primary', secondary_role='standby',
-                   primary_scopes=['server1'], secondary_scopes=[],
-                   comm_interrupt=False, in_touch=True, channel=channel)
+    get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
+                  primary_role='primary', secondary_role='standby',
+                  primary_scopes=['server1'], secondary_scopes=[],
+                  comm_interrupt=False, in_touch=True, channel=channel)
 
     # stop server 2
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
