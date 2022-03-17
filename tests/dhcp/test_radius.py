@@ -5,7 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # For dhcp_version:
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument,line-too-long
 
 import pytest
 
@@ -42,6 +42,7 @@ def test_radius(dhcp_version: str,
     misc.test_setup()
 
     # Provide RADIUS configuration and start RADIUS server.
+    radius.add_usual_reservations()
     radius.init_and_start_radius()
 
     # Configure and start Kea.
@@ -64,35 +65,34 @@ def test_radius(dhcp_version: str,
 @pytest.mark.v4_bootp
 @pytest.mark.v6
 @pytest.mark.radius
-@pytest.mark.parametrize('attributes', ['single-attribute', 'double-attributes'])
-def test_radius_framed_pool(dhcp_version: str, attributes: str):
+@pytest.mark.parametrize('attribute_cardinality', ['single-attribute', 'double-attributes'])
+def test_radius_framed_pool(dhcp_version: str, attribute_cardinality: str):
     """
     Check that Kea can classify a packet using a single type of RADIUS
     attribute, either v4 or v6, as opposed to having both assigned, as in
     test_radius.
 
     :param dhcp_version: the DHCP version being tested
-    :param attributes: whether support for multiple attributes is tested
+    :param attribute_cardinality: whether support for multiple attributes is tested
     """
 
     misc.test_setup()
 
-    authorize_content = '{p}:08:00:27:b0:c1:41    Cleartext-password := "08:00:27:b0:c1:41"\n'
-
     # RFC 2869 says that zero or one instance of the framed pool attribute MAY
     # be present.
+    attributes = []
     if world.proto == 'v4':
-        if attributes == 'double-attributes':
-            authorize_content += '    \tFramed-Pool = "bogus",\n'
-        authorize_content += '    \tFramed-Pool = "gold"\n'
+        if attribute_cardinality == 'double-attributes':
+            attributes.append('Framed-Pool = "bogus"')
+        attributes.append('Framed-Pool = "gold"')
     elif world.proto == 'v6':
-        if attributes == 'double-attributes':
-            authorize_content += '    \tFramed-IPv6-Pool = "bogus",\n'
-        authorize_content += '    \tFramed-IPv6-Pool = "gold"\n'
+        if attribute_cardinality == 'double-attributes':
+            attributes.append('Framed-IPv6-Pool = "bogus"')
+        attributes.append('Framed-IPv6-Pool = "gold"')
 
     # Provide RADIUS configuration and start RADIUS server.
-    radius.init_and_start_radius(authorize_content=authorize_content,
-                                 replace_authorize_content=True)
+    radius.add_reservation('08:00:27:b0:c1:41', attributes)
+    radius.init_and_start_radius()
 
     # Configure and start Kea.
     addresses, configs = radius.get_test_case_variables()
@@ -102,7 +102,7 @@ def test_radius_framed_pool(dhcp_version: str, attributes: str):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    if attributes == 'double-attributes':
+    if attribute_cardinality == 'double-attributes':
         # Wether Kea takes only the first pool into consideration, as it happens at
         # the time of writing, or if the allocation explicitly fails, expect the
         # client to not get the gold lease.
@@ -122,22 +122,32 @@ def test_radius_framed_pool(dhcp_version: str, attributes: str):
 @pytest.mark.radius
 def test_radius_no_attributes(dhcp_version: str):
     """
-    Check RADIUS functionality with an empty authorize file.
+    Check RADIUS functionality with an authorize file that has an authentication
+    entry for the client with no attributes.
 
     :param dhcp_version: the DHCP version being tested
     """
 
     misc.test_setup()
 
-    authorize_content = '{p}:08:00:27:b0:c1:41    Cleartext-password := "08:00:27:b0:c1:41"\n'
-
     # Provide RADIUS configuration and start RADIUS server.
-    radius.init_and_start_radius(authorize_content=authorize_content,
-                                 replace_authorize_content=True)
+    radius.add_reservation('08:00:27:b0:c1:41')
+    radius.init_and_start_radius()
 
-    # Configure and start Kea.
-    addresses, configs = radius.get_test_case_variables()
-    setup_server_with_radius(**configs['subnet'])
+    # Configure with an unguarded pool and start Kea.
+    setup_server_with_radius(**{
+        f'subnet{world.proto[1]}': [
+            {
+                'interface': world.f_cfg.server_iface,
+                'pools': [
+                    {
+                        'pool': '192.168.50.5 - 192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5 - 2001:db8:50::5'
+                    }
+                ],
+                'subnet': '192.168.50.5/24'if world.proto == 'v4' else '2001:db8:50::/64'
+            }
+        ]
+    })
     if dhcp_version == 'v4_bootp':
         srv_control.add_hooks('libdhcp_bootp.so')
     srv_control.build_and_send_config_files()
@@ -176,11 +186,12 @@ def test_radius_giaddr(dhcp_version: str,
     misc.test_setup()
 
     # Provide RADIUS configuration and start RADIUS server.
-    radius.init_and_start_radius(authorize_content='''
-{p}:08:00:27:b0:aa:aa    Cleartext-password := "08:00:27:b0:aa:aa"
-    \tFramed-IP-Address = "192.168.50.5",
-    \tFramed-IPv6-Address = "2001:db8:50::5"
-''')
+    radius.add_usual_reservations()
+    radius.add_reservation('08:00:27:b0:aa:aa', [
+        'Framed-IP-Address = "192.168.50.5"',
+        'Framed-IPv6-Address = "2001:db8:50::5"',
+    ])
+    radius.init_and_start_radius()
 
     # Configure and start Kea.
     _, configs = radius.get_test_case_variables()
@@ -206,7 +217,7 @@ def test_radius_giaddr(dhcp_version: str,
     radius.add_leading_subnet()
     # Add another one random one if the test requests it.
     if leading_subnet == 'leading_subnet':
-        radius.add_leading_subnet('192.168.88.0/24', '192.168.88.0 - 192.168.88.255')
+        radius.add_leading_subnet('192.168.22.0/24', '192.168.22.0 - 192.168.22.255')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

@@ -624,18 +624,16 @@ def test_HA_and_RADIUS(dhcp_version: str,
     starting_mac_2 = '02:02:0c:03:0a:00'
 
     # Start with 10 to avoid RADIUS pools which are below 10.
+    radius.add_usual_reservations()
     last_octet = 10
-    authorize_content = ''
     for mac in [starting_mac, starting_mac_2]:
         for _ in range(leases_count):
             last_octet = last_octet + 1
             mac = increase_mac(mac)
-            # Leave {p} unchanged. It is formatted in radius.init_and_start_radius().
-            authorize_content += '''
-{p}:{mac}    Cleartext-password := "{mac}"
-    \tFramed-IP-Address = "192.168.50.{last_octet}",
-    \tFramed-IPv6-Address = "2001:db8:50::{last_octet}"
-'''.format(p='{p}', mac=mac, last_octet=last_octet)
+            radius.add_reservation(mac, [
+                'Framed-IP-Address = "192.168.50.{last_octet}"',
+                'Framed-IPv6-Address = "2001:db8:50::{last_octet}"',
+            ])
 
     # ---- HA server1 ----
     misc.test_setup()
@@ -644,7 +642,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
     srv_control.clear_some_data('all')
 
     # Setup the RADIUS server.
-    radius.init_and_start_radius(authorize_content=authorize_content)
+    radius.init_and_start_radius()
 
     # Some useful variables
     addresses, configs = radius.get_test_case_variables()
@@ -695,8 +693,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
     # Setup the RADIUS server.
-    radius.init_and_start_radius(authorize_content=authorize_content,
-                                 destination=world.f_cfg.mgmt_address_2)
+    radius.init_and_start_radius(destination=world.f_cfg.mgmt_address_2)
 
     # Get the server2-specific variables again.
     _, configs = radius.get_test_case_variables(interface=world.f_cfg.server2_iface)
