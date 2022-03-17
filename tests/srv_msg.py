@@ -660,7 +660,7 @@ def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_re
     return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result, exp_failed)
 
 
-def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, address='$(MGMT_ADDRESS)'):
+def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, address=world.f_cfg.mgmt_address):
     """Send request to DHCP Kea server over Unix socket or over HTTP via CA."""
 
     if channel == 'http':
