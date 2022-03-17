@@ -46,7 +46,7 @@ def test_radius(dhcp_version: str,
     radius.init_and_start_radius()
 
     # Configure and start Kea.
-    addresses, configs = radius.get_test_case_variables()
+    configs = radius.configurations()
     setup_server_with_radius(**configs[config_type])
     srv_control.define_temporary_lease_db_backend(backend)
     if dhcp_version == 'v4_bootp':
@@ -55,7 +55,7 @@ def test_radius(dhcp_version: str,
     srv_control.start_srv('DHCP', 'started')
 
     # Check the leases.
-    leases = radius.send_and_receive(config_type, has_reservation, addresses)
+    leases = radius.send_and_receive(config_type, has_reservation)
 
     # Check that leases are in the backend.
     srv_msg.check_leases(leases, backend=backend)
@@ -95,7 +95,7 @@ def test_radius_framed_pool(dhcp_version: str, attribute_cardinality: str):
     radius.init_and_start_radius()
 
     # Configure and start Kea.
-    addresses, configs = radius.get_test_case_variables()
+    configs = radius.configurations()
     setup_server_with_radius(**configs['network'])
     if dhcp_version == 'v4_bootp':
         srv_control.add_hooks('libdhcp_bootp.so')
@@ -110,7 +110,7 @@ def test_radius_framed_pool(dhcp_version: str, attribute_cardinality: str):
     else:
         # For a single attribute, expect the gold lease.
         lease = radius.get_address(mac='08:00:27:b0:c1:41',
-                                   expected_lease=addresses['50-5'])
+                                   expected_lease='192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5')
 
         # Check that leases are in the backend.
         srv_msg.check_leases([lease])
@@ -155,7 +155,7 @@ def test_radius_no_attributes(dhcp_version: str):
 
     # The client should get a lease from the configured pool.
     lease = radius.get_address(mac='08:00:27:b0:c1:41',
-                               expected_lease=addresses['50-5'])
+                               expected_lease='192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5')
 
     # Check that leases are in the backend.
     srv_msg.check_leases([lease])
@@ -194,7 +194,7 @@ def test_radius_giaddr(dhcp_version: str,
     radius.init_and_start_radius()
 
     # Configure and start Kea.
-    _, configs = radius.get_test_case_variables()
+    configs = radius.configurations()
     setup_server_with_radius(**configs[config_type])
     # Delete any client class in all pools.
     elements = [world.dhcp_cfg]

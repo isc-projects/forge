@@ -80,116 +80,85 @@ def add_reservation(mac: str, attributes = None):
 
 
 def add_usual_reservations():
-    add_reservation('08:00:27:b0:c1:41 ', [
+    add_reservation('08:00:27:b0:c1:41', [
         'Framed-IP-Address = "192.168.51.51"',
         'Framed-IPv6-Address = "2001:db8:51::51"',
         'Framed-Pool = "blues"',
         'Framed-IPv6-Pool = "blues"',
     ])
 
-    add_reservation('08:00:27:b0:c1:42 ', [
+    add_reservation('08:00:27:b0:c1:42', [
         'Framed-IP-Address = "192.168.52.52"',
         'Framed-IPv6-Address = "2001:db8:52::52"',
         'Framed-Pool = "gold"',
         'Framed-IPv6-Pool = "gold"',
     ])
 
-    add_reservation('08:00:27:b0:c5:01 ', [
+    add_reservation('08:00:27:b0:c5:01', [
         'Framed-Pool = "gold"',
         'Framed-IPv6-Pool = "gold"',
     ])
 
-    add_reservation('08:00:27:b0:c5:02 ', [
+    add_reservation('08:00:27:b0:c5:02', [
         'Framed-Pool = "gold"',
         'Framed-IPv6-Pool = "gold"',
     ])
 
-    add_reservation('08:00:27:b0:c5:03 ', [
+    add_reservation('08:00:27:b0:c5:03', [
         'Framed-Pool = "gold"',
         'Framed-IPv6-Pool = "gold"',
     ])
 
-    add_reservation('08:00:27:b0:c5:10 ', [
+    add_reservation('08:00:27:b0:c5:10', [
         'Framed-IP-Address = "192.168.50.5"',
         'Framed-IPv6-Address = "2001:db8:50::5"',
         'Framed-Pool = "gold"',
         'Framed-IPv6-Pool = "gold"',
     ])
 
-    add_reservation('08:00:27:b0:c6:01 ', [
+    add_reservation('08:00:27:b0:c6:01', [
         'Framed-Pool = "silver"',
         'Framed-IPv6-Pool = "silver"',
     ])
 
-    add_reservation('08:00:27:b0:c6:02 ', [
+    add_reservation('08:00:27:b0:c6:02', [
         'Framed-Pool = "silver"',
         'Framed-IPv6-Pool = "silver"',
     ])
 
-    add_reservation('08:00:27:b0:c6:03 ', [
+    add_reservation('08:00:27:b0:c6:03', [
         'Framed-Pool = "silver"',
         'Framed-IPv6-Pool = "silver"',
     ])
 
-    add_reservation('08:00:27:b0:c7:01 ', [
+    add_reservation('08:00:27:b0:c7:01', [
         'Framed-Pool = "bronze"',
         'Framed-IPv6-Pool = "bronze"',
     ])
 
-    add_reservation('08:00:27:b0:c7:02 ', [
+    add_reservation('08:00:27:b0:c7:02', [
         'Framed-Pool = "bronze"',
         'Framed-IPv6-Pool = "bronze"',
     ])
 
-    add_reservation('08:00:27:b0:c7:03 ', [
+    add_reservation('08:00:27:b0:c7:03', [
         'Framed-Pool = "bronze"',
         'Framed-IPv6-Pool = "bronze"',
     ])
 
-    add_reservation('08:00:27:b0:c8:01 ', [
+    add_reservation('08:00:27:b0:c8:01', [
         'Framed-Pool = "platinum"',
         'Framed-IPv6-Pool = "platinum"',
     ])
 
 
-def get_test_case_variables(interface: str = world.f_cfg.server_iface):
+def configurations(interface: str = world.f_cfg.server_iface):
     """
-    Populate variables used in RADIUS tests: various addresses, subnets and configurations.
+    Return configurations used in RADIUS tests.
 
     :param interface: the name of the client-facing interface on the server side
-    :return: tuple(addresses, configurations)
+    :return: configurations
     """
-
-    if world.proto in ['v4', 'v4_bootp']:
-        addresses = {
-          '50-5': '192.168.50.5',
-          '50-6': '192.168.50.6',
-          '50-7': '192.168.50.7',
-          '52-52': '192.168.52.52',
-          '60-5': '192.168.60.5',
-          '60-6': '192.168.60.6',
-          '70-5': '192.168.70.5',
-        }
-        subnets = {
-          '50': '192.168.50.0/24',
-          '60': '192.168.60.0/24',
-          '70': '192.168.70.0/24',
-        }
-    elif world.proto == 'v6':
-        addresses = {
-          '50-5': '2001:db8:50::5',
-          '50-6': '2001:db8:50::6',
-          '50-7': '2001:db8:50::7',
-          '52-52': '2001:db8:52::52',
-          '60-5': '2001:db8:60::5',
-          '60-6': '2001:db8:60::6',
-          '70-5': '2001:db8:70::5',
-        }
-        subnets = {
-          '50': '2001:db8:50::/64',
-          '60': '2001:db8:60::/64',
-          '70': '2001:db8:70::/64',
-        }
 
     v = world.proto[1]
     configs = {}
@@ -201,10 +170,10 @@ def get_test_case_variables(interface: str = world.f_cfg.server_iface):
                 'pools': [
                     {
                         'client-class': 'gold',
-                        'pool': f"{addresses['50-5']} - {addresses['50-5']}"
+                        'pool': '192.168.50.5 - 192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5 - 2001:db8:50::5'
                     }
                 ],
-                'subnet': subnets['50']
+                'subnet': '192.168.50.0/24' if world.proto == 'v4' else '2001:db8:50::/64'
             }
         ]
     }
@@ -222,10 +191,10 @@ def get_test_case_variables(interface: str = world.f_cfg.server_iface):
                         'pools': [
                             {
                                 'client-class': 'gold',
-                                'pool': f"{addresses['50-5']} - {addresses['50-5']}"
+                                'pool': '192.168.50.5 - 192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5 - 2001:db8:50::5'
                             }
                         ],
-                        'subnet': subnets['50']
+                        'subnet': '192.168.50.0/24' if world.proto == 'v4' else '2001:db8:50::/64'
                     }
                 ]
             }
@@ -241,50 +210,50 @@ def get_test_case_variables(interface: str = world.f_cfg.server_iface):
                 'name': 'net-1',
                 f'subnet{v}': [
                     {
-                        'subnet': subnets['50'],
                         'interface': interface,
                         'pools': [
                             {
                                 'client-class': 'gold',
-                                'pool': f"{addresses['50-5']} - {addresses['50-5']}"
+                                'pool': '192.168.50.5 - 192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5 - 2001:db8:50::5'
                             }, {
                                 'client-class': 'silver',
-                                'pool': f"{addresses['50-6']} - {addresses['50-6']}"
+                                'pool': '192.168.50.6 - 192.168.50.6' if world.proto == 'v4' else '2001:db8:50::6 - 2001:db8:50::6'
                             }, {
                                 'client-class': 'bronze',
-                                'pool': f"{addresses['50-7']} - {addresses['50-7']}"
+                                'pool': '192.168.50.7 - 192.168.50.7' if world.proto == 'v4' else '2001:db8:50::7 - 2001:db8:50::7'
                             }
-                        ]
+                        ],
+                        'subnet': '192.168.50.0/24' if world.proto == 'v4' else '2001:db8:50::/64'
                     },
                     {
-                        'subnet': subnets['60'],
                         'interface': interface,
                         'pools': [
                             {
                                 'client-class': 'gold',
-                                'pool': f"{addresses['60-5']} - {addresses['60-5']}"
+                                'pool': '192.168.60.5 - 192.168.60.5' if world.proto == 'v4' else '2001:db8:60::5 - 2001:db8:60::5'
                             }, {
                                 'client-class': 'silver',
-                                'pool': f"{addresses['60-6']} - {addresses['60-6']}"
+                                'pool': '192.168.60.6 - 192.168.60.6' if world.proto == 'v4' else '2001:db8:60::6 - 2001:db8:60::6'
                             }
-                        ]
+                        ],
+                        'subnet': '192.168.60.0/24' if world.proto == 'v4' else '2001:db8:60::/64'
                     },
                     {
-                        'subnet': subnets['70'],
                         'client-class': 'platinum',
                         'interface': interface,
                         'pools': [
                             {
-                                'pool': f"{addresses['70-5']} - {addresses['70-5']}"
+                                'pool': '192.168.70.5 - 192.168.70.5' if world.proto == 'v4' else '2001:db8:70::5 - 2001:db8:70::5'
                             }
-                        ]
+                        ],
+                        'subnet': '192.168.70.0/24' if world.proto == 'v4' else '2001:db8:70::/64'
                     }
                 ]
             }
         ]
     }
 
-    return addresses, configs
+    return configs
 
 
 def get_address(mac: str, giaddr: str = None, expected_lease: str = None):
@@ -328,8 +297,12 @@ def init_and_start_radius(destination: str = world.f_cfg.mgmt_address):
     _init_radius(destination=destination)
     _start_radius(destination=destination)
 
+    # Reset for next use.
+    global AUTHORIZE_CONTENT
+    AUTHORIZE_CONTENT = ''
 
-def send_and_receive(config_type: str, has_reservation: str, addresses):
+
+def send_and_receive(config_type: str, has_reservation: str):
     """
     Exchange messages and check that the proper leases were returned according
     to Kea's configuration.
@@ -341,7 +314,6 @@ def send_and_receive(config_type: str, has_reservation: str, addresses):
     :param has_reservation: whether the first client coming in with a request has its lease or pool reserved in RADIUS
         * 'client-has-reservation-in-radius': yes
         * 'client-has-no-reservation-in-radius': no
-    :param addresses: dictionary of addresses used in testing indexed by recognizable patterns
     :return list of dictionaries of leases containing address, client_id, mac
     """
 
@@ -351,7 +323,7 @@ def send_and_receive(config_type: str, has_reservation: str, addresses):
         # Get a lease that is explicitly configured in RADIUS as
         # Framed-IP-Address that is part of a configured pool in Kea.
         leases.append(get_address(mac='08:00:27:b0:c5:10',
-                                  expected_lease=addresses['50-5']))
+                                  expected_lease='192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5'))
 
         # If the config has only one address in the pool...
         if config_type in ['subnet', 'network']:
@@ -367,25 +339,27 @@ def send_and_receive(config_type: str, has_reservation: str, addresses):
         # Get a lease that is explicitly configured in RADIUS as
         # Framed-IP-Address that is outside of any configured pool in Kea.
         leases.append(get_address(mac='08:00:27:b0:c1:42',
-                                  expected_lease=addresses['52-52']))
+                                  expected_lease='192.168.52.52' if world.proto == 'v4' else '2001:db8:52::52'))
 
         # A client with a gold Framed-Pool should get the lease because the
         # pool has a free lease.
         leases.append(get_address(mac='08:00:27:b0:c5:01',
-                                  expected_lease=addresses['50-5']))
+                                  expected_lease='192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5'))
 
     # 'multiple-subnets' is more complex so treat it first.
     if config_type == 'multiple-subnets':
-        gold_ips = {addresses['60-5']}  # Skip '50-5' because it was leased previously.
-        silver_ips = {addresses['50-6'], addresses['60-6']}
+        # Skip 192.168.50.5 / 2001:db8:50::5 because it was leased previously.
+        gold_ips = {'192.168.60.5' if world.proto == 'v4' else '2001:db8:60::5'}
+        silver_ips = {'192.168.50.6' if world.proto == 'v4' else '2001:db8:50::6',
+                      '192.168.60.6' if world.proto == 'v4' else '2001:db8:60::6'}
 
         # Get the lease that is configured explicitly in RADIUS with
         # Framed-IP-Address.
         leases.append(get_address(mac='08:00:27:b0:c1:42',
-                                  expected_lease=addresses['52-52']))
+                                  expected_lease='192.168.52.52' if world.proto == 'v4' else '2001:db8:52::52'))
 
         # ---- Take all addresses from gold pools. ----
-        # Skip '50-5' because it was leased previously.
+        # Skip 192.168.50.5 / 2001:db8:50::5 because it was leased previously.
 
         # Lease the second and last gold address.
         lease = get_address(mac='08:00:27:b0:c5:02')
@@ -415,14 +389,14 @@ def send_and_receive(config_type: str, has_reservation: str, addresses):
         # ---- Take all addresses from bronze pools. ----
         # Lease the first and only bronze address.
         leases.append(get_address(mac='08:00:27:b0:c7:01',
-                                  expected_lease=addresses['50-7']))
+                                  expected_lease='192.168.50.7' if world.proto == 'v4' else '2001:db8:50::7'))
 
         # No more leases.
         send_message_and_expect_no_more_leases(mac='08:00:27:b0:c7:02')
 
         # Platinum client gets platinum lease.
         leases.append(get_address(mac='08:00:27:b0:c8:01',
-                                  expected_lease=addresses['70-5']))
+                                  expected_lease='192.168.70.5' if world.proto == 'v4' else '2001:db8:70::5'))
 
     # Remove None from leases because it doesn't play nice with srv_msg.check_leases().
     leases = [l for l in leases if l is not None]

@@ -644,12 +644,10 @@ def test_HA_and_RADIUS(dhcp_version: str,
     # Setup the RADIUS server.
     radius.init_and_start_radius()
 
-    # Some useful variables
-    addresses, configs = radius.get_test_case_variables()
-
     # Configure RADIUS in Kea. Server also starts here which is an
     # unfortunate side effect, but we'll restart after finishing
     # configuration below.
+    configs = radius.configurations()
     setup_server_with_radius(**configs[config_type])
 
     # Configure the backend.
@@ -696,7 +694,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
     radius.init_and_start_radius(destination=world.f_cfg.mgmt_address_2)
 
     # Get the server2-specific variables again.
-    _, configs = radius.get_test_case_variables(interface=world.f_cfg.server2_iface)
+    configs = radius.configurations(interface=world.f_cfg.server2_iface)
 
     # Configure RADIUS in Kea. Server also starts here which is an
     # unfortunate side effect, but we'll restart after finishing
@@ -805,7 +803,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
 
     # Exchange some messages and make sure leases are given with clients that
     # are configured in RADIUS.
-    radius_leases = radius.send_and_receive(config_type, has_reservation, addresses)
+    radius_leases = radius.send_and_receive(config_type, has_reservation)
 
     # Check that both servers have all the leases in the backends.
     for leases in [set_of_leases, set_of_leases_2, radius_leases]:
