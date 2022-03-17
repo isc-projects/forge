@@ -13,7 +13,7 @@
 # NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 # WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name,line-too-long,too-many-arguments
 
 import random
 import misc
@@ -328,3 +328,65 @@ def load_hook_libraries(dhcp_version, hook_order):
         srv_control.add_ha_hook('libdhcp_ha.so')
         if dhcp_version == 'v4_bootp':
             srv_control.add_hooks('libdhcp_bootp.so')
+
+
+def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str, secondary_state: str, primary_role: str,
+                  secondary_role: str, primary_scopes: list, secondary_scopes: list,
+                  comm_interrupt: bool, in_touch=True, channel='http'):
+    """Check HA dependent status returned by 'status-get' command according to parameters.
+    This function checks 2 servers in HA pair.
+
+    :param server1: Should server1 be checked?
+    :param server2: Should server2 be checked?
+    :param ha_mode: HA mode that servers are in. ('load-balancing', 'hot-standby')
+    :param primary_state: HA mode server1 is in. ('hot-standby', 'load-balancing', 'syncing', 'ready', 'waiting' etc.)
+    :param secondary_state: HA mode server2 is in. ('hot-standby', 'load-balancing', 'syncing', 'ready', 'waiting' etc.)
+    :param primary_role: HA role server1 is in. ('primary', 'secondary', 'standby' etc.)
+    :param secondary_role: HA role server2 is in. ('primary', 'secondary', 'standby' etc.)
+    :param primary_scopes: Server1 scopes
+    :param secondary_scopes: Server2 scopes
+    :param comm_interrupt: Is communication interrupted on any server.
+    :param in_touch: Are servers in 'in touch' state.
+    :param channel: Communication channel for 'status-get' command ('http', 'socket')
+    :return:
+    """
+    if server1:
+        # Get status from Server1 and test the response
+        cmd = {"command": "status-get", "arguments": {}}
+        response = srv_msg.send_ctrl_cmd(cmd, channel=channel,
+                                         address=world.f_cfg.mgmt_address)['arguments']['high-availability'][0]
+
+        assert response['ha-mode'] == ha_mode
+        assert response['ha-servers']['local']['role'] == primary_role
+        assert response['ha-servers']['local']['scopes'] == primary_scopes
+        assert response['ha-servers']['local']['state'] == primary_state
+        assert response['ha-servers']['remote']['age'] >= 0
+        assert response['ha-servers']['remote']['analyzed-packets'] >= 0
+        assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
+        assert response['ha-servers']['remote']['connecting-clients'] >= 0
+        assert response['ha-servers']['remote']['in-touch'] == in_touch
+        assert response['ha-servers']['remote']['last-scopes'] == secondary_scopes
+        assert response['ha-servers']['remote']['last-state'] == secondary_state
+        assert response['ha-servers']['remote']['role'] == secondary_role
+        assert response['ha-servers']['remote']['unacked-clients'] >= 0
+        assert response['ha-servers']['remote']['unacked-clients-left'] >= 0
+    if server2:
+        # Get status from Server2 and test the response
+        cmd = {"command": "status-get", "arguments": {}}
+        response = srv_msg.send_ctrl_cmd(cmd, channel=channel,
+                                         address=world.f_cfg.mgmt_address_2)['arguments']['high-availability'][0]
+
+        assert response['ha-mode'] == ha_mode
+        assert response['ha-servers']['local']['role'] == secondary_role
+        assert response['ha-servers']['local']['scopes'] == secondary_scopes
+        assert response['ha-servers']['local']['state'] == secondary_state
+        assert response['ha-servers']['remote']['age'] >= 0
+        assert response['ha-servers']['remote']['analyzed-packets'] >= 0
+        assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
+        assert response['ha-servers']['remote']['connecting-clients'] >= 0
+        assert response['ha-servers']['remote']['in-touch'] == in_touch
+        assert response['ha-servers']['remote']['last-scopes'] == primary_scopes
+        assert response['ha-servers']['remote']['last-state'] == primary_state
+        assert response['ha-servers']['remote']['role'] == primary_role
+        assert response['ha-servers']['remote']['unacked-clients'] >= 0
+        assert response['ha-servers']['remote']['unacked-clients-left'] >= 0
