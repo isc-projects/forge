@@ -162,7 +162,7 @@ def add_hooks(library_path):
     pass
 
 
-def delete_hooks(hook_patterns: list[str]):
+def delete_hooks(hook_patterns):
     pass
 
 

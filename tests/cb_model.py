@@ -678,7 +678,7 @@ def _normalize_keys(kwargs):
 def setup_server(destination: str = world.f_cfg.mgmt_address,
                  interface: str = world.f_cfg.server_iface,
                  **kwargs):
-    '''
+    """
     Create a basic configuration and send it to the Kea server.
 
     :param destination: address of server that is being set up
@@ -686,7 +686,7 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
     :param kwargs: dynamic set of arguments
     :return: the configuration that was sent to Kea and sometimes as a second
         variable: the configuration retrieved through "config-get"
-    '''
+    """
 
     misc.test_setup()
 
@@ -761,14 +761,14 @@ def setup_server_for_config_backend_cmds(**kwargs):
 def setup_server_with_radius(destination: str = world.f_cfg.mgmt_address,
                              interface: str = world.f_cfg.server_iface,
                              **kwargs):
-    '''
+    """
     Create a RADIUS configuration and send it to the Kea server.
 
     :param destination: address of server that is being set up
     :param interface: the client-facing interface on the server
     :param kwargs: dynamic set of arguments
     :return: the configuration that was sent to Kea
-    '''
+    """
 
     if world.proto == 'v4':
         expression = "hexstring(pkt4.mac, ':')"

@@ -29,7 +29,7 @@ def test_radius(dhcp_version: str,
                 backend: str,
                 config_type: str,
                 has_reservation: str):
-    '''
+    """
     Check RADIUS functionality on various Kea configurations.
     See radius.send_and_receive() for explanations on what the parametrizations mean.
 
@@ -37,7 +37,7 @@ def test_radius(dhcp_version: str,
     :param backend: the lease database backend type
     :param config_type: different configurations used in testing
     :param has_reservation: whether the first client coming in with a request has its lease or pool reserved in RADIUS
-    '''
+    """
 
     misc.test_setup()
 
@@ -66,14 +66,14 @@ def test_radius(dhcp_version: str,
 @pytest.mark.radius
 @pytest.mark.parametrize('attributes', ['single-attribute', 'double-attributes'])
 def test_radius_framed_pool(dhcp_version: str, attributes: str):
-    '''
+    """
     Check that Kea can classify a packet using a single type of RADIUS
     attribute, either v4 or v6, as opposed to having both assigned, as in
     test_radius.
 
     :param dhcp_version: the DHCP version being tested
     :param attributes: whether support for multiple attributes is tested
-    '''
+    """
 
     misc.test_setup()
 
@@ -121,11 +121,11 @@ def test_radius_framed_pool(dhcp_version: str, attributes: str):
 @pytest.mark.v6
 @pytest.mark.radius
 def test_radius_no_attributes(dhcp_version: str):
-    '''
+    """
     Check RADIUS functionality with an empty authorize file.
 
     :param dhcp_version: the DHCP version being tested
-    '''
+    """
 
     misc.test_setup()
 
@@ -162,7 +162,7 @@ def test_radius_giaddr(dhcp_version: str,
                        giaddr: str,
                        leading_subnet: str,
                        reselect: str):
-    '''
+    """
     Check RADIUS functionality with a client that has a giaddr either belonging
     to a configured subnet inisde Kea, or not.
 
@@ -171,7 +171,7 @@ def test_radius_giaddr(dhcp_version: str,
     :param giaddr: whether the used giaddr is
     :param leading_subnet: whether a random subnet is introduced in order to test subnet reselection
     :param reselect: whether to enable reselect-subnet-address in the RAIDUS hook library
-    '''
+    """
 
     misc.test_setup()
 

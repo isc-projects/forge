@@ -658,13 +658,13 @@ def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
                                   chaddr: str = 'ff:01:02:03:ff:04',
                                   client_id: str = None):
-    '''
+    """
     Send a BOOTP request and expect a BOOTP reply.
 
     :param address: the address expected in the reply
     :param chaddr: the value of the chaddr field in the BOOTP request packet
     :param client_id: the value of option 61 client identifier in the BOOTP request packet
-    '''
+    """
 
     # Send request.
     misc.test_procedure()

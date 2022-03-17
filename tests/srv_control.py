@@ -83,12 +83,12 @@ def config_srv_subnet_with_iface(interface, address, subnet, pool):
 
 
 def update_subnet_counter():
-    '''
+    """
     When subnets are configured via other functions than the ones in this
     module, the subnet counter is left behind. This function updates it so that
     the functions in this module e.g. config_srv_another_subnet() can be used
     correctly again.
-    '''
+    """
     subnet_key = f'subnet{world.proto[1]}'
     if subnet_key in world.dhcp_cfg:
         world.dhcp['subnet_cnt'] = len(world.dhcp_cfg[subnet_key])

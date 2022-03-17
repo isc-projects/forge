@@ -621,11 +621,11 @@ def add_hooks(library_path):
 
 
 def delete_hooks(hook_patterns):
-    '''
+    """
     Delete hook whose path matches one of the patterns given as parameters.
 
     :param hook_patterns: list of patterns used to match library paths
-    '''
+    """
     for hp in hook_patterns:
         for i, hook_library in enumerate(world.dhcp_cfg['hooks-libraries']):
             if re.search(hp, hook_library['library']):
@@ -635,7 +635,7 @@ def delete_hooks(hook_patterns):
 def add_parameter_to_hook(hook_number_or_name, parameter_name: str, parameter_value):
     '''
     Determine the hook library with number {hook_number_or_name} if it's an int,
-    or thatcontains pattern {hook_number_or_name} if it's a str.
+    or that contains pattern {hook_number_or_name} if it's a str.
     Add to the hook library's parameters: "{parameter_name}": {parameter_value}
 
     :param hook_number_or_name: hook index starting with 1 or pattern contained in the library name

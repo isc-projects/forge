@@ -8,7 +8,6 @@
 
 # pylint: disable=invalid-name,line-too-long,too-many-branches
 
-import itertools
 import pytest
 
 import misc
@@ -555,17 +554,8 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend, hook
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2)
 
 
-# The 'subnet' test case is intentionally excluded. Its Kea configuration
-# contains an unclassified pool which makes it difficult to control client
-# access to it.
-RADIUS_TEST_CASE_COMBINATIONS = list(itertools.product(
-    ['network', 'multiple-subnets'],
-    ['client-has-reservation-in-radius', 'client-has-no-reservation-in-radius']
-))
-
-
 def _add_ha_pools():
-    '''
+    """
     Add pools for the usual HA traffic coming from generate_leases().
     NOTE: Relying on leases being assigned to pools according to the order they
     are declared in the configuration is discouraged and is considered undefined
@@ -574,7 +564,7 @@ def _add_ha_pools():
     from the first pool and the rest is left for RADIUS traffic. So these pools
     are added to the beginning, starting with 50.11 or 50::11 because lower
     values are used in RADIUS testing.
-    '''
+    """
     v = world.proto[1]
     if world.proto == 'v4':
         if f'subnet{v}' in world.dhcp_cfg:
@@ -606,26 +596,27 @@ def _add_ha_pools():
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('ha_mode', ['hot-standby', 'load-balancing', 'passive-backup'])
 @pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
-@pytest.mark.parametrize('radius_test_case', RADIUS_TEST_CASE_COMBINATIONS)
+@pytest.mark.parametrize('config_type', ['network', 'multiple-subnets'])
+@pytest.mark.parametrize('has_reservation', ['client-has-reservation-in-radius', 'client-has-no-reservation-in-radius'])
 def test_HA_and_RADIUS(dhcp_version: str,
                        backend: str,
                        ha_mode: str,
                        hook_order: str,
-                       radius_test_case):
-    '''
+                       config_type: str,
+                       has_reservation: str):
+    """
     Check that HA and RADIUS can work together.
 
     :param dhcp_version: the DHCP version being tested
     :param backend: the lease database backend type
-    :param ha_mdoe: the HA mode: HS, LB or PB
+    :param ha_mode: the HA mode: HS, LB or PB
     :param hook_order: the order in which hooks are loaded: either aplhabetical
         or reverse alphabetical. This is to test all order combinations for each
         set of two hook libraries after problems were found in one case where HA
         and leasequery were loaded in a certain order.
-    :param radius_test_case: list of two elements where the first one is config
-        type and the second represents whether whether the first client coming
-        in with a request has its lease or pool reserved in RADIUS.
-    '''
+    :param config_type: different configurations used in testing
+    :param has_reservation: whether the first client coming in with a request has its lease or pool reserved in RADIUS
+    """
 
     # Constants
     leases_count = 50
@@ -652,19 +643,16 @@ def test_HA_and_RADIUS(dhcp_version: str,
     # Clear data.
     srv_control.clear_some_data('all')
 
-    if radius_test_case is not None:
-        # Setup the RADIUS server.
-        radius.init_and_start_radius(authorize_content=authorize_content)
+    # Setup the RADIUS server.
+    radius.init_and_start_radius(authorize_content=authorize_content)
 
-        # Some useful variables
-        config_type = radius_test_case[0]
-        has_reservation = radius_test_case[1]
-        addresses, configs = radius.get_test_case_variables()
+    # Some useful variables
+    addresses, configs = radius.get_test_case_variables()
 
-        # Configure RADIUS in Kea. Server also starts here which is an
-        # unfortunate side effect, but we'll restart after finishing
-        # configuration below.
-        setup_server_with_radius(**configs[config_type])
+    # Configure RADIUS in Kea. Server also starts here which is an
+    # unfortunate side effect, but we'll restart after finishing
+    # configuration below.
+    setup_server_with_radius(**configs[config_type])
 
     # Configure the backend.
     srv_control.define_temporary_lease_db_backend(backend)
@@ -706,25 +694,24 @@ def test_HA_and_RADIUS(dhcp_version: str,
     # Clear data.
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
-    if radius_test_case is not None:
-        # Setup the RADIUS server.
-        radius.init_and_start_radius(authorize_content=authorize_content,
-                                     destination=world.f_cfg.mgmt_address_2)
+    # Setup the RADIUS server.
+    radius.init_and_start_radius(authorize_content=authorize_content,
+                                 destination=world.f_cfg.mgmt_address_2)
 
-        # Get the server2-specific variables again.
-        _, configs = radius.get_test_case_variables(interface=world.f_cfg.server2_iface)
+    # Get the server2-specific variables again.
+    _, configs = radius.get_test_case_variables(interface=world.f_cfg.server2_iface)
 
-        # Configure RADIUS in Kea. Server also starts here which is an
-        # unfortunate side effect, but we'll restart after finishing
-        # configuration below.
-        setup_server_with_radius(destination=world.f_cfg.mgmt_address_2,
-                                 interface=world.f_cfg.server2_iface,
-                                 **configs[config_type])
+    # Configure RADIUS in Kea. Server also starts here which is an
+    # unfortunate side effect, but we'll restart after finishing
+    # configuration below.
+    setup_server_with_radius(destination=world.f_cfg.mgmt_address_2,
+                             interface=world.f_cfg.server2_iface,
+                             **configs[config_type])
 
-        # radius.setup_server_with_radius() was used for server2 to generate a
-        # configuration that is identical to server1's config, but the one thing we
-        # don't necessarily need in server2 is RADIUS functionality.
-        srv_control.delete_hooks(['libdhcp_radius.so'])
+    # radius.setup_server_with_radius() was used for server2 to generate a
+    # configuration that is identical to server1's config, but the one thing we
+    # don't necessarily need in server2 is RADIUS functionality.
+    srv_control.delete_hooks(['libdhcp_radius.so'])
 
     # Configure the backend.
     srv_control.define_temporary_lease_db_backend(backend)

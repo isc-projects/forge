@@ -14,7 +14,7 @@ from .multi_server_functions import fabric_sudo_command, fabric_send_file, Tempo
 def _init_radius(authorize_content: str = '',
                  replace_authorize_content: bool = False,
                  destination: str = world.f_cfg.mgmt_address):
-    '''
+    """
     Create authorize file and clients.conf needed by RADIUS and send them to {destination}.
 
     :param authorize_content: additional content that can go in the authorize
@@ -22,10 +22,10 @@ def _init_radius(authorize_content: str = '',
     :param replace_authorize_content: whether to completely replace the content
         in the authorize file, or otherwise just add to it
     :param destination: address where RADIUS is set up
-    '''
+    """
 
     # User-Name prefix
-    if world.proto in ['v4', 'v4_bootp']:
+    if world.proto == 'v4':
         p = '11'
     elif world.proto == 'v6':
         p = '00:03:00:01'
@@ -140,11 +140,11 @@ client {mgmt_address} {{
 
 
 def _start_radius(destination: str = world.f_cfg.mgmt_address):
-    '''
+    """
     Restart the RADIUS systemd service.
 
     :param destination: address of the server that hosts the RADIUS service
-    '''
+    """
     if world.server_system == 'redhat':
         cmd = 'sudo systemctl restart radiusd'
     else:
@@ -155,19 +155,26 @@ def _start_radius(destination: str = world.f_cfg.mgmt_address):
 def init_and_start_radius(authorize_content: str = '',
                           replace_authorize_content: bool = False,
                           destination: str = world.f_cfg.mgmt_address):
-    '''
+    """
     Configure and restart RADIUS on remote hosts.
 
+    :param authorize_content: additional content that can go in the authorize
+        file, it can contain {p} as a template for the prefix below.
+    :param replace_authorize_content: whether to completely replace the content
+        in the authorize file, or otherwise just add to it
     :param destination: address of the server that hosts the RADIUS service
-    '''
+    """
     _init_radius(authorize_content=authorize_content,
                  replace_authorize_content=replace_authorize_content,
                  destination=destination)
     _start_radius(destination=destination)
 
 
-def get_address(mac: str, giaddr: str = None, expected_lease: str = None) -> str:
-    '''
+def add_reservation():
+
+
+def get_address(mac: str, giaddr: str = None, expected_lease: str = None):
+    """
     Make a full exchange, check that the expected lease is received and,
     finally, return the received leases.
 
@@ -175,9 +182,9 @@ def get_address(mac: str, giaddr: str = None, expected_lease: str = None) -> str
     :param giaddr: the v4 client's giaddr value
     :param expected_lease: a lease that's expected to be given by the DHCP server
     :return: the leased v4 address or the first lease in the v6 case, in both cases along with the client ID and MAC address
-    '''
+    """
 
-    if world.proto in ['v4', 'v4_bootp']:
+    if world.proto == 'v4':
         client_id = '11' + mac.replace(':', '')
         address = get_address4(chaddr=mac,
                                client_id=client_id,
@@ -194,21 +201,20 @@ def get_address(mac: str, giaddr: str = None, expected_lease: str = None) -> str
         # Tests check only one address, so return the first.
         return {
             'address': addresses[0] if len(addresses) > 0 else None,
-            'client_id': client_id,
             'duid': duid
         }
     assert False, f'unknown proto {world.proto}'
 
 
 def send_message_and_expect_no_more_leases(mac):
-    '''
+    """
     Send a discover or a solicit and expect the exhausted leases case which is
     no answer for v4 or NoAddrsAvail status code for v6.
 
     :param mac: the client's MAC address
-    '''
+    """
 
-    if world.proto in ['v4', 'v4_bootp']:
+    if world.proto == 'v4':
         client_id = '11' + mac.replace(':', '')
         send_discover_with_no_answer(chaddr=mac, client_id=client_id)
     elif world.proto == 'v6':
@@ -219,12 +225,12 @@ def send_message_and_expect_no_more_leases(mac):
 
 
 def get_test_case_variables(interface: str = world.f_cfg.server_iface):
-    '''
+    """
     Populate variables used in RADIUS tests: various addresses, subnets and configurations.
 
     :param interface: the name of the client-facing interface on the server side
     :return: tuple(addresses, configurations)
-    '''
+    """
 
     if world.proto in ['v4', 'v4_bootp']:
         addresses = {
@@ -354,7 +360,7 @@ def get_test_case_variables(interface: str = world.f_cfg.server_iface):
 
 
 def send_and_receive(config_type: str, has_reservation: str, addresses):
-    '''
+    """
     Exchange messages and check that the proper leases were returned according
     to Kea's configuration.
 
@@ -367,7 +373,7 @@ def send_and_receive(config_type: str, has_reservation: str, addresses):
         * 'client-has-no-reservation-in-radius': no
     :param addresses: dictionary of addresses used in testing indexed by recognizable patterns
     :return list of dictionaries of leases containing address, client_id, mac
-    '''
+    """
 
     leases = []
 
@@ -456,13 +462,15 @@ def send_and_receive(config_type: str, has_reservation: str, addresses):
 
 def add_leading_subnet(subnet: str = '192.168.99.0/24',
                        pool: str = '192.168.99.0 - 192.168.99.255'):
-    '''
+    """
     Add to the first position: a subnet or a shared network with a single subnet,
-    in both cases with a single pool.
+    in both cases with a single pool. The subnet ID is the third octet from the
+    v4 address.
 
     :param subnet: the subnet value
     :param pool: the pool value
-    '''
+    """
+    # TODO: make it work with v6?
     v = world.proto[1]
     if f'subnet{v}' in world.dhcp_cfg:
         world.dhcp_cfg[f'subnet{v}'].insert(0, {
