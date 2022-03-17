@@ -72,47 +72,49 @@ def _get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: st
     if server1:
         # Get status from Server1 and test the response
         cmd = {"command": "status-get", "arguments": {}}
-        response = srv_msg.send_ctrl_cmd(cmd, channel=channel, address='$(MGMT_ADDRESS)')
+        response = srv_msg.send_ctrl_cmd(cmd, channel=channel,
+                                         address=world.f_cfg.mgmt_address)['arguments']['high-availability'][0]
 
-        assert response['arguments']['high-availability'][0]['ha-mode'] == ha_mode
-        assert response['arguments']['high-availability'][0]['ha-servers']['local']['role'] == primary_role
-        assert response['arguments']['high-availability'][0]['ha-servers']['local']['scopes'] == primary_scopes
-        assert response['arguments']['high-availability'][0]['ha-servers']['local']['state'] == primary_state
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['age'] >= 0
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['analyzed-packets'] >= 0
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['connecting-clients'] >= 0
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['in-touch'] == in_touch
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['last-scopes'] == secondary_scopes
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['last-state'] == secondary_state
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['role'] == secondary_role
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['unacked-clients'] >= 0
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['unacked-clients-left'] >= 0
+        assert response['ha-mode'] == ha_mode
+        assert response['ha-servers']['local']['role'] == primary_role
+        assert response['ha-servers']['local']['scopes'] == primary_scopes
+        assert response['ha-servers']['local']['state'] == primary_state
+        assert response['ha-servers']['remote']['age'] >= 0
+        assert response['ha-servers']['remote']['analyzed-packets'] >= 0
+        assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
+        assert response['ha-servers']['remote']['connecting-clients'] >= 0
+        assert response['ha-servers']['remote']['in-touch'] == in_touch
+        assert response['ha-servers']['remote']['last-scopes'] == secondary_scopes
+        assert response['ha-servers']['remote']['last-state'] == secondary_state
+        assert response['ha-servers']['remote']['role'] == secondary_role
+        assert response['ha-servers']['remote']['unacked-clients'] >= 0
+        assert response['ha-servers']['remote']['unacked-clients-left'] >= 0
     if server2:
         # Get status from Server2 and test the response
         cmd = {"command": "status-get", "arguments": {}}
-        response = srv_msg.send_ctrl_cmd(cmd, channel=channel, address='$(MGMT_ADDRESS_2)')
+        response = srv_msg.send_ctrl_cmd(cmd, channel=channel,
+                                         address=world.f_cfg.mgmt_address_2)['arguments']['high-availability'][0]
 
-        assert response['arguments']['high-availability'][0]['ha-mode'] == ha_mode
-        assert response['arguments']['high-availability'][0]['ha-servers']['local']['role'] == secondary_role
-        assert response['arguments']['high-availability'][0]['ha-servers']['local']['scopes'] == secondary_scopes
-        assert response['arguments']['high-availability'][0]['ha-servers']['local']['state'] == secondary_state
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['age'] >= 0
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['analyzed-packets'] >= 0
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['connecting-clients'] >= 0
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['in-touch'] == in_touch
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['last-scopes'] == primary_scopes
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['last-state'] == primary_state
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['role'] == primary_role
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['unacked-clients'] >= 0
-        assert response['arguments']['high-availability'][0]['ha-servers']['remote']['unacked-clients-left'] >= 0
+        assert response['ha-mode'] == ha_mode
+        assert response['ha-servers']['local']['role'] == secondary_role
+        assert response['ha-servers']['local']['scopes'] == secondary_scopes
+        assert response['ha-servers']['local']['state'] == secondary_state
+        assert response['ha-servers']['remote']['age'] >= 0
+        assert response['ha-servers']['remote']['analyzed-packets'] >= 0
+        assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
+        assert response['ha-servers']['remote']['connecting-clients'] >= 0
+        assert response['ha-servers']['remote']['in-touch'] == in_touch
+        assert response['ha-servers']['remote']['last-scopes'] == primary_scopes
+        assert response['ha-servers']['remote']['last-state'] == primary_state
+        assert response['ha-servers']['remote']['role'] == primary_role
+        assert response['ha-servers']['remote']['unacked-clients'] >= 0
+        assert response['ha-servers']['remote']['unacked-clients-left'] >= 0
 
 
 @pytest.mark.v6
 @pytest.mark.v4
 @pytest.mark.ha
-@pytest.mark.parametrize('channel', ['http', 'socket'])
+@pytest.mark.parametrize('channel', ['http'])
 def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
 
     # HA SERVER 1
@@ -446,7 +448,7 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
 @pytest.mark.v6
 @pytest.mark.v4
 @pytest.mark.ha
-@pytest.mark.parametrize('channel', ['socket', 'http'])
+@pytest.mark.parametrize('channel', ['http'])
 def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
 
     # HA SERVER 1
