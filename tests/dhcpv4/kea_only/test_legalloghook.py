@@ -439,3 +439,33 @@ def test_v4_legal_log_rebind_state_db(backend):
                                         'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
                                         'client-id: 00:01:02:03:04:05:06')
+
+
+@pytest.mark.v4
+@pytest.mark.kea_only
+@pytest.mark.legal_logging
+def test_v4_legal_log_parser_format():
+    misc.test_procedure()
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+
+    misc.test_setup()
+    srv_control.set_time('renew-timer', 3)
+    srv_control.set_time('rebind-timer', 50)
+    srv_control.set_time('valid-lifetime', 600)
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+    srv_control.add_hooks('libdhcp_legal_log.so')
+    srv_control.add_parameter_to_hook(1, "request-parser-format",
+                                      "pkt.iface + addrtotext(pkt.src) + addrtotext(pkt.dst) + hexstring(pkt4.mac, ':') + addrtotext(pkt4.ciaddr) + addrtotext(pkt4.giaddr) + addrtotext(pkt4.yiaddr) + addrtotext(pkt4.siaddr)")
+    srv_control.add_parameter_to_hook(1, "response-parser-format",
+                                      "'|' + pkt.iface + addrtotext(pkt.src) + addrtotext(pkt.dst) + hexstring(pkt4.mac, ':') + addrtotext(pkt4.ciaddr) + addrtotext(pkt4.giaddr) + addrtotext(pkt4.yiaddr) + addrtotext(pkt4.siaddr)")
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    _send_client_requests(MESSAGE_COUNT)
+
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    breakpoint()
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                                       'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
+                                       'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
+                                       'client-id: 00:01:02:03:04:05:06')
