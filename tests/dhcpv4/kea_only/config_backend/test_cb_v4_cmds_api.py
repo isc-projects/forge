@@ -2335,8 +2335,7 @@ def _get_class(backend, args=None, args_rec=None, res=0, resp_text=None, tag=Non
                  "next-server": "0.0.0.0",
                  "option-data": [],
                  "option-def": [],
-                 "server-hostname": "", "test": "member('KNOWN')",
-                 "valid-lifetime": 0}],
+                 "server-hostname": "", "test": "member('KNOWN')"}],
             "count": 1}
         if world.proto == 'v6':
             # in v6 we save a bit different data
@@ -2344,7 +2343,6 @@ def _get_class(backend, args=None, args_rec=None, res=0, resp_text=None, tag=Non
             del args_rec["client-classes"][0]["boot-file-name"]
             del args_rec["client-classes"][0]["server-hostname"]
             del args_rec["client-classes"][0]["option-def"]
-            args_rec["client-classes"][0].update({'preferred-lifetime': 0})
 
     cmd = dict(command="remote-class%s-get" % world.proto[-1], arguments=args)
     response = _send_cmd(cmd, backend=backend, tag=tag, exp_result=res)
@@ -2580,7 +2578,7 @@ def test_remote_class_get(dhcp_version, backend):  # pylint: disable=unused-argu
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
-def test_remote_class4_get_all(dhcp_version, backend):
+def test_remote_class_get_all(dhcp_version, backend):
     _setup_server(backend)
     # non existing tag
     _get_all_class(backend=backend, args={"server-tags": ["some-name-that-do-not-exist"]},
@@ -2600,17 +2598,14 @@ def test_remote_class4_get_all(dhcp_version, backend):
                                     "option-data": [],
                                     "option-def": [],
                                     "server-hostname": "",
-                                    "test": "member('KNOWN')",
-                                    "valid-lifetime": 0}],
+                                    "test": "member('KNOWN')"}],
                 "count": 1}
 
     if dhcp_version == 'v6':
         args_rec = {"client-classes": [{"metadata": {"server-tags": ["abc"]},
                                         "name": "foo",
                                         "option-data": [],
-                                        "preferred-lifetime": 0,
-                                        "test": "member('KNOWN')",
-                                        "valid-lifetime": 0}],
+                                        "test": "member('KNOWN')"}],
                     "count": 1}
 
     _get_all_class(backend=backend, args={"server-tags": ["abc"]}, resp_text="1 DHCPvX client class(es) found.",
@@ -2621,9 +2616,7 @@ def test_remote_class4_get_all(dhcp_version, backend):
     if dhcp_version == 'v6':
         args_rec["client-classes"].append({"metadata": {"server-tags": ["abc"]},
                                            "name": "bar",
-                                           "option-data": [],
-                                           "preferred-lifetime": 0,
-                                           "valid-lifetime": 0})
+                                           "option-data": []})
         args_rec["count"] = 2
     else:
         args_rec["client-classes"].append({"boot-file-name": "",
@@ -2632,8 +2625,7 @@ def test_remote_class4_get_all(dhcp_version, backend):
                                            "next-server": "0.0.0.0",
                                            "option-data": [],
                                            "option-def": [],
-                                           "server-hostname": "",
-                                           "valid-lifetime": 0})
+                                           "server-hostname": ""})
         args_rec["count"] = 2
 
     _get_all_class(backend=backend, args={"server-tags": ["abc"]}, resp_text="2 DHCPvX client class(es) found.",
@@ -2653,16 +2645,13 @@ def test_remote_class4_get_all(dhcp_version, backend):
                                       "option-data": [],
                                       "option-def": [],
                                       "server-hostname": "",
-                                      "test": "member('UNKNOWN')",
-                                      "valid-lifetime": 0}],
+                                      "test": "member('UNKNOWN')"}],
                   "count": 1}
     if dhcp_version == 'v6':
         args_rec_2 = {"client-classes": [{"metadata": {"server-tags": ["xyz"]},
                                           "name": "3rd-class",
                                           "option-data": [],
-                                          "preferred-lifetime": 0,
-                                          "test": "member('UNKNOWN')",
-                                          "valid-lifetime": 0}],
+                                          "test": "member('UNKNOWN')"}],
                       "count": 1}
 
     _get_all_class(backend=backend, args={"server-tags": ["xyz"]}, resp_text="1 DHCPvX client class(es) found.",
@@ -2677,16 +2666,12 @@ def test_remote_class4_get_all(dhcp_version, backend):
         args_rec["client-classes"].append({"metadata": {"server-tags": ["all"]},
                                            "name": "4th-class",
                                            "option-data": [],
-                                           "preferred-lifetime": 0,
-                                           "test": "member('UNKNOWN')",
-                                           "valid-lifetime": 0})
+                                           "test": "member('UNKNOWN')"})
         args_rec["count"] = 3
         args_rec_2["client-classes"].append({"metadata": {"server-tags": ["all"]},
                                              "name": "4th-class",
                                              "option-data": [],
-                                             "preferred-lifetime": 0,
-                                             "test": "member('UNKNOWN')",
-                                             "valid-lifetime": 0})
+                                             "test": "member('UNKNOWN')"})
         args_rec_2["count"] = 2
 
     else:
@@ -2697,8 +2682,7 @@ def test_remote_class4_get_all(dhcp_version, backend):
                                            "option-data": [],
                                            "option-def": [],
                                            "server-hostname": "",
-                                           "test": "member('UNKNOWN')",
-                                           "valid-lifetime": 0})
+                                           "test": "member('UNKNOWN')"})
         args_rec["count"] = 3
         args_rec_2["client-classes"].append({"boot-file-name": "",
                                              "metadata": {"server-tags": ["all"]},
@@ -2707,8 +2691,7 @@ def test_remote_class4_get_all(dhcp_version, backend):
                                              "option-data": [],
                                              "option-def": [],
                                              "server-hostname": "",
-                                             "test": "member('UNKNOWN')",
-                                             "valid-lifetime": 0})
+                                             "test": "member('UNKNOWN')"})
         args_rec_2["count"] = 2
 
     _get_all_class(backend=backend, args={"server-tags": ["abc", "all"]}, resp_text="3 DHCPvX client class(es) found.",
@@ -2724,16 +2707,13 @@ def test_remote_class4_get_all(dhcp_version, backend):
                                         "option-data": [],
                                         "option-def": [],
                                         "server-hostname": "",
-                                        "test": "member('UNKNOWN')",
-                                        "valid-lifetime": 0}],
+                                        "test": "member('UNKNOWN')"}],
                     "count": 1}
     if dhcp_version == 'v6':
         args_rec_all = {"client-classes": [{"metadata": {"server-tags": ["all"]},
                                             "name": "4th-class",
                                             "option-data": [],
-                                            "preferred-lifetime": 0,
-                                            "test": "member('UNKNOWN')",
-                                            "valid-lifetime": 0}],
+                                            "test": "member('UNKNOWN')"}],
                         "count": 1}
 
     _get_all_class(backend=backend, args={"server-tags": ["all"]}, resp_text="1 DHCPvX client class(es) found.",
