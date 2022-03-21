@@ -165,7 +165,6 @@ def _move_pgsql_back_to_default(previous_location, pgsql_cfg,
 
 
 @pytest.mark.v6
-@pytest.mark.kea_only
 @pytest.mark.disabled
 def test_v6_recover_pgsql():
     # in case if test_v6_full_disk_testing_pgsql will fail and not recover settings
@@ -175,7 +174,6 @@ def test_v6_recover_pgsql():
 
 
 @pytest.mark.v6
-@pytest.mark.kea_only
 @pytest.mark.disabled
 def test_v6_full_disk_testing_pgsql():
     # create new ramdisk with
@@ -218,7 +216,6 @@ def test_v6_full_disk_testing_pgsql():
 
 
 @pytest.mark.v6
-@pytest.mark.kea_only
 @pytest.mark.disabled
 def test_v6_full_disk_testing_memfile():
     # check how kea6 behave when disk is full, using memfile and logs to file
@@ -259,7 +256,6 @@ def test_v6_full_disk_testing_memfile():
 
 
 @pytest.mark.v4
-@pytest.mark.kea_only
 @pytest.mark.disabled
 def test_v4_full_disk_testing():
     # check how kea4 behave when disk is full, using memfile and logs to file
