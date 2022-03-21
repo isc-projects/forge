@@ -404,17 +404,17 @@ def send_and_receive(config_type: str, has_reservation: str):
     return leases
 
 
-def send_message_and_expect_no_more_leases(mac):
+def send_message_and_expect_no_more_leases(mac: str, giaddr: str = None):
     """
     Send a discover or a solicit and expect the exhausted leases case which is
     no answer for v4 or NoAddrsAvail status code for v6.
 
     :param mac: the client's MAC address
+    :param giaddr: the v4 client's giaddr value
     """
-
     if world.proto == 'v4':
         client_id = '11' + mac.replace(':', '')
-        send_discover_with_no_answer(chaddr=mac, client_id=client_id)
+        send_discover_with_no_answer(chaddr=mac, client_id=client_id, giaddr=giaddr)
     elif world.proto == 'v6':
         duid = '00:03:00:01:' + mac
         srv_msg.SA(duid=duid, status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])

@@ -178,9 +178,9 @@ def test_radius_giaddr(dhcp_version: str,
 
     :param dhcp_version: the DHCP version being tested
     :param config_type: whether usual subnets are used or shared network
-    :param giaddr: whether the used giaddr is
+    :param giaddr: how the used giaddr is positioned relative to configured subnets
     :param leading_subnet: whether a random subnet is introduced in order to test subnet reselection
-    :param reselect: whether to enable reselect-subnet-address in the RAIDUS hook library
+    :param reselect: whether to enable reselect-subnet-address in the RADIUS hook library
     """
 
     misc.test_setup()
@@ -221,7 +221,7 @@ def test_radius_giaddr(dhcp_version: str,
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # Determine giaddr.
+    # Set giaddr.
     if giaddr == 'in-subnet':
         giaddr_value = '192.168.50.5'
     elif giaddr == 'in-other-subnet':
@@ -229,10 +229,17 @@ def test_radius_giaddr(dhcp_version: str,
     elif giaddr == 'out-of-subnet':
         giaddr_value = '192.168.77.77'
 
-    # The client should get the lease configured in RADIUS.
-    lease = radius.get_address(mac='08:00:27:b0:aa:aa',
-                               giaddr=giaddr_value,
-                               expected_lease='192.168.50.5')
+    if giaddr == 'out-of-subnet':
+        # If a subnet is not selected initially, there will be no RADIUS request
+        # sent, and there is no chance of the client getting the address reserved in RADIUS.
+        radius.send_message_and_expect_no_more_leases(mac='08:00:27:b0:aa:aa',
+                                                      giaddr=giaddr_value)
+        srv_msg.wait_for_message_in_log('DHCP4_SUBNET_SELECTION_FAILED.*failed to select subnet for the client')
+    else:
+        # The client should get the lease configured in RADIUS.
+        lease = radius.get_address(mac='08:00:27:b0:aa:aa',
+                                   giaddr=giaddr_value,
+                                   expected_lease='192.168.50.5')
 
-    # Check that leases are in the backend.
-    srv_msg.check_leases([lease])
+        # Check that leases are in the backend.
+        srv_msg.check_leases([lease])
