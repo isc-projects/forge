@@ -37,7 +37,7 @@ def _check_dns_record(expect_dns_record=True):
         srv_msg.dns_option('ANSWER', expect_include=False)
 
 
-def _get_lease(option_used):
+def _get_lease(option_used='fqdn'):
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
@@ -1679,7 +1679,6 @@ def test_ddns4_notsig_rev_Nflag_override_no_update():
     srv_msg.dns_option_content('ANSWER', 'rrname', 'aa.four.example.com.')
 
 
-
 @pytest.mark.v4
 @pytest.mark.ddns
 @pytest.mark.notsig
@@ -1754,7 +1753,6 @@ def test_ddns4_notsig_forw_and_rev_add_success_hostname():
     srv_msg.dns_option_content('ANSWER', 'rrname', '10.50.168.192.in-addr.arpa.')
 
 
-
 @pytest.mark.v4
 @pytest.mark.ddns
 @pytest.mark.notsig
@@ -1826,7 +1824,6 @@ def test_ddns4_notsig_forw_and_rev_add_fail_Sflag():
     misc.pass_criteria()
     srv_msg.send_wait_for_query('MUST')
     srv_msg.dns_option('ANSWER', expect_include=False)
-
 
 
 @pytest.mark.v4
@@ -2198,4 +2195,3 @@ def test_ddns4_notsig_forw_and_rev_release_notenabled():
     srv_msg.dns_option('ANSWER')
     srv_msg.dns_option_content('ANSWER', 'rdata', 'aa.four.example.com.')
     srv_msg.dns_option_content('ANSWER', 'rrname', '10.50.168.192.in-addr.arpa.')
-

@@ -13,7 +13,7 @@ from forge_cfg import world
 
 @pytest.mark.v4
 @pytest.mark.flex_options
-def test_flex_options_add():
+def test_flex_options4_add():
     misc.test_setup()
     # first exchange of DORA with hostname should result with adding option boot-file-name (67) with hostname + .boot
     # second exchange of DORA without hostname should result with adding option boot-file-name with value 'no-boot-file'
@@ -74,7 +74,7 @@ def test_flex_options_add():
 
 @pytest.mark.v4
 @pytest.mark.flex_options
-def test_flex_options_remove():
+def test_flex_options4_remove():
     misc.test_setup()
     # First DORA without hostname, responses from server will include option name-servers
     # second DORA exchange with hostname should NOT include name-servers option
@@ -136,7 +136,7 @@ def test_flex_options_remove():
 
 @pytest.mark.v4
 @pytest.mark.flex_options
-def test_flex_options_remove_non_existing():
+def test_flex_options4_remove_non_existing():
     misc.test_setup()
     # Kea will try to remove non existing option, let's check if it survives
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
@@ -243,7 +243,7 @@ def test_flex_options_supersede():
 
 @pytest.mark.v4
 @pytest.mark.flex_options
-def test_flex_options_all_actions():
+def test_flex_options4_all_actions():
     misc.test_setup()
     # First DORA should activate all 3 actions, changed option 5, removed option 6, add option 67 with concat hostname
     # Second DORA should just activate 1 action, add option 67 with value no-boot-file
@@ -464,7 +464,7 @@ def test_flex_options_complex():
 
 @pytest.mark.v6
 @pytest.mark.flex_options
-def test_flex_options_add():
+def test_flex_options6_add():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.add_hooks('libdhcp_flex_option.so')
@@ -508,7 +508,7 @@ def test_flex_options_add():
 
 @pytest.mark.v6
 @pytest.mark.flex_options
-def test_flex_options_remove():
+def test_flex_options6_remove():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.config_srv_opt('nisp-domain-name', 'ntp.example.com')
@@ -551,7 +551,7 @@ def test_flex_options_remove():
 
 @pytest.mark.v6
 @pytest.mark.flex_options
-def test_flex_options_remove_non_existing():
+def test_flex_options6_remove_non_existing():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.add_hooks('libdhcp_flex_option.so')
@@ -764,7 +764,7 @@ def test_flex_options_supersede_string():
 
 @pytest.mark.v6
 @pytest.mark.flex_options
-def test_flex_options_all_actions():
+def test_flex_options6_all_actions():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.config_srv_opt('nisp-domain-name', 'ntp.example.com')

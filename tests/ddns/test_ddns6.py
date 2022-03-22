@@ -1462,4 +1462,3 @@ def test_ddns6_notsig_rev_Nflag_override_no_update():
     srv_msg.dns_option_content('ANSWER', 'rdata', 'sth6.six.example.com.')
     srv_msg.dns_option_content('ANSWER', 'rrname',
                                '0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.')
-

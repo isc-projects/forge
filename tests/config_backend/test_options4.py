@@ -111,6 +111,6 @@ def test_options_inherit(backend):
 #
 #
 # @pytest.mark.v4
-# # def test_options_inherit_custom_option(backend):
+# def test_options_inherit_custom_option(backend):
 #     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 # for now I don't know how to test custom option without tweaking scapy, TODO figure it out!

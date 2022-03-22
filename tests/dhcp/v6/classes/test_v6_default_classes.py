@@ -12,7 +12,7 @@ import srv_msg
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.default_classes
-def test_v6_client_classification_onesubnet_docsis3_advertise_success():
+def test_v6_classification_onesubnet_docsis3_advertise_success():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -37,7 +37,7 @@ def test_v6_client_classification_onesubnet_docsis3_advertise_success():
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.default_classes
-def test_v6_client_classification_onesubnet_docsis3_advertise_fail():
+def test_v6_classification_onesubnet_docsis3_advertise_fail():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -60,7 +60,7 @@ def test_v6_client_classification_onesubnet_docsis3_advertise_fail():
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.default_classes
-def test_v6_client_classification_onesubnet_docsis3_request_success():
+def test_v6_classification_onesubnet_docsis3_request_success():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -99,7 +99,7 @@ def test_v6_client_classification_onesubnet_docsis3_request_success():
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.default_classes
-def test_v6_client_classification_onesubnet_docsis3_request_fail():
+def test_v6_classification_onesubnet_docsis3_request_fail():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -137,7 +137,7 @@ def test_v6_client_classification_onesubnet_docsis3_request_fail():
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.default_classes
-def test_v6_client_classification_onesubnet_eRouter1_0_advertise_success():
+def test_v6_classification_onesubnet_eRouter1_0_advertise_success():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -162,7 +162,7 @@ def test_v6_client_classification_onesubnet_eRouter1_0_advertise_success():
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.default_classes
-def test_v6_client_classification_onesubnet_eRouter1_0_advertise_fail():
+def test_v6_classification_onesubnet_eRouter1_0_advertise_fail():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -185,7 +185,7 @@ def test_v6_client_classification_onesubnet_eRouter1_0_advertise_fail():
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.default_classes
-def test_v6_client_classification_onesubnet_eRouter1_0_request_success():
+def test_v6_classification_onesubnet_eRouter1_0_request_success():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -224,7 +224,7 @@ def test_v6_client_classification_onesubnet_eRouter1_0_request_success():
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.default_classes
-def test_v6_client_classification_onesubnet_eRouter1_0_request_fail():
+def test_v6_classification_onesubnet_eRouter1_0_request_fail():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')

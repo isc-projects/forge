@@ -13,7 +13,7 @@ import srv_msg
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled
-def test_v4_client_classification_one_class_docsis3_boot_file_name():
+def test_v4_classification_one_class_docsis3_boot_file_name():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -49,7 +49,7 @@ def test_v4_client_classification_one_class_docsis3_boot_file_name():
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled
-def test_v4_client_classification_one_class_docsis3_next_server():
+def test_v4_classification_one_class_docsis3_next_server():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -85,7 +85,7 @@ def test_v4_client_classification_one_class_docsis3_next_server():
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled
-def test_v4_client_classification_one_class_eRouter1_global_next_server():
+def test_v4_classification_one_class_eRouter1_global_next_server():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -123,7 +123,7 @@ def test_v4_client_classification_one_class_eRouter1_global_next_server():
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled
-def test_v4_client_classification_one_class_eRouter1_subnet_next_server():
+def test_v4_classification_one_class_eRouter1_subnet_next_server():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -161,7 +161,7 @@ def test_v4_client_classification_one_class_eRouter1_subnet_next_server():
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled
-def test_v4_client_classification_one_class_eRouter1_two_next_servers():
+def test_v4_classification_one_class_eRouter1_two_next_servers():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -200,7 +200,7 @@ def test_v4_client_classification_one_class_eRouter1_two_next_servers():
 @pytest.mark.classification
 @pytest.mark.default_classes
 @pytest.mark.disabled
-def test_v4_client_classification_multiple_classes_three_subnets_docsis_erouter():
+def test_v4_classification_multiple_classes_three_subnets_docsis_erouter():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')

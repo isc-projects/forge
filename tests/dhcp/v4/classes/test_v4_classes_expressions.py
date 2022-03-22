@@ -11,7 +11,7 @@ import srv_msg
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_member():
+def test_v4_classification_member():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -63,7 +63,7 @@ def test_v4_client_classification_member():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_unknown_pool():
+def test_v4_classification_unknown_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '$(EMPTY)')
     srv_control.add_line_to_subnet(0, {"pools": [{"pool": "192.168.50.50-192.168.50.50", "client-class": "UNKNOWN"}]})
@@ -102,7 +102,7 @@ def test_v4_client_classification_unknown_pool():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_known_pool():
+def test_v4_classification_known_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '$(EMPTY)')
     srv_control.add_line_to_subnet(0, {"pools": [{"pool": "192.168.50.55-192.168.50.55", "client-class": "KNOWN"}]})
@@ -141,7 +141,7 @@ def test_v4_client_classification_known_pool():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_known_unknown_pool():
+def test_v4_classification_known_unknown_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '$(EMPTY)')
     srv_control.add_line_to_subnet(0, {"pools": [{"pool": "192.168.50.50-192.168.50.50", "client-class": "UNKNOWN"},
@@ -203,7 +203,7 @@ def test_v4_client_classification_known_unknown_pool():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_option_hex():
+def test_v4_classification_option_hex():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -247,7 +247,7 @@ def test_v4_client_classification_option_hex():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_option_exists():
+def test_v4_classification_option_exists():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -290,7 +290,7 @@ def test_v4_client_classification_option_exists():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_relay_option_exists():
+def test_v4_classification_relay_option_exists():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -336,7 +336,7 @@ def test_v4_client_classification_relay_option_exists():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_transid():
+def test_v4_classification_transid():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -382,7 +382,7 @@ def test_v4_client_classification_transid():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_siaddr():
+def test_v4_classification_siaddr():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -414,7 +414,7 @@ def test_v4_client_classification_siaddr():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_yiaddr():
+def test_v4_classification_yiaddr():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -447,7 +447,7 @@ def test_v4_client_classification_yiaddr():
 @pytest.mark.v4
 @pytest.mark.classification
 @pytest.mark.disabled
-def test_v4_client_classification_giaddr():
+def test_v4_classification_giaddr():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -493,7 +493,7 @@ def test_v4_client_classification_giaddr():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_ciaddr():
+def test_v4_classification_ciaddr():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -539,7 +539,7 @@ def test_v4_client_classification_ciaddr():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_htype():
+def test_v4_classification_htype():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -585,7 +585,7 @@ def test_v4_client_classification_htype():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_mac():
+def test_v4_classification_mac():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -628,7 +628,7 @@ def test_v4_client_classification_mac():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_vendor():
+def test_v4_classification_vendor():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -674,7 +674,7 @@ def test_v4_client_classification_vendor():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_specific_vendor():
+def test_v4_classification_specific_vendor():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -723,7 +723,7 @@ def test_v4_client_classification_specific_vendor():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_specific_vendor_2():
+def test_v4_classification_specific_vendor_2():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -772,7 +772,7 @@ def test_v4_client_classification_specific_vendor_2():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_vendor_suboption_exists():
+def test_v4_classification_vendor_suboption_exists():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -821,7 +821,7 @@ def test_v4_client_classification_vendor_suboption_exists():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_vendor_suboption_value():
+def test_v4_classification_vendor_suboption_value():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -870,7 +870,7 @@ def test_v4_client_classification_vendor_suboption_value():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_vendor_class_exists():
+def test_v4_classification_vendor_class_exists():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -917,7 +917,7 @@ def test_v4_client_classification_vendor_class_exists():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_specific_vendor_class():
+def test_v4_classification_specific_vendor_class():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -966,7 +966,7 @@ def test_v4_client_classification_specific_vendor_class():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_specific_vendor_class_2():
+def test_v4_classification_specific_vendor_class_2():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -1015,7 +1015,7 @@ def test_v4_client_classification_specific_vendor_class_2():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_expressions_not_equal():
+def test_v4_classification_expressions_not_equal():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -1060,7 +1060,7 @@ def test_v4_client_classification_expressions_not_equal():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_expressions_and():
+def test_v4_classification_expressions_and():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -1112,7 +1112,7 @@ def test_v4_client_classification_expressions_and():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_expressions_or():
+def test_v4_classification_expressions_or():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -1175,7 +1175,7 @@ def test_v4_client_classification_expressions_or():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_expressions_substring():
+def test_v4_classification_expressions_substring():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -1215,7 +1215,7 @@ def test_v4_client_classification_expressions_substring():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_expressions_concat():
+def test_v4_classification_expressions_concat():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -1273,7 +1273,7 @@ def test_v4_client_classification_expressions_concat():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_expressions_ifelse():
+def test_v4_classification_expressions_ifelse():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 

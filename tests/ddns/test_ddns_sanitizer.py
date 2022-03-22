@@ -1393,7 +1393,6 @@ def test_ddns4_expire_fqdn_sanitization():
     srv_msg.dns_option('ANSWER', expect_include=False)
 
 
-
 @pytest.mark.v6
 @pytest.mark.ddns
 @pytest.mark.notsig

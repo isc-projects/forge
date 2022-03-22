@@ -11,7 +11,7 @@ import srv_msg
 
 @pytest.mark.v6
 @pytest.mark.classification
-def test_v6_client_classification_onesubnet_advertise_success():
+def test_v6_classification_onesubnet_advertise_success():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -36,7 +36,7 @@ def test_v6_client_classification_onesubnet_advertise_success():
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.default_classes
-def test_v6_client_classification_onesubnet_advertise_fail():
+def test_v6_classification_onesubnet_advertise_fail():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -58,7 +58,7 @@ def test_v6_client_classification_onesubnet_advertise_fail():
 
 @pytest.mark.v6
 @pytest.mark.classification
-def test_v6_client_classification_onesubnet_request_success():
+def test_v6_classification_onesubnet_request_success():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -96,7 +96,7 @@ def test_v6_client_classification_onesubnet_request_success():
 
 @pytest.mark.v6
 @pytest.mark.classification
-def test_v6_client_classification_twosubnets_request_success():
+def test_v6_classification_twosubnets_request_success():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -158,7 +158,7 @@ def test_v6_client_classification_twosubnets_request_success():
 
 @pytest.mark.v6
 @pytest.mark.classification
-def test_v6_client_classification_twosubnets_request_fail():
+def test_v6_classification_twosubnets_request_fail():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -250,7 +250,7 @@ def test_v6_client_classification_twosubnets_request_fail():
 
 @pytest.mark.v6
 @pytest.mark.classification
-def test_v6_client_classification_twoclasses_request_success():
+def test_v6_classification_twoclasses_request_success():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
@@ -329,7 +329,7 @@ def test_v6_client_classification_twoclasses_request_success():
 
 @pytest.mark.v6
 @pytest.mark.classification
-def test_v6_client_classification_multiple_subnets():
+def test_v6_classification_multiple_subnets():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
@@ -413,7 +413,7 @@ def test_v6_client_classification_multiple_subnets():
 
 @pytest.mark.v6
 @pytest.mark.classification
-def test_v6_client_classification_multiple_subnets_2():
+def test_v6_classification_multiple_subnets_2():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
@@ -499,7 +499,7 @@ def test_v6_client_classification_multiple_subnets_2():
 
 @pytest.mark.v6
 @pytest.mark.classification
-def test_v6_client_classification_class_with_option():
+def test_v6_classification_class_with_option():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
 
@@ -547,7 +547,7 @@ def test_v6_client_classification_class_with_option():
 
 @pytest.mark.v6
 @pytest.mark.classification
-def test_v6_client_classification_multiple_subnets_options():
+def test_v6_classification_multiple_subnets_options():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
@@ -646,7 +646,7 @@ def test_v6_client_classification_multiple_subnets_options():
 
 @pytest.mark.v6
 @pytest.mark.classification
-def test_v6_client_classification_multiple_subnets_options_override_global():
+def test_v6_classification_multiple_subnets_options_override_global():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
@@ -755,7 +755,7 @@ def test_v6_client_classification_multiple_subnets_options_override_global():
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.sharedsubnets
-def test_v6_client_classification_shared_subnet_options_override():
+def test_v6_classification_shared_subnet_options_override():
     # we discussed classification on numerous occasions. This is actually working
     # as designed, I don't like this design, I still don't know why option defined
     # in shared-network should takes precedence before option defined in class and
@@ -829,7 +829,7 @@ def test_v6_client_classification_shared_subnet_options_override():
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.sharedsubnets
-def test_v6_client_classification_shared_subnet_options_override_global():
+def test_v6_classification_shared_subnet_options_override_global():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::10')
     srv_control.config_srv_opt('dns-servers', '2001:db8::1,2001:db8::2')
@@ -867,7 +867,7 @@ def test_v6_client_classification_shared_subnet_options_override_global():
 @pytest.mark.v6
 @pytest.mark.classification
 @pytest.mark.sharedsubnets
-def test_v6_client_classification_shared_subnet_options_subnet():
+def test_v6_classification_shared_subnet_options_subnet():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::10')
     srv_control.create_new_class('Client_Class_1')

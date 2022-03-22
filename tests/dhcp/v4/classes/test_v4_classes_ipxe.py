@@ -11,7 +11,7 @@ import srv_msg
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_iPXE_client_arch():
+def test_v4_classification_iPXE_client_arch():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -51,7 +51,7 @@ def test_v4_client_classification_iPXE_client_arch():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_iPXE_client_inter():
+def test_v4_classification_iPXE_client_inter():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -91,7 +91,7 @@ def test_v4_client_classification_iPXE_client_inter():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_iPXE_machine_ident():
+def test_v4_classification_iPXE_machine_ident():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 

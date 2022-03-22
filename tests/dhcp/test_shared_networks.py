@@ -831,7 +831,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
 @pytest.mark.v4
 @pytest.mark.sharednetworks
 @pytest.mark.sharedsubnets
-def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classification_server_identifier():
+def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_classification_server_identifier():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
@@ -973,7 +973,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
 @pytest.mark.v4
 @pytest.mark.sharednetworks
 @pytest.mark.sharedsubnets
-def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classification_server_identifier_negative():
+def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_classification_server_identifier_negative():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')

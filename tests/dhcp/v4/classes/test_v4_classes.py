@@ -11,7 +11,7 @@ import srv_control
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_one_class_one_subnet():
+def test_v4_classification_one_class_one_subnet():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -58,7 +58,7 @@ def test_v4_client_classification_one_class_one_subnet():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_one_class_two_subnets_same_values():
+def test_v4_classification_one_class_two_subnets_same_values():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -138,7 +138,7 @@ def test_v4_client_classification_one_class_two_subnets_same_values():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_one_class_two_subnets_different_class_id_included():
+def test_v4_classification_one_class_two_subnets_different_class_id_included():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -168,7 +168,7 @@ def test_v4_client_classification_one_class_two_subnets_different_class_id_inclu
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_one_class_two_subnets_different_chaddr():
+def test_v4_classification_one_class_two_subnets_different_chaddr():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -239,7 +239,7 @@ def test_v4_client_classification_one_class_two_subnets_different_chaddr():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_one_class_empty_pool_with_classification():
+def test_v4_classification_one_class_empty_pool_with_classification():
 
     # test if server is assigning addresses from pool without classification after
     # all addresses form pool with classification has been assigned
@@ -299,7 +299,7 @@ def test_v4_client_classification_one_class_empty_pool_with_classification():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_one_class_empty_pool_without_classification():
+def test_v4_classification_one_class_empty_pool_without_classification():
 
     # test if server is assigning addresses from pool with classification after
     # all addresses form pool without classification has been assigned
@@ -356,7 +356,7 @@ def test_v4_client_classification_one_class_empty_pool_without_classification():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_multiple_classes_two_subnets_different_chaddr():
+def test_v4_classification_multiple_classes_two_subnets_different_chaddr():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -430,7 +430,7 @@ def test_v4_client_classification_multiple_classes_two_subnets_different_chaddr(
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_multiple_classes_three_subnets_different_chaddr():
+def test_v4_classification_multiple_classes_three_subnets_different_chaddr():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -506,7 +506,7 @@ def test_v4_client_classification_multiple_classes_three_subnets_different_chadd
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_client_classification_multiple_classes_three_subnets_different_values():
+def test_v4_classification_multiple_classes_three_subnets_different_values():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -622,7 +622,7 @@ def test_v4_client_classification_multiple_classes_three_subnets_different_value
 @pytest.mark.v4
 @pytest.mark.classification
 @pytest.mark.release
-def test_v4_client_classification_release_same_chaddr_client_id():
+def test_v4_classification_release_same_chaddr_client_id():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -688,7 +688,7 @@ def test_v4_client_classification_release_same_chaddr_client_id():
 @pytest.mark.v4
 @pytest.mark.classification
 @pytest.mark.release
-def test_v4_client_classification_release_different_chaddr_client_id():
+def test_v4_classification_release_different_chaddr_client_id():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')

@@ -4,8 +4,9 @@
 
 import pytest
 
-import srv_control
 import misc
+import references
+import srv_control
 import srv_msg
 
 
@@ -503,6 +504,7 @@ def test_v4_options_path_mtu_aging_timeout():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_include_option(24)
     srv_msg.response_check_option_content(24, 'value', 85)
+
 
 @pytest.mark.v4
 @pytest.mark.options
@@ -2027,17 +2029,6 @@ def test_v4_options_not_requested_options():
     # domain-search	119	binary	false
     # vivco-suboptions	124	binary	false
     # vivso-suboptions	125	binary
-
-"""Standard DHCPv6 options part 1"""
-
-# pylint: disable=invalid-name,line-too-long
-
-import pytest
-
-import srv_msg
-import references
-import srv_control
-import misc
 
 
 @pytest.mark.v6

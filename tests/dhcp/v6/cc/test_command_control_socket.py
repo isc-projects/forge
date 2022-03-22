@@ -8,6 +8,8 @@ import srv_msg
 import misc
 import srv_control
 
+from forge_cfg import world
+
 
 @pytest.mark.v6
 @pytest.mark.controlchannel

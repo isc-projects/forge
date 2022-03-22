@@ -24,7 +24,7 @@ elif test "${1-}" = '--changed'; then
   files_to_search="$(git diff --name-only "$(git merge-base origin/master "$(git rev-parse --abbrev-ref HEAD)")")"
   shift
 else
-  files_to_search=$(find ./tests/{dhcp,dhcpv4,dhcpv6,other_tests,HA,iscdhcp}/ | sort -uV)
+  files_to_search=$(find ./tests/{config_backend,ddns,dhcp,HA,iscdhcp,misc}/ | sort -uV)
 fi
 
 cd "${script_path}"
