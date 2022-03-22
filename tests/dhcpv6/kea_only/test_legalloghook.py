@@ -654,3 +654,60 @@ def test_v6_legal_log_with_flex_id_address_assigned_db(backend):
                                         'Address: 2001:db8:1::f has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                         'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+
+
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.legal_logging
+def test_v6_legal_log_parser_format():
+    """
+    Test checks custom formatting of "legal_log" hook logging.
+    'request-parser-format' and 'response-parser-format' parameters are configured with a set of expressions.
+    """
+    misc.test_procedure()
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+
+    misc.test_setup()
+    srv_control.set_time('renew-timer', 100)
+    srv_control.set_time('rebind-timer', 200)
+    srv_control.set_time('preferred-lifetime', 400)
+    srv_control.set_time('valid-lifetime', 600)
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+    srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+    srv_control.add_hooks('libdhcp_legal_log.so')
+    request_format = "pkt.iface +" \
+                     "addrtotext(pkt.src) +" \
+                     "addrtotext(pkt.dst) +" \
+                     "int32totext(pkt.len) +" \
+                     "int32totext(pkt6.msgtype) +"\
+                     "int32totext(pkt6.transid) +" \
+                     "0x0a"
+    srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
+    response_format = "pkt.iface +" \
+                      "addrtotext(pkt.src) +" \
+                      "addrtotext(pkt.dst) +" \
+                      "int32totext(pkt.len) +" \
+                      "int32totext(pkt6.msgtype) +" \
+                      "int32totext(pkt6.transid)"
+    srv_control.add_parameter_to_hook(1, "response-parser-format", response_format)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    _send_client_requests(1)
+
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    request_line = f'{world.f_cfg.server_iface}' \
+                   f'{world.f_cfg.cli_link_local}' \
+                   f'ff02::1:2' \
+                   f'80' \
+                   f'3' \
+                   f'{world.cfg["values"]["tr_id"]}'
+    response_line = f'{world.f_cfg.server_iface}' \
+                    f'{world.f_cfg.cli_link_local}' \
+                    f'ff02::1:2' \
+                    f'80' \
+                    f'7' \
+                    f'{world.cfg["values"]["tr_id"]}'
+
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, request_line)
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, response_line)

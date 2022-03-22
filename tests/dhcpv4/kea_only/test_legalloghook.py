@@ -470,7 +470,9 @@ def test_v4_legal_log_parser_format():
                      "addrtotext(pkt4.yiaddr) + " \
                      "addrtotext(pkt4.siaddr) + " \
                      "int32totext(pkt4.msgtype) + " \
+                     "ifelse(option[61].exists, hexstring(option[61].hex, ':'), '') + " \
                      "int32totext(pkt4.transid) + " \
+                     "int32totext(vendor.enterprise) + " \
                      "0x0a"
     srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
     response_format = "pkt.iface + " \
@@ -485,6 +487,7 @@ def test_v4_legal_log_parser_format():
                       "addrtotext(pkt4.yiaddr) + " \
                       "addrtotext(pkt4.siaddr) + " \
                       "int32totext(pkt4.msgtype) + " \
+                      "ifelse(option[61].exists, hexstring(option[61].hex, ':'), '') + " \
                       "int32totext(pkt4.transid)"
     srv_control.add_parameter_to_hook(1, "response-parser-format", response_format)
     srv_control.build_and_send_config_files()
@@ -505,10 +508,11 @@ def test_v4_legal_log_parser_format():
                    f'0.0.0.0' \
                    f'0.0.0.0' \
                    f'3' \
+                   f'00:01:02:03:04:05:06' \
                    f'{world.srvmsg[0].xid}'
     response_line = f'{world.f_cfg.server_iface}' \
                     f'192.168.50.1' \
-                    f'192.168.20.1' \
+                    f'{world.f_cfg.srv4_addr}' \
                     f'ff:01:02:03:ff:04' \
                     f'6' \
                     f'1' \
@@ -518,6 +522,95 @@ def test_v4_legal_log_parser_format():
                     f'192.168.50.1' \
                     f'0.0.0.0' \
                     f'5' \
+                    f'00:01:02:03:04:05:06' \
+                    f'{world.srvmsg[0].xid}'
+
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, request_line)
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, response_line)
+
+
+@pytest.mark.v4
+@pytest.mark.kea_only
+@pytest.mark.legal_logging
+def test_v4_legal_log_parser_format_via_relay():
+    """
+    Test checks custom formatting of "legal_log" hook logging.
+    'request-parser-format' and 'response-parser-format' parameters are configured with a set of expressions.
+    """
+    misc.test_procedure()
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+
+    misc.test_setup()
+    srv_control.set_time('renew-timer', 3)
+    srv_control.set_time('rebind-timer', 50)
+    srv_control.set_time('valid-lifetime', 600)
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+    srv_control.add_hooks('libdhcp_legal_log.so')
+    request_format = "pkt.iface + " \
+                     "addrtotext(pkt.src) + " \
+                     "addrtotext(pkt.dst) + " \
+                     "hexstring(pkt4.mac, ':') + " \
+                     "int32totext(pkt4.hlen) + " \
+                     "int32totext(pkt4.htype) + " \
+                     "int32totext(pkt.len) + " \
+                     "addrtotext(pkt4.ciaddr) + " \
+                     "addrtotext(pkt4.giaddr) + " \
+                     "addrtotext(pkt4.yiaddr) + " \
+                     "addrtotext(pkt4.siaddr) + " \
+                     "int32totext(pkt4.msgtype) + " \
+                     "ifelse(option[61].exists, hexstring(option[61].hex, ':'), '') + " \
+                     "int32totext(pkt4.transid) + " \
+                     "int32totext(vendor.enterprise) + " \
+                     "0x0a"
+    srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
+    response_format = "pkt.iface + " \
+                      "addrtotext(pkt.src) + " \
+                      "addrtotext(pkt.dst) + " \
+                      "hexstring(pkt4.mac, ':') + " \
+                      "int32totext(pkt4.hlen) + " \
+                      "int32totext(pkt4.htype) + " \
+                      "int32totext(pkt.len) + " \
+                      "addrtotext(pkt4.ciaddr) + " \
+                      "addrtotext(pkt4.giaddr) + " \
+                      "addrtotext(pkt4.yiaddr) + " \
+                      "addrtotext(pkt4.siaddr) + " \
+                      "int32totext(pkt4.msgtype) + " \
+                      "ifelse(option[61].exists, hexstring(option[61].hex, ':'), '') + " \
+                      "int32totext(pkt4.transid)"
+    srv_control.add_parameter_to_hook(1, "response-parser-format", response_format)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    _send_client_requests_via_relay(1)
+
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    request_line = f'{world.f_cfg.server_iface}' \
+                   f'{world.f_cfg.giaddr4}' \
+                   f'{world.f_cfg.srv4_addr}' \
+                   f'ff:01:02:03:ff:05' \
+                   f'6' \
+                   f'1' \
+                   f'263' \
+                   f'0.0.0.0' \
+                   f'{world.f_cfg.giaddr4}' \
+                   f'0.0.0.0' \
+                   f'0.0.0.0' \
+                   f'3' \
+                   f'00:01:02:03:04:05:77' \
+                   f'{world.srvmsg[0].xid}'
+    response_line = f'{world.f_cfg.server_iface}' \
+                    f'{world.f_cfg.giaddr4}' \
+                    f'{world.f_cfg.srv4_addr}' \
+                    f'ff:01:02:03:ff:05' \
+                    f'6' \
+                    f'1' \
+                    f'278' \
+                    f'0.0.0.0' \
+                    f'{world.f_cfg.giaddr4}' \
+                    f'192.168.50.1' \
+                    f'0.0.0.0' \
+                    f'5' \
+                    f'00:01:02:03:04:05:77' \
                     f'{world.srvmsg[0].xid}'
 
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, request_line)
