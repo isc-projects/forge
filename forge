@@ -303,7 +303,7 @@ def set_init_all(args):
         tmp_txt += '\nPACKET_WAIT_INTERVAL = 3'
         txt = tmp_txt
 
-    path = os.path.abspath('tests/init_all.py')
+    path = os.path.abspath('init_all.py')
     with open(path, 'w') as f:
         f.write(txt)
     print('Generated %s.' % path)
@@ -959,7 +959,7 @@ def clean(args):
         _destroy_lxc_containers(args)
 
     # clean files
-    files_to_del = ['tests/init_all.py',
+    files_to_del = ['init_all.py',
                     os.path.join(vagrant_dir, 'Vagrantfile'),
                     os.path.join(vagrant_dir, 'hammer.py')]
     for path in files_to_del:
