@@ -24,7 +24,7 @@ from src import misc
 from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
-from protosupport.multi_protocol_functions import sort_container
+from src.protosupport.multi_protocol_functions import sort_container
 
 
 @pytest.mark.v4

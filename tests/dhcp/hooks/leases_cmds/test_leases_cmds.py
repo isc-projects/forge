@@ -7,7 +7,7 @@ import pytest
 from src import misc
 from src import srv_msg
 from src import srv_control
-from dhcp4_scen import DHCPv6_STATUS_CODES
+from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
 
 
 def _get_lease(addr='192.168.50.1', mac="ff:01:02:03:ff:04"):

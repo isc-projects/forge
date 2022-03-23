@@ -8,7 +8,7 @@ from src import misc
 from src import srv_control
 
 from src.forge_cfg import world
-from softwaresupport.multi_server_functions import fabric_run_command
+from src.softwaresupport.multi_server_functions import fabric_run_command
 
 
 def _send_cmd(cmd, arg):

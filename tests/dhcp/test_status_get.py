@@ -7,7 +7,7 @@ from src import misc
 from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
-from softwaresupport.multi_server_functions import fabric_sudo_command
+from src.softwaresupport.multi_server_functions import fabric_sudo_command
 
 
 @pytest.mark.v4

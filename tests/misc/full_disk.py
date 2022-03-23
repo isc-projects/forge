@@ -12,7 +12,7 @@ from src import srv_control
 from src import misc
 from src import srv_msg
 from src.forge_cfg import world
-from HA.steps import generate_leases, send_command
+from tests.HA.steps import generate_leases, send_command
 
 
 def _check_disk(dest=world.f_cfg.mgmt_address):

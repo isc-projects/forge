@@ -9,7 +9,7 @@ from src import srv_control
 from src import srv_msg
 
 from src.forge_cfg import world
-from dhcp4_scen import DHCPv6_STATUS_CODES
+from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
 
 
 @pytest.mark.v4

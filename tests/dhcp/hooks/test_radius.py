@@ -9,13 +9,13 @@
 
 import pytest
 
-import misc
-import srv_control
-import srv_msg
+from src import misc
+from src import srv_control
+from src import srv_msg
 
-from cb_model import setup_server_with_radius
-from forge_cfg import world
-from softwaresupport import radius
+from src.forge_cfg import world
+from src.softwaresupport.cb_model import setup_server_with_radius
+from src.softwaresupport import radius
 
 
 @pytest.mark.v4

@@ -8,7 +8,7 @@ from src import srv_control
 from src import srv_msg
 from src import misc
 
-from cb_model import setup_server_for_config_backend_cmds
+from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
 
 @pytest.mark.v4
