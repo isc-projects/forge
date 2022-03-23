@@ -1,8 +1,16 @@
+# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# pylint: disable=invalid-name,line-too-long
+
 import os
 import time
-from .multi_server_functions import fabric_sudo_command, send_content, fabric_download_file, fabric_send_file
 
 from src.forge_cfg import world
+from .multi_server_functions import fabric_sudo_command, send_content, fabric_download_file, fabric_send_file
 
 #
 # This file include all operations needed for installing, configuring and managing kerberos server

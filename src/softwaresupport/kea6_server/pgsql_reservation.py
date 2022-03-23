@@ -1,25 +1,18 @@
-# Copyright (C) 2016-2020 Internet Systems Consortium.
+# Copyright (C) 2016-2022 Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SYSTEMS CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SYSTEMS CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# pylint: disable=invalid-name,line-too-long
 
 # Author: Wlodzimierz Wencel
 
 import logging
 
-from src.forge_cfg import world, step
-from src.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
-    remove_local_file, copy_configuration_file, fabric_sudo_command
+from src.forge_cfg import world
+from src.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file
+from src.softwaresupport.multi_server_functions import remove_local_file, copy_configuration_file, fabric_sudo_command
 
 
 log = logging.getLogger('forge')

@@ -1,19 +1,20 @@
-# Copyright (C) 2019-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# pylint: disable=invalid-name,line-too-long
+
 import copy
 import logging
 
 from src import srv_control, srv_msg, misc
-
-from .cb_api import global_parameter_set, subnet_set, network_set, \
-                   subnet_del_by_prefix, global_option_set, global_option_del,\
-                   client_class_set, client_class_del
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import substitute_vars
+
+from .cb_api import global_parameter_set, subnet_set, network_set, client_class_set
+from .cb_api import subnet_del_by_prefix, global_option_set, global_option_del, client_class_del
 
 
 log = logging.getLogger('forge')

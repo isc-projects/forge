@@ -1,17 +1,10 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SYSTEMS CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SYSTEMS CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# pylint: disable=invalid-name,line-too-long
 
 # Author: Wlodzimierz Wencel
 
@@ -97,11 +90,11 @@ def send_wait_for_query(choose_must, expect_include, iface=None):
              world.f_cfg.dns_retry,
              timeout)
 
-    ans, unans = sr(world.climsg,
-                    iface=iface,
-                    timeout=timeout,
-                    multi=True,
-                    verbose=99)
+    ans, _ = sr(world.climsg,
+                iface=iface,
+                timeout=timeout,
+                multi=True,
+                verbose=99)
 
     world.dns_send_query_counter += 1
     world.dns_send_query_time_out += 0.5
@@ -302,12 +295,10 @@ def parsing_received_parts(query_part_list, length, expect, value_name, value):
         if test == value:
             return 1, test
         outcome = outcome + test + ' '
-    else:
-        return 0, outcome
+    return 0, outcome
 
 
 def dns_option_content(part_name, expect, value_name, value):
-    flag = 0
     if part_name == 'QUESTION':
         flag, outcome = parsing_received_parts(world.srvmsg[0].qd, world.srvmsg[0].qdcount, expect, value_name, value)
 
@@ -317,12 +308,13 @@ def dns_option_content(part_name, expect, value_name, value):
     elif part_name == 'AUTHORITATIVE_NAMESERVERS':
         flag, outcome = parsing_received_parts(world.srvmsg[0].ns, world.srvmsg[0].nscount, expect, value_name, value)
 
-    elif part_name == 'ADDITIONAL_RECORDS':
+    # elif part_name == 'ADDITIONAL_RECORDS':
+    else:
         flag, outcome = parsing_received_parts(world.srvmsg[0].ar, world.srvmsg[0].arcount, expect, value_name, value)
 
     if not flag and expect:
-        assert False, 'In received DNS query part: "{value_name}" there is/are values:' \
-                      ' {outcome} expected was: {value}'.format(**locals())
+        assert False, f'In received DNS query part: "{value_name}" there is/are values:' \
+                      f' {outcome} expected was: {value}'
     elif flag and not expect:
-        assert False, 'In received DNS query part: "{value_name}" there is value:' \
-                      ' {outcome} which was forbidden to show up.'.format(**locals())
+        assert False, f'In received DNS query part: "{value_name}" there is value:' \
+                      f' {outcome} which was forbidden to show up.'

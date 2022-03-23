@@ -1,32 +1,23 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SYSTEMS CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SYSTEMS CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# pylint: disable=invalid-name,line-too-long
 
 import os
-import re
 import glob
 import json
 import logging
 
-# import srv_msg
 from src import srv_msg
 
 from src.forge_cfg import world
-from src.protosupport.multi_protocol_functions import add_variable, execute_shell_cmd, substitute_vars
+from src.protosupport.multi_protocol_functions import add_variable, substitute_vars
 from src.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
-from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command, fabric_download_file
-from src.softwaresupport.multi_server_functions import fabric_remove_file_command
+from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command
+from src.softwaresupport.multi_server_functions import fabric_remove_file_command, fabric_download_file
 from src.softwaresupport.multi_server_functions import check_local_path_for_downloaded_files
 
 log = logging.getLogger('forge')

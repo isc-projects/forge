@@ -1,17 +1,10 @@
-# Copyright (C) 2013-2020 Internet Systems Consortium.
+# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
 #
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SYSTEMS CONSORTIUM
-# DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-# INTERNET SYSTEMS CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
-# FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
-# WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# pylint: disable=invalid-name,line-too-long,unused-import, unused-argument
 
 # Author: Wlodzimierz Wencel
 
@@ -19,14 +12,14 @@
 
 import logging
 
-from functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 from src.protosupport.multi_protocol_functions import test_pause
+from .functions_ddns import add_forward_ddns, add_reverse_ddns, add_keys, build_ddns_config
 
 
 log = logging.getLogger('forge')
 
 
-def config_srv_id(id_type, id_value):
+def config_srv_id(*args):
     pass
 
 
@@ -34,7 +27,7 @@ def set_time(*args):
     pass
 
 
-def add_interface(iface):
+def add_interface(*args):
     pass
 
 
@@ -42,7 +35,7 @@ def add_defaults():
     pass
 
 
-def set_conf_parameter_global(parameter_name, value):
+def set_conf_parameter_global(*args):
     pass
 
 
