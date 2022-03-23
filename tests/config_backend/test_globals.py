@@ -4,11 +4,11 @@ import time
 
 import pytest
 
-from dhcp4_scen import get_address, get_rejected
-from dhcp4_scen import get_address4, get_address6
-from dhcp4_scen import send_decline4, send_decline6
-from dhcp4_scen import send_request_and_check_ack, rebind_with_nak_answer
-from cb_model import setup_server_for_config_backend_cmds
+from src.protosupport.dhcp4_scen import get_address, get_rejected
+from src.protosupport.dhcp4_scen import get_address4, get_address6
+from src.protosupport.dhcp4_scen import send_decline4, send_decline6
+from src.protosupport.dhcp4_scen import send_request_and_check_ack, rebind_with_nak_answer
+from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
 
 pytestmark = [pytest.mark.kea_only,

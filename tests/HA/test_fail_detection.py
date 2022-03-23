@@ -4,13 +4,13 @@
 
 import pytest
 
-import misc
-import srv_control
-import srv_msg
+from src import misc
+from src import srv_control
+from src import srv_msg
 
-from forge_cfg import world
-from HA.steps import generate_leases, wait_until_ha_state, send_increased_elapsed_time, send_heartbeat
-from HA.steps import HOT_STANDBY, LOAD_BALANCING
+from src.forge_cfg import world
+from .steps import generate_leases, wait_until_ha_state, send_increased_elapsed_time, send_heartbeat
+from .steps import HOT_STANDBY, LOAD_BALANCING
 
 
 @pytest.fixture(autouse=True)

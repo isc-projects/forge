@@ -2,8 +2,8 @@
 
 import pytest
 
-import srv_msg
-from cb_model import setup_server_for_config_backend_cmds
+from src import srv_msg
+from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
 pytestmark = [pytest.mark.v4,
               pytest.mark.kea_only,

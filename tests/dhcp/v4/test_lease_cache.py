@@ -3,11 +3,11 @@
 
 import pytest
 
-import srv_msg
-import srv_control
-import misc
+from src import srv_msg
+from src import srv_control
+from src import misc
 
-from forge_cfg import world
+from src.forge_cfg import world
 
 # in v4 renew and rebind process differ between each other just with
 # destination address. Testing this feature I will just use rebind.

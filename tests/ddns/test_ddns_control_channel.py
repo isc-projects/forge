@@ -6,10 +6,10 @@ import os
 import json
 import pytest
 
-import misc
-import srv_msg
-import srv_control
-from forge_cfg import world
+from src import misc
+from src import srv_msg
+from src import srv_control
+from src.forge_cfg import world
 
 
 def _send_through_ddns_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_socket'),

@@ -3,10 +3,10 @@
 # pylint: disable=unused-argument
 
 import pytest
-import misc
-import srv_msg
-import srv_control
-from forge_cfg import world
+from src import misc
+from src import srv_msg
+from src import srv_control
+from src.forge_cfg import world
 from softwaresupport.multi_server_functions import fabric_sudo_command
 
 

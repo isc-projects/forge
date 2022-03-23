@@ -1,8 +1,8 @@
 import time
 import pytest
 
-from cb_model import setup_server_for_config_backend_cmds, get_config
-from dhcp4_scen import get_address, get_rejected
+from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds, get_config
+from src.protosupport.dhcp4_scen import get_address, get_rejected
 
 pytestmark = [pytest.mark.kea_only,
               pytest.mark.controlchannel,

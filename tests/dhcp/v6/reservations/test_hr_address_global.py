@@ -4,11 +4,11 @@
 
 import pytest
 
-import srv_control
-import srv_msg
-import misc
+from src import srv_control
+from src import srv_msg
+from src import misc
 
-from forge_cfg import world
+from src.forge_cfg import world
 
 
 def _send_solicit(duid, address):

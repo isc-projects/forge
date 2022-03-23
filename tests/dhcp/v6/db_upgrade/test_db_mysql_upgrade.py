@@ -5,11 +5,11 @@
 import glob
 import pytest
 
-import misc
-import srv_control
-import srv_msg
+from src import misc
+from src import srv_control
+from src import srv_msg
 
-from forge_cfg import world
+from src.forge_cfg import world
 
 # 1.6.3 version is our starting point here. In 1.6.0 CB backend was introduced in mysql
 # but there were no changes in schema between 1.6.0 and 1.6.3. In the tests are included

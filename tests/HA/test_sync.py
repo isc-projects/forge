@@ -10,15 +10,16 @@
 
 import pytest
 
-import misc
-import srv_control
-import srv_msg
+from src import misc
+from src import srv_control
+from src import srv_msg
 
-from cb_model import setup_server_with_radius
-from forge_cfg import world
-from HA.steps import generate_leases, increase_mac, load_hook_libraries, wait_until_ha_state
-from HA.steps import HOT_STANDBY, LOAD_BALANCING, PASSIVE_BACKUP
-from softwaresupport import radius
+from src.forge_cfg import world
+from .steps import generate_leases, load_hook_libraries, increase_mac, wait_until_ha_state
+from .steps import HOT_STANDBY, LOAD_BALANCING, PASSIVE_BACKUP
+
+from src.softwaresupport.cb_model import setup_server_with_radius
+from src.softwaresupport import radius
 
 
 # TODO add checking logs in all those tests

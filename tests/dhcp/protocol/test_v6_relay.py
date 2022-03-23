@@ -4,11 +4,11 @@
 
 import pytest
 
-import srv_control
-import misc
-import srv_msg
-import references
-from forge_cfg import world
+from src import srv_control
+from src import misc
+from src import srv_msg
+from src import references
+from src.forge_cfg import world
 
 
 @pytest.mark.v6

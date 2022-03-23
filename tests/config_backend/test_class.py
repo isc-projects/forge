@@ -2,8 +2,8 @@
 
 import pytest
 
-from dhcp4_scen import get_address, get_rejected
-from cb_model import setup_server_for_config_backend_cmds
+from src.protosupport.dhcp4_scen import get_address, get_rejected
+from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
 # pylint: disable=invalid-name,line-too-long
 

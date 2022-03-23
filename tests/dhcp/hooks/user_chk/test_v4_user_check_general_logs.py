@@ -5,9 +5,9 @@
 import glob
 import pytest
 
-import misc
-import srv_control
-import srv_msg
+from src import misc
+from src import srv_control
+from src import srv_msg
 
 
 @pytest.mark.v4

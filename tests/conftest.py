@@ -5,7 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
-from forge_cfg import world
+from src.forge_cfg import world
 
 
 @pytest.fixture(autouse=True, scope='session')
@@ -20,12 +20,12 @@ def get_number_of_tests(request):
 
 
 def pytest_runtest_setup(item):
-    import terrain
+    from src import terrain
     terrain.initialize(item)
 
 
 def pytest_runtest_teardown(item, nextitem):
-    import terrain
+    from src import terrain
     item.failed = None
     terrain.cleanup(item)
 
@@ -107,14 +107,13 @@ def pytest_generate_tests(metafunc):
 
 
 def pytest_configure(config):
-    import terrain
+    from src import terrain
     terrain.test_start()
 
 
 def pytest_unconfigure(config):
-    import terrain
+    from src import terrain
     terrain.say_goodbye()
-
 
 
 def pytest_addoption(parser):

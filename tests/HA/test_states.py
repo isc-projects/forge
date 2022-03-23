@@ -4,11 +4,11 @@
 
 import pytest
 
-import misc
-import srv_control
-import srv_msg
-from forge_cfg import world
-from HA.steps import send_command, HOT_STANDBY, LOAD_BALANCING, wait_until_ha_state, send_heartbeat, get_status_HA
+from src import misc
+from src import srv_control
+from src import srv_msg
+from src.forge_cfg import world
+from .steps import send_command, HOT_STANDBY, LOAD_BALANCING, wait_until_ha_state, send_heartbeat, get_status_HA
 # TODO add checking logs in all those tests
 
 WAIT_TIME = 3

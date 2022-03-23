@@ -2,10 +2,10 @@
 
 import pytest
 
-import srv_msg
+from src import srv_msg
 
-from cb_model import setup_server_for_config_backend_cmds
-from forge_cfg import world
+from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
+from src.forge_cfg import world
 
 
 pytestmark = [pytest.mark.v4,

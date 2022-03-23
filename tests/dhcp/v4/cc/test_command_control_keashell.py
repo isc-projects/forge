@@ -5,10 +5,10 @@
 import json
 import pytest
 
-import srv_msg
-import srv_control
-import misc
-from forge_cfg import world
+from src import srv_msg
+from src import srv_control
+from src import misc
+from src.forge_cfg import world
 
 
 @pytest.mark.v4

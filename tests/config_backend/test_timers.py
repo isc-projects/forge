@@ -5,9 +5,9 @@ import logging
 
 import pytest
 
-import srv_msg
-from cb_model import setup_server_for_config_backend_cmds, get_cfg_default
-from dhcp4_scen import get_address, get_rejected
+from src import srv_msg
+from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds, get_cfg_default
+from src.protosupport.dhcp4_scen import get_address, get_rejected
 
 
 log = logging.getLogger('forge')

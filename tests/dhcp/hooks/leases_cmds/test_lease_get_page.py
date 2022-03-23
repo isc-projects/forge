@@ -3,9 +3,9 @@
 # pylint: disable=invalid-name,line-too-long,unused-argument
 import pytest
 
-import misc
-import srv_msg
-import srv_control
+from src import misc
+from src import srv_msg
+from src import srv_control
 
 
 @pytest.mark.v4

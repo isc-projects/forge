@@ -6,10 +6,10 @@ import os
 import json
 import pytest
 
-import misc
-import srv_msg
-import srv_control
-from forge_cfg import world
+from src import misc
+from src import srv_msg
+from src import srv_control
+from src.forge_cfg import world
 
 
 def _send_directly_to_ca(cmd, exp_result=0, address='$(SRV4_ADDR)', exp_failed=False):

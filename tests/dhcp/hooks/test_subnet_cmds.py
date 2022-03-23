@@ -4,9 +4,9 @@
 
 import pytest
 
-import srv_control
-import srv_msg
-import misc
+from src import srv_control
+from src import srv_msg
+from src import misc
 
 from cb_model import setup_server_for_config_backend_cmds
 

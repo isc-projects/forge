@@ -4,10 +4,10 @@
 
 import pytest
 
-import misc
-import srv_control
-import srv_msg
-from forge_cfg import world
+from src import misc
+from src import srv_control
+from src import srv_msg
+from src.forge_cfg import world
 
 
 def _add_reservation(reservation, exp_result=0, exp_failed=False):

@@ -14,15 +14,15 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
-import misc
-import srv_control
-import srv_msg
+from src import misc
+from src import srv_control
+from src import srv_msg
 
 # if used those 3 functions has to be imported directly
-# from softwaresupport.isc_dhcp6_server.functions_ddns import add_forward_ddns, add_reverse_ddns
-# from softwaresupport.isc_dhcp6_server.functions import add_line_in_global
+# from src.softwaresupport.isc_dhcp6_server.functions_ddns import add_forward_ddns, add_reverse_ddns
+# from src.softwaresupport.isc_dhcp6_server.functions import add_line_in_global
 
-from forge_cfg import world
+from src.forge_cfg import world
 
 
 @pytest.fixture(autouse=True)

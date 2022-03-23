@@ -4,11 +4,11 @@
 
 import pytest
 
-import srv_msg
-import srv_control
-import misc
+from src import srv_msg
+from src import srv_control
+from src import misc
 
-from forge_cfg import world
+from src.forge_cfg import world
 
 
 def _get_offer():

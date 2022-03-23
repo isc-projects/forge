@@ -4,12 +4,12 @@
 
 import pytest
 
-import misc
-import srv_msg
-import srv_control
+from src import misc
+from src import srv_msg
+from src import srv_control
 
 # importing directly from server definitions is not usual way we do, but I don't want to change kea related code
-from softwaresupport.isc_dhcp6_server.functions_ddns import add_forward_ddns, add_reverse_ddns
+from src.softwaresupport.isc_dhcp6_server.functions_ddns import add_forward_ddns, add_reverse_ddns
 
 
 @pytest.mark.v4

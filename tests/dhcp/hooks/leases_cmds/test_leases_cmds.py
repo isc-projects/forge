@@ -4,9 +4,9 @@
 import time
 import pytest
 
-import misc
-import srv_msg
-import srv_control
+from src import misc
+from src import srv_msg
+from src import srv_control
 from dhcp4_scen import DHCPv6_STATUS_CODES
 
 

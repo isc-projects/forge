@@ -2,8 +2,8 @@
 
 import pytest
 
-from dhcp4_scen import get_address
-from cb_model import setup_server_for_config_backend_cmds
+from src.protosupport.dhcp4_scen import get_address
+from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
 # pylint: disable=unused-argument
 

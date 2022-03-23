@@ -3,11 +3,11 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
-import misc
-import srv_control
-import srv_msg
+from src import misc
+from src import srv_control
+from src import srv_msg
 
-from softwaresupport.isc_dhcp6_server.functions import unset_time, add_line_in_global
+from src.softwaresupport.isc_dhcp6_server.functions import unset_time, add_line_in_global
 
 
 @pytest.mark.v6

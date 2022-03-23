@@ -2,12 +2,12 @@
 
 import pytest
 
-import srv_control
-import srv_msg
+from src import srv_control
+from src import srv_msg
 
-from dhcp4_scen import get_address, get_rejected
-from cb_model import setup_server_for_config_backend_cmds
-from forge_cfg import world
+from src.protosupport.dhcp4_scen import get_address, get_rejected
+from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
+from src.forge_cfg import world
 
 pytestmark = [pytest.mark.kea_only,
               pytest.mark.hook,
