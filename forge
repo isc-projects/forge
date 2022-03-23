@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (C) 2019-2020 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2019-2022 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -318,10 +318,30 @@ def get_vagrant_dir(args):
     return vagrant_dir
 
 
-def ensure_lxc_bridges(args):
-    mgmt_brg = 'lxcfgmgmt' + args.sid if args.sid else 'lxcfgmgmt'
-    traffic_brg = 'lxcfgtrf' + args.sid if args.sid else 'lxcfgtrf'
+def _sanitize_sid(sid: str):
+    """
+    Remove underscores from setup ID to make it a valid name in various low-level operations.
+    :param sid: setup ID
+    :return: sanitized setup ID
+    """
+    return sid.replace('_', '') if sid else ''
 
+
+def _get_interface_names(sid):
+    """
+    Get the names of interfaces used in LXC. Remove underscores from setup ID to make for a valid
+    interface name.
+    :param sid: setup ID
+    :return: pair of (management interface name, traffic interface name)
+    """
+    sid = _sanitize_sid(sid)
+    management_bridge = 'm' + sid
+    traffic_bridge = 't' + sid
+    return management_bridge, traffic_bridge
+
+
+def ensure_lxc_bridges(args):
+    mgmt_brg, traffic_brg = _get_interface_names(args.sid)
     for bridge in [mgmt_brg, traffic_brg]:
         if execute('sudo ip link show dev %s' % bridge, raise_error=False):
             execute('sudo ip link add dev %s type bridge' % bridge)
@@ -329,9 +349,7 @@ def ensure_lxc_bridges(args):
 
 
 def delete_lxc_bridges(args):
-    mgmt_brg = 'lxcfgmgmt' + args.sid if args.sid else 'lxcfgmgmt'
-    traffic_brg = 'lxcfgtrf' + args.sid if args.sid else 'lxcfgtrf'
-
+    mgmt_brg, traffic_brg = _get_interface_names(args.sid)
     for bridge in [mgmt_brg, traffic_brg]:
         if not execute('sudo ip link show dev %s' % bridge, raise_error=False):
             execute('sudo ip link set dev %s down' % bridge)
@@ -354,13 +372,13 @@ def _get_server_name(args, idx):
 
     name = 'forge-srv%d-%s' % (idx, short_sys)
     if args.sid:
-        name += '-' + args.sid
+        name += '-' + _sanitize_sid(args.sid)
 
     return name
 
 
 def _destroy_lxc_containers(args):
-    client_name = 'forge-client-' + args.sid if args.sid else 'forge-client'
+    client_name = 'forge-client-' + _sanitize_sid(args.sid)
     server1_name = _get_server_name(args, 1)
     server2_name = _get_server_name(args, 2)
 
@@ -484,11 +502,10 @@ def setup(args):
 
     server_image = 'kea-' + args.system
 
-    client_name = 'forge-client-' + args.sid if args.sid else 'forge-client'
+    client_name = 'forge-client-' + _sanitize_sid(args.sid)
     server1_name = _get_server_name(args, 1)
     server2_name = _get_server_name(args, 2)
-    mgmt_brg = 'lxcfgmgmt' + args.sid if args.sid else 'lxcfgmgmt'
-    traffic_brg = 'lxcfgtrf' + args.sid if args.sid else 'lxcfgtrf'
+    mgmt_brg, traffic_brg = _get_interface_names(args.sid)
 
     # generate global addresses for servers
     srv1_addr4 = SRV4_ADDR
@@ -917,7 +934,7 @@ def test(args, params):
 
     params = ' '.join(params)
     print('Test params: %s' % params)
-    client_name = 'forge-client-' + args.sid if args.sid else 'forge-client'
+    client_name = 'forge-client-' + _sanitize_sid(args.sid)
     cmd = 'vagrant ssh ' + client_name + ' -c "%s"'
     subcmd = 'cd /forge/; sudo ~/venv/bin/pytest ' + params
     cmd %= subcmd
@@ -1021,7 +1038,7 @@ def _package_box(lxc_name, vagrant_dir, box_name):
 
 
 def package_box_and_upload(args):
-    lxc_name = 'forge-client-' + args.sid
+    lxc_name = 'forge-client-' + _sanitize_sid(args.sid)
     box_name = 'forge-clt-%s' % args.system
 
     vagrant_dir = get_vagrant_dir(args)
