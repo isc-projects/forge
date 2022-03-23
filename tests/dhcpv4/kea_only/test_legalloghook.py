@@ -493,7 +493,7 @@ def test_v4_legal_log_parser_format():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _send_client_requests(1)
+    _send_client_requests(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     request_line = f'{world.f_cfg.server_iface}' \
@@ -525,8 +525,8 @@ def test_v4_legal_log_parser_format():
                     f'00:01:02:03:04:05:06' \
                     f'{world.srvmsg[0].xid}'
 
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, request_line)
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, response_line)
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)
 
 
 @pytest.mark.v4
@@ -560,7 +560,7 @@ def test_v4_legal_log_parser_format_via_relay():
                      "int32totext(pkt4.msgtype) + " \
                      "ifelse(option[61].exists, hexstring(option[61].hex, ':'), '') + " \
                      "int32totext(pkt4.transid) + " \
-                     "int32totext(vendor.enterprise) + " \
+                     "hexstring(relay4[61].hex, ':') + " \
                      "0x0a"
     srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
     response_format = "pkt.iface + " \
@@ -581,7 +581,7 @@ def test_v4_legal_log_parser_format_via_relay():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _send_client_requests_via_relay(1)
+    _send_client_requests_via_relay(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     request_line = f'{world.f_cfg.server_iface}' \
@@ -613,5 +613,5 @@ def test_v4_legal_log_parser_format_via_relay():
                     f'00:01:02:03:04:05:77' \
                     f'{world.srvmsg[0].xid}'
 
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, request_line)
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, response_line)
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)

@@ -693,7 +693,7 @@ def test_v6_legal_log_parser_format():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _send_client_requests(1)
+    _send_client_requests(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     request_line = f'{world.f_cfg.server_iface}' \
@@ -708,6 +708,71 @@ def test_v6_legal_log_parser_format():
                     f'80' \
                     f'7' \
                     f'{world.cfg["values"]["tr_id"]}'
+
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)
+
+
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.legal_logging
+def test_v6_legal_log_parser_format_via_relay():
+    """
+    Test checks custom formatting of "legal_log" hook logging.
+    'request-parser-format' and 'response-parser-format' parameters are configured with a set of expressions.
+    """
+    misc.test_procedure()
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+
+    misc.test_setup()
+    srv_control.set_time('renew-timer', 100)
+    srv_control.set_time('rebind-timer', 200)
+    srv_control.set_time('preferred-lifetime', 400)
+    srv_control.set_time('valid-lifetime', 600)
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+    srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+    srv_control.add_hooks('libdhcp_legal_log.so')
+    request_format = "pkt.iface +" \
+                     "addrtotext(pkt.src) +" \
+                     "addrtotext(pkt.dst) +" \
+                     "int32totext(pkt.len) +" \
+                     "int32totext(pkt6.msgtype) +"\
+                     "int32totext(pkt6.transid) +" \
+                     "addrtotext(relay6[0].linkaddr) + " \
+                     "addrtotext(relay6[0].peeraddr) + " \
+                     "0x0a"
+    srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
+    response_format = "pkt.iface +" \
+                      "addrtotext(pkt.src) +" \
+                      "addrtotext(pkt.dst) +" \
+                      "int32totext(pkt.len) +" \
+                      "int32totext(pkt6.msgtype) +" \
+                      "int32totext(pkt6.transid) +" \
+                      "addrtotext(relay6[0].linkaddr) + " \
+                      "addrtotext(relay6[0].peeraddr)"
+    srv_control.add_parameter_to_hook(1, "response-parser-format", response_format)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    _send_relayed_client_requests(1)
+
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    request_line = f'{world.f_cfg.server_iface}' \
+                   f'{world.f_cfg.cli_link_local}' \
+                   f'ff02::1:2' \
+                   f'315' \
+                   f'3' \
+                   f'{world.cfg["values"]["tr_id"]}' \
+                   f'2001:db8:1::1005' \
+                   f'{world.f_cfg.cli_link_local}'
+    response_line = f'{world.f_cfg.server_iface}' \
+                    f'{world.f_cfg.cli_link_local}' \
+                    f'ff02::1:2' \
+                    f'309' \
+                    f'7' \
+                    f'{world.cfg["values"]["tr_id"]}' \
+                    f'2001:db8:1::1005' \
+                    f'{world.f_cfg.cli_link_local}'
 
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, request_line)
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, response_line)
