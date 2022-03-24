@@ -258,12 +258,13 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
         # hexadecimal so we can build a chaddr out of it.
         assert 2 * leases_count < 256, 'too many leases: will result in invalid chaddr'
 
-        for i in range(leases_count + 1, 2 * leases_count):
+        for _ in range(leases_count + 1, 2 * leases_count):
             mac = increase_mac(mac)
             client_id = '11' + mac.replace(':', '')
-            srv_msg.BOOTP_REQUEST_and_BOOTP_REPLY(address='192.168.50.' + str(i),
-                                                  chaddr='00:01:02:03:04:%0.2x' % i,
+            srv_msg.BOOTP_REQUEST_and_BOOTP_REPLY(address=None,
+                                                  chaddr=mac,
                                                   client_id=client_id)
+            all_leases.append(srv_msg.get_all_leases())
 
     world.f_cfg.show_packets_from = tmp
     return all_leases

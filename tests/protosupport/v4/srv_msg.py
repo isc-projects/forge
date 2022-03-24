@@ -130,7 +130,12 @@ def client_send_msg(msgname, iface=None, addr=None):
 
     elif msgname == "BOOTP_REQUEST":
         world.cfg["values"]["broadcastBit"] = True
-        msg = build_msg(options)
+        # Gitlab issue kea#2361
+        # Kea expects a four-byte sequence at the beginning of the options section and claims it
+        # should be the magic cookie, but the magic cookie is right before it, placed by scapy, and
+        # that's where Kea correctly ends up reading it from. So let's put some four-byte padding.
+        padding = ['\x00\x00\x00\x00']
+        msg = build_msg(padding + options)
 
     else:
         assert False, "Invalid message type: %s" % msgname
@@ -545,7 +550,10 @@ def get_all_leases(decode_duid=True):
         lease.update({"client_id": get_option(world.srvmsg[0], 61)[1]}.hex())
     except:
         pass
-    lease.update({"valid_lifetime": get_option(world.srvmsg[0], 51)[1]})
+    try:
+        lease.update({"valid_lifetime": get_option(world.srvmsg[0], 51)[1]})
+    except:
+        pass
 
     return lease
 
@@ -661,7 +669,7 @@ def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
     """
     Send a BOOTP request and expect a BOOTP reply.
 
-    :param address: the address expected in the reply
+    :param address: the address expected in the reply. If None, address is not checked.
     :param chaddr: the value of the chaddr field in the BOOTP request packet
     :param client_id: the value of option 61 client identifier in the BOOTP request packet
     """
@@ -686,4 +694,5 @@ def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
     response_check_include_option(False, 59)
 
     # Check received address.
-    response_check_content(True, 'yiaddr', address)
+    if address is not None:
+        response_check_content(True, 'yiaddr', address)
