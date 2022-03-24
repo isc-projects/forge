@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name,line-too-long,,unused-import
 
 # Author: Wlodzimierz Wencel
 
@@ -23,7 +23,7 @@ from scapy.packet import Raw
 from scapy.layers.inet import IP, UDP
 
 from src.forge_cfg import world
-from src.protosupport.v6.srv_msg import apply_message_fields_changes
+from src.protosupport.v6.srv_msg import apply_message_fields_changes, change_message_field, client_add_saved_option
 
 from src import misc
 
