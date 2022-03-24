@@ -14,12 +14,14 @@ from forge_cfg import world
 MESSAGE_COUNT = 3
 
 
-def _send_client_requests(count):
+def _send_client_requests(count, ia_pd=False):
     for _ in range(count):
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
         srv_msg.client_does_include('Client', 'client-id')
         srv_msg.client_does_include('Client', 'IA-NA')
+        if ia_pd:
+            srv_msg.client_does_include('Client', 'IA-PD')
         srv_msg.client_send_msg('SOLICIT')
 
         misc.pass_criteria()
@@ -33,6 +35,8 @@ def _send_client_requests(count):
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
         srv_msg.client_copy_option('server-id')
         srv_msg.client_copy_option('IA_NA')
+        if ia_pd:
+            srv_msg.client_does_include('Client', 'IA-PD')
         srv_msg.client_does_include('Client', 'client-id')
         srv_msg.client_send_msg('REQUEST')
 
@@ -798,8 +802,8 @@ def test_v6_legal_log_parser_format_dual_ip():
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     request_format = "pkt.iface +" \
-                     "addrtotext(substring(option[3].option[5].hex, 0, 16)) +" \
-                     "addrtotext(substring(option[25].option[26].hex, 9, 16)) +" \
+                     "ifelse(option[3].option[5].exists, addrtotext(substring(option[3].option[5].hex, 0, 16)),'none') +" \
+                     "ifelse(option[25].option[26].exists, addrtotext(substring(option[25].option[26].hex, 9, 16)), 'none') +" \
                      "addrtotext(pkt.src) +" \
                      "addrtotext(pkt.dst) +" \
                      "int32totext(pkt.len) +" \
@@ -808,8 +812,8 @@ def test_v6_legal_log_parser_format_dual_ip():
                      "0x0a"
     srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
     response_format = "pkt.iface +" \
-                      "addrtotext(substring(option[3].option[5].hex, 0, 16)) +" \
-                      "addrtotext(substring(option[25].option[26].hex, 9, 16)) +" \
+                      "ifelse(option[3].option[5].exists, addrtotext(substring(option[3].option[5].hex, 0, 16)),'none') +" \
+                      "ifelse(option[25].option[26].exists, addrtotext(substring(option[25].option[26].hex, 9, 16)), 'none') +" \
                       "addrtotext(pkt.src) +" \
                       "addrtotext(pkt.dst) +" \
                       "int32totext(pkt.len) +" \
@@ -819,69 +823,45 @@ def test_v6_legal_log_parser_format_dual_ip():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # snip =====
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_include_option(2)
-    srv_msg.response_check_include_option(3)
-    srv_msg.response_check_option_content(3, 'sub-option', 5)
-
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
-    srv_msg.client_copy_option('server-id')
-    srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_copy_option('IA_PD')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.response_check_include_option(3)
-    srv_msg.response_check_option_content(3, 'sub-option', 5)
-    # snip =====
-    # srv_msg.client_sets_value('Client', 'ia_pd', this_iapd)
+    _send_client_requests(MESSAGE_COUNT, ia_pd=True)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     request_line_na = f'{world.f_cfg.server_iface}' \
-                   f'2001:db8:1::5' \
-                   f'{world.f_cfg.cli_link_local}' \
-                   f'ff02::1:2' \
-                   f'125' \
-                   f'3' \
-                   f'{world.cfg["values"]["tr_id"]}'
+                      f'2001:db8:1::5' \
+                      f'none' \
+                      f'{world.f_cfg.cli_link_local}' \
+                      f'ff02::1:2' \
+                      f'96' \
+                      f'3' \
+                      f'{world.cfg["values"]["tr_id"]}'
     response_line_na = f'{world.f_cfg.server_iface}' \
-                   f'2001:db8:1::5' \
-                   f'{world.f_cfg.cli_link_local}' \
-                   f'ff02::1:2' \
-                   f'125' \
-                   f'7' \
-                   f'{world.cfg["values"]["tr_id"]}'
+                       f'2001:db8:1::5' \
+                       f'none' \
+                       f'{world.f_cfg.cli_link_local}' \
+                       f'ff02::1:2' \
+                       f'125' \
+                       f'7' \
+                       f'{world.cfg["values"]["tr_id"]}'
 
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, request_line_na)
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, response_line_na)
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_na)
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_na)
 
     request_line_pd = f'{world.f_cfg.server_iface}' \
-                   f'2001:db8:2::' \
-                   f'{world.f_cfg.cli_link_local}' \
-                   f'ff02::1:2' \
-                   f'125' \
-                   f'3' \
-                   f'{world.cfg["values"]["tr_id"]}'
+                      f'none' \
+                      f'none' \
+                      f'{world.f_cfg.cli_link_local}' \
+                      f'ff02::1:2' \
+                      f'96' \
+                      f'3' \
+                      f'{world.cfg["values"]["tr_id"]}'
     response_line_pd = f'{world.f_cfg.server_iface}' \
-                   f'2001:db8:2::' \
-                   f'{world.f_cfg.cli_link_local}' \
-                   f'ff02::1:2' \
-                   f'125' \
-                   f'7' \
-                   f'{world.cfg["values"]["tr_id"]}'
+                       f'none' \
+                       f'2001:db8:2::4:0:0' \
+                       f'{world.f_cfg.cli_link_local}' \
+                       f'ff02::1:2' \
+                       f'125' \
+                       f'7' \
+                       f'{world.cfg["values"]["tr_id"]}'
 
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, request_line_pd)
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1, response_line_pd)
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_pd)
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_pd)
