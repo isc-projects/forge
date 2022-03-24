@@ -215,6 +215,7 @@ class ConfigModel(ConfigElem):
                        "pattern": ""}
         else:
             loggers = {"output": "stdout",
+                       "flush": True,
                        "pattern": ""}
 
         # loggers config
@@ -222,6 +223,12 @@ class ConfigModel(ConfigElem):
                            "output_options": [loggers],
                            "debuglevel": 99,
                            "severity": "DEBUG"}]
+
+        # some default settings
+        cfg['ddns-replace-client-name'] = 'never'
+        cfg['ddns-generated-prefix'] = 'myhost'
+        cfg['ddns-send-updates'] = True
+        cfg['ddns-use-conflict-resolution'] = True
 
         # combining whole config
         dhcp_key = 'Dhcp' + proto
