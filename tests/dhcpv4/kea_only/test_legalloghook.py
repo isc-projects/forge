@@ -446,8 +446,10 @@ def test_v4_legal_log_rebind_state_db(backend):
 @pytest.mark.legal_logging
 def test_v4_legal_log_parser_format():
     """
-    Test checks custom formatting of "legal_log" hook logging.
+    Test checks custom formatting of "legal_log" hook.
     'request-parser-format' and 'response-parser-format' parameters are configured with a set of expressions.
+    DORA exchange is used to acquire leases.
+    Log file is checked for proper content.
     """
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
@@ -534,8 +536,10 @@ def test_v4_legal_log_parser_format():
 @pytest.mark.legal_logging
 def test_v4_legal_log_parser_format_via_relay():
     """
-    Test checks custom formatting of "legal_log" hook logging.
+    Test checks custom formatting of "legal_log" hook.
     'request-parser-format' and 'response-parser-format' parameters are configured with a set of expressions.
+    DORA exchange via relay is used to acquire leases.
+    Log file is checked for proper content.
     """
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))

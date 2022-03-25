@@ -665,8 +665,10 @@ def test_v6_legal_log_with_flex_id_address_assigned_db(backend):
 @pytest.mark.legal_logging
 def test_v6_legal_log_parser_format():
     """
-    Test checks custom formatting of "legal_log" hook logging.
+    Test checks custom formatting of "legal_log" hook.
     'request-parser-format' and 'response-parser-format' parameters are configured with a set of expressions.
+    SARR exchange is used to acquire leases.
+    Log file is checked for proper content.
     """
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
@@ -722,8 +724,10 @@ def test_v6_legal_log_parser_format():
 @pytest.mark.legal_logging
 def test_v6_legal_log_parser_format_via_relay():
     """
-    Test checks custom formatting of "legal_log" hook logging.
+    Test checks custom formatting of "legal_log" hook.
     'request-parser-format' and 'response-parser-format' parameters are configured with a set of expressions.
+    SARR exchange via relay is used to acquire leases.
+    Log file is checked for proper content.
     """
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
@@ -787,8 +791,10 @@ def test_v6_legal_log_parser_format_via_relay():
 @pytest.mark.legal_logging
 def test_v6_legal_log_parser_format_dual_ip():
     """
-    Test checks custom formatting of "legal_log" hook logging.
+    Test checks custom formatting of "legal_log" hook with multiple ip addresses in one lease.
     'request-parser-format' and 'response-parser-format' parameters are configured with a set of expressions.
+    SARR exchange is used to acquire leases.
+    Log file is checked for proper content.
     """
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
@@ -865,3 +871,39 @@ def test_v6_legal_log_parser_format_dual_ip():
 
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_pd)
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_pd)
+
+
+@pytest.mark.v6
+@pytest.mark.kea_only
+@pytest.mark.legal_logging
+def test_v6_legal_log_dual_ip():
+    """
+    Test checks standart formatting of "legal_log" hook with multiple ip addresses in one lease.
+    SARR exchange is used to acquire leases.
+    Log file is checked for proper content.
+    """
+    misc.test_procedure()
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+
+    misc.test_setup()
+    srv_control.set_time('renew-timer', 100)
+    srv_control.set_time('rebind-timer', 200)
+    srv_control.set_time('preferred-lifetime', 400)
+    srv_control.set_time('valid-lifetime', 600)
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+    srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+    srv_control.add_hooks('libdhcp_legal_log.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    _send_client_requests(MESSAGE_COUNT, ia_pd=True)
+
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                                       'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                       'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
+                                       'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                                       'Prefix: 2001:db8:2::4:0:0/94 has been assigned for 0 hrs 10 mins 0 '
+                                       'secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and '
+                                       'hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
