@@ -468,6 +468,7 @@ def test_v4_legal_log_parser_format():
                      "addrtotext(pkt4.yiaddr) + " \
                      "addrtotext(pkt4.siaddr) + " \
                      "int32totext(pkt4.msgtype) + " \
+                     "int32totext(pkt4.msgtype) + " \
                      "ifelse(option[61].exists, hexstring(option[61].hex, ':'), '') + " \
                      "int32totext(pkt4.transid) + " \
                      "int32totext(vendor.enterprise) + " \
@@ -485,6 +486,7 @@ def test_v4_legal_log_parser_format():
                       "addrtotext(pkt4.giaddr) + " \
                       "addrtotext(pkt4.yiaddr) + " \
                       "addrtotext(pkt4.siaddr) + " \
+                      "int32totext(pkt4.msgtype) + " \
                       "int32totext(pkt4.msgtype) + " \
                       "ifelse(option[61].exists, hexstring(option[61].hex, ':'), '') + " \
                       "hexstring(option[12].hex, ':') + " \
@@ -508,6 +510,7 @@ def test_v4_legal_log_parser_format():
                    f'0.0.0.0' \
                    f'0.0.0.0' \
                    f'3' \
+                   f'3' \
                    f'00:01:02:03:04:05:06' \
                    f'' \
                    f'{world.srvmsg[0].xid}'
@@ -522,6 +525,7 @@ def test_v4_legal_log_parser_format():
                     f'0.0.0.0' \
                     f'192.168.50.1' \
                     f'0.0.0.0' \
+                    f'5' \
                     f'5' \
                     f'00:01:02:03:04:05:06' \
                     f'' \
