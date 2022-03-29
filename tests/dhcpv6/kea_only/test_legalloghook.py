@@ -674,10 +674,6 @@ def test_v6_legal_log_parser_format():
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
-    srv_control.set_time('renew-timer', 100)
-    srv_control.set_time('rebind-timer', 200)
-    srv_control.set_time('preferred-lifetime', 400)
-    srv_control.set_time('valid-lifetime', 600)
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
@@ -741,10 +737,6 @@ def test_v6_legal_log_parser_format_via_relay():
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
-    srv_control.set_time('renew-timer', 100)
-    srv_control.set_time('rebind-timer', 200)
-    srv_control.set_time('preferred-lifetime', 400)
-    srv_control.set_time('valid-lifetime', 600)
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
@@ -812,10 +804,6 @@ def test_v6_legal_log_parser_format_dual_ip():
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
-    srv_control.set_time('renew-timer', 100)
-    srv_control.set_time('rebind-timer', 200)
-    srv_control.set_time('preferred-lifetime', 400)
-    srv_control.set_time('valid-lifetime', 600)
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
