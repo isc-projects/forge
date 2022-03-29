@@ -9,7 +9,6 @@ import misc
 import srv_control
 from forge_cfg import world
 
-
 # number of messages that the client will send in each test
 MESSAGE_COUNT = 3
 
@@ -475,6 +474,7 @@ def test_v4_legal_log_parser_format():
                      "ifelse(option[61].exists, hexstring(option[61].hex, ':'), '') + " \
                      "int32totext(pkt4.transid) + " \
                      "int32totext(vendor.enterprise) + " \
+                     "hexstring(option[12].hex, ':') + " \
                      "0x0a"
     srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
     response_format = "pkt.iface + " \
@@ -490,6 +490,7 @@ def test_v4_legal_log_parser_format():
                       "addrtotext(pkt4.siaddr) + " \
                       "int32totext(pkt4.msgtype) + " \
                       "ifelse(option[61].exists, hexstring(option[61].hex, ':'), '') + " \
+                      "hexstring(option[12].hex, ':') + " \
                       "int32totext(pkt4.transid)"
     srv_control.add_parameter_to_hook(1, "response-parser-format", response_format)
     srv_control.build_and_send_config_files()
@@ -511,6 +512,7 @@ def test_v4_legal_log_parser_format():
                    f'0.0.0.0' \
                    f'3' \
                    f'00:01:02:03:04:05:06' \
+                   f'' \
                    f'{world.srvmsg[0].xid}'
     response_line = f'{world.f_cfg.server_iface}' \
                     f'192.168.50.1' \
@@ -525,6 +527,7 @@ def test_v4_legal_log_parser_format():
                     f'0.0.0.0' \
                     f'5' \
                     f'00:01:02:03:04:05:06' \
+                    f'' \
                     f'{world.srvmsg[0].xid}'
 
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
@@ -545,9 +548,6 @@ def test_v4_legal_log_parser_format_via_relay():
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
-    srv_control.set_time('renew-timer', 3)
-    srv_control.set_time('rebind-timer', 50)
-    srv_control.set_time('valid-lifetime', 600)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_legal_log.so')
     request_format = "pkt.iface + " \
@@ -562,9 +562,11 @@ def test_v4_legal_log_parser_format_via_relay():
                      "addrtotext(pkt4.yiaddr) + " \
                      "addrtotext(pkt4.siaddr) + " \
                      "int32totext(pkt4.msgtype) + " \
+                     "int32totext(pkt4.msgtype) + " \
                      "ifelse(option[61].exists, hexstring(option[61].hex, ':'), '') + " \
                      "int32totext(pkt4.transid) + " \
                      "hexstring(relay4[61].hex, ':') + " \
+                     "hexstring(option[12].hex, ':') + " \
                      "0x0a"
     srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
     response_format = "pkt.iface + " \
@@ -579,7 +581,9 @@ def test_v4_legal_log_parser_format_via_relay():
                       "addrtotext(pkt4.yiaddr) + " \
                       "addrtotext(pkt4.siaddr) + " \
                       "int32totext(pkt4.msgtype) + " \
+                      "int32totext(pkt4.msgtype) + " \
                       "ifelse(option[61].exists, hexstring(option[61].hex, ':'), '') + " \
+                      "hexstring(option[12].hex, ':') + " \
                       "int32totext(pkt4.transid)"
     srv_control.add_parameter_to_hook(1, "response-parser-format", response_format)
     srv_control.build_and_send_config_files()
@@ -600,7 +604,9 @@ def test_v4_legal_log_parser_format_via_relay():
                    f'0.0.0.0' \
                    f'0.0.0.0' \
                    f'3' \
+                   f'3' \
                    f'00:01:02:03:04:05:77' \
+                   f'' \
                    f'{world.srvmsg[0].xid}'
     response_line = f'{world.f_cfg.server_iface}' \
                     f'{world.f_cfg.giaddr4}' \
@@ -614,7 +620,9 @@ def test_v4_legal_log_parser_format_via_relay():
                     f'192.168.50.1' \
                     f'0.0.0.0' \
                     f'5' \
+                    f'5' \
                     f'00:01:02:03:04:05:77' \
+                    f'' \
                     f'{world.srvmsg[0].xid}'
 
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)

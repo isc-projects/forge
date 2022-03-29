@@ -685,8 +685,10 @@ def test_v6_legal_log_parser_format():
                      "addrtotext(pkt.src) +" \
                      "addrtotext(pkt.dst) +" \
                      "int32totext(pkt.len) +" \
-                     "int32totext(pkt6.msgtype) +"\
+                     "int32totext(pkt6.msgtype) +" \
+                     "int32totext(pkt6.msgtype) +" \
                      "int32totext(pkt6.transid) +" \
+                     "addrtotext(relay6[0].linkaddr) +" \
                      "0x0a"
     srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
     response_format = "pkt.iface +" \
@@ -694,7 +696,9 @@ def test_v6_legal_log_parser_format():
                       "addrtotext(pkt.dst) +" \
                       "int32totext(pkt.len) +" \
                       "int32totext(pkt6.msgtype) +" \
-                      "int32totext(pkt6.transid)"
+                      "int32totext(pkt6.msgtype) +" \
+                      "int32totext(pkt6.transid) +" \
+                      "addrtotext(relay6[0].linkaddr)"
     srv_control.add_parameter_to_hook(1, "response-parser-format", response_format)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -707,13 +711,17 @@ def test_v6_legal_log_parser_format():
                    f'ff02::1:2' \
                    f'80' \
                    f'3' \
-                   f'{world.cfg["values"]["tr_id"]}'
+                   f'3' \
+                   f'{world.cfg["values"]["tr_id"]}' \
+                   f''
     response_line = f'{world.f_cfg.server_iface}' \
                     f'{world.f_cfg.cli_link_local}' \
                     f'ff02::1:2' \
                     f'80' \
                     f'7' \
-                    f'{world.cfg["values"]["tr_id"]}'
+                    f'7' \
+                    f'{world.cfg["values"]["tr_id"]}' \
+                    f''
 
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)
@@ -744,7 +752,8 @@ def test_v6_legal_log_parser_format_via_relay():
                      "addrtotext(pkt.src) +" \
                      "addrtotext(pkt.dst) +" \
                      "int32totext(pkt.len) +" \
-                     "int32totext(pkt6.msgtype) +"\
+                     "int32totext(pkt6.msgtype) +" \
+                     "int32totext(pkt6.msgtype) +" \
                      "int32totext(pkt6.transid) +" \
                      "addrtotext(relay6[0].linkaddr) + " \
                      "addrtotext(relay6[0].peeraddr) + " \
@@ -754,6 +763,7 @@ def test_v6_legal_log_parser_format_via_relay():
                       "addrtotext(pkt.src) +" \
                       "addrtotext(pkt.dst) +" \
                       "int32totext(pkt.len) +" \
+                      "int32totext(pkt6.msgtype) +" \
                       "int32totext(pkt6.msgtype) +" \
                       "int32totext(pkt6.transid) +" \
                       "addrtotext(relay6[0].linkaddr) + " \
@@ -770,6 +780,7 @@ def test_v6_legal_log_parser_format_via_relay():
                    f'ff02::1:2' \
                    f'315' \
                    f'3' \
+                   f'3' \
                    f'{world.cfg["values"]["tr_id"]}' \
                    f'2001:db8:1::1005' \
                    f'{world.f_cfg.cli_link_local}'
@@ -777,6 +788,7 @@ def test_v6_legal_log_parser_format_via_relay():
                     f'{world.f_cfg.cli_link_local}' \
                     f'ff02::1:2' \
                     f'309' \
+                    f'7' \
                     f'7' \
                     f'{world.cfg["values"]["tr_id"]}' \
                     f'2001:db8:1::1005' \
@@ -814,7 +826,9 @@ def test_v6_legal_log_parser_format_dual_ip():
                      "addrtotext(pkt.dst) +" \
                      "int32totext(pkt.len) +" \
                      "int32totext(pkt6.msgtype) +" \
+                     "int32totext(pkt6.msgtype) +" \
                      "int32totext(pkt6.transid) +" \
+                     "addrtotext(relay6[0].linkaddr) +" \
                      "0x0a"
     srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
     response_format = "pkt.iface +" \
@@ -824,7 +838,9 @@ def test_v6_legal_log_parser_format_dual_ip():
                       "addrtotext(pkt.dst) +" \
                       "int32totext(pkt.len) +" \
                       "int32totext(pkt6.msgtype) +" \
-                      "int32totext(pkt6.transid)"
+                      "int32totext(pkt6.msgtype) +" \
+                      "int32totext(pkt6.transid) +" \
+                      "addrtotext(relay6[0].linkaddr)"
     srv_control.add_parameter_to_hook(1, "response-parser-format", response_format)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -839,7 +855,9 @@ def test_v6_legal_log_parser_format_dual_ip():
                       f'ff02::1:2' \
                       f'96' \
                       f'3' \
-                      f'{world.cfg["values"]["tr_id"]}'
+                      f'3' \
+                      f'{world.cfg["values"]["tr_id"]}' \
+                      f''
     response_line_na = f'{world.f_cfg.server_iface}' \
                        f'2001:db8:1::5' \
                        f'none' \
@@ -847,7 +865,9 @@ def test_v6_legal_log_parser_format_dual_ip():
                        f'ff02::1:2' \
                        f'125' \
                        f'7' \
-                       f'{world.cfg["values"]["tr_id"]}'
+                       f'7' \
+                       f'{world.cfg["values"]["tr_id"]}' \
+                       f''
 
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_na)
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_na)
@@ -859,7 +879,9 @@ def test_v6_legal_log_parser_format_dual_ip():
                       f'ff02::1:2' \
                       f'96' \
                       f'3' \
-                      f'{world.cfg["values"]["tr_id"]}'
+                      f'3' \
+                      f'{world.cfg["values"]["tr_id"]}' \
+                      f''
     response_line_pd = f'{world.f_cfg.server_iface}' \
                        f'none' \
                        f'2001:db8:2::4:0:0' \
@@ -867,7 +889,9 @@ def test_v6_legal_log_parser_format_dual_ip():
                        f'ff02::1:2' \
                        f'125' \
                        f'7' \
-                       f'{world.cfg["values"]["tr_id"]}'
+                       f'7' \
+                       f'{world.cfg["values"]["tr_id"]}' \
+                       f''
 
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_pd)
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_pd)
