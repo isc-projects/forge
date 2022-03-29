@@ -454,9 +454,6 @@ def test_v4_legal_log_parser_format():
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
-    srv_control.set_time('renew-timer', 3)
-    srv_control.set_time('rebind-timer', 50)
-    srv_control.set_time('valid-lifetime', 600)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_legal_log.so')
     request_format = "pkt.iface + " \
