@@ -125,7 +125,7 @@ def test_v4_pool_selection_based_on_global_reservation_of_class():
 #
 # @pytest.mark.v4
 # @pytest.mark.host_reservation
-# # def test_v4_subnet_selection_based_on_global_reservation_of_class_additional_address_reservation():
+# def test_v4_subnet_selection_based_on_global_reservation_of_class_additional_address_reservation():
 #     misc.test_setup()
 #     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
 #     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',

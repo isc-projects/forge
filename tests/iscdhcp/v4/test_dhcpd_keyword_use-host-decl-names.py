@@ -14,16 +14,16 @@ from src.softwaresupport.isc_dhcp6_server.functions import add_line_in_global
 @pytest.mark.dhcpd
 def test_v4_dhcpd_keyword_use_host_decl_names_on():
     """new-v4.dhcpd.keyword.use-host-decl-names-on"""
-    # # Tests use-host-decl-names enabled for both a BOOTP and DHCP.
+    # Tests use-host-decl-names enabled for both a BOOTP and DHCP.
     # #
-    # # Message details 		Client		  Server
-    # # 						BOOTP_REQUEST -->
-    # # 		   						<--	BOOTP_REPLY
-    # # 						DISCOVER -->
-    # # 		   						<-- OFFER
+    # Message details 		Client		  Server
+    # 						BOOTP_REQUEST -->
+    # 		   						<--	BOOTP_REPLY
+    # 						DISCOVER -->
+    # 		   						<-- OFFER
     # #
-    # # Pass Criteria: In both instances the server's response should contain
-    # # the host-name option whose value is the name of the host declaration.
+    # Pass Criteria: In both instances the server's response should contain
+    # the host-name option whose value is the name of the host declaration.
     # #
     misc.test_setup()
     add_line_in_global('ping-check off;')
@@ -67,16 +67,16 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on():
 @pytest.mark.dhcpd
 def test_v4_dhcpd_keyword_use_host_decl_names_off():
     """new-v4.dhcpd.keyword.use-host-decl-names-off"""
-    # # Tests use-host-decl-names enabled for both a BOOTP and DHCP.
+    # Tests use-host-decl-names enabled for both a BOOTP and DHCP.
     # #
-    # # Message details 		Client		  Server
-    # # 						BOOTP_REQUEST -->
-    # # 		   						<--	BOOTP_REPLY
-    # # 						DISCOVER -->
-    # # 		   						<-- OFFER
+    # Message details 		Client		  Server
+    # 						BOOTP_REQUEST -->
+    # 		   						<--	BOOTP_REPLY
+    # 						DISCOVER -->
+    # 		   						<-- OFFER
     # #
-    # # Pass Criteria: In both instances the server's response should NOT
-    # # contain the host-name option.
+    # Pass Criteria: In both instances the server's response should NOT
+    # contain the host-name option.
     # #
     misc.test_setup()
     add_line_in_global('ping-check off;')
@@ -118,18 +118,18 @@ def test_v4_dhcpd_keyword_use_host_decl_names_off():
 @pytest.mark.dhcpd
 def test_v4_dhcpd_keyword_use_host_decl_names_override():
     """new-v4.dhcpd.keyword.use-host-decl-names-override"""
-    # # Tests use-host-decl-names enabled but overridden by host-name option
-    # # defined within the host-declaration.
+    # Tests use-host-decl-names enabled but overridden by host-name option
+    # defined within the host-declaration.
     # #
-    # # Message details 		Client		  Server
-    # # 						BOOTP_REQUEST -->
-    # # 		   						<--	BOOTP_REPLY
-    # # 						DISCOVER -->
-    # # 		   						<-- OFFER
+    # Message details 		Client		  Server
+    # 						BOOTP_REQUEST -->
+    # 		   						<--	BOOTP_REPLY
+    # 						DISCOVER -->
+    # 		   						<-- OFFER
     # #
-    # # Pass Criteria: In both instances the server's response should
-    # # contain the host-name option whose value is that of the defined
-    # # host-name option.
+    # Pass Criteria: In both instances the server's response should
+    # contain the host-name option whose value is that of the defined
+    # host-name option.
     # #
     misc.test_setup()
     add_line_in_global('ping-check off;')

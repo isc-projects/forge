@@ -13,10 +13,10 @@ from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_l
 @pytest.mark.dhcpd
 def test_v6_dhcpd_keyword_log_facility_success():
     """new-v6.dhcpd.keyword.log-facility.success"""
-    # # Testing log-facility server option
+    # Testing log-facility server option
     # #
-    # # Verifies that log-facility option (there by forge default setup)
-    # # succeeds in capturing dhcpd logging.
+    # Verifies that log-facility option (there by forge default setup)
+    # succeeds in capturing dhcpd logging.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
@@ -35,10 +35,10 @@ def test_v6_dhcpd_keyword_log_facility_success():
 @pytest.mark.dhcpd
 def test_v6_dhcpd_keyword_log_facility_fail():
     """new-v6.dhcpd.keyword.log-facility.fail"""
-    # # Testing log-facility server option
+    # Testing log-facility server option
     # #
-    # # Verifies that by setting log-facility to an invalid
-    # # value, causes dhcpd logging to not be directed to log file.
+    # Verifies that by setting log-facility to an invalid
+    # value, causes dhcpd logging to not be directed to log file.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')

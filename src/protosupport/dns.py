@@ -308,9 +308,10 @@ def dns_option_content(part_name, expect, value_name, value):
     elif part_name == 'AUTHORITATIVE_NAMESERVERS':
         flag, outcome = parsing_received_parts(world.srvmsg[0].ns, world.srvmsg[0].nscount, expect, value_name, value)
 
-    # elif part_name == 'ADDITIONAL_RECORDS':
-    else:
+    elif part_name == 'ADDITIONAL_RECORDS':
         flag, outcome = parsing_received_parts(world.srvmsg[0].ar, world.srvmsg[0].arcount, expect, value_name, value)
+    else:
+        assert False, f"No support implemented for: {part_name}"
 
     if not flag and expect:
         assert False, f'In received DNS query part: "{value_name}" there is/are values:' \

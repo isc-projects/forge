@@ -12,7 +12,6 @@ from src import misc
 
 pytestmark = [pytest.mark.v4,
               pytest.mark.v6,
-              pytest.mark.kea_only,
               pytest.mark.controlchannel,
               pytest.mark.hook,
               pytest.mark.class_cmds]

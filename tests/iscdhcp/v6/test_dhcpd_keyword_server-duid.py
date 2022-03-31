@@ -14,14 +14,14 @@ from src.softwaresupport.isc_dhcp6_server.functions import add_line_in_global
 @pytest.mark.dhcpd
 def test_v6_dhcpd_keyword_server_duid_ll():
     """new-v6.dhcpd.keyword.server-duid-ll"""
-    # # Testing server-duid LL
+    # Testing server-duid LL
     # #
-    # # Message details 		Client		Server
-    # # 						SOLICIT -->
-    # # 		   						<--	ADVERTISE
-    # # Pass Criteria:
+    # Message details 		Client		Server
+    # 						SOLICIT -->
+    # 		   						<--	ADVERTISE
+    # Pass Criteria:
     # #
-    # # server DUID matches the configured LL value
+    # server DUID matches the configured LL value
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
@@ -47,14 +47,14 @@ def test_v6_dhcpd_keyword_server_duid_ll():
 @pytest.mark.dhcpd
 def test_v6_dhcpd_keyword_server_duid_llt():
     """new-v6.dhcpd.keyword.server-duid-llt"""
-    # # Testing server-duid LLT
+    # Testing server-duid LLT
     # #
-    # # Message details 		Client		Server
-    # # 						SOLICIT -->
-    # # 		   						<--	ADVERTISE
-    # # Pass Criteria:
+    # Message details 		Client		Server
+    # 						SOLICIT -->
+    # 		   						<--	ADVERTISE
+    # Pass Criteria:
     # #
-    # # server DUID matches the configured LLT value
+    # server DUID matches the configured LLT value
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
@@ -80,14 +80,14 @@ def test_v6_dhcpd_keyword_server_duid_llt():
 @pytest.mark.dhcpd
 def test_v6_dhcpd_keyword_server_duid_en():
     """new-v6.dhcpd.keyword.server-duid-en"""
-    # # Testing server-duid EN
+    # Testing server-duid EN
     # #
-    # # Message details 		Client		Server
-    # # 						SOLICIT -->
-    # # 		   						<--	ADVERTISE
-    # # Pass Criteria:
+    # Message details 		Client		Server
+    # 						SOLICIT -->
+    # 		   						<--	ADVERTISE
+    # Pass Criteria:
     # #
-    # # server DUID matches the configured EN value
+    # server DUID matches the configured EN value
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')

@@ -13,7 +13,6 @@ from src.forge_cfg import world
 
 @pytest.mark.v6
 @pytest.mark.controlchannel
-@pytest.mark.kea_onlyn
 def test_control_channel_keashell_dhcp_disable_timer():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')

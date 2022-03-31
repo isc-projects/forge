@@ -14,16 +14,16 @@ from src.softwaresupport.isc_dhcp6_server.functions import unset_time
 @pytest.mark.dhcpd
 def test_v6_dhcpd_keyword_valid_lifetime_not_set():
     """new-v6.dhcpd.keyword.valid-lifetime-not-set"""
-    # # Testing lease times offered when valid-lifetime
-    # # is NOT specified.
+    # Testing lease times offered when valid-lifetime
+    # is NOT specified.
     # #
-    # # Message details 		Client		Server
-    # # 						SOLICIT -->
-    # # 		   						<--	ADVERTISE
-    # # Pass Criteria:
+    # Message details 		Client		Server
+    # 						SOLICIT -->
+    # 		   						<--	ADVERTISE
+    # Pass Criteria:
     # #
-    # # valid lifetime offered should be default of 43200.
-    # # preferred lifetime should be 27000 (62.5% of valid lifetime)
+    # valid lifetime offered should be default of 43200.
+    # preferred lifetime should be 27000 (62.5% of valid lifetime)
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
@@ -49,16 +49,16 @@ def test_v6_dhcpd_keyword_valid_lifetime_not_set():
 @pytest.mark.dhcpd
 def test_v6_dhcpd_keyword_valid_lifetime_set():
     """new-v6.dhcpd.keyword.valid-lifetime-set"""
-    # # Testing lease times offered when valid-lifetime
-    # # is specified.
+    # Testing lease times offered when valid-lifetime
+    # is specified.
     # #
-    # # Message details 		Client		Server
-    # # 						SOLICIT -->
-    # # 		   						<--	ADVERTISE
-    # # Pass Criteria:
+    # Message details 		Client		Server
+    # 						SOLICIT -->
+    # 		   						<--	ADVERTISE
+    # Pass Criteria:
     # #
-    # # valid lifetime should be the configured value of 1000.
-    # # preferred lifetime  should be 625.
+    # valid lifetime should be the configured value of 1000.
+    # preferred lifetime  should be 625.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')

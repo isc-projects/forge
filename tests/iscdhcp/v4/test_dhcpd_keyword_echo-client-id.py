@@ -14,19 +14,19 @@ from src.softwaresupport.isc_dhcp6_server.functions import add_line_in_global
 @pytest.mark.dhcpd
 def test_v4_dhcpd_keyword_echo_client_id_off_offer_ack_nak():
     """new-v4.dhcpd.keyword.echo-client-id-off-offer-ack-nak"""
-    # # Checks that the default behavior is echo-client-id off and that the
-    # # does not echo back a received client-id.
+    # Checks that the default behavior is echo-client-id off and that the
+    # does not echo back a received client-id.
     # #
-    # # Message details 		Client		Server
-    # # 						DISCOVER -->
-    # # 		   						<--	OFFER
-    # # 						REQUEST -->
-    # # 		   						<--	ACK
-    # # 						REQUEST -->
-    # # 		   						<--	NAK
-    # # Pass Criteria:
+    # Message details 		Client		Server
+    # 						DISCOVER -->
+    # 		   						<--	OFFER
+    # 						REQUEST -->
+    # 		   						<--	ACK
+    # 						REQUEST -->
+    # 		   						<--	NAK
+    # Pass Criteria:
     # #
-    # # OFFER received without client-id option
+    # OFFER received without client-id option
     # #
     misc.test_setup()
     add_line_in_global(' ping-check off;')
@@ -75,21 +75,21 @@ def test_v4_dhcpd_keyword_echo_client_id_off_offer_ack_nak():
 @pytest.mark.dhcpd
 def test_v4_dhcpd_keyword_echo_client_id_on_offer_ack_nak():
     """new-v4.dhcpd.keyword.echo-client-id-on-offer-ack-nak"""
-    # # Checks that the when echo-client-id is  enabled the server echoes
-    # # back a client-id IF received.
+    # Checks that the when echo-client-id is  enabled the server echoes
+    # back a client-id IF received.
     # #
-    # # The following sequence is performed twice, once with the client
-    # # sending a client_id and once without:
-    # # Message details 		Client		Server
-    # # 						DISCOVER -->
-    # # 		   						<--	OFFER
-    # # 						REQUEST -->
-    # # 		   						<--	ACK
-    # # 						REQUEST -->
-    # # 		   						<--	NAK
-    # # Pass Criteria:
+    # The following sequence is performed twice, once with the client
+    # sending a client_id and once without:
+    # Message details 		Client		Server
+    # 						DISCOVER -->
+    # 		   						<--	OFFER
+    # 						REQUEST -->
+    # 		   						<--	ACK
+    # 						REQUEST -->
+    # 		   						<--	NAK
+    # Pass Criteria:
     # #
-    # # OFFER,ACK and NAK received with client-id option
+    # OFFER,ACK and NAK received with client-id option
     # #
     misc.test_setup()
     add_line_in_global(' ping-check off;')
@@ -170,22 +170,22 @@ def test_v4_dhcpd_keyword_echo_client_id_on_offer_ack_nak():
 @pytest.mark.dhcpd
 def test_v4_dhcpd_keyword_echo_client_id_per_class():
     """new-v4.dhcpd.keyword.echo-client-id-per-class"""
-    # # Tests the echo-client-id can be specified on class basis.
-    # # The following message sequence is performed once for a client
-    # # which belongs to class "echo" and once for a client which does not.
-    # # In the former, echo-client-id enabled, in the latter it is not:
+    # Tests the echo-client-id can be specified on class basis.
+    # The following message sequence is performed once for a client
+    # which belongs to class "echo" and once for a client which does not.
+    # In the former, echo-client-id enabled, in the latter it is not:
     # #
-    # # Message details 		Client		Server
-    # # 						DISCOVER -->
-    # # 		   						<--	OFFER
-    # # 						REQUEST -->
-    # # 		   						<--	ACK
-    # # 						REQUEST -->
-    # # 		   						<--	NAK
-    # # Pass Criteria:
+    # Message details 		Client		Server
+    # 						DISCOVER -->
+    # 		   						<--	OFFER
+    # 						REQUEST -->
+    # 		   						<--	ACK
+    # 						REQUEST -->
+    # 		   						<--	NAK
+    # Pass Criteria:
     # #
-    # # OFFER,ACK and NAK received with client-id option for first subnet,
-    # # not received for the second.
+    # OFFER,ACK and NAK received with client-id option for first subnet,
+    # not received for the second.
     # #
     misc.test_setup()
     add_line_in_global('ping-check off;')
@@ -288,16 +288,16 @@ def test_v4_dhcpd_keyword_echo_client_id_per_class():
 def test_v4_dhcpd_keyword_echo_client_id_vs_config_id():
     """new-v4.dhcpd.keyword.echo-client-id-vs-config-id"""
     # #
-    # # Message details 		Client		Server
-    # # 						DISCOVER -->
-    # # 		   						<--	OFFER
-    # # 						REQUEST -->
-    # # 		   						<--	ACK
-    # # 						REQUEST -->
-    # # 		   						<--	NAK
-    # # Pass Criteria:
+    # Message details 		Client		Server
+    # 						DISCOVER -->
+    # 		   						<--	OFFER
+    # 						REQUEST -->
+    # 		   						<--	ACK
+    # 						REQUEST -->
+    # 		   						<--	NAK
+    # Pass Criteria:
     # #
-    # # OFFER,ACK and NAK received with client-id option
+    # OFFER,ACK and NAK received with client-id option
     # #
     misc.test_setup()
     add_line_in_global(' ping-check off;')

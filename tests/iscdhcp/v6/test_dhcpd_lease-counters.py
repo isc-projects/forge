@@ -15,20 +15,20 @@ from src.softwaresupport.isc_dhcp6_server.functions import build_log_path
 def test_v6_dhcpd_lease_counters():
     """new-v6.dhcpd.lease-counters"""
     # #
-    # # Checks that the count of total, active, and abandoned leases is
-    # # and abandoned-best-match are logged correctly when a declined
-    # # address is subsequently reclaimed:
+    # Checks that the count of total, active, and abandoned leases is
+    # and abandoned-best-match are logged correctly when a declined
+    # address is subsequently reclaimed:
     # #
-    # # Step 1: Client 1 gets an address then declines it
-    # # Step 2: Client 2 gets an address
-    # # Step 3: Client 1 solicits, but is denied
-    # #  - should see total 2, active 2, abandoned 1
-    # #  - should see best match message for DUID 1
-    # # Step 4: Client 1 requests denied address
-    # #  - server should reclaim and grant it
-    # # Step 5: Client 3 solicits but is denied
-    # #  - should see total 2, active 2, abandoned 0
-    # #  - should NOT see best match message for DUID 3
+    # Step 1: Client 1 gets an address then declines it
+    # Step 2: Client 2 gets an address
+    # Step 3: Client 1 solicits, but is denied
+    #  - should see total 2, active 2, abandoned 1
+    #  - should see best match message for DUID 1
+    # Step 4: Client 1 requests denied address
+    #  - server should reclaim and grant it
+    # Step 5: Client 3 solicits but is denied
+    #  - should see total 2, active 2, abandoned 0
+    #  - should NOT see best match message for DUID 3
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::100-2001:db8:1::101')
@@ -36,7 +36,7 @@ def test_v6_dhcpd_lease_counters():
     srv_control.start_srv('DHCP', 'started')
 
     # ###################################################
-    # # Step 1: Client 1 gets an address then declines it
+    # Step 1: Client 1 gets an address then declines it
     # ###################################################
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
@@ -70,7 +70,7 @@ def test_v6_dhcpd_lease_counters():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
 
     # ###################################################
-    # # Step 2: Client 2 gets an address
+    # Step 2: Client 2 gets an address
     # ###################################################
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:02')
@@ -94,9 +94,9 @@ def test_v6_dhcpd_lease_counters():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     # ###################################################
-    # # Step 3: Client 1 solicits, but is denied
-    # #  - should see total 2, active 2, abandoned 1
-    # #  - should see best match message for DUID 1
+    # Step 3: Client 1 solicits, but is denied
+    #  - should see total 2, active 2, abandoned 1
+    #  - should see best match message for DUID 1
     # ###################################################
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
@@ -115,8 +115,8 @@ def test_v6_dhcpd_lease_counters():
                                     count=1, log_file=build_log_path())
 
     # ###################################################
-    # # Step 4: Client 1 reclaims denied address
-    # #  - server should reclaim and grant it
+    # Step 4: Client 1 reclaims denied address
+    #  - server should reclaim and grant it
     # ###################################################
     misc.test_procedure()
     # Client adds saved options in set no. 1. and Erase.
@@ -128,9 +128,9 @@ def test_v6_dhcpd_lease_counters():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
     # ###################################################
-    # # Step 5: Client 3 solicits but is denied
-    # #  - should see total 2, active 2, abandoned 0
-    # #  - should NOT see best match message for DUID 3
+    # Step 5: Client 3 solicits but is denied
+    #  - should see total 2, active 2, abandoned 0
+    #  - should NOT see best match message for DUID 3
     # ###################################################
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:03')

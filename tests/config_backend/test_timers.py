@@ -13,8 +13,7 @@ from src.protosupport.dhcp4_scen import get_address, get_rejected
 log = logging.getLogger('forge')
 
 
-pytestmark = [pytest.mark.kea_only,
-              pytest.mark.controlchannel,
+pytestmark = [pytest.mark.controlchannel,
               pytest.mark.hook,
               pytest.mark.cb]
 

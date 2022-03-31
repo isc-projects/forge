@@ -15,19 +15,19 @@ from src.softwaresupport.isc_dhcp6_server.functions import add_line_in_global
 def test_v6_dhcpd_keyword_fixed_address6():
     """new-v6.dhcpd.keyword.fixed-address6"""
     # #
-    # # Tests address assignment when fixed-address6 is used.
+    # Tests address assignment when fixed-address6 is used.
     # #
-    # # Server is configured with one subnet 2001:db8:1::/64, with one pool of two
-    # # addresses 2001:db8:1::1 - 2001:db8:1::2.  One address, 2001:db8:1::1, is reserved to a
-    # # specific client (DUID2) using the host statement and fixed-address6.
+    # Server is configured with one subnet 2001:db8:1::/64, with one pool of two
+    # addresses 2001:db8:1::1 - 2001:db8:1::2.  One address, 2001:db8:1::1, is reserved to a
+    # specific client (DUID2) using the host statement and fixed-address6.
     # #
-    # # Stage 1: Client with DUID1 asks for and should be granted 2001:db8:1::2,
-    # # the only address available to Clients who are NOT DUID2
+    # Stage 1: Client with DUID1 asks for and should be granted 2001:db8:1::2,
+    # the only address available to Clients who are NOT DUID2
     # #
-    # # Stage 2: Client with DUID3 solicts an address but should be denied
+    # Stage 2: Client with DUID3 solicts an address but should be denied
     # #
-    # # Stage 3: Client with DUID2 solicits and should be should be granted
-    # # 2001:db8:1::1, the reserved address.
+    # Stage 3: Client with DUID2 solicits and should be should be granted
+    # 2001:db8:1::1, the reserved address.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')

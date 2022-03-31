@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public

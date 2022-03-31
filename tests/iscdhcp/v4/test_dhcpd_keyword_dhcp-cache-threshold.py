@@ -14,19 +14,19 @@ from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_l
 @pytest.mark.dhcpd
 def test_v4_dhcpd_keyword_dhcp_cache_threshold_default_on_dora():
     """new-v4.dhcpd.keyword.dhcp-cache-threshold.default_on.dora"""
-    # # Verifies that by default the threshold is set to 25%, and
-    # # renewing via DORA works correctly.
+    # Verifies that by default the threshold is set to 25%, and
+    # renewing via DORA works correctly.
     # #
-    # # Case 1:
-    # # Client gets initial lease
+    # Case 1:
+    # Client gets initial lease
     # #
-    # # Case 2:
-    # # Client renews lease with DORA before threshold is reached
-    # # - Server should reuse the original lease.
+    # Case 2:
+    # Client renews lease with DORA before threshold is reached
+    # - Server should reuse the original lease.
     # #
-    # # Case 3:
-    # # Client renews lease with DORA after threshold is reached
-    # # - Server should extend the lease
+    # Case 3:
+    # Client renews lease with DORA after threshold is reached
+    # - Server should extend the lease
     # #
     misc.test_setup()
     add_line_in_global(' ping-check off;')
@@ -116,19 +116,19 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_default_on_dora():
 @pytest.mark.dhcpd
 def test_v4_dhcpd_keyword_dhcp_cache_threshold_default_ra():
     """new-v4.dhcpd.keyword.dhcp-cache-threshold.default.ra"""
-    # # Verifies that by default the threshold is set to 25% and.
-    # # client renewing using RAs works correctly.
+    # Verifies that by default the threshold is set to 25% and.
+    # client renewing using RAs works correctly.
     # #
-    # # Case 1:
-    # # Client gets initial lease
+    # Case 1:
+    # Client gets initial lease
     # #
-    # # Case 2:
-    # # Client renews lease with RA before threshold is reached
-    # # - Server should reuse the original lease.
+    # Case 2:
+    # Client renews lease with RA before threshold is reached
+    # - Server should reuse the original lease.
     # #
-    # # Case 3:
-    # # Client renews lease with RA after threshold is reached
-    # # - Server should extend the lease
+    # Case 3:
+    # Client renews lease with RA after threshold is reached
+    # - Server should extend the lease
     # #
     misc.test_setup()
     add_line_in_global(' ping-check off;')
@@ -205,16 +205,16 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_default_ra():
 def test_v4_dhcpd_keyword_dhcp_cache_threshold_off():
     """new-v4.dhcpd.keyword.dhcp-cache-threshold.off"""
     # #
-    # # Case 1:
-    # # Client gets initial lease
+    # Case 1:
+    # Client gets initial lease
     # #
-    # # Case 2:
-    # # Client renews lease with DORA before the default threshold has passed
-    # # - Server should extend the lease.
+    # Case 2:
+    # Client renews lease with DORA before the default threshold has passed
+    # - Server should extend the lease.
     # #
-    # # Case 3:
-    # # Client renews lease with DORA after the default threshold has passed
-    # # - Server should extend the lease
+    # Case 3:
+    # Client renews lease with DORA after the default threshold has passed
+    # - Server should extend the lease
     # #
     misc.test_setup()
     add_line_in_global(' ping-check off;')
@@ -304,23 +304,23 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_off():
 @pytest.mark.dhcpd
 def test_v4_dhcpd_keyword_dhcp_cache_threshold_config_on():
     """new-v4.dhcpd.keyword.dhcp-cache-threshold.config_on"""
-    # # Verifies that the threshold can set to a custom value and
-    # # that renewing works correctly.
+    # Verifies that the threshold can set to a custom value and
+    # that renewing works correctly.
     # #
-    # # Case 1:
-    # # Client gets initial lease
+    # Case 1:
+    # Client gets initial lease
     # #
-    # # Case 2:
-    # # Client renews lease with DORA before threshold is reached
-    # # - Server should reuse the original lease.
+    # Case 2:
+    # Client renews lease with DORA before threshold is reached
+    # - Server should reuse the original lease.
     # #
-    # # Case 3:
-    # # Client renews lease with RA before threshold is reached
-    # # - Server should reuse the original lease.
+    # Case 3:
+    # Client renews lease with RA before threshold is reached
+    # - Server should reuse the original lease.
     # #
-    # # Case 4:
-    # # Client renews lease with DORA after threshold is reached
-    # # - Server should extend the lease
+    # Case 4:
+    # Client renews lease with DORA after threshold is reached
+    # - Server should extend the lease
     # #
     misc.test_setup()
     add_line_in_global(' ping-check off;')

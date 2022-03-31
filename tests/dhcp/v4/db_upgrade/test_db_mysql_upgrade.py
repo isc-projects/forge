@@ -146,7 +146,7 @@ def _create_mysql_dump():
     srv_msg.execute_shell_cmd("sed -i 's/$(SERVER_IFACE)/!serverinterface!/g' $(SOFTWARE_INSTALL_PATH)/my_db_v4.sql")
     srv_msg.execute_shell_cmd("sed -i 's/$(DB_USER)/!db_user!/g' $(SOFTWARE_INSTALL_PATH)/my_db_v4.sql")
 
-# # Uncomment this test to build your own database dump
+# Uncomment this test to build your own database dump
 # @pytest.mark.v4
 # def test_create_dump():
 #     _create_mysql_dump()

@@ -16,8 +16,8 @@ from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_l
 def test_v6_dhcpd_keyword_ddns_reverse_add():
     """new-v6.dhcpd.keyword.ddns.reverse.add"""
     # #
-    # # Testing: Checks that a reverse add is attempted when the configuration
-    # # is valid but minimal and client sends a request with valid fqdn
+    # Testing: Checks that a reverse add is attempted when the configuration
+    # is valid but minimal and client sends a request with valid fqdn
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
@@ -29,7 +29,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_add():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Grab a lease
+    # Grab a lease
     # #
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
@@ -66,8 +66,8 @@ def test_v6_dhcpd_keyword_ddns_reverse_add():
 def test_v6_dhcpd_keyword_ddns_reverse_do_reverse_updates_false():
     """new-v6.dhcpd.keyword.ddns.reverse.do-reverse-updates.false"""
     # #
-    # # Testing: Checks that a reverse add is not attempted when the
-    # # when do-reverse-updates is set to false.
+    # Testing: Checks that a reverse add is not attempted when the
+    # when do-reverse-updates is set to false.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
@@ -79,7 +79,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_do_reverse_updates_false():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Grab a lease
+    # Grab a lease
     # #
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
@@ -116,8 +116,8 @@ def test_v6_dhcpd_keyword_ddns_reverse_do_reverse_updates_false():
 def test_v6_dhcpd_keyword_ddns_reverse_no_client_fqdn():
     """new-v6.dhcpd.keyword.ddns.reverse.no-client-fqdn"""
     # #
-    # # Testing: Checks that reverse ddns updates are not attempted when
-    # # no client FQDN option is supplied.
+    # Testing: Checks that reverse ddns updates are not attempted when
+    # no client FQDN option is supplied.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
@@ -129,7 +129,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_no_client_fqdn():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Grab a lease
+    # Grab a lease
     # #
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
@@ -162,8 +162,8 @@ def test_v6_dhcpd_keyword_ddns_reverse_no_client_fqdn():
 def test_v6_dhcpd_keyword_ddns_reverse_ddns_ttl():
     """new-v6.dhcpd.keyword.ddns.reverse.ddns-ttl"""
     # #
-    # # Testing: Checks that TTL sent with the reverse add can be specified
-    # # using ddns-ttl.
+    # Testing: Checks that TTL sent with the reverse add can be specified
+    # using ddns-ttl.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
@@ -176,7 +176,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_ddns_ttl():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Grab a lease
+    # Grab a lease
     # #
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
@@ -212,12 +212,12 @@ def test_v6_dhcpd_keyword_ddns_reverse_ddns_ttl():
 def test_v6_dhcpd_keyword_ddns_reverse_ddns_hostname():
     """new-v6.dhcpd.keyword.ddns.reverse.ddns-hostname"""
     # #
-    # # Testing: Checks that hostname used as the FQDN in the reverse add
-    # # can be specified using ddns-hostname.
+    # Testing: Checks that hostname used as the FQDN in the reverse add
+    # can be specified using ddns-hostname.
     # #
-    # # This test currently FAILS.  Unlike for forward v6 updates which
-    # # use ddns-hostname for the AAAA record, they do not use it for
-    # # the PTR record.  This seems inconsistent.
+    # This test currently FAILS.  Unlike for forward v6 updates which
+    # use ddns-hostname for the AAAA record, they do not use it for
+    # the PTR record.  This seems inconsistent.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
@@ -231,7 +231,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_ddns_hostname():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Grab a lease
+    # Grab a lease
     # #
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')

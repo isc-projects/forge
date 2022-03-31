@@ -106,7 +106,7 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
 #
 # @pytest.mark.v6
 # @pytest.mark.host_reservation
-# # def test_v6_pool_selection_based_on_global_reservation_of_class():
+# def test_v6_pool_selection_based_on_global_reservation_of_class():
 #     misc.test_setup()
 #     # pool selection based on global reservation with class
 #     # address assigned based on reservation on subnet level
@@ -147,7 +147,7 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
 #
 # @pytest.mark.v6
 # @pytest.mark.host_reservation
-# # def test_v6_subnet_selection_based_on_global_reservation_of_class_additional_address_reservation():
+# def test_v6_subnet_selection_based_on_global_reservation_of_class_additional_address_reservation():
 #     misc.test_setup()
 #     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
 #     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
@@ -200,7 +200,7 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
 
 # @pytest.mark.v6
 # @pytest.mark.host_reservation
-# # def test_v6_pool_selection_based_on_global_reservation_of_class_additional_address_reservation():
+# def test_v6_pool_selection_based_on_global_reservation_of_class_additional_address_reservation():
 #     misc.test_setup()
 #     # pool selection based on global reservation with class
 #     # address assigned based on reservation on subnet level

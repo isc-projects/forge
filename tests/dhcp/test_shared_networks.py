@@ -796,7 +796,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    # File stored in kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
+    # TODO File stored in kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
     srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:f2:f2')
@@ -825,7 +825,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_client_classi
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    # File stored in kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
+    # TODO File stored in kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
 
 
 @pytest.mark.v4
@@ -897,7 +897,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
     srv_msg.response_check_option_content(54, 'value', '44.44.44.222', expect_include=False)
     srv_msg.response_check_option_content(54, 'value', '11.22.33.123')
 
-    # File stored in kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
+    # TODO File stored in kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
     srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:f2:f2')
@@ -967,7 +967,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
     srv_msg.response_check_option_content(54, 'value', '11.22.33.123', expect_include=False)
     srv_msg.response_check_option_content(54, 'value', '44.44.44.222', expect_include=False)
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
-    # File stored in kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
+    # TODO File stored in kea-leases4.csv MUST contain line or phrase: 192.168.51.1,00:00:00:00:00:33
 
 
 @pytest.mark.v4
@@ -1042,7 +1042,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
     srv_msg.response_check_option_content(54, 'value', '44.44.44.222', expect_include=False)
     srv_msg.response_check_option_content(54, 'value', '11.22.33.123')
 
-    # File stored in kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
+    # TODO File stored in kea-leases4.csv MUST contain line or phrase: 192.168.50.1,00:00:00:00:00:22
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
     srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:f2:f2')
@@ -1112,7 +1112,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_classificatio
     srv_msg.response_check_option_content(54, 'value', '11.22.33.123', expect_include=False)
     srv_msg.response_check_option_content(54, 'value', '44.44.44.222', expect_include=False)
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
-    # File stored in kea-leases4.csv MUST contain line or phrase:
+    # TODO File stored in kea-leases4.csv MUST contain line or phrase:
     #  192.168.51.1,00:00:00:00:00:33
 
 

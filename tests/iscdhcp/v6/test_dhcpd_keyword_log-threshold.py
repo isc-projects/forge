@@ -15,17 +15,17 @@ from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_l
 def test_v6_dhcpd_keyword_log_threshold_none():
     """new-v6.dhcpd.keyword.log-threshold-none"""
     # #
-    # # Testing: That log messages for crossing the high and
-    # # low thresholds do not appear if log-threshold values
-    # # are not set.
+    # Testing: That log messages for crossing the high and
+    # low thresholds do not appear if log-threshold values
+    # are not set.
     # #
-    # # Stage 1: Consume all leases from the pool and verify that the
-    # # high threshold message is not logged
+    # Stage 1: Consume all leases from the pool and verify that the
+    # high threshold message is not logged
     # #
-    # # Stage 2: Release all leases
+    # Stage 2: Release all leases
     # #
-    # # Stage 3: request a lease, and verify that the low threshold log message
-    # # does not appear.
+    # Stage 3: request a lease, and verify that the low threshold log message
+    # does not appear.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::4')
@@ -33,7 +33,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Stage 1: Consume all leases
+    # Stage 1: Consume all leases
     # #
 
     # Grab first lease. Expect no threshold logs.
@@ -149,7 +149,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_msg.log_doesnt_contain('Pool threshold', log_file=build_log_path())
 
     # #
-    # # Stage 2: Release leases until we cross low threshold.
+    # Stage 2: Release leases until we cross low threshold.
     # #
 
     # Release the first lease, should not see low threshold log.
@@ -197,7 +197,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # #
-    # # Stage 3: Grab a lease, should not see threshold reset log.
+    # Stage 3: Grab a lease, should not see threshold reset log.
     # #
 
     misc.test_procedure()
@@ -229,19 +229,19 @@ def test_v6_dhcpd_keyword_log_threshold_none():
 def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     """new-v6.dhcpd.keyword.log-threshold-high-gt-low"""
     # #
-    # # Testing: That log messages for crossing the high and low
-    # # thresholds are output at the correct times when both
-    # # high and low are set, and high threshold is larger than low
-    # # threshold.
+    # Testing: That log messages for crossing the high and low
+    # thresholds are output at the correct times when both
+    # high and low are set, and high threshold is larger than low
+    # threshold.
     # #
-    # # Stage 1: consume enough leases from the pool to verify the
-    # # that the high threshold message is logged
+    # Stage 1: consume enough leases from the pool to verify the
+    # that the high threshold message is logged
     # #
-    # # Stage 2: release enough leases to fall under the low threshold.
+    # Stage 2: release enough leases to fall under the low threshold.
     # #
-    # # Stage 3: request a lease, and verify the low threshold log
-    # # message appears. (thresholds are testing only during allocation
-    # # not release... asinine but true).
+    # Stage 3: request a lease, and verify the low threshold log
+    # message appears. (thresholds are testing only during allocation
+    # not release... asinine but true).
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::4')
@@ -251,7 +251,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Stage 1: Consume leases until we exceed high threshold
+    # Stage 1: Consume leases until we exceed high threshold
     # #
 
     # Grab first lease. Expect no threshold logs.
@@ -339,7 +339,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
 
     # #
-    # # Stage 2: Release leases until we cross low threshold.
+    # Stage 2: Release leases until we cross low threshold.
     # #
 
     # Release the first lease, should not see low threshold log.
@@ -376,7 +376,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # #
-    # # Stage 3: Grab a lease, should see threshold reset log.
+    # Stage 3: Grab a lease, should see threshold reset log.
     # #
 
     misc.test_procedure()
@@ -408,18 +408,18 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
 def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     """new-v6.dhcpd.keyword.log-threshold-low-gt-high"""
     # #
-    # # Testing: When low threshold is greater than high threshold
-    # # the high threshold log should be output on each grant once exceeded.
-    # # and low threshold crossing never logs.
+    # Testing: When low threshold is greater than high threshold
+    # the high threshold log should be output on each grant once exceeded.
+    # and low threshold crossing never logs.
     # #
-    # # Stage 1: consume enough leases from the pool to verify
-    # # that the high threshold message is logged. Verify the high
-    # # threshold message repeats.
+    # Stage 1: consume enough leases from the pool to verify
+    # that the high threshold message is logged. Verify the high
+    # threshold message repeats.
     # #
-    # # Stage 2: release all the leases
+    # Stage 2: release all the leases
     # #
-    # # Stage 3: request a lease, and verify that no new threshold logs
-    # # are output.
+    # Stage 3: request a lease, and verify that no new threshold logs
+    # are output.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::4')
@@ -429,7 +429,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Stage 1: Consume leases until we exceed high threshold
+    # Stage 1: Consume leases until we exceed high threshold
     # #
 
     # Grab first lease. Expect no threshold logs.
@@ -517,7 +517,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=2, log_file=build_log_path())
 
     # #
-    # # Stage 2: Release leases until we cross low threshold.
+    # Stage 2: Release leases until we cross low threshold.
     # #
 
     # Release the first lease, should not see low threshold log.
@@ -554,7 +554,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # #
-    # # Stage 3: Grab a lease, should not see threshold reset log.
+    # Stage 3: Grab a lease, should not see threshold reset log.
     # #
 
     misc.test_procedure()
@@ -588,20 +588,20 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
 def test_v6_dhcpd_keyword_log_threshold_high_only():
     """new-v6.dhcpd.keyword.log-threshold-high-only"""
     # #
-    # # Testing: When only the high threshold is specified
-    # # than the threshold exceeded log only occurs once each
-    # # time it is exceeded.  In other words, once exceeded it
-    # # does not repeat with each grant.  Since low threshold
-    # # defaults to 0, that log should never appear.
+    # Testing: When only the high threshold is specified
+    # than the threshold exceeded log only occurs once each
+    # time it is exceeded.  In other words, once exceeded it
+    # does not repeat with each grant.  Since low threshold
+    # defaults to 0, that log should never appear.
     # #
-    # # Stage 1: consume enough leases from the pool to verify the
-    # # that the high threshold message is logged. Verify the high
-    # # threshold message does not repeat.
+    # Stage 1: consume enough leases from the pool to verify the
+    # that the high threshold message is logged. Verify the high
+    # threshold message does not repeat.
     # #
-    # # Stage 2: release all the leases
+    # Stage 2: release all the leases
     # #
-    # # Stage 3: request a lease, and verify that no new threshold logs
-    # # are output.
+    # Stage 3: request a lease, and verify that no new threshold logs
+    # are output.
     # #
 
     misc.test_setup()
@@ -611,7 +611,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Stage 1: Consume leases until we exceed high threshold
+    # Stage 1: Consume leases until we exceed high threshold
     # #
 
     # Grab first lease. Expect no threshold logs.
@@ -699,7 +699,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
     srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
 
     # #
-    # # Stage 2: Release leases until we cross low threshold.
+    # Stage 2: Release leases until we cross low threshold.
     # #
 
     # Release the first lease, should not see low threshold log.
@@ -736,7 +736,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
     srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
     # #
-    # # Stage 3: Grab a lease, should see threshold reset log.
+    # Stage 3: Grab a lease, should see threshold reset log.
     # #
 
     misc.test_procedure()
@@ -769,17 +769,17 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
 def test_v6_dhcpd_keyword_log_threshold_low_only():
     """new-v6.dhcpd.keyword.log-threshold-low-only"""
     # #
-    # # Testing: That log messages for crossing the high and
-    # # low thresholds do not appear if only log-threshold-low
-    # # value is set.
+    # Testing: That log messages for crossing the high and
+    # low thresholds do not appear if only log-threshold-low
+    # value is set.
     # #
-    # # Stage 1: Consume all leases from the pool and verify that the
-    # # high threshold message is not logged
+    # Stage 1: Consume all leases from the pool and verify that the
+    # high threshold message is not logged
     # #
-    # # Stage 2: Release all leases
+    # Stage 2: Release all leases
     # #
-    # # Stage 3: request a lease, and verify that the low threshold log does not
-    # # message appear.
+    # Stage 3: request a lease, and verify that the low threshold log does not
+    # message appear.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::4')
@@ -788,7 +788,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Stage 1: Consume leases
+    # Stage 1: Consume leases
     # #
 
     # Grab first lease. Expect no threshold logs.
@@ -904,7 +904,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
 
     # #
-    # # Stage 2: Release leases until we cross low threshold.
+    # Stage 2: Release leases until we cross low threshold.
     # #
 
     # Release the first lease, should not see low threshold log.
@@ -952,7 +952,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
     # #
-    # # Stage 3: Grab a lease, should not see threshold reset log.
+    # Stage 3: Grab a lease, should not see threshold reset log.
     # #
 
     misc.test_procedure()
@@ -985,10 +985,10 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
 def test_v6_dhcpd_keyword_log_threshold_too_large():
     """new-v6.dhcpd.keyword.log-threshold-too-large"""
     # #
-    # # Checks that the server emits a log message stating that log-threshold
-    # # is disabled for a shared-network when the total number of addresses in
-    # # a given pond is too large to track.  For obvious reasons, we do not
-    # # attempt to test that threshold logic is actually skipped.
+    # Checks that the server emits a log message stating that log-threshold
+    # is disabled for a shared-network when the total number of addresses in
+    # a given pond is too large to track.  For obvious reasons, we do not
+    # attempt to test that threshold logic is actually skipped.
     # #
     misc.test_setup()
     add_line_in_global(' shared-network net1 {')

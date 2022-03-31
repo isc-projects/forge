@@ -5,8 +5,7 @@ import pytest
 from src.protosupport.dhcp4_scen import get_address
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
-pytestmark = [pytest.mark.kea_only,
-              pytest.mark.hook,
+pytestmark = [pytest.mark.hook,
               pytest.mark.v6,
               pytest.mark.cb]
 

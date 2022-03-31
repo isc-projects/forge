@@ -158,7 +158,7 @@ def test_v6_upgrade_mysql_db():
     # new db parameters
     tmp_db_name = "kea_tmp_db"
     tmp_user_name = "kea_tmp_user"
-    # # make sure that new db does not exists
+    # make sure that new db does not exists
     # srv_msg.execute_shell_cmd("mysql -u root -N -B -e \"DROP DATABASE IF EXISTS %s;\"" % tmp_db_name)
     # create new db without schema
     srv_control.build_database(db_name=tmp_db_name, db_user=tmp_user_name, init_db=False)

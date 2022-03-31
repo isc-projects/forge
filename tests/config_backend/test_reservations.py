@@ -7,8 +7,7 @@ from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
 # pylint: disable=unused-argument
 
-pytestmark = [pytest.mark.kea_only,
-              pytest.mark.controlchannel,
+pytestmark = [pytest.mark.controlchannel,
               pytest.mark.hook,
               pytest.mark.v4,
               pytest.mark.v6,

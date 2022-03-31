@@ -8,8 +8,6 @@ from src import srv_control
 from src import misc
 from src import srv_msg
 
-# to reduce size of the tests
-
 
 def _get_lease(fqdn='sth6.six.example.com.'):
     # we don't need multiple options here

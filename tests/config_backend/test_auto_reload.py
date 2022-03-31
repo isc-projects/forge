@@ -4,11 +4,9 @@ import pytest
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds, get_config
 from src.protosupport.dhcp4_scen import get_address, get_rejected
 
-pytestmark = [pytest.mark.kea_only,
-              pytest.mark.controlchannel,
+pytestmark = [pytest.mark.controlchannel,
               pytest.mark.hook,
               pytest.mark.cb,
-              pytest.mark.kea_only,
               pytest.mark.v4,
               pytest.mark.v6]
 

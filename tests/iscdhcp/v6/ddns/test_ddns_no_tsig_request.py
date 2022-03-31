@@ -149,7 +149,7 @@ def test_ddns6_notsig_forw_and_rev_add_fail_Sflag():
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    # # Update for different zone
+    # Update for different zone
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.com.')
     srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
     srv_msg.client_does_include('Client', 'fqdn')
@@ -502,7 +502,7 @@ def test_ddns6_notsig_forw_and_rev_two_dhci_Sflag():
     srv_msg.send_wait_for_query('MUST')
     srv_msg.dns_option('ANSWER', expect_include=False)
 
-    # # Client 1 add
+    # Client 1 add
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_does_include('Client', 'client-id')
@@ -543,7 +543,7 @@ def test_ddns6_notsig_forw_and_rev_two_dhci_Sflag():
     # Received DNS part ANSWER MUST contain rdata with value 2001:db8:1::51.
     srv_msg.dns_option_content('ANSWER', 'rrname', 'client1.six.example.com.')
 
-    # # Client 2 add
+    # Client 2 add
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:02')
     srv_msg.client_does_include('Client', 'client-id')
@@ -624,7 +624,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_Sflag():
     srv_msg.send_wait_for_query('MUST')
     srv_msg.dns_option('ANSWER', expect_include=False)
 
-    # # Client 1 add
+    # Client 1 add
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_does_include('Client', 'client-id')
@@ -665,7 +665,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_Sflag():
     srv_msg.dns_option_content('ANSWER', 'rdata', '2001:db8:1::51')
     srv_msg.dns_option_content('ANSWER', 'rrname', 'client1.six.example.com.')
 
-    # # Client 2 add
+    # Client 2 add
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:02')
     srv_msg.client_does_include('Client', 'client-id')
@@ -807,7 +807,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_remove_Sflag():
     srv_msg.send_wait_for_query('MUST')
     srv_msg.dns_option('ANSWER', expect_include=False)
 
-    # # Client 1 add
+    # Client 1 add
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_does_include('Client', 'client-id')
@@ -848,7 +848,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_remove_Sflag():
     srv_msg.dns_option_content('ANSWER', 'rdata', '2001:db8:1::51')
     srv_msg.dns_option_content('ANSWER', 'rrname', 'client1.six.example.com.')
 
-    # # Client 2 add
+    # Client 2 add
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:02')
     srv_msg.client_does_include('Client', 'client-id')

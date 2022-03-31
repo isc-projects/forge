@@ -14,39 +14,39 @@ from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_l
 @pytest.mark.dhcpd
 def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
     """new-v4.dhcpd.keyword.use-host-decl-names-on.ddns"""
-    # # Tests use-host-decl-names enabled in conjunction with ddns updates
-    # # The  test consists of a single server configuration and instance which
-    # # is used to execute the following test cases:
+    # Tests use-host-decl-names enabled in conjunction with ddns updates
+    # The  test consists of a single server configuration and instance which
+    # is used to execute the following test cases:
     # #
-    # # Case 1:
-    # # Get a lease for fixed host which has no host-name option.
-    # # Server should send the host declarartion name back in to the client
-    # # as the hostname option and use it in forward DNS name.
+    # Case 1:
+    # Get a lease for fixed host which has no host-name option.
+    # Server should send the host declarartion name back in to the client
+    # as the hostname option and use it in forward DNS name.
     # #
-    # # Case 2:
-    # # Get a lease for fixed host which has a host-name option.
-    # # Server should send the hostname option defined in the host
-    # # declarartion back to the client, and and use it in forward DNS name.
+    # Case 2:
+    # Get a lease for fixed host which has a host-name option.
+    # Server should send the hostname option defined in the host
+    # declarartion back to the client, and and use it in forward DNS name.
     # #
-    # # Case 3:
-    # # Get a lease for fixed host has a host-name option, client sends hostname.
-    # # Server should send back the hostname option defined in the host
-    # # declaration but should use the hostname provided by the client in the
-    # # forward DNS name.
+    # Case 3:
+    # Get a lease for fixed host has a host-name option, client sends hostname.
+    # Server should send back the hostname option defined in the host
+    # declaration but should use the hostname provided by the client in the
+    # forward DNS name.
     # #
-    # # Case 4:
-    # # Get a lease for a dynamic client.
-    # # Server should NOT send back a hostname option and should not attempt
-    # # a DNS update.
+    # Case 4:
+    # Get a lease for a dynamic client.
+    # Server should NOT send back a hostname option and should not attempt
+    # a DNS update.
     # #
-    # # Case 5:
-    # # Get a lease for a dynamic client that sends hostname option.
-    # # Server should NOT send back a hostname option and should not attempt
-    # # a DNS update.
+    # Case 5:
+    # Get a lease for a dynamic client that sends hostname option.
+    # Server should NOT send back a hostname option and should not attempt
+    # a DNS update.
     # #
-    # # NOTE: Currently Scapy does not support FQDN option for DHCPv4. Use of
-    # # FQDN as the source for DDNS forward name cannot be tested via Forge
-    # # at this time.
+    # NOTE: Currently Scapy does not support FQDN option for DHCPv4. Use of
+    # FQDN as the source for DDNS forward name cannot be tested via Forge
+    # at this time.
     # #
     misc.test_setup()
     add_line_in_global('ping-check off;')
@@ -86,10 +86,10 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
     srv_control.start_srv('DHCP', 'started')
 
     # #######################################################################
-    # # Case 1:
-    # # Get a lease for fixed host which has no host-name option
-    # # Server should send the host declarartion name back in to the client
-    # # as the hostname option and use it in forward DNS name.
+    # Case 1:
+    # Get a lease for fixed host which has no host-name option
+    # Server should send the host declarartion name back in to the client
+    # as the hostname option and use it in forward DNS name.
     # #######################################################################
     misc.test_procedure()
     srv_msg.client_does_include_with_value('client_id', '31:31:31:31')
@@ -114,10 +114,10 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
                          log_file=build_log_path())
 
     # #######################################################################
-    # # Case 2:
-    # # Get a lease for fixed host which has a host-name option
-    # # Server should send the hostname option defined in the host
-    # # declarartion back to the client, and and use it in forward DNS name.
+    # Case 2:
+    # Get a lease for fixed host which has a host-name option
+    # Server should send the hostname option defined in the host
+    # declarartion back to the client, and and use it in forward DNS name.
     # #######################################################################
     misc.test_procedure()
     srv_msg.client_does_include_with_value('client_id', '32:32:32:32')
@@ -142,11 +142,11 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
                          log_file=build_log_path())
 
     # #######################################################################
-    # # Case 3:
-    # # Get a lease for fixed host has a host-name option, client sends hostname.
-    # # Server should send back the hostname option defined in the host
-    # # declaration but should use the hostname provided by the client in the
-    # # forward DNS name.
+    # Case 3:
+    # Get a lease for fixed host has a host-name option, client sends hostname.
+    # Server should send back the hostname option defined in the host
+    # declaration but should use the hostname provided by the client in the
+    # forward DNS name.
     # #######################################################################
     misc.test_procedure()
     srv_msg.client_does_include_with_value('client_id', '33:33:33:33')
@@ -173,10 +173,10 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
                          log_file=build_log_path())
 
     # #######################################################################
-    # # Case 4:
-    # # Get a lease for a dynamic client.
-    # # Server should NOT send back a hostname option and should not attempt
-    # # a DNS update.
+    # Case 4:
+    # Get a lease for a dynamic client.
+    # Server should NOT send back a hostname option and should not attempt
+    # a DNS update.
     # #######################################################################
     misc.test_procedure()
     srv_msg.client_does_include_with_value('client_id', '34:34:34:34')
@@ -199,10 +199,10 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
     srv_msg.log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 192.168.50.100', log_file=build_log_path())
 
     # #######################################################################
-    # # Case 5:
-    # # Get a lease for a dynamic client that sends hostname option.
-    # # Server should NOT send back a hostname option and should not attempt
-    # # a DNS update.
+    # Case 5:
+    # Get a lease for a dynamic client that sends hostname option.
+    # Server should NOT send back a hostname option and should not attempt
+    # a DNS update.
     # #######################################################################
 
     misc.test_procedure()

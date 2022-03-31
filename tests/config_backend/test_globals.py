@@ -11,8 +11,7 @@ from src.protosupport.dhcp4_scen import send_request_and_check_ack, rebind_with_
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
 
-pytestmark = [pytest.mark.kea_only,
-              pytest.mark.controlchannel,
+pytestmark = [pytest.mark.controlchannel,
               pytest.mark.hook,
               pytest.mark.cb]
 

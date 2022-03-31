@@ -16,8 +16,8 @@ from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_l
 def test_v6_dhcpd_keyword_ddns_forward_add():
     """new-v6.dhcpd.keyword.ddns.forward.add"""
     # #
-    # # Testing: Checks that a forward add is attempted when the configuration
-    # # is valid but minimal and client sends a request with valid fqdn
+    # Testing: Checks that a forward add is attempted when the configuration
+    # is valid but minimal and client sends a request with valid fqdn
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
@@ -30,7 +30,7 @@ def test_v6_dhcpd_keyword_ddns_forward_add():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Grab a lease
+    # Grab a lease
     # #
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
@@ -68,8 +68,8 @@ def test_v6_dhcpd_keyword_ddns_forward_add():
 def test_v6_dhcpd_keyword_ddns_forward_do_forward_updates_false():
     """new-v6.dhcpd.keyword.ddns.forward.do-forward-updates.false"""
     # #
-    # # Testing: Checks that a forward add is not attempted if do-forward-updates
-    # # is set to false.
+    # Testing: Checks that a forward add is not attempted if do-forward-updates
+    # is set to false.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
@@ -82,7 +82,7 @@ def test_v6_dhcpd_keyword_ddns_forward_do_forward_updates_false():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Grab a lease
+    # Grab a lease
     # #
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
@@ -118,8 +118,8 @@ def test_v6_dhcpd_keyword_ddns_forward_do_forward_updates_false():
 def test_v6_dhcpd_keyword_ddns_forward_no_client_fqdn():
     """new-v6.dhcpd.keyword.ddns.forward.no-client-fqdn"""
     # #
-    # # Testing: Checks that forward ddns updates are not attempted when
-    # # no client FQDN option is supplied.
+    # Testing: Checks that forward ddns updates are not attempted when
+    # no client FQDN option is supplied.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
@@ -132,7 +132,7 @@ def test_v6_dhcpd_keyword_ddns_forward_no_client_fqdn():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Grab a lease
+    # Grab a lease
     # #
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
@@ -165,8 +165,8 @@ def test_v6_dhcpd_keyword_ddns_forward_no_client_fqdn():
 def test_v6_dhcpd_keyword_ddns_forward_ddns_hostname():
     """new-v6.dhcpd.keyword.ddns.forward.ddns-hostname"""
     # #
-    # # Testing: Checks that hostname used as the FQDN in the forward add
-    # # can be specified using ddns-hostname.
+    # Testing: Checks that hostname used as the FQDN in the forward add
+    # can be specified using ddns-hostname.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
@@ -179,7 +179,7 @@ def test_v6_dhcpd_keyword_ddns_forward_ddns_hostname():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Grab a lease
+    # Grab a lease
     # #
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
@@ -216,8 +216,8 @@ def test_v6_dhcpd_keyword_ddns_forward_ddns_hostname():
 def test_v6_dhcpd_keyword_ddns_forward_ddns_ttl():
     """new-v6.dhcpd.keyword.ddns.forward.ddns-ttl"""
     # #
-    # # Testing: Checks that TTL sent with the forward add can be specified
-    # # using ddns-ttl.
+    # Testing: Checks that TTL sent with the forward add can be specified
+    # using ddns-ttl.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::2-2001:db8:1::2')
@@ -230,7 +230,7 @@ def test_v6_dhcpd_keyword_ddns_forward_ddns_ttl():
     srv_control.start_srv('DHCP', 'started')
 
     # #
-    # # Grab a lease
+    # Grab a lease
     # #
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')

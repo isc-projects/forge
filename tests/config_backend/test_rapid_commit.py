@@ -7,7 +7,6 @@ from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
 
 pytestmark = [pytest.mark.v6,
-              pytest.mark.kea_only,
               pytest.mark.controlchannel,
               pytest.mark.hook,
               pytest.mark.cb]
