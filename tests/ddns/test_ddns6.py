@@ -36,7 +36,7 @@ def _get_lease(fqdn='sth6.six.example.com.'):
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    # if _get_lease used twice during test it will save multiple options are release will fail
+    # if _get_lease used twice during test it will save multiple options and release will fail
     srv_msg.client_save_option_count(1, 'IA_NA')  # save for release
     srv_msg.client_save_option_count(1, 'server-id')  # save for release
     srv_msg.response_check_include_option(1)
