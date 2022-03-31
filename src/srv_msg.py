@@ -9,6 +9,7 @@
 # Author: Wlodzimierz Wencel
 
 import datetime
+import random
 import json
 import importlib
 
@@ -724,16 +725,18 @@ def get_subopt_from_option(exp_opt_code, exp_subopt_code):
     return dhcpmsg.get_subopt_from_option(exp_opt_code, exp_subopt_code)
 
 
-def DO(address, options=None, chaddr='ff:01:02:03:ff:04'):
+def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04'):
     return dhcpmsg.DO(address, options, chaddr)
 
 
-def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04', init_reboot=False):
-    return dhcpmsg.RA(address, options, response_type, chaddr, init_reboot)
+def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
+       init_reboot=False, subnet_mask='255.255.255.0'):
+    return dhcpmsg.RA(address, options, response_type, chaddr, init_reboot, subnet_mask)
 
 
-def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04', init_reboot=False):
-    return dhcpmsg.DORA(address, options, exchange, response_type, chaddr, init_reboot)
+def DORA(address=None, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04',
+         init_reboot=False, subnet_mask='255.255.255.0'):
+    return dhcpmsg.DORA(address, options, exchange, response_type, chaddr, init_reboot, subnet_mask)
 
 
 def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
@@ -765,3 +768,14 @@ def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
     return dhcpmsg.BOOTP_REQUEST_and_BOOTP_REPLY(address=address,
                                                  chaddr=chaddr,
                                                  client_id=client_id)
+
+
+def start_fuzzing():
+    '''
+    Initialize any variables that may be used in fuzz tests.
+    '''
+    world.fuzzing = True
+    seed = random.randint(0, 100)
+    print(f'Using seed {seed}.')
+    random.seed(seed)
+    world.coin_toss = random.randint(1, 100) % 2 == 0

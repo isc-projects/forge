@@ -264,10 +264,6 @@ def convert_to_hex(mac):
     return codecs.decode(mac.replace(":", ""), 'hex')
 
 
-def start_fuzzing():  # time_period, time_units):
-    world.fuzzing = True
-
-
 def build_msg(opts):
     conf.checkIPaddr = False
     fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
@@ -443,6 +439,18 @@ def byte_to_hex(byte_str):
 
 
 def test_option(opt_code, received, expected):
+    """
+    Make some adjustments to {received} and check if it is equal to {expected}.
+    :param opt_code: option code
+    :param received: option value received on the wire
+    :param expected: option value expected in the test
+    :return: tuple(boolean on whether the values are equal, the adjusted {received})
+    """
+
+    if isinstance(received, tuple):
+        # Last element is considered to be the option value.
+        received = received[-1]
+
     if isinstance(received, str):
         if received == str(expected):
             return True, received
@@ -547,19 +555,19 @@ def get_all_leases(decode_duid=True):
     return lease
 
 
-def DO(address, options=None, chaddr='ff:01:02:03:ff:04'):
+def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04'):
     """
     Sends a discover and expects an offer. Inserts options in the client
     packets based on given parameters and ensures that the right options are
     found in the server packets. A single option missing or having incorrect
     values renders the test failed.
 
-    Arguments:
-    address -- the expected address as value of the requested_addr option
-    options -- any additional options to be inserted in the client packets in
+    :param address: the expected address as value of the requested_addr option.
+        If None, no DHCPOFFER is expected.
+    :param options: any additional options to be inserted in the client packets in
         dictionary form with option names as keys and option values as values.
         (default: {})
-    chaddr -- the client hardware address to be used in client packets
+    :param chaddr: the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
     """
     # Send a discover.
@@ -570,34 +578,40 @@ def DO(address, options=None, chaddr='ff:01:02:03:ff:04'):
     client_send_msg('DISCOVER')
 
     # Expect an offer.
-    send_wait_for_message('MUST', True, 'OFFER')
-    response_check_content(True, 'yiaddr', address)
-    client_sets_value('chaddr', chaddr)
+    if address is not None:
+        send_wait_for_message('MUST', True, 'OFFER')
+        response_check_content(True, 'yiaddr', address)
+        client_sets_value('chaddr', chaddr)
 
 
-def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04', init_reboot=False):
+def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
+       init_reboot=False, subnet_mask='255.255.255.0'):
     """
     Sends a request and expects an advertise. Inserts options in the client
     packets based on given parameters and ensures that the right options are
     found in the server packets. A single option missing or having incorrect
     values renders the test failed.
 
-    Arguments:
-    address -- the expected address as value of the requested_addr option
-    options -- any additional options to be inserted in the client packets in
+    :param address: the address used in the requested_addr option in the DHCP request.
+        If None, the yiaddr in the last message, supposedly a DHCPOFFER, is expected.
+    :param options: any additional options to be inserted in the client packets in
         dictionary form with option names as keys and option values as values.
         (default: {})
-    response_type -- the type of response to be expected in the server packet.
+    :param response_type: the type of response to be expected in the server packet.
         Can have values 'ACK', 'NAK' or None. None means no response.
         (default: 'ACK')
-    chaddr -- the client hardware address to be used in client packets
+    :param chaddr: the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
+    :param subnet_mask: the value for option 1 subnet mask expected in a DHCPACK
     """
     client_sets_value('chaddr', chaddr)
     if not init_reboot:
         client_copy_option('server_id')
-    if not options or 'requested_addr' not in options:
-        client_does_include(None, 'requested_addr', address)
+    if options is None or 'requested_addr' not in options:
+        if address is None:
+            client_does_include(None, 'requested_addr', world.srvmsg[0].yiaddr)
+        else:
+            client_does_include(None, 'requested_addr', address)
     if options:
         for k, v in options.items():
             client_does_include(None, k, v)
@@ -609,12 +623,13 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04', i
         send_wait_for_message('MUST', True, 'ACK')
         response_check_content(True, 'yiaddr', address)
         response_check_include_option(True, 'subnet-mask')
-        response_check_option_content('subnet-mask', True, 'value', '255.255.255.0')
+        response_check_option_content('subnet-mask', True, 'value', subnet_mask)
     elif response_type == 'NAK':
         send_wait_for_message('MUST', True, 'NAK')
 
 
-def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04', init_reboot=False):
+def DORA(address=None, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04',
+         init_reboot=False, subnet_mask='255.255.255.0'):
     """
     Sends and ensures receival of 6 packets part of a regular DHCPv4 exchange
     in the correct sequence: discover, offer, request,
@@ -624,19 +639,20 @@ def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff
     are found in the server packets. A single option missing or having incorrect
     values renders the test failed.
 
-    Arguments:
-    address -- the expected address in the yiaddr field
-    options -- any additional options to be inserted in the client packets in
+    :param address: the expected address in the yiaddr field and then used in the
+        requested_addr option in the DHCP request. If None, no packet is expected.
+    :param options: any additional options to be inserted in the client packets in
         dictionary form with option names as keys and option values as values.
         (default: {})
-    exchange -- can have values 'full' meaning DORA plus an additional
+    :param exchange: can have values 'full' meaning DORA plus an additional
         request-reply for the renew scenario or "renew-only". It is a string
         instead of a boolean for clearer test names because this value often
         comes from pytest parametrization. (default: 'full')
-    response_type -- the type of response to be expected in the server packet.
+    :param response_type: the type of response to be expected in the server packet.
         Can have values 'ACK' or 'NAK'. (default: 'ACK')
-    chaddr -- the client hardware address to be used in client packets
+    :param chaddr: the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
+    :param subnet_mask: the value for option 1 subnet mask expected in a DHCPACK
     """
     misc.test_procedure()
     client_sets_value('chaddr', chaddr)
@@ -645,11 +661,11 @@ def DORA(address, options=None, exchange='full', response_type='ACK', chaddr='ff
         DO(address, options, chaddr)
 
         # Send a request and expect an acknowledgement.
-        RA(address, options, response_type, chaddr, init_reboot)
+        RA(address, options, response_type, chaddr, init_reboot, subnet_mask)
 
     # Send a request and expect an acknowledgement.
     # This is supposed to be the renew scenario after DORA.
-    RA(address, options, response_type, chaddr, init_reboot)
+    RA(address, options, response_type, chaddr, init_reboot, subnet_mask)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,

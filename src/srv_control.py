@@ -587,7 +587,7 @@ def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address):
 
 
 @step(r'(\S+) server is (started|stopped|restarted|reconfigured).')
-def start_srv(name, type_of_action, config_set=None, dest=world.f_cfg.mgmt_address):
+def start_srv(name, type_of_action, config_set=None, dest=world.f_cfg.mgmt_address, should_succeed=True):
     """
     Decide which you want, start server of failed start (testing incorrect configuration)
     Also decide in which part should it failed.
@@ -599,11 +599,11 @@ def start_srv(name, type_of_action, config_set=None, dest=world.f_cfg.mgmt_addre
     if type_of_action == "started":
         log.info(f'-----------------  {name} START %s -------------------------------------------------------', dest)
         if name == "DHCP":
-            dhcp.start_srv(True, None, destination_address=dest)
+            dhcp.start_srv(should_succeed, None, destination_address=dest)
         elif name == "DNS":
             if config_set is not None:
                 use_dns_set_number(config_set)
-            dns.start_srv(True, None, destination_address=dest)
+            dns.start_srv(should_succeed, None, destination_address=dest)
     elif type_of_action == "stopped":
         log.info(f'-----------------  {name} STOP %s  -------------------------------------------------------', dest)
         if name == "DHCP":

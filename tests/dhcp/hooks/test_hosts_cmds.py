@@ -468,8 +468,8 @@ def test_v4_hosts_cmds_add_reservation_flex_id_nak(channel, host_database):
         "text": "Host added."
     }
 
-    srv_msg.DORA('192.168.50.100', {'requested_addr': '192.168.50.200',
-                                    'vendor_class_id': 'docsis3.0'},
+    srv_msg.DORA(None, {'requested_addr': '192.168.50.200',
+                        'vendor_class_id': 'docsis3.0'},
                  response_type='NAK')
 
 
