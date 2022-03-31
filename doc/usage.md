@@ -18,7 +18,7 @@ sudo ./venv/bin/pytest
 To run just subset of tests from one file
 
 ```shell
-sudo ./venv/bin/pytest tests/dhcpv4/kea_only/control_channel/test_command_control_socket.py
+sudo ./venv/bin/pytest tests/dhcp/hooks/leases_cmds/test_lease_get_by.py
 ```
 
 Additional useful options are:

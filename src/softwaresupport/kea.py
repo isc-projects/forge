@@ -584,22 +584,15 @@ def _config_db_backend():
                                             "host": world.f_cfg.db_host,
                                             "user": world.f_cfg.db_user,
                                             "password": world.f_cfg.db_passwd}
-        if world.f_cfg.db_type in ["cql"]:
-            if "keyspace" not in world.dhcp_cfg["lease-database"].keys():
-                world.dhcp_cfg["lease-database"] = {"keyspace": "keatest"}
+
 
     # set reservations
-    if world.reservation_backend in ["mysql", "postgresql", "cql"]:
+    if world.reservation_backend in ["mysql", "postgresql"]:
         world.dhcp_cfg["hosts-database"] = {"type": world.reservation_backend,
                                             "name": world.f_cfg.db_name,
                                             "host": world.f_cfg.db_host,
                                             "user": world.f_cfg.db_user,
                                             "password": world.f_cfg.db_passwd}
-
-        if world.reservation_backend in ["cql"]:
-            # if value is not given in the test - use default (backward compatibility)
-            if "keyspace" not in world.dhcp_cfg["hosts-database"].keys():
-                world.dhcp_cfg["hosts-database"] = {"keyspace": "keatest"}
 
 
 def add_hooks(library_path):
@@ -952,12 +945,6 @@ def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_pa
         command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6 logs;' \
                   ' do psql -U {db_user} -d {db_name} -c "delete from $table_name" ; done'.format(**locals())
         fabric_run_command(command, destination_host=destination_address)
-    elif world.f_cfg.db_type == "cql":
-        # TODO: hardcoded passwords for now in cassandra, extend it in some time :)
-        command = 'for table_name in dhcp_option_scope host_reservations lease4 lease6 logs;' \
-                  ' do cqlsh --keyspace=keatest --user=keatest --password=keatest -e "TRUNCATE $table_name;"' \
-                  ' ; done'.format(**locals())
-        fabric_run_command(command, destination_host=destination_address)
     elif world.f_cfg.db_type in ["memfile", ""]:
         fabric_remove_file_command(world.f_cfg.get_leases_path(), destination_host=destination_address)
     else:
@@ -1208,7 +1195,7 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
 
 
 def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
-    if world.f_cfg.db_type in ["mysql", "postgresql", "cql"]:
+    if world.f_cfg.db_type in ["mysql", "postgresql"]:
         # TODO
         pass
     else:

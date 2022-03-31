@@ -39,7 +39,6 @@ dhcp = Dispatcher('functions')
 ddns = Dispatcher('functions_ddns')
 mysql_reservation = Dispatcher('mysql_reservation')
 pgsql_reservation = Dispatcher('pgsql_reservation')
-cql_reservation = Dispatcher('cql_reservation')
 
 
 ##DHCP server configurations
@@ -308,9 +307,6 @@ def enable_db_backend_reservation(db_type):
     elif db_type == 'PostgreSQL':
         pgsql_reservation.enable_db_backend_reservation()
         pgsql_reservation.clear_all_reservations()
-    elif db_type == 'Cassandra':
-        cql_reservation.enable_db_backend_reservation()
-        cql_reservation.clear_all_reservations()
     elif db_type == "memfile":
         pass
     else:
@@ -323,8 +319,6 @@ def new_db_backend_reservation(db_type, reservation_identifier, reservation_iden
         mysql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
     elif db_type == 'PostgreSQL':
         pgsql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
-    elif db_type == 'Cassandra':
-        cql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
     else:
         assert False, "Database type not recognised."
 
@@ -335,8 +329,6 @@ def update_db_backend_reservation(field_name, field_value, db_type, reservation_
         mysql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
     elif db_type == 'PostgreSQL':
         pgsql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
-    elif db_type == 'Cassandra':
-        cql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
 
@@ -351,9 +343,6 @@ def ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len,
     elif db_type == 'PostgreSQL':
         pgsql_reservation.ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, reserved_iaid,
                                                              int(reservation_record_id))
-    elif db_type == 'Cassandra':
-        cql_reservation.ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, reserved_iaid,
-                                                           int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
 
@@ -366,9 +355,6 @@ def ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, db_type
     elif db_type == 'PostgreSQL':
         pgsql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid,
                                                               int(reservation_record_id))
-    elif db_type == 'Cassandra':
-        cql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid,
-                                                            int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
 
@@ -387,11 +373,6 @@ def option_db_record_reservation(reserved_option_code, reserved_option_value, re
                                                        reserved_option_space, reserved_option_persistent,
                                                        reserved_option_client_class, reserved_subnet_id,
                                                        reserved_option_scope, int(reservation_record_id))
-    elif db_type == 'Cassandra':
-        cql_reservation.option_db_record_reservation(reserved_option_code, reserved_option_value,
-                                                     reserved_option_space, reserved_option_persistent,
-                                                     reserved_option_client_class, reserved_subnet_id,
-                                                     reserved_option_scope, int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
 
@@ -402,8 +383,6 @@ def dump_db_reservation(db_type):
         mysql_reservation.clear_all_reservations()
     elif db_type == 'PostgreSQL':
         pgsql_reservation.clear_all_reservations()
-    elif db_type == 'Cassandra':
-        cql_reservation.clear_all_reservations()
     else:
         assert False, "Database type not recognised."
 
@@ -414,8 +393,6 @@ def upload_db_reservation(db_type, exp_failed=False):
         mysql_reservation.upload_db_reservation(exp_failed)
     elif db_type == 'PostgreSQL':
         pgsql_reservation.upload_db_reservation(exp_failed)
-    elif db_type == 'Cassandra':
-        cql_reservation.upload_db_reservation(exp_failed)
     else:
         assert False, "Database type not recognised."
 # END Reservation backend section

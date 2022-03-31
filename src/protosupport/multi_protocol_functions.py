@@ -288,12 +288,6 @@ def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
     elif db_type in ["postgresql", "PostgreSQL"]:
         command = 'PGPASSWORD={db_passwd} psql -h localhost -U {db_user} -d {db_name} -c "delete from {table_name}"'.format(**locals())
         fabric_run_command(command)
-    elif db_type == "cql":
-        # TODO: hardcoded passwords for now in cassandra, extend it in some time :)
-        command = 'for table_name in dhcp_option_scope host_reservations lease4 lease6 logs;' \
-                  ' do cqlsh --keyspace=keatest --user=keatest --password=keatest -e "TRUNCATE $table_name;"' \
-                  ' ; done'.format(**locals())
-        fabric_run_command(command)
     else:
         assert False, "db type {db_type} not recognized/not supported".format(**locals())
 
@@ -780,9 +774,6 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
                                    destination=destination, lease=lease,
                                    expect=should_succeed)
 
-    elif backend == 'cassandra':
-        # TODO implement this sometime in the future
-        pass
 
 def convert_address_to_hex(address):
     '''Convert string address to hexadecimal representation.'''

@@ -226,8 +226,6 @@ class KeaConfiguration:
             self.add_to_xml_script('passwd', tmp.db_passwd)
             self.add_to_xml_script('port', tmp.db_port)
             self.add_to_xml_script('readonly', tmp.db_readonly)
-        elif tmp.db_leases_type.lower() == "cassandra":
-            self.add_to_xml_script('name', tmp.db_name)
         else:
             assert False, "Forge should not get here... bug!"
         self.add_to_xml_script('/lease-database')

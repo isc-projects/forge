@@ -157,8 +157,7 @@ def test_user_check_hook_IA_NA_with_registry_unknown_user_logging_2():
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     # That test works, we don't need last step:
-    # Client compares downloaded file from server with local file stored in:
-    #  tests/dhcpv6/kea_only/user_chk/v6_outcome_1.txt.
+    # Client compares downloaded file from server with local file v6_outcome_1.txt.
     # srv_msg.compare_file(glob.glob("**/v6_outcome_1.txt", recursive=True)[0])
 
 

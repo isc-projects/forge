@@ -1645,8 +1645,8 @@ def test_v6_flexid_replace_duid_release_failed():
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 3)
 
-    # File stored in kea-leases6.csv MUST contain line or phrase: 2001:db8:1::f,01:02:03:04:05:06,4000,
-    # File stored in kea-leases6.csv MUST NOT contain line or phrase: 2001:db8:1::f,01:02:03:04:05:06,0,
+    # TODO File stored in kea-leases6.csv MUST contain line or phrase: 2001:db8:1::f,01:02:03:04:05:06,4000,
+    # TODO File stored in kea-leases6.csv MUST NOT contain line or phrase: 2001:db8:1::f,01:02:03:04:05:06,0,
 
 
 @pytest.mark.v6

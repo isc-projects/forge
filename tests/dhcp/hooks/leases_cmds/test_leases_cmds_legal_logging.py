@@ -625,7 +625,7 @@ def test_v6_lease_cmds_legal_logging_wipe():
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     srv_msg.test_fail()
-    # File stored in kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
+    # TODO File stored in kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
 
 
 @pytest.mark.v6
