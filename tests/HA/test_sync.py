@@ -15,12 +15,11 @@ from src import srv_control
 from src import srv_msg
 
 from src.forge_cfg import world
-from .steps import generate_leases, load_hook_libraries, increase_mac, wait_until_ha_state
-from .steps import HOT_STANDBY, LOAD_BALANCING, PASSIVE_BACKUP
-
 from src.softwaresupport.cb_model import setup_server_with_radius
 from src.softwaresupport import radius
 
+from .steps import generate_leases, load_hook_libraries, increase_mac, wait_until_ha_state
+from .steps import HOT_STANDBY, LOAD_BALANCING, PASSIVE_BACKUP
 
 # TODO add checking logs in all those tests
 
