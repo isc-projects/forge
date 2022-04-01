@@ -108,7 +108,7 @@ def test_lease_cache_incorrect_values(dhcp_version, parameter, value):
     cache = {parameter: value}
     world.dhcp_cfg["subnet%d" % ver][0].update(cache)
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configure')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v6

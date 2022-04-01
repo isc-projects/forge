@@ -372,7 +372,7 @@ def test_v6_options_user_defined_option_code_zero():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_custom_opt('foo', 0, 'uint8', 123)
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v6
@@ -395,7 +395,7 @@ def test_v6_options_user_defined_option_standard_code():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_custom_opt('foo', 12, 'uint8', 123)
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v6

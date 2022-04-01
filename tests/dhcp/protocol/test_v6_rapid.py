@@ -17,7 +17,7 @@ def test_v6_rapid_commit_as_global_parameter():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.set_conf_parameter_global('rapid-commit', True)
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v6

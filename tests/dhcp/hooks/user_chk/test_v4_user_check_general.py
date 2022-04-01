@@ -23,7 +23,7 @@ def test_user_check_IA_NA_no_registry():
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
     srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
     # Test Procedure:
     # Client requests option 1.

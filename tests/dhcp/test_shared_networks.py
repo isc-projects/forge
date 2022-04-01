@@ -24,7 +24,7 @@ def test_v4_sharednetworks_negative_missing_name():
     srv_control.build_and_send_config_files()
 
     # DHCP server is started.
-    srv_control.start_srv_during_process('DHCP', 'configure')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v4
@@ -43,7 +43,7 @@ def test_v4_sharednetworks_negative_empty_name():
     srv_control.build_and_send_config_files()
 
     # DHCP server is started.
-    srv_control.start_srv_during_process('DHCP', 'configure')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v4
@@ -64,7 +64,7 @@ def test_v4_sharednetworks_negative_not_unique_names():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 1)
     srv_control.build_and_send_config_files()
 
-    srv_control.start_srv_during_process('DHCP', 'configure')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v4
@@ -1131,7 +1131,7 @@ def test_v6_sharednetworks_negative_missing_name():
     srv_control.build_and_send_config_files()
 
     # DHCP server is started.
-    srv_control.start_srv_during_process('DHCP', 'configure')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v6
@@ -1154,7 +1154,7 @@ def test_v6_sharednetworks_negative_not_unique_names():
     srv_control.set_conf_parameter_shared_subnet('interface-id', '"interface-xyz"', 1)
     srv_control.build_and_send_config_files()
 
-    srv_control.start_srv_during_process('DHCP', 'configure')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v6
@@ -3513,7 +3513,7 @@ def test_v6_sharednetworks_host_reservation_duplicate_reservation():
     srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v6

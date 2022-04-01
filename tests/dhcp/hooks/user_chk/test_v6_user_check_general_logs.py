@@ -27,7 +27,7 @@ def test_user_check_hook_IA_NA_no_registry_logging():
     srv_control.configure_loggers('kea-dhcp6.callouts', 'ERROR', 'None')
     srv_control.configure_loggers('kea-dhcp6.hooks', 'ERROR', 'None')
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
     # DHCP server is started.
     #

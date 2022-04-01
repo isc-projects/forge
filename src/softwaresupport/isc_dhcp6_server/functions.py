@@ -574,12 +574,11 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     stop_srv(destination_address=destination_address)
 
 
-def check_process_result(succeed, result, process):
+def check_process_result(succeed: bool, result: str):
     """
     Check result of starting ISC-DHCP
     :param succeed: True/False, True if we expect ISC-DHCP to start successfully
     :param result: logs from ISC-DHCP
-    :param process: not used
     :return:
     """
     errors = ["exiting."]
@@ -634,7 +633,7 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
         #world.subcfg[subnet_id][0] += '{parameter_name} {value};'.format(**locals())
 
 
-def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
+def start_srv(start: bool, destination_address: str = world.f_cfg.mgmt_address):
     """
     Start ISC-DHCP server on remote system
     :param start: binary value of expected result, True if server should successfully start
@@ -649,7 +648,7 @@ def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
                                  + '&); sleep ' + str(world.f_cfg.sleep_time_1) + ';',
                                  destination_host=destination_address)
 
-    check_process_result(start, result, process)
+    check_process_result(start, result)
 
     # clear configs in case we would like make couple configs in one test
     world.cfg["conf_time"] = ""

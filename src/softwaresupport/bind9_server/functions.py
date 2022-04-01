@@ -206,7 +206,13 @@ def save_leases(destination_address=world.f_cfg.mgmt_address):
     pass
 
 
-def reconfigure_srv(destination_address=world.f_cfg.mgmt_address):
+def reconfigure_srv(should_succeed: bool = True,
+                    destination_address: str = world.f_cfg.mgmt_address):
+    """
+    Reconfigure the BIND9 server.
+    :param should_succeed: whether the reconfiguration is supposed to succeed or fail
+    :param destination_address: management address of server
+    """
     # TODO implement this when needed
     pass
 

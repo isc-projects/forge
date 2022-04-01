@@ -123,7 +123,7 @@ def test_v6_upgrade_pgsql_db():
     world.dhcp_cfg.update(hosts)
     world.dhcp_cfg.update(leases)
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'started')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
     kea_admin = world.f_cfg.sbin_join('kea-admin')
     srv_msg.execute_shell_cmd("sudo %s db-upgrade pgsql -u %s -p $(DB_PASSWD) -n %s" % (kea_admin, tmp_user_name, tmp_db_name))

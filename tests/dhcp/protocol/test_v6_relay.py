@@ -433,7 +433,7 @@ def test_v6_relay_interface_local_and_relay_interface_in_the_same_subnet():
                                          "interface": '$(SERVER_IFACE)',
                                          "relay": {"ip-address": "3000::1005"}})
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
     references.references_check('Kea')
 

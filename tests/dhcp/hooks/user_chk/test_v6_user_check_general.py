@@ -24,7 +24,7 @@ def test_user_check_hook_IA_NA_no_registry():
     srv_control.config_srv_another_subnet_no_interface('1000::/64', '1000::5-1000::5')
     srv_control.add_hooks('libdhcp_user_chk.so')
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v6

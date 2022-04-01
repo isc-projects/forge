@@ -586,42 +586,46 @@ def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address):
     dhcp.build_and_send_config_files(cfg=cfg, destination_address=dest)
 
 
-@step(r'(\S+) server is (started|stopped|restarted|reconfigured).')
-def start_srv(name, type_of_action, config_set=None, dest=world.f_cfg.mgmt_address, should_succeed=True):
+def start_srv(name: str, action: str, config_set=None,
+              dest: str = world.f_cfg.mgmt_address, should_succeed: bool = True):
     """
-    Decide which you want, start server of failed start (testing incorrect configuration)
-    Also decide in which part should it failed.
+    Start, stop, restart or reconfigure server.
+    :param name: 'DHCP' | 'DNS'
+    :param action: 'started' | 'stopped' | 'restarted' | 'reconfigured'
+    :param config_set: Dynamic configuration to be used. Currently used only as an integer to select
+        a certain DNS configuration.
+    :param dest: management address of server
+    :param should_succeed: whether the action is supposed to succeed or fail
     """
     dest = test_define_value(dest)[0]
     check_remote_address(dest)
     if name not in ["DHCP", "DNS"]:
         assert False, "I don't think there is support for something else than DNS or DHCP"
-    if type_of_action == "started":
-        log.info(f'-----------------  {name} START %s -------------------------------------------------------', dest)
+    log.info(f'---------------- {name} {action} {dest} ----------------')
+    if action == "started":
         if name == "DHCP":
-            dhcp.start_srv(should_succeed, None, destination_address=dest)
+            dhcp.start_srv(should_succeed, destination_address=dest)
         elif name == "DNS":
             if config_set is not None:
                 use_dns_set_number(config_set)
-            dns.start_srv(should_succeed, None, destination_address=dest)
-    elif type_of_action == "stopped":
-        log.info(f'-----------------  {name} STOP %s  -------------------------------------------------------', dest)
+            dns.start_srv(should_succeed, destination_address=dest)
+    elif action == "stopped":
+        assert should_succeed, 'should_succeed == false not implemented for stop action'
         if name == "DHCP":
             dhcp.stop_srv(destination_address=dest)
         elif name == "DNS":
             dns.stop_srv(destination_address=dest)
-    elif type_of_action == "restarted":
-        log.info(f'-----------------  {name} RESTART %s  -------------------------------------------------------', dest)
+    elif action == "restarted":
+        assert should_succeed, 'should_succeed == false not implemented for restart action'
         if name == "DHCP":
             dhcp.restart_srv(destination_address=dest)
         elif name == "DNS":
             dns.restart_srv(destination_address=dest)
-    elif type_of_action == "reconfigured":
-        log.info(f'-----------------  {name} RECONFIG %s  -------------------------------------------------------', dest)
+    elif action == "reconfigured":
         if name == "DHCP":
-            dhcp.reconfigure_srv(destination_address=dest)
+            dhcp.reconfigure_srv(should_succeed, destination_address=dest)
         elif name == "DNS":
-            dns.reconfigure_srv(destination_address=dest)
+            dns.reconfigure_srv(should_succeed, destination_address=dest)
     else:
         assert False, "we don't support '%s' action." % str(type_of_action)
 
@@ -635,70 +639,6 @@ def check_remote_address(remote_address):
     """
     if remote_address not in world.f_cfg.multiple_tested_servers:
         world.f_cfg.multiple_tested_servers.append(remote_address)
-
-
-@step(r'Remote (\S+) server is (started|stopped|restarted|reconfigured) on address (\S+).')
-def remote_start_srv(name, type_of_action, destination_address):
-    """
-    Decide which you want, start server of failed start (testing incorrect configuration)
-    Also decide in which part should it failed.
-    """
-    destination_address = test_define_value(destination_address)[0]
-    check_remote_address(destination_address)
-    if name not in ["DHCP", "DNS"]:
-        assert False, "I don't think there is support for something else than DNS or DHCP"
-    if type_of_action == "started":
-        if name == "DHCP":
-            dhcp.start_srv(True, None, destination_address)
-        elif name == "DNS":
-            dns.start_srv(True, None, destination_address)
-    elif type_of_action == "stopped":
-        if name == "DHCP":
-            dhcp.stop_srv(destination_address=destination_address)
-        elif name == "DNS":
-            dns.stop_srv(destination_address=destination_address)
-    elif type_of_action == "restarted":
-        if name == "DHCP":
-            dhcp.restart_srv(destination_address=destination_address)
-        elif name == "DNS":
-            dns.restart_srv(destination_address=destination_address)
-    elif type_of_action == "reconfigured":
-        if name == "DHCP":
-            dhcp.reconfigure_srv(destination_address=destination_address)
-        elif name == "DNS":
-            dns.reconfigure_srv(destination_address=destination_address)
-    else:
-        assert False, "we don't support this action."
-
-
-@step(r'(\S+) server failed to start. During (\S+) process.')
-def start_srv_during_process(name, process):
-    """
-    Decide which you want, start server of failed start (testing incorrect configuration)
-    Also decide in which part should it failed.
-    """
-    if name == "DHCP":
-        dhcp.start_srv(False, process)
-    elif name == "DNS":
-        dns.start_srv(False, process)
-    else:
-        assert False, "I don't think there is support for something else than DNS or DHCP"
-
-
-@step(r'(\S+) server failed to start. During (\S+) process on remote destination (\S+).')
-def start_srv_during_remote_process(name, process, destination_address):
-    """
-    Decide which you want, start server of failed start (testing incorrect configuration)
-    Also decide in which part should it failed.
-    """
-    destination_address[0] = test_define_value(destination_address)
-    check_remote_address(destination_address)
-    if name == "DHCP":
-        dhcp.start_srv(False, process, destination_address)
-    elif name == "DNS":
-        dns.start_srv(False, process, destination_address)
-    else:
-        assert False, "I don't think there is support for something else than DNS or DHCP"
 
 
 @step(r'Add remote server with address: (\S+).')

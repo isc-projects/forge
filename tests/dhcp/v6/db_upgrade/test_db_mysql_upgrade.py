@@ -201,7 +201,7 @@ def test_v6_upgrade_mysql_db():
     world.dhcp_cfg["config-control"] = cb_config
     world.dhcp_cfg["server-tag"] = "abc"
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'started')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
     # upgrade with kea admin
     kea_admin = world.f_cfg.sbin_join('kea-admin')
     srv_msg.execute_shell_cmd("sudo %s db-upgrade mysql -u %s -p $(DB_PASSWD) -n %s" % (kea_admin, tmp_user_name, tmp_db_name))

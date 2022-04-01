@@ -254,4 +254,4 @@ def test_v4_host_reservation_hostname_duplicated_entries():
                                            'hw-address',
                                            'ff:01:02:03:ff:04')
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)

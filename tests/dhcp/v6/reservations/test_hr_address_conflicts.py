@@ -25,7 +25,7 @@ def test_v6_host_reservation_conflicts_duplicate_duid_reservations():
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')  # the same DUID
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
     # expected error logs
     srv_msg.log_contains(r'ERROR \[kea-dhcp6.dhcp6')
@@ -48,7 +48,7 @@ def test_v6_host_reservation_conflicts_duplicate_ip_reservations():
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:02')
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
     # expected error logs
     srv_msg.log_contains(r'ERROR \[kea-dhcp6.dhcp6')

@@ -1212,9 +1212,11 @@ def _reload_kea_with_systemctl(destination_address):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
-def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
+def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_address):
     """
     Start kea with generated config
+    :param should_succeed: whether the action is supposed to succeed or fail
+    :param destination_address: management address of server
     """
     if destination_address not in world.f_cfg.multiple_tested_servers:
         world.multiple_tested_servers.append(destination_address)
@@ -1222,15 +1224,11 @@ def start_srv(start, process, destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method == 'make':
         v4_running, v6_running = _check_kea_status(destination_address)
 
-        if process is None:
-            process = "starting"
-        # check process - if None add some.
-
         if v4_running and world.proto == 'v4' or v6_running and world.proto == 'v6':
             result = _stop_kea_with_keactrl(destination_address)  # TODO: check result
 
         result = _start_kea_with_keactrl(destination_address)
-        _check_kea_process_result(start, result, process)
+        _check_kea_process_result(should_succeed, result, 'start')
     else:
         _restart_kea_with_systemctl(destination_address)
 
@@ -1251,16 +1249,22 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
-def _check_kea_process_result(succeed, result, process):
+def _check_kea_process_result(succeed: bool, result: str, action: str):
+    """
+    Check if a server's logs or a server's output contains failure messages.
+    :param succeed: whether the result is supposed to be success or failure
+    :param result: the logs or output resulted from an action on the server
+    :param action: one-word description of the action done on the server
+    """
     errors = ["Failed to apply configuration", "Failed to initialize server",
               "Service failed", "failed to initialize Kea"]
 
     if succeed:
         if any(error_message in result for error_message in errors):
-            assert False, 'Server operation: ' + process + ' failed! '
+            assert False, 'Server operation: ' + action + ' failed! '
     if not succeed:
         if not any(error_message in result for error_message in errors):
-            assert False, 'Server operation: ' + process + ' NOT failed!'
+            assert False, 'Server operation: ' + action + ' NOT failed!'
 
 
 def _start_kea_with_keactrl(destination_host):
@@ -1288,10 +1292,16 @@ def _reload_kea_with_keactrl(destination_host):
     return fabric_sudo_command(stop_cmd, destination_host=destination_host)
 
 
-def reconfigure_srv(destination_address=world.f_cfg.mgmt_address):
+def reconfigure_srv(should_succeed: bool = True,
+                    destination_address: str = world.f_cfg.mgmt_address):
+    """
+    Send signal to Kea server to reconfigure itself.
+    :param should_succeed: whether the reconfiguration is supposed to succeed or fail
+    :param destination_address: management address of server
+    """
     if world.f_cfg.install_method == 'make':
         result = _reload_kea_with_keactrl(destination_address)
-        _check_kea_process_result(True, result, 'reconfigure')
+        _check_kea_process_result(should_succeed, result, 'reconfigure')
     else:
         _reload_kea_with_systemctl(destination_address)
     srv_msg.wait_for_message_in_log('dynamic server reconfiguration succeeded with file')

@@ -44,7 +44,7 @@ def test_v6_dhcpd_keyword_log_facility_fail():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     add_line_in_global('log-facility bogus;')
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
     # No steps required
     misc.test_procedure()

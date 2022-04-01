@@ -38,7 +38,7 @@ def test_v4_host_reservation_conflicts_duplicate_mac_reservations(backend):
                                                'hw-address',
                                                'ff:01:02:03:ff:04')  # the same MAC address
         srv_control.build_and_send_config_files()
-        srv_control.start_srv_during_process('DHCP', 'configuration')
+        srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
         # expected error logs
         srv_msg.log_contains(r'ERROR \[kea-dhcp4.dhcp4')
@@ -110,7 +110,7 @@ def test_v4_host_reservation_conflicts_duplicate_ip_reservations():
                                            'hw-address',
                                            'bb:bb:bb:bb:bb:bb')
     srv_control.build_and_send_config_files()
-    srv_control.start_srv_during_process('DHCP', 'configuration')
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
     # expected error logs
     srv_msg.log_contains(r'ERROR \[kea-dhcp4.dhcp4')
     srv_msg.log_contains(r'failed to add new host using the HW address')
