@@ -6,6 +6,7 @@
 
 # pylint: disable=invalid-name,line-too-long
 
+import re
 import os
 import glob
 import json

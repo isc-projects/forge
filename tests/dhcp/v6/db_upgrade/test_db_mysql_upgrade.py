@@ -169,7 +169,7 @@ def test_v6_upgrade_mysql_db():
     srv_msg.execute_shell_cmd("sed -i 's/!serverinterface!/$(SERVER_IFACE)/g' /tmp/my_db_v6.sql")
     srv_msg.execute_shell_cmd("sed -i 's/!db_user!/%s/g' /tmp/my_db_v6.sql" % tmp_user_name)
     if world.server_system == 'redhat':
-        srv_msg.execute_shell_cmd("sed -i 's/CHARSET=utf8mb4/CHARSET=latin1/g' /tmp/my_db_v4.sql")
+        srv_msg.execute_shell_cmd("sed -i 's/CHARSET=utf8mb4/CHARSET=latin1/g' /tmp/my_db_v6.sql")
     # this solves the problem: "Variable 'sql_mode' can't be set to the value of 'NO_AUTO_CREATE_USER'"
     srv_msg.execute_shell_cmd("sed -i 's/NO_AUTO_CREATE_USER,//g' /tmp/my_db_v6.sql")
     # recreate db content in new db

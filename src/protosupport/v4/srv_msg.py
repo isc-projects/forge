@@ -667,7 +667,7 @@ def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
     misc.test_procedure()
     client_sets_value('chaddr', chaddr)
     if client_id is not None:
-        srv_msg.client_does_include_with_value('client_id', client_id)
+        client_does_include(None, 'client_id', client_id)
     client_send_msg('BOOTP_REQUEST')
 
     # Wait for reply.
