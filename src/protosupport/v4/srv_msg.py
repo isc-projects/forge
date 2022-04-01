@@ -577,8 +577,11 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04'):
             client_does_include(None, k, v)
     client_send_msg('DISCOVER')
 
-    # Expect an offer.
-    if address is not None:
+    # If the test requires an address, expect it in the offer, otherwise expect
+    # no message back.
+    if address is None:
+        send_wait_for_message('MUST', False, None)
+    else:
         send_wait_for_message('MUST', True, 'OFFER')
         response_check_content(True, 'yiaddr', address)
         client_sets_value('chaddr', chaddr)

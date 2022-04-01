@@ -771,9 +771,9 @@ def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
 
 
 def start_fuzzing():
-    '''
+    """
     Initialize any variables that may be used in fuzz tests.
-    '''
+    """
     world.fuzzing = True
     seed = random.randint(0, 100)
     print(f'Using seed {seed}.')
