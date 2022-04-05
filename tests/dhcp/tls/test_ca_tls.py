@@ -17,6 +17,8 @@ from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
 from src.softwaresupport.multi_server_functions import fabric_sudo_command
+import requests
+import json
 
 
 class _CreateCert:
@@ -81,3 +83,13 @@ def test_ca_tls(dhcp_version):
     world.ca_cfg["Control-agent"]["cert-required"] = False
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+
+    cmd = {"command": "status-get", "arguments": {}}
+   # response = srv_msg.send_ctrl_cmd(cmd, http)
+
+    cmd = json.dumps(cmd)
+    response = requests.post("https://192.168.61.9:8000",
+                  headers={"Content-Type": "application/json"},
+                  data=cmd, verify="/home/mgodzina/forge/tests_results/test_ca_tls_v4_/downloaded_file")
+
+    print(response.text)
