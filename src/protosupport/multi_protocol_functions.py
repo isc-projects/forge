@@ -54,12 +54,12 @@ def test_pause():
     getch()
 
 
-def copy_file_from_server(remote_path):
+def copy_file_from_server(remote_path, local_filename='downloaded_file'):
     """
     Copy file from remote server via ssh. Address/login/password from init_all.py
     Path required.
     """
-    fabric_download_file(remote_path, world.cfg["test_result_dir"] + '/downloaded_file')
+    fabric_download_file(remote_path, world.cfg["test_result_dir"] + f'/{local_filename}')
 
 
 def send_file_to_server(local_path, remote_path):
@@ -630,7 +630,7 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
     return result
 
 
-def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=False):
+def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=False, https=False, verify=None, cert=None):
     if exp_failed:
         # expected result should be default (0) or None
         assert exp_result in [0, None]
@@ -641,9 +641,19 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
     if isinstance(command, dict):
         command = json.dumps(command)
     try:
-        response = requests.post("http://" + address + ":" + locale.str(port),
-                                 headers={"Content-Type": "application/json"},
-                                 data=command)
+        if https:
+            if cert:
+                response = requests.post("https://" + address + ":" + locale.str(port),
+                                         headers={"Content-Type": "application/json"},
+                                         data=command, verify=verify, cert=cert)
+            else:
+                response = requests.post("https://" + address + ":" + locale.str(port),
+                                         headers={"Content-Type": "application/json"},
+                                         data=command, verify=verify)
+        else:
+            response = requests.post("http://" + address + ":" + locale.str(port),
+                                     headers={"Content-Type": "application/json"},
+                                     data=command)
         # print response.status_code
     except requests.exceptions.ConnectionError:
         # this is weird, if post fail it should have 400 or 500 but it's not created instead

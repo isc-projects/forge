@@ -521,13 +521,13 @@ def test_fail():
 
 
 @step(r'Client download file from server stored in: (\S+).')
-def copy_remote(remote_path):
+def copy_remote(remote_path, local_filename='downloaded_file'):
     """
     Download file from remote server. It is stored in test directory.
     And named "downloaded_file"
     """
     remote_path = test_define_value(remote_path)[0]
-    multi_protocol_functions.copy_file_from_server(remote_path)
+    multi_protocol_functions.copy_file_from_server(remote_path, local_filename)
 
 
 @step(r'Client compares downloaded file from server with local file stored in: (\S+).')
@@ -644,19 +644,19 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
 
 
 @step(r'Send ctrl cmd (.+) using HTTP (\S+):(\S+) connection.')
-def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_result=0, exp_failed=False):
+def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_result=0, exp_failed=False, https=False, verify=None, cert=None):
     if isinstance(command, dict):
         substitute_vars(command)
         address, port = test_define_value(address, port)
     else:
         address, port, command = test_define_value(address, port, command)
-    return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result, exp_failed)
+    return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result, exp_failed, https, verify, cert)
 
 
-def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, address=world.f_cfg.mgmt_address):
+def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, address=world.f_cfg.mgmt_address, verify=None, cert=None):
     """Send request to DHCP Kea server over Unix socket or over HTTP via CA."""
 
-    if channel == 'http':
+    if channel == 'http' or channel == 'https':
         if service != 'agent':
             if world.proto == 'v4':
                 cmd["service"] = ['dhcp4']
@@ -665,6 +665,9 @@ def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, address=world
 
     if channel == 'http':
         response = send_ctrl_cmd_via_http(cmd, address, 8000, exp_result=exp_result)
+        response = response[0]
+    elif channel == 'https':
+        response = send_ctrl_cmd_via_http(cmd, address, 8000, exp_result=exp_result, https=True, verify=verify, cert=cert)
         response = response[0]
     elif channel == 'socket':
         response = send_ctrl_cmd_via_socket(cmd, destination_address=address, exp_result=exp_result)
