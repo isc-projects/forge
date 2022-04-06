@@ -170,15 +170,21 @@ class CreateCert:
     """
     def __init__(self):
         # Assign certificate files paths to attributes.
-        self.ca_key = os.path.join(world.f_cfg.software_install_path, 'ca_key.pem')
-        self.ca_cert = os.path.join(world.f_cfg.software_install_path, 'ca_cert.pem')
-        self.server_cert = os.path.join(world.f_cfg.software_install_path, 'server_cert.pem')
-        self.server_csr = os.path.join(world.f_cfg.software_install_path, 'server_csr.csr')
-        self.server_key = os.path.join(world.f_cfg.software_install_path, 'server_key.pem')
-        self.client_cert = os.path.join(world.f_cfg.software_install_path, 'client_cert.pem')
-        self.client_csr = os.path.join(world.f_cfg.software_install_path, 'client_csr.csr')
-        self.client_key = os.path.join(world.f_cfg.software_install_path, 'client_key.pem')
+        self.ca_key = world.f_cfg.data_join('ca_key.pem')
+        self.ca_cert = world.f_cfg.data_join('ca_cert.pem')
+        self.server_cert = world.f_cfg.data_join('server_cert.pem')
+        self.server_csr = world.f_cfg.data_join('server_csr.csr')
+        self.server_key = world.f_cfg.data_join('server_key.pem')
+        self.client_cert = world.f_cfg.data_join('client_cert.pem')
+        self.client_csr = world.f_cfg.data_join('client_csr.csr')
+        self.client_key = world.f_cfg.data_join('client_key.pem')
 
+        # Delete leftover certificates.
+        self.clear()
+        # Generate certificates.
+        self.generate()
+
+    def clear(self):
         # Delete leftover certificates.
         remove_file_from_server(self.ca_key)
         remove_file_from_server(self.ca_cert)
@@ -189,6 +195,7 @@ class CreateCert:
         remove_file_from_server(self.client_csr)
         remove_file_from_server(self.client_key)
 
+    def generate(self):
         # Generate CA cert and key
         generate_ca = f'openssl req ' \
                       f'-x509 ' \
@@ -239,34 +246,29 @@ class CreateCert:
         fabric_sudo_command(generate_client_priv)
         fabric_sudo_command(generate_client)
 
-    def download(self, cert_type: str):
+    def download(self, cert_name: str = None):
         """ This function downloads selected certificate to test result directory on forge machine
-    and returns full path of the file.
-        :param cert_type: select from: server_cert, server_key, client_cert, client_key, ca_cert, ca_key
-        :return: Full path of the downloaded file on Forge machine.
+        and returns full path of the file.
+        If no certificate name is provided, then function will download all of them
+        and return dictionary of name and full file path
+
+        :param cert_name: Select certificate to download or None to download all.
+        :return: Full path of the downloaded file on Forge machine or dict with names and path of certificates.
         """
-        if cert_type == 'server_cert':
-            copy_file_from_server(self.server_cert, 'server_cert.pem')
-            return f'{world.cfg["test_result_dir"]}/server_cert.pem'
-        if cert_type == 'server_key':
-            fabric_sudo_command(f'chmod 644 {self.server_key}')
-            copy_file_from_server(self.server_cert, 'server_key.pem')
-            return f'{world.cfg["test_result_dir"]}/server_key.pem'
-        if cert_type == 'client_key':
-            fabric_sudo_command(f'chmod 644 {self.client_key}')
-            copy_file_from_server(self.client_key, 'client_key.pem')
-            return f'{world.cfg["test_result_dir"]}/client_key.pem'
-        if cert_type == 'client_cert':
-            copy_file_from_server(self.client_cert, 'client_cert.pem')
-            return f'{world.cfg["test_result_dir"]}/client_cert.pem'
-        if cert_type == 'ca_cert':
-            copy_file_from_server(self.server_cert, 'ca_cert.pem')
-            return f'{world.cfg["test_result_dir"]}/ca_cert.pem'
-        if cert_type == 'ca_key':
-            fabric_sudo_command(f'chmod 644 {self.server_key}')
-            copy_file_from_server(self.server_cert, 'ca_key.pem')
-            return f'{world.cfg["test_result_dir"]}/ca_key.pem'
-        assert False, 'Wrong Certificate type to download.'
+        if cert_name is None:
+            certs = {}
+            for name, path in self.__dict__.items():
+                fabric_sudo_command(f'chmod 644 {path}')
+                copy_file_from_server(path, f'{name}.pem')
+                certs[name] = path
+            return certs
+        else:
+            if cert_name in self.__dict__.keys():
+                fabric_sudo_command(f'chmod 644 {self.__dict__[cert_name]}')
+                copy_file_from_server(self.__dict__[cert_name], f'{cert_name}.pem')
+                return f'{world.cfg["test_result_dir"]}/{cert_name}.pem'
+            else:
+                assert False, f'There is no "{cert_name}" certificate to download.'
 
 
 def generate_certificate():
