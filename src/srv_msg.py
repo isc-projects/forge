@@ -656,7 +656,7 @@ def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_re
 def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=False, address=world.f_cfg.mgmt_address, verify=None, cert=None):
     """Send request to DHCP Kea server over Unix socket or over HTTP via CA."""
 
-    if channel == 'http' or channel == 'https':
+    if channel in ['http', 'https']:
         if service != 'agent':
             if world.proto == 'v4':
                 cmd["service"] = ['dhcp4']
