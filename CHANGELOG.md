@@ -1,3 +1,8 @@
+* 36    [build] wlodek
+
+    Complete restructure of source code tree
+    (gitlab !265)
+
 * 35    [func]  wlodek
 
     Bring back isc-dhcp tests and isc-dhcp server management.
