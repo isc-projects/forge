@@ -23,6 +23,6 @@ from src.softwaresupport.kea import prepare_cfg_add_option, prepare_cfg_add_opti
 from src.softwaresupport.kea import prepare_cfg_add_option_shared_subnet, config_require_client_classification
 from src.softwaresupport.kea import kea_otheroptions, config_client_classification, add_option_to_defined_class
 from src.softwaresupport.kea import host_reservation, host_reservation_extension, config_srv_id, prepare_cfg_prefix
-from src.softwaresupport.kea import update_ha_hook_parameter, db_setup
+from src.softwaresupport.kea import update_ha_hook_parameter, db_setup, generate_certificate
 
 # TODO remove this file :) but this is another set of reworks so for another time

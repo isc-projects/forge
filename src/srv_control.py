@@ -798,3 +798,7 @@ def print_cfg(service='DHCP'):
     elif service.lower() == 'ddns':
         print("DDNS config:")
         print(json.dumps(world.ddns_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
+
+
+def generate_certificate():
+    return dhcp.generate_certificate()

@@ -16,6 +16,7 @@ from src import srv_msg
 
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import add_variable, substitute_vars
+from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
 from src.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
 from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command
 from src.softwaresupport.multi_server_functions import fabric_remove_file_command, fabric_download_file
@@ -155,6 +156,121 @@ world.kea_options4 = {
     "vivso-suboptions": 125,  # binary
     "end": 255
 }
+
+
+class CreateCert:
+    """
+    This class creates TLS certificates for CA, server and client,
+    mostly for testing Control Agent with TLS.
+    class attributes return certificate files paths on server.
+    eg. CreateCert.ca_key returns "/home/user/kea/ca_key.pem"
+
+    download() function downloads selected certificate to test result directory on forge machine
+    and returns full path of the file.
+    """
+    def __init__(self):
+        # Assign certificate files paths to attributes.
+        self.ca_key = os.path.join(world.f_cfg.software_install_path, 'ca_key.pem')
+        self.ca_cert = os.path.join(world.f_cfg.software_install_path, 'ca_cert.pem')
+        self.server_cert = os.path.join(world.f_cfg.software_install_path, 'server_cert.pem')
+        self.server_csr = os.path.join(world.f_cfg.software_install_path, 'server_csr.csr')
+        self.server_key = os.path.join(world.f_cfg.software_install_path, 'server_key.pem')
+        self.client_cert = os.path.join(world.f_cfg.software_install_path, 'client_cert.pem')
+        self.client_csr = os.path.join(world.f_cfg.software_install_path, 'client_csr.csr')
+        self.client_key = os.path.join(world.f_cfg.software_install_path, 'client_key.pem')
+
+        # Delete leftover certificates.
+        remove_file_from_server(self.ca_key)
+        remove_file_from_server(self.ca_cert)
+        remove_file_from_server(self.server_cert)
+        remove_file_from_server(self.server_csr)
+        remove_file_from_server(self.server_key)
+        remove_file_from_server(self.client_cert)
+        remove_file_from_server(self.client_csr)
+        remove_file_from_server(self.client_key)
+
+        # Generate CA cert and key
+        generate_ca = f'openssl req ' \
+                      f'-x509 ' \
+                      f'-nodes ' \
+                      f'-days 3650 ' \
+                      f'-newkey rsa:4096 ' \
+                      f'-keyout {self.ca_key} ' \
+                      f'-out {self.ca_cert} ' \
+                      f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={world.f_cfg.mgmt_address}"'
+
+        # Generate server cert and key
+        generate_server_priv = f'openssl genrsa -out {self.server_key} 4096 ; ' \
+                               f'openssl req ' \
+                               f'-new ' \
+                               f'-key {self.server_key} ' \
+                               f'-out {self.server_csr} ' \
+                               f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={world.f_cfg.mgmt_address}"'
+        # Sign server cert
+        generate_server = f'openssl x509 -req ' \
+                          f'-days 1460 ' \
+                          f'-in {self.server_csr} ' \
+                          f'-CA {self.ca_cert} ' \
+                          f'-CAkey {self.ca_key} ' \
+                          f'-CAcreateserial -out {self.server_cert} ' \
+                          f'-extensions SAN ' \
+                          f'-extfile <(cat /etc/ssl/openssl.cnf' \
+                          f' <(printf "\n[SAN]\nsubjectAltName=IP:{world.f_cfg.mgmt_address}"))'
+
+        # Generate client cert and key
+        generate_client_priv = f'openssl genrsa -out {self.client_key} 4096 ; ' \
+                               f'openssl req ' \
+                               f'-new ' \
+                               f'-key {self.client_key} ' \
+                               f'-out {self.client_csr} ' \
+                               f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN=client"'
+
+        # Sign client cert
+        generate_client = f'openssl x509 -req ' \
+                          f'-days 1460 ' \
+                          f'-in {self.client_csr} ' \
+                          f'-CA {self.ca_cert} ' \
+                          f'-CAkey {self.ca_key} ' \
+                          f'-CAcreateserial -out {self.client_cert} ' \
+
+        fabric_sudo_command(generate_ca)
+        fabric_sudo_command(generate_server_priv)
+        fabric_sudo_command(generate_server)
+        fabric_sudo_command(generate_client_priv)
+        fabric_sudo_command(generate_client)
+
+    def download(self, cert_type: str):
+        """ This function downloads selected certificate to test result directory on forge machine
+    and returns full path of the file.
+        :param cert_type: select from: server_cert, server_key, client_cert, client_key, ca_cert, ca_key
+        :return: Full path of the downloaded file on Forge machine.
+        """
+        if cert_type == 'server_cert':
+            copy_file_from_server(self.server_cert, 'server_cert.pem')
+            return f'{world.cfg["test_result_dir"]}/server_cert.pem'
+        if cert_type == 'server_key':
+            fabric_sudo_command(f'chmod 644 {self.server_key}')
+            copy_file_from_server(self.server_cert, 'server_key.pem')
+            return f'{world.cfg["test_result_dir"]}/server_key.pem'
+        if cert_type == 'client_key':
+            fabric_sudo_command(f'chmod 644 {self.client_key}')
+            copy_file_from_server(self.client_key, 'client_key.pem')
+            return f'{world.cfg["test_result_dir"]}/client_key.pem'
+        if cert_type == 'client_cert':
+            copy_file_from_server(self.client_cert, 'client_cert.pem')
+            return f'{world.cfg["test_result_dir"]}/client_cert.pem'
+        if cert_type == 'ca_cert':
+            copy_file_from_server(self.server_cert, 'ca_cert.pem')
+            return f'{world.cfg["test_result_dir"]}/ca_cert.pem'
+        if cert_type == 'ca_key':
+            fabric_sudo_command(f'chmod 644 {self.server_key}')
+            copy_file_from_server(self.server_cert, 'ca_key.pem')
+            return f'{world.cfg["test_result_dir"]}/ca_key.pem'
+        assert False, 'Wrong Certificate type to download.'
+
+
+def generate_certificate():
+    return CreateCert()
 
 
 def _check_value(value):
