@@ -447,10 +447,6 @@ def test_option(opt_code, received, expected):
     :return: tuple(boolean on whether the values are equal, the adjusted {received})
     """
 
-    if isinstance(received, tuple):
-        # Last element is considered to be the option value.
-        received = received[-1]
-
     if isinstance(received, str):
         if received == str(expected):
             return True, received
