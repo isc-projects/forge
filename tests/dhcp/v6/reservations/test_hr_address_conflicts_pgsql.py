@@ -37,7 +37,7 @@ def test_v6_host_reservation_duplicate_reservation_duid():
 @pytest.mark.disabled
 def test_v6_host_reservation_duplicate_reservation_address():
     """
-    Since address uniqueness is now configurable fom kea config level
+    Since address uniqueness is now configurable from Kea config level,
     it's normal we can input reservations directly to database no matter
     kea configuration, reservation uniqueness is checked while using "reservation-add"
     command. Disabling test.

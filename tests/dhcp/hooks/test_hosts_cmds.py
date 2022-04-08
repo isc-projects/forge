@@ -2339,7 +2339,7 @@ def test_v6_hosts_cmds_add_reservation_flex_id_NoAddressAvail(channel, host_data
     # Get the first lease from subnet
     srv_msg.SARR('2001:db8:1::50', duid='00:03:00:01:f6:f5:f4:f3:f2:01', relay_information=False)
 
-    # add host reservationa
+    # add host reservation
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {

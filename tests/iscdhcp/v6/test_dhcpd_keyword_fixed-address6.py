@@ -24,7 +24,7 @@ def test_v6_dhcpd_keyword_fixed_address6():
     # Stage 1: Client with DUID1 asks for and should be granted 2001:db8:1::2,
     # the only address available to Clients who are NOT DUID2
     # #
-    # Stage 2: Client with DUID3 solicts an address but should be denied
+    # Stage 2: Client with DUID3 solicits an address but should be denied
     # #
     # Stage 3: Client with DUID2 solicits and should be should be granted
     # 2001:db8:1::1, the reserved address.

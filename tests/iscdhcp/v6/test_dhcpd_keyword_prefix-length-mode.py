@@ -641,7 +641,7 @@ def test_dhcpd_keyword_prefix_length_mode_maximum():
 def test_dhcpd_keyword_prefix_length_mode_plen_0():
     """new-dhcpd.keyword.prefix-length-mode.plen_0"""
     # Tests that prefix selection is correct for clients soliciting with plen
-    # of 0, as pools are exhausted.  Witha plen of 0, prefix-length-mode is
+    # of 0, as pools are exhausted.  With a plen of 0, prefix-length-mode is
     # ignored, so prefix consumption should proceed from first available.
     #
     # Server is configured with two pools of 1 prefix each.  One pool with

@@ -19,7 +19,7 @@ source ./venv/bin/activate
 ```
 
 Also, you may want to install tcpdump for saving captures of every test.
-This step is optional and tcpdump usage is controlled via init_all.py
+This step is optional and tcpdump usage is controlled via `init_all.py`.
 
 ```shell
 sudo apt-get install tcpdump
@@ -43,9 +43,9 @@ Manual Configuration
 --------------------
 
 Configuration management is not well-designed yet. The default configuration
-is stored in forge/tests/init_all.py_default. Please copy this file
-to forge/tests/init_all.py and edit relevant values in this file.
-Without init_all.py Forge will not start at all. init_all.py is added
+is stored in `init_all.py_default`. Please copy this file
+to `init_all.py` and edit relevant values in this file.
+Without `init_all.py`, Forge will not start at all. `init_all.py` is added
 to gitignore, so any local changes you make to this file will be ignored by git.
 
 Also make sure that your ssh server is configured. Make sure that SSH connection between

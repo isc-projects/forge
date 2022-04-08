@@ -58,7 +58,7 @@ def test_v6_dhcpd_keyword_valid_lifetime_set():
     # Pass Criteria:
     # #
     # valid lifetime should be the configured value of 1000.
-    # preferred lifetime  should be 625.
+    # preferred lifetime should be 625.
     # #
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')

@@ -155,7 +155,7 @@ needs_changing_comma = [
 
 def add_siaddr(addr, subnet_number):
     """
-    Change siaddr value in partucular subnet
+    Change siaddr value in a particular subnet.
     :param addr: string with ip address
     :param subnet_number: int with subnet id
     :return:

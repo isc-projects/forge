@@ -997,7 +997,7 @@ def test_v6_legal_log_parser_format_dual_ip():
 @pytest.mark.legal_logging
 def test_v6_legal_log_dual_ip():
     """
-    Test checks standart formatting of "legal_log" hook with multiple ip addresses in one lease.
+    Test checks standard formatting of legal_log hook with multiple IP addresses in one lease.
     SARR exchange is used to acquire leases.
     Log file is checked for proper content.
     """

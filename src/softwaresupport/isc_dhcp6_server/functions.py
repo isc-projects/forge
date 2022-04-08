@@ -83,24 +83,24 @@ def switch_prefix6_lengths_to_pool(ip6_addr, length, delegated_length):
     :param delegated_length: int prefix delegated length
     """
 
-    ip6_addr_splited = ip6_addr.split(":")
-    if len(ip6_addr_splited) < 3 or len(ip6_addr_splited) > 9:
+    ip6_addr_split = ip6_addr.split(":")
+    if len(ip6_addr_split) < 3 or len(ip6_addr_split) > 9:
         assert False, "Error! Please enter correct IPv6 address!"
     error_flag = False
-    for i in range(1, len(ip6_addr_splited) - 1):
-        if not ip6_addr_splited[i]:
+    for i in range(1, len(ip6_addr_split) - 1):
+        if not ip6_addr_split[i]:
             if error_flag:
                 assert False, "Error! Please enter correct IPv6 address!"
             error_flag = True
 
     for i in range(0, 6):
-        if ip6_addr_splited[i]:
+        if ip6_addr_split[i]:
             continue
         else:
-            ip6_addr_splited.append("")
+            ip6_addr_split.append("")
 
     bin_addr = []
-    for each in ip6_addr_splited:
+    for each in ip6_addr_split:
         if not each:
             bin_addr.append('')
             continue
@@ -457,7 +457,7 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
 
 def cfg_write():
     """
-    Build config file from all previously added options, subntes and parameters
+    Build config file from all previously added options, subnets and parameters.
     """
     cfg_file = open(world.cfg["cfg_file"], 'w')
     cfg_file.write(world.cfg["conf_time"])

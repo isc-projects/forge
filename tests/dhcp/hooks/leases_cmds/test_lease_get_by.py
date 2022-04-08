@@ -48,7 +48,7 @@ def _get_address(mac, address, cli_id=None, fqdn=None):
     srv_msg.response_check_content('yiaddr', address)
 
 
-# lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-adderss
+# lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-address
 @pytest.mark.v4
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
@@ -195,13 +195,13 @@ def test_control_channel_lease4_get_by_positive(backend):
     _send_cmd("lease4-get-by-client-id", exp_result=1)
 
 
-# lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-adderss
+# lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-address
 @pytest.mark.v4
 @pytest.mark.controlchannel
 def test_control_channel_lease4_get_by_negative():
     """
     Check various options of incorrectly build
-    lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-adderss, commands.
+    lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-address, commands.
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_lease_cmds.so')

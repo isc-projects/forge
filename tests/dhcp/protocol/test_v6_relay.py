@@ -57,7 +57,7 @@ def test_v6_relay_message_unicast_global():
     srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 
@@ -89,7 +89,7 @@ def test_v6_relay_message_unicast_local():
     srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
-    srv_msg.unicast_addres(None, 'LINK_LOCAL')
+    srv_msg.unicast_address(None, 'LINK_LOCAL')
     srv_msg.client_does_include('RelayAgent', 'interface-id')
     srv_msg.create_relay_forward()
 

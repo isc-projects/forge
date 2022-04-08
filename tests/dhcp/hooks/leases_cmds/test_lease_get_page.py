@@ -185,7 +185,7 @@ def test_control_channel_lease4_get_page_positive(backend):
             del all_leases[lease_nbr]["cltt"]  # this value is dynamic so we delete it
             # add lease to buffer
             all_pages.append(all_leases[lease_nbr])
-            # remeber last ip to ask for next page
+            # remember last ip to ask for next page
             last_ip = all_leases[lease_nbr]["ip-address"]
         counter += len(all_leases)
         # get next page

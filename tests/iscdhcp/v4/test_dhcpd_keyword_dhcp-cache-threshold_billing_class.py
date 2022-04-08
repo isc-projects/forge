@@ -16,7 +16,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     """new-v4.dhcpd.keyword.dhcp-cache-threshold.billing_class"""
     # Verifies that cache-threshold logic takes billing class
     # into account. In short, if the billing class associated with a
-    # lease changes it must be superseded, not resused.
+    # lease changes it must be superseded, not reused.
     # #
     # Setup:
     # Client gets initial lease, with no billing class.
@@ -24,7 +24,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     # Case 1:
     # Client adds vendor-class-id when renewing with DORA before the
     # threshold expires.
-    # - Server maps client to billing class and should NOT resuse the lease
+    # - Server maps client to billing class and should NOT reuse the lease
     # #
     # Case 2:
     # Client uses same vendor-class-id and renews with DORA before the
@@ -40,7 +40,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     # Client changes vendor-class-id when renewing with DORA before the
     # threshold expires.
     # - Server maps client to different billing class and should NOT
-    # resuse the lease
+    # reuse the lease
     # #
     misc.test_setup()
     add_line_in_global(' ping-check off;')
@@ -91,7 +91,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     # Case 1:
     # Client adds vendor-class-id when renewing with DORA before the
     # threshold expires.
-    # - Server maps client to billing class and should NOT resuse the
+    # - Server maps client to billing class and should NOT reuse the
     # lease
     # ##################################################################
     misc.test_procedure()
@@ -170,7 +170,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     # Client changes vendor-class-id when renewing with DORA before the
     # threshold expires.
     # - Server maps client to different billing class and should NOT
-    # resuse the lease
+    # reuse the lease
     # ##################################################################
     misc.test_procedure()
     srv_msg.forge_sleep(20, 'seconds')
@@ -219,7 +219,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     # Case 6:
     # Client omits vendor-class-id when renewing with DORA before the
     # threshold expires.
-    # - Server removes billing class and should NOT resuse the lease
+    # - Server removes billing class and should NOT reuse the lease
     # ##################################################################
     misc.test_procedure()
     srv_msg.forge_sleep(20, 'seconds')

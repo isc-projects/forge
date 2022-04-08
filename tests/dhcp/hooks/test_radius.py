@@ -103,7 +103,7 @@ def test_radius_framed_pool(dhcp_version: str, attribute_cardinality: str):
     srv_control.start_srv('DHCP', 'started')
 
     if attribute_cardinality == 'double-attributes':
-        # Wether Kea takes only the first pool into consideration, as it happens at
+        # Whether Kea takes only the first pool into consideration, as it happens at
         # the time of writing, or if the allocation explicitly fails, expect the
         # client to not get the gold lease.
         radius.send_message_and_expect_no_more_leases(mac='08:00:27:b0:c1:41')
@@ -174,7 +174,7 @@ def test_radius_giaddr(dhcp_version: str,
                        reselect: str):
     """
     Check RADIUS functionality with a client that has a giaddr either belonging
-    to a configured subnet inisde Kea, or not.
+    to a configured subnet inside Kea, or not.
 
     :param dhcp_version: the DHCP version being tested
     :param config_type: whether usual subnets are used or shared network

@@ -75,7 +75,7 @@ def test_v4_dhcpd_keyword_echo_client_id_off_offer_ack_nak():
 @pytest.mark.dhcpd
 def test_v4_dhcpd_keyword_echo_client_id_on_offer_ack_nak():
     """new-v4.dhcpd.keyword.echo-client-id-on-offer-ack-nak"""
-    # Checks that the when echo-client-id is  enabled the server echoes
+    # Checks that the when echo-client-id is enabled the server echoes
     # back a client-id IF received.
     # #
     # The following sequence is performed twice, once with the client

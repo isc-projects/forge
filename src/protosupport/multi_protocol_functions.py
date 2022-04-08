@@ -381,7 +381,7 @@ def lease_dump(backend, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user
                db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address,
                out="/tmp/lease_dump.csv"):
     """
-    Function dumps database to CSV file performing kea-admin lese-dump command on server.
+    Function dumps database to CSV file performing kea-admin lease-dump command on server.
     :param backend: Select database backend: mysql, pgsql
     :param db_name: specifies a database name to connect to
     :param db_user: specifies username when connecting to a database
@@ -403,7 +403,7 @@ def lease_dump(backend, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user
 def lease_upload(backend, leases_file, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
                  db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address):
     """
-    Function uploads CSV file to database performing kea-admin lese-upload command on server.
+    Function uploads CSV file to database performing kea-admin lease-upload command on server.
     :param backend: Select database backend: mysql, pgsql
     :param leases_file: input file path
     :param db_name: specifies a database name to connect to

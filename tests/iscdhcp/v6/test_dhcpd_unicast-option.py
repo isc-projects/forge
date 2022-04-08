@@ -27,7 +27,7 @@ def test_dhcpd_feature_unicast_option_defined():
     # - server should reply with success status code
     # Step 5: Client SOLICITs requesting unicast option
     # - server should advertise an address and include unicast option
-    # Step 6: Client declines offered  address via unicast
+    # Step 6: Client declines offered address via unicast
     # - server should reply with success status code
     #
     misc.test_setup()
@@ -62,7 +62,7 @@ def test_dhcpd_feature_unicast_option_defined():
     # - server should reply (grant) the address
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('client-id')
     srv_msg.client_copy_option('server-id')
@@ -78,7 +78,7 @@ def test_dhcpd_feature_unicast_option_defined():
     # - server should reply (renew) the address
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('client-id')
     srv_msg.client_copy_option('server-id')
@@ -94,7 +94,7 @@ def test_dhcpd_feature_unicast_option_defined():
     # - server should reply with success status code
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('client-id')
     srv_msg.client_copy_option('server-id')
@@ -122,11 +122,11 @@ def test_dhcpd_feature_unicast_option_defined():
     srv_msg.response_check_include_option(12)
 
     # ##############################################################
-    # Step 6: Client declines offered  address via unicast
+    # Step 6: Client declines offered address via unicast
     # - server should reply with success status code
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('client-id')
     srv_msg.client_copy_option('server-id')
@@ -157,7 +157,7 @@ def test_dhcpd_feature_unicast_option_not_defined():
     # - server should reject with status code of 5
     # Step 5: Client SOLICITs requesting unicast option
     # - server should advertise an address without unicast option
-    # Step 6: Client declines offered  address via unicast
+    # Step 6: Client declines offered address via unicast
     # - server should reject with status code of 5
     #
     misc.test_setup()
@@ -194,7 +194,7 @@ def test_dhcpd_feature_unicast_option_not_defined():
     # - server should reply with status code = 5
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     # Client adds saved options in set no. 1. and DONT Erase.
     srv_msg.client_send_msg('REQUEST')
 
@@ -209,7 +209,7 @@ def test_dhcpd_feature_unicast_option_not_defined():
     # - server should reply with status code = 5
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     # Client adds saved options in set no. 1. and DONT Erase.
     srv_msg.client_send_msg('RENEW')
 
@@ -224,7 +224,7 @@ def test_dhcpd_feature_unicast_option_not_defined():
     # - server should reply with status code = 5
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     # Client adds saved options in set no. 1. and DONT Erase.
     srv_msg.client_send_msg('RELEASE')
 
@@ -254,7 +254,7 @@ def test_dhcpd_feature_unicast_option_not_defined():
     # - server should reply with status code = 5
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('client-id')
     srv_msg.client_copy_option('server-id')
@@ -313,7 +313,7 @@ def test_dhcpd_feature_unicast_option_defined_subnet():
     # - server should reply (grant) the address
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('client-id')
     srv_msg.client_copy_option('server-id')
@@ -374,7 +374,7 @@ def test_dhcpd_feature_unicast_option_defined_shared_network():
     # - server should reply (grant) the address
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('client-id')
     srv_msg.client_copy_option('server-id')
@@ -435,7 +435,7 @@ def test_dhcpd_feature_unicast_option_defined_IA_PD():
     # - server should reply (grant) the address
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     srv_msg.client_copy_option('IA_PD')
     srv_msg.client_copy_option('client-id')
     srv_msg.client_copy_option('server-id')
@@ -500,7 +500,7 @@ def test_dhcpd_feature_unicast_option_defined_IA_TA():
     # - server should reply (grant) the address
     # ##############################################################
     misc.test_procedure()
-    srv_msg.unicast_addres('GLOBAL', None)
+    srv_msg.unicast_address('GLOBAL', None)
     srv_msg.client_copy_option('IA_TA')
     srv_msg.client_copy_option('client-id')
     srv_msg.client_copy_option('server-id')

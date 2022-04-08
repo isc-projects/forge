@@ -132,7 +132,7 @@ def relay_agent_does_include(opt_type):
 
 
 @step(r'Client chooses (GLOBAL)|(LINK_LOCAL) UNICAST address.')
-def unicast_addres(addr_type, addr_type2):
+def unicast_address(addr_type, addr_type2):
     """
     Message can be send on 3 different addresses:
     - multicast for DHCPv6
@@ -141,7 +141,7 @@ def unicast_addres(addr_type, addr_type2):
     Proper configuration in init_all.py required.
     """
     # send true when GLOBAL and False when LINK_LOCAL
-    dhcpmsg.unicast_addres(True if addr_type else False)
+    dhcpmsg.unicast_address(True if addr_type else False)
 
 
 @step(r'Generate new (\S+).')

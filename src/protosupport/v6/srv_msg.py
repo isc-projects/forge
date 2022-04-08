@@ -162,7 +162,7 @@ def client_sets_value(value_name, new_value):
         assert value_name in world.cfg["values"], "Unknown value name : %s" % value_name
 
 
-def unicast_addres(addr_type):
+def unicast_address(addr_type):
     """
     Turn off sending on All_DHCP_Relay_Agents_and_Servers, and use UNICAST address.
     """

@@ -15,7 +15,7 @@ from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_l
 def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
     """new-v4.dhcpd.keyword.use-host-decl-names-on.ddns"""
     # Tests use-host-decl-names enabled in conjunction with ddns updates
-    # The  test consists of a single server configuration and instance which
+    # The test consists of a single server configuration and instance which
     # is used to execute the following test cases:
     # #
     # Case 1:

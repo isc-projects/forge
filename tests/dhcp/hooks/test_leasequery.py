@@ -175,7 +175,7 @@ def test_v4_leasequery_mac(backend):
     srv_msg.client_sets_value('Client', 'giaddr', '$(CIADDR)')
     srv_msg.client_sets_value('Client', 'ciaddr', 0)
     srv_msg.client_sets_value('Client', 'chaddr', "1a:1b:1c:1d:1e:1f")
-    srv_msg.client_requests_option(82)  # Recomended by RFC, not required by Kea
+    srv_msg.client_requests_option(82)  # Recommended by RFC, not required by Kea
     srv_msg.client_send_msg('LEASEQUERY')
 
     # sending and testing the response
@@ -267,7 +267,7 @@ def test_v4_leasequery_client(backend):
     srv_msg.client_sets_value('Client', 'chaddr', "00")
     srv_msg.client_sets_value('Client', 'hlen', 0)
     srv_msg.client_does_include_with_value('client_id', '00010203040506')
-    srv_msg.client_requests_option(82)  # Recomended by RFC, not required by Kea
+    srv_msg.client_requests_option(82)  # Recommended by RFC, not required by Kea
     srv_msg.client_send_msg('LEASEQUERY')
 
     # sending and testing the response
