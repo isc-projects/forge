@@ -604,11 +604,15 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
     :param subnet_mask: the value for option 1 subnet mask expected in a DHCPACK
     """
     client_sets_value('chaddr', chaddr)
-    if not init_reboot:
+    # Copy server ID if the client is not simulating an INIT-REBOOT state and if
+    # there was a server response in the past to copy it from.
+    if not init_reboot and len(world.srvmsg) > 0:
         client_copy_option('server_id')
     if options is None or 'requested_addr' not in options:
         if address is None:
-            client_does_include(None, 'requested_addr', world.srvmsg[0].yiaddr)
+            # Only request an address if there was a server response in the past.
+            if len(world.srvmsg) > 0:
+                client_does_include(None, 'requested_addr', world.srvmsg[0].yiaddr)
         else:
             client_does_include(None, 'requested_addr', address)
     if options:
