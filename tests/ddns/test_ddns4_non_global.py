@@ -83,7 +83,7 @@ def _get_address_and_update_ddns(mac=None, fqdn=None, address=None, arpa=None):
 @pytest.mark.ddns
 def test_ddns4_subnet():
     misc.test_setup()
-    # simple case, ddns configuration in subnet - get and addres and dns entry
+    # simple case, ddns configuration in subnet - get and address and dns entry
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
 
     world.dhcp_cfg["subnet4"][0].update({"ddns-send-updates": True,
@@ -112,7 +112,7 @@ def test_ddns4_subnet():
 @pytest.mark.ddns
 def test_ddns4_shared_network():
     misc.test_setup()
-    # simple case, ddns configuration in shared network - get and addres and dns entry
+    # simple case, ddns configuration in shared network - get and address and dns entry
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
 
     srv_control.shared_subnet('192.168.50.0/24', 0)
@@ -141,7 +141,7 @@ def test_ddns4_shared_network():
 @pytest.mark.ddns
 def test_ddns4_gloabl():
     misc.test_setup()
-    # simple case, ddns configuration in global - get and addres and dns entry
+    # simple case, ddns configuration in global - get and address and dns entry
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
 
     srv_control.shared_subnet('192.168.50.0/24', 0)

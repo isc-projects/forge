@@ -144,7 +144,7 @@ def install_krb(dns_addr, domain, key_life=2):
 
 def krb_destroy():
     """
-    Execute kdestory -A
+    Execute kdestroy -A
     """
     fabric_sudo_command('kdestroy -A', ignore_errors=True)
 

@@ -610,7 +610,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
     :param dhcp_version: the DHCP version being tested
     :param backend: the lease database backend type
     :param ha_mode: the HA mode: HS, LB or PB
-    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    :param hook_order: the order in which hooks are loaded: either alphabetical
         or reverse alphabetical. This is to test all order combinations for each
         set of two hook libraries after problems were found in one case where HA
         and leasequery were loaded in a certain order.

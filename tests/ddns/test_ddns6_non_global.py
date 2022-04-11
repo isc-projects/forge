@@ -85,7 +85,7 @@ def _get_address_and_update_ddns(duid=None, fqdn=None, address=None, arpa=None):
 @pytest.mark.ddns
 def test_ddns6_global():
     misc.test_setup()
-    # simple case, global ddns configuration - get and addres and dns entry
+    # simple case, global ddns configuration - get and address and dns entry
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
@@ -110,7 +110,7 @@ def test_ddns6_global():
 @pytest.mark.ddns
 def test_ddns6_shared_network():
     misc.test_setup()
-    # simple case, ddns configuration in shared network - get and addres and dns entry
+    # simple case, ddns configuration in shared network - get and address and dns entry
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
@@ -139,7 +139,7 @@ def test_ddns6_shared_network():
 @pytest.mark.ddns
 def test_ddns6_subnet():
     misc.test_setup()
-    # simple case, ddns configuration in subnet - get and addres and dns entry
+    # simple case, ddns configuration in subnet - get and address and dns entry
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
 
     world.dhcp_cfg["subnet6"][0].update({"ddns-send-updates": True,
