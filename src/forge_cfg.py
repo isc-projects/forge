@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
@@ -166,12 +168,12 @@ class ForgeConfiguration:
 
     def basic_validation(self):
         if self.software_install_path == "":
-            print ("Configuration failure, software_install_path empty. "
-                   "Please use ./forge_cfg.py -T to validate configuration.")
+            print ("Configuration failure, software_install_path is empty. "
+                   "Please use ./src/forge_cfg.py -T to validate configuration.")
             sys.exit(-1)
         if self.mgmt_address == "":
-            print("Configuration failure, mgmt_address empty." \
-                  " Please use ./forge_cfg.py -T to validate configuration.")
+            print("Configuration failure, mgmt_address is empty. "
+                  "Please use ./src/forge_cfg.py -T to validate configuration.")
             sys.exit(-1)
 
     def set_env_val(self, env_name, env_val):

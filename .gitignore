@@ -1,5 +1,6 @@
-*.py[co]
-init_all.py
+*.pyc
+*.pyo
+/init_all.py
 
 # Packages
 *.egg

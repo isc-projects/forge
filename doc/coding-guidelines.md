@@ -68,8 +68,8 @@ Writing new tests
 -----------------
 
 Since forge moved from lettuce to pytest, writing new tests is just python programming.
-Functions available in `tests/srv_control.py` are used to operate remote DHCP/DNS servers.
-Functions available in `tests/srv_msg.py` are used to generate and parse traffic. Don't forget
+Functions available in `src/srv_control.py` are used to operate remote DHCP/DNS servers.
+Functions available in `src/srv_msg.py` are used to generate and parse traffic. Don't forget
 to write test description for new tests.
 
 Additional info

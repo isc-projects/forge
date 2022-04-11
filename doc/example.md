@@ -203,7 +203,6 @@ Now you need to apply new configuration.
 sudo netplan apply
 ```
 
-
 ### 4. Clone Forge from Git Repository
 You can use git clone to download Forge from repository.
 
@@ -234,13 +233,12 @@ source ./venv/bin/activate
 You need to copy default config file as a working one:
 
 ```shell
-+cp tests/init_all.py_default tests/init_all.py
++cp ./init_all.py_default ./init_all.py
 ```
-
 
 And now edit this file:
 ```shell
-nano tests/init_all.py
+nano ./init_all.py
 ```
 
 Parameters that need to be set or uncommented, some of them will be empty:
