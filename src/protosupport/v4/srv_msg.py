@@ -587,7 +587,7 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04'):
 
 
 def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
-       init_reboot=False, subnet_mask='255.255.255.0'):
+       init_reboot=False, subnet_mask='255.255.255.0', fqdn=None):
     """
     Sends a request and expects an advertise. Inserts options in the client
     packets based on given parameters and ensures that the right options are
@@ -621,6 +621,10 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
     if options:
         for k, v in options.items():
             client_does_include(None, k, v)
+    if fqdn is not None:
+        client_sets_value('FQDN_domain_name', fqdn)
+        client_sets_value('FQDN_flags', 'S')
+        client_does_include(None, 'fqdn', 'fqdn')
     client_send_msg('REQUEST')
 
     if response_type is None:
@@ -635,7 +639,7 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
 
 
 def DORA(address=None, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04',
-         init_reboot=False, subnet_mask='255.255.255.0'):
+         init_reboot=False, subnet_mask='255.255.255.0', fqdn=None):
     """
     Sends and ensures receival of 6 packets part of a regular DHCPv4 exchange
     in the correct sequence: discover, offer, request,
@@ -667,11 +671,11 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
         DO(address, options, chaddr)
 
         # Send a request and expect an acknowledgement.
-        RA(address, options, response_type, chaddr, init_reboot, subnet_mask)
+        RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn)
 
     # Send a request and expect an acknowledgement.
     # This is supposed to be the renew scenario after DORA.
-    RA(address, options, response_type, chaddr, init_reboot, subnet_mask)
+    RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
