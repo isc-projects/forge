@@ -11,7 +11,6 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
-
 from src import misc
 from src import srv_msg
 from src import srv_control
@@ -47,87 +46,26 @@ def _get_address(duid, fqdn):
 @pytest.mark.v6
 @pytest.mark.ddns
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_ddns_tuning_basic(backend, dhcp_version):
+@pytest.mark.parametrize('hostname', ['basic', 'suffix', 'empty'])
+def test_ddns_tuning_basic(backend, dhcp_version, hostname):
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
+
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::21')
+
     srv_control.add_hooks('libdhcp_ddns_tuning.so')
     if dhcp_version == 'v4':
-        srv_control.add_parameter_to_hook(1, "hostname-expr", "'host-'+hexstring(pkt4.mac,'-')")
+        srv_control.add_parameter_to_hook(1, "hostname-expr", "" if hostname == 'empty' else "'host-'+hexstring(pkt4.mac,'-')")
     else:
-        srv_control.add_parameter_to_hook(1, "hostname-expr", "'host-'+hexstring(option[1].hex, '-')")
+        srv_control.add_parameter_to_hook(1, "hostname-expr", "" if hostname == 'empty' else  "'host-'+hexstring(option[1].hex, '-')")
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
 
-    if dhcp_version == 'v4':
-        srv_msg.DORA('192.168.50.1')
-        cmd = {"command": "lease4-get-all"}
-        response = srv_msg.send_ctrl_cmd(cmd, 'http')
-        assert response['arguments']['leases'][0]['hostname'] == 'host-ff-01-02-03-ff-04'
-    else:
-        _get_address(duid='00:03:00:01:66:55:44:33:22:11', fqdn='test.com')
-        cmd = {"command": "lease6-get-all"}
-        response = srv_msg.send_ctrl_cmd(cmd, 'http')
-        assert response['arguments']['leases'][0]['hostname'] == 'host-00-03-00-01-66-55-44-33-22-11.'
+    if hostname == 'suffix':
+        world.dhcp_cfg['ddns-qualifying-suffix'] = 'foo.bar'
 
-
-@pytest.mark.v4
-@pytest.mark.v6
-@pytest.mark.ddns
-@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_ddns_tuning_basic_suffix(backend, dhcp_version):
-    misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
-    if dhcp_version == 'v4':
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    else:
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::21')
-    srv_control.add_hooks('libdhcp_ddns_tuning.so')
-    if dhcp_version == 'v4':
-        srv_control.add_parameter_to_hook(1, "hostname-expr", "'host-'+hexstring(pkt4.mac,'-')")
-    else:
-        srv_control.add_parameter_to_hook(1, "hostname-expr", "'host-'+hexstring(option[1].hex, '-')")
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
-    world.dhcp_cfg['ddns-qualifying-suffix'] = 'foo.bar'
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    if dhcp_version == 'v4':
-        srv_msg.DORA('192.168.50.1')
-        cmd = {"command": "lease4-get-all"}
-        response = srv_msg.send_ctrl_cmd(cmd, 'http')
-        assert response['arguments']['leases'][0]['hostname'] == 'host-ff-01-02-03-ff-04.foo.bar'
-    else:
-        _get_address(duid='00:03:00:01:66:55:44:33:22:11', fqdn='test.com')
-        cmd = {"command": "lease6-get-all"}
-        response = srv_msg.send_ctrl_cmd(cmd, 'http')
-        assert response['arguments']['leases'][0]['hostname'] == 'host-00-03-00-01-66-55-44-33-22-11.foo.bar.'
-
-@pytest.mark.v4
-@pytest.mark.v6
-@pytest.mark.ddns
-@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_ddns_tuning_basic_empty(backend, dhcp_version):
-    misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
-    if dhcp_version == 'v4':
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    else:
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::21')
-    srv_control.add_hooks('libdhcp_ddns_tuning.so')
-    if dhcp_version == 'v4':
-        srv_control.add_parameter_to_hook(1, "hostname-expr", "")
-    else:
-        srv_control.add_parameter_to_hook(1, "hostname-expr", "")
-    srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     srv_control.build_and_send_config_files()
@@ -137,9 +75,19 @@ def test_ddns_tuning_basic_empty(backend, dhcp_version):
         srv_msg.DORA('192.168.50.1', fqdn='test.com')
         cmd = {"command": "lease4-get-all"}
         response = srv_msg.send_ctrl_cmd(cmd, 'http')
-        assert response['arguments']['leases'][0]['hostname'] == 'test.com.'
+        if hostname == 'basic':
+            assert response['arguments']['leases'][0]['hostname'] == 'host-ff-01-02-03-ff-04'
+        elif hostname == 'suffix':
+            assert response['arguments']['leases'][0]['hostname'] == 'host-ff-01-02-03-ff-04.foo.bar'
+        elif hostname == 'empty':
+            assert response['arguments']['leases'][0]['hostname'] == 'test.com.'
     else:
         _get_address(duid='00:03:00:01:66:55:44:33:22:11', fqdn='test.com')
         cmd = {"command": "lease6-get-all"}
         response = srv_msg.send_ctrl_cmd(cmd, 'http')
-        assert response['arguments']['leases'][0]['hostname'] == 'test.com.'
+        if hostname == 'basic':
+            assert response['arguments']['leases'][0]['hostname'] == 'host-00-03-00-01-66-55-44-33-22-11.'
+        elif hostname == 'suffix':
+            assert response['arguments']['leases'][0]['hostname'] == 'host-00-03-00-01-66-55-44-33-22-11.foo.bar.'
+        elif hostname == 'empty':
+            assert response['arguments']['leases'][0]['hostname'] == 'test.com.'
