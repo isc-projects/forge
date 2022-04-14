@@ -91,3 +91,61 @@ def test_ddns_tuning_basic(backend, dhcp_version, hostname):
             assert response['arguments']['leases'][0]['hostname'] == 'host-00-03-00-01-66-55-44-33-22-11.foo.bar.'
         elif hostname == 'empty':
             assert response['arguments']['leases'][0]['hostname'] == 'test.com.'
+
+@pytest.mark.v4
+@pytest.mark.ddns
+@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('hostname', ['basic'])
+def test_ddns_tuning_subnets(backend, dhcp_version, hostname):
+    misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
+
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.10-192.168.51.10')
+    srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24', '192.168.52.10-192.168.52.10')
+    srv_control.add_line_to_subnet(1, {"user-context": {
+            "ddns-tuning": {
+                "hostname-expr": "'guest1-'+hexstring(pkt4.mac,'-')"
+            }}})
+    srv_control.add_line_to_subnet(2, {"user-context": {
+            "ddns-tuning": {
+                "hostname-expr": "'guest2-'+hexstring(pkt4.mac,'-')"
+            }}})
+    srv_control.add_hooks('libdhcp_ddns_tuning.so')
+    if dhcp_version == 'v4':
+        pass
+        srv_control.add_parameter_to_hook(1, "hostname-expr", "" if hostname == 'empty' else "'host-'+hexstring(pkt4.mac,'-')")
+    else:
+        srv_control.add_parameter_to_hook(1, "hostname-expr", "" if hostname == 'empty' else  "'host-'+hexstring(option[1].hex, '-')")
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+
+    if hostname == 'suffix':
+        world.dhcp_cfg['ddns-qualifying-suffix'] = 'foo.bar'
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    if dhcp_version == 'v4':
+        srv_msg.DORA('192.168.50.10', fqdn='test.com')
+        cmd = {"command": "lease4-get-all"}
+        response = srv_msg.send_ctrl_cmd(cmd, 'http')
+        if hostname == 'basic':
+            assert response['arguments']['leases'][0]['hostname'] == 'host-ff-01-02-03-ff-04'
+        elif hostname == 'suffix':
+            assert response['arguments']['leases'][0]['hostname'] == 'host-ff-01-02-03-ff-04.foo.bar'
+        elif hostname == 'empty':
+            assert response['arguments']['leases'][0]['hostname'] == 'test.com.'
+
+        srv_msg.DORA('192.168.51.10', chaddr='ff:01:02:03:ff:05', fqdn='test1.com')
+        cmd = {"command": "lease4-get-all"}
+        response = srv_msg.send_ctrl_cmd(cmd, 'http')
+        if hostname == 'basic':
+            assert response['arguments']['leases'][0]['hostname'] == 'guest1-ff-01-02-03-ff-05'
+        elif hostname == 'suffix':
+            assert response['arguments']['leases'][0]['hostname'] == 'guest1-ff-01-02-03-ff-05.foo.bar'
+        elif hostname == 'empty':
+            assert response['arguments']['leases'][0]['hostname'] == 'test.com.'
+
+
