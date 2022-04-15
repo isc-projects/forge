@@ -48,6 +48,13 @@ def _get_address(duid, fqdn):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hostname', ['basic', 'suffix', 'empty'])
 def test_ddns_tuning_basic(backend, dhcp_version, hostname):
+    """
+    Test of the "ddns-tuning" premium hook basic functionality.
+    This basic test sets ddns-tuning hook parameter to replace hostname with expression including text and hardware address.
+    DORA/SARR exchange acquires lease and leaseX-get command returns hostname applied to lease.
+    We then compare returned lease with expected.
+    Parameter 'suffix' and 'empty' check for proper behaviour with global suffix applied or global tuning disabled.
+    """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
 
@@ -60,7 +67,7 @@ def test_ddns_tuning_basic(backend, dhcp_version, hostname):
     if dhcp_version == 'v4':
         srv_control.add_parameter_to_hook(1, "hostname-expr", "" if hostname == 'empty' else "'host-'+hexstring(pkt4.mac,'-')")
     else:
-        srv_control.add_parameter_to_hook(1, "hostname-expr", "" if hostname == 'empty' else  "'host-'+hexstring(option[1].hex, '-')")
+        srv_control.add_parameter_to_hook(1, "hostname-expr", "" if hostname == 'empty' else "'host-'+hexstring(option[1].hex, '-')")
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     if hostname == 'suffix':
@@ -92,11 +99,21 @@ def test_ddns_tuning_basic(backend, dhcp_version, hostname):
         elif hostname == 'empty':
             assert response['arguments']['leases'][0]['hostname'] == 'test.com.'
 
+
 @pytest.mark.v4
 @pytest.mark.ddns
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hostname', ['basic', 'suffix', 'empty'])
 def test_v4_ddns_tuning_subnets(backend, hostname):
+    """
+    Test of the "ddns-tuning" premium hook basic functionality with configured subnets in IP v4.
+    This test sets ddns-tuning hook parameter to replace hostname with expression including text and hardware address
+    globally and per subnet.
+    First subnet uses global expression, and rest uses respective subnet configured expressions.
+    DORA exchange acquires lease and lease4-get command returns hostname applied to lease.
+    We then compare returned lease with expected.
+    Parameter 'suffix' and 'empty' check for proper behaviour with global suffix applied or global tuning disabled.
+    """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
 
@@ -152,6 +169,15 @@ def test_v4_ddns_tuning_subnets(backend, hostname):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hostname', ['basic', 'suffix', 'empty'])
 def test_v6_ddns_tuning_subnets(backend, hostname):
+    """
+    Test of the "ddns-tuning" premium hook basic functionality with configured subnets in IP v6.
+    This test sets ddns-tuning hook parameter to replace hostname with expression including text and hardware address
+    globally and per subnet.
+    First subnet uses global expression, and rest uses respective subnet configured expressions.
+    SARR exchange acquires lease and leas6-get command returns hostname applied to lease.
+    We then compare returned lease with expected.
+    Parameter 'suffix' and 'empty' check for proper behaviour with global suffix applied or global tuning disabled.
+    """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
 
@@ -187,10 +213,10 @@ def test_v6_ddns_tuning_subnets(backend, hostname):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    for i in range(1,4):
+    for i in range(1, 4):
         _get_address(duid=f'00:03:00:01:66:55:44:33:22:1{i}', fqdn=f'test{i}.com')
 
-    for i in range(1,4):
+    for i in range(1, 4):
         cmd = {"command": "lease6-get",
                "arguments": {"ip-address": f'2001:db8:{i}::1'}}
         response = srv_msg.send_ctrl_cmd(cmd, 'http')
