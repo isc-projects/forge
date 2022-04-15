@@ -132,9 +132,8 @@ def test_v4_ddns_tuning_subnets(backend, hostname):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.DORA('192.168.50.10', chaddr='ff:01:02:03:ff:00', fqdn='test0.com')
-    srv_msg.DORA('192.168.51.10', chaddr='ff:01:02:03:ff:01', fqdn='test1.com')
-    srv_msg.DORA('192.168.52.10', chaddr='ff:01:02:03:ff:02', fqdn='test2.com')
+    for i in range(3):
+        srv_msg.DORA(f'192.168.5{i}.10', chaddr=f'ff:01:02:03:ff:0{i}', fqdn=f'test{i}.com')
 
     for i in range(3):
         cmd = {"command": "lease4-get",
@@ -144,5 +143,60 @@ def test_v4_ddns_tuning_subnets(backend, hostname):
             assert response['arguments']['hostname'] == f'host{i}-ff-01-02-03-ff-0{i}'
         elif hostname == 'suffix':
             assert response['arguments']['hostname'] == f'host{i}-ff-01-02-03-ff-0{i}.foo.bar'
+        elif hostname == 'empty':
+            assert response['arguments']['hostname'] == f'test{i}.com.'
+
+
+@pytest.mark.v6
+@pytest.mark.ddns
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('hostname', ['basic', 'suffix', 'empty'])
+def test_v6_ddns_tuning_subnets(backend, hostname):
+    misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
+
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64', '2001:db8:2::1-2001:db8:2::1')
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:3::/64', '2001:db8:3::1-2001:db8:3::1')
+    srv_control.add_line_to_subnet(1, {"user-context": {
+            "ddns-tuning": {
+                "hostname-expr": "" if hostname == 'empty' else "'host2-'+hexstring(option[1].hex, '-')"
+            }}})
+    srv_control.add_line_to_subnet(2, {"user-context": {
+            "ddns-tuning": {
+                "hostname-expr": "" if hostname == 'empty' else "'host3-'+hexstring(option[1].hex, '-')"
+            }}})
+    srv_control.add_hooks('libdhcp_ddns_tuning.so')
+
+    srv_control.add_parameter_to_hook(1, "hostname-expr", "" if hostname == 'empty' else "'host1-'+hexstring(option[1].hex, '-')")
+
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+
+    if hostname == 'suffix':
+        world.dhcp_cfg['ddns-qualifying-suffix'] = 'foo.bar'
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+
+    srv_control.shared_subnet('2001:db8:1::/64', 0)
+    srv_control.shared_subnet('2001:db8:2::/64', 0)
+    srv_control.shared_subnet('2001:db8:3::/64', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    for i in range(1,4):
+        _get_address(duid=f'00:03:00:01:66:55:44:33:22:1{i}', fqdn=f'test{i}.com')
+
+    for i in range(1,4):
+        cmd = {"command": "lease6-get",
+               "arguments": {"ip-address": f'2001:db8:{i}::1'}}
+        response = srv_msg.send_ctrl_cmd(cmd, 'http')
+        if hostname == 'basic':
+            assert response['arguments']['hostname'] == f'host{i}-00-03-00-01-66-55-44-33-22-1{i}.'
+        elif hostname == 'suffix':
+            assert response['arguments']['hostname'] == f'host{i}-00-03-00-01-66-55-44-33-22-1{i}.foo.bar.'
         elif hostname == 'empty':
             assert response['arguments']['hostname'] == f'test{i}.com.'
