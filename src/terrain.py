@@ -414,7 +414,7 @@ def initialize(scenario):
                 "-s", str(65535), "-i", world.cfg["iface"]]
 
         subprocess.Popen(args)
-        # potential probelms with two instances of tcpdump running
+        # potential problems with two instances of tcpdump running
         # TODO make sure it works properly!
         if world.dhcp_enable and world.dns_enable:
             if world.f_cfg.dns_iface != world.cfg["iface"]:
