@@ -352,13 +352,16 @@ def send_wait_for_message(msgtype, presence, exp_message):
     Block until the given message is (not) received.
     """
     # We need to use srp() here (send and receive on layer 2)
-    timeout = world.cfg["wait_interval"]
-    if "HA" in os.environ.get('PYTEST_CURRENT_TEST').split("/"):
-        timeout *= world.f_cfg.ha_packet_wait_interval_factor
+    factor = 1
+    pytest_current_test = os.environ.get('PYTEST_CURRENT_TEST')
+    if 'HA' in pytest_current_test.split('/'):
+        factor = max(factor, world.f_cfg.ha_packet_wait_interval_factor)
+    if '_radius' in pytest_current_test.lower():
+        factor = max(factor, world.f_cfg.radius_packet_wait_interval_factor)
     apply_message_fields_changes()
     ans, unans = srp(world.climsg,
                      iface=world.cfg["iface"],
-                     timeout=timeout,
+                     timeout=factor * world.cfg['wait_interval'],
                      multi=True,
                      verbose=99)
 
