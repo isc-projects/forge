@@ -81,14 +81,9 @@ def test_radius_framed_pool(dhcp_version: str, attribute_cardinality: str):
     # RFC 2869 says that zero or one instance of the framed pool attribute MAY
     # be present.
     attributes = []
-    if world.proto == 'v4':
-        if attribute_cardinality == 'double-attributes':
-            attributes.append('Framed-Pool = "bogus"')
-        attributes.append('Framed-Pool = "gold"')
-    elif world.proto == 'v6':
-        if attribute_cardinality == 'double-attributes':
-            attributes.append('Framed-IPv6-Pool = "bogus"')
-        attributes.append('Framed-IPv6-Pool = "gold"')
+    if attribute_cardinality == 'double-attributes':
+        attributes.append('Framed-Pool = "bogus"')
+    attributes.append('Framed-Pool = "gold"')
 
     # Provide RADIUS configuration and start RADIUS server.
     radius.add_reservation('08:00:27:b0:c1:41', attributes)
