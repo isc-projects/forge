@@ -411,7 +411,7 @@ shutdown /s /t 25200
     """
     params = dict(MaxCount=1,
                   MinCount=1,
-                  InstanceType='t2.micro',
+                  InstanceType='t3a.small',
                   ImageId=ami,
                   SubnetId='subnet-0efca44a30c0a40c0',
                   KeyName='jenkins-ec2',
@@ -485,8 +485,8 @@ def setup(args):
     win_vm_2019 = None
 
     if args.win_gss_tsig:
-        win_vm_2016 = _setup_win_ad_dns('ami-085b34aa1f55b9a7c', 'win2016ad.aws.isc.org')
-        win_vm_2019 = _setup_win_ad_dns('ami-0d9beed9cfa1f66a2', 'win2019ad.aws.isc.org')
+        win_vm_2016 = _setup_win_ad_dns('ami-08065ac07e6a96549', 'win2016ad.aws.isc.org')
+        win_vm_2019 = _setup_win_ad_dns('ami-06602a989923b1eba', 'win2019ad.aws.isc.org')
 
     set_init_all(args)
 
