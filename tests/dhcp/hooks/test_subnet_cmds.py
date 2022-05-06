@@ -505,7 +505,8 @@ def test_hook_v4_subnet_grow_cb_command(channel):
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.', 2)
+    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.',
+                                    count=2, timeout=7)
 
     response = srv_msg.send_ctrl_cmd({
         'arguments': {
