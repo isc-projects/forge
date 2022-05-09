@@ -731,7 +731,7 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04'):
 
 def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
        init_reboot=False, subnet_mask='255.255.255.0', fqdn=None):
-    return dhcpmsg.RA(address, options, response_type, chaddr, init_reboot, subnet_mask,fqdn)
+    return dhcpmsg.RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn)
 
 
 def DORA(address=None, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04',
