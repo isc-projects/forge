@@ -34,6 +34,7 @@ def test_ca_tls_basic(dhcp_version, client_cert_required):
     certificate = srv_control.generate_certificate()
     # Download required certificates.
     server_cert = certificate.download('server_cert')
+    ca_cert = certificate.download('ca_cert')
     if client_cert_required:
         client_cert = certificate.download('client_cert')
         client_key = certificate.download('client_key')
@@ -54,10 +55,10 @@ def test_ca_tls_basic(dhcp_version, client_cert_required):
     if client_cert_required:
         # Send command using server_cert  and ca_cert to verify Kea server,
         # and client_cert+client_key to authorize message.
-        response = srv_msg.send_ctrl_cmd(cmd, 'https', verify=server_cert, cert=(client_cert, client_key))
+        response = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert, client_key))
     else:
         # Send command using server_cert and ca_cert to verify Kea server.
-        response = srv_msg.send_ctrl_cmd(cmd, 'https', verify=server_cert)
+        response = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert)
 
     # Check the response.
     for option in ["pid",
@@ -119,5 +120,3 @@ def test_ca_tls_basic_negative(dhcp_version, client_cert_required):
     else:
         # Send command using missing verification.
         srv_msg.send_ctrl_cmd(cmd, 'https', exp_failed=True)
-        # Send command using wrong verification.
-        srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, exp_failed=True)
