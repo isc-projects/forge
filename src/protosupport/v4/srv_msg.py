@@ -634,9 +634,9 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
         response_check_content(True, 'yiaddr', address)
         response_check_include_option(True, 'subnet-mask')
         response_check_option_content('subnet-mask', True, 'value', subnet_mask)
-        # if fqdn is not None:
-        #     response_check_include_option(True, 81)
-        #     response_check_option_content(81, True, 'fqdn', fqdn)
+        if fqdn is not None:
+            response_check_include_option(True, 81)
+            response_check_option_content(81, True, 'fqdn', fqdn)
     elif response_type == 'NAK':
         send_wait_for_message('MUST', True, 'NAK')
 

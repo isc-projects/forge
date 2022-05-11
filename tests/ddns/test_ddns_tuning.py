@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -95,6 +95,8 @@ def _get_address_v6(duid, fqdn, expected_fqdn=None):
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
     if fqdn is not None:
         srv_msg.response_check_include_option(39)
         srv_msg.response_check_option_content(39, 'fqdn', expected_fqdn)
