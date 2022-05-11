@@ -175,12 +175,14 @@ class CreateCert:
         self.server_cert = world.f_cfg.data_join('server_cert.pem')
         self.server_csr = world.f_cfg.data_join('server_csr.csr')
         self.server_key = world.f_cfg.data_join('server_key.pem')
-        self.server2_cert = world.f_cfg.data_join('server2_cert.pem')
-        self.server2_csr = world.f_cfg.data_join('server2_csr.csr')
-        self.server2_key = world.f_cfg.data_join('server2_key.pem')
         self.client_cert = world.f_cfg.data_join('client_cert.pem')
         self.client_csr = world.f_cfg.data_join('client_csr.csr')
         self.client_key = world.f_cfg.data_join('client_key.pem')
+        if world.f_cfg.mgmt_address_2 != '':
+            self.server2_cert = world.f_cfg.data_join('server2_cert.pem')
+            self.server2_csr = world.f_cfg.data_join('server2_csr.csr')
+            self.server2_key = world.f_cfg.data_join('server2_key.pem')
+
 
         # Delete leftover certificates.
         self.clear()
@@ -194,12 +196,13 @@ class CreateCert:
         remove_file_from_server(self.server_cert)
         remove_file_from_server(self.server_csr)
         remove_file_from_server(self.server_key)
-        remove_file_from_server(self.server2_cert)
-        remove_file_from_server(self.server2_csr)
-        remove_file_from_server(self.server2_key)
         remove_file_from_server(self.client_cert)
         remove_file_from_server(self.client_csr)
         remove_file_from_server(self.client_key)
+        if world.f_cfg.mgmt_address_2 != '':
+            remove_file_from_server(self.server2_cert)
+            remove_file_from_server(self.server2_csr)
+            remove_file_from_server(self.server2_key)
 
     def generate(self):
         # Generate CA cert and key
@@ -230,24 +233,6 @@ class CreateCert:
                           f'-extfile <(cat /etc/ssl/openssl.cnf' \
                           f' <(printf "\n[SAN]\nsubjectAltName=IP:{world.f_cfg.mgmt_address}"))'
 
-        # Generate server cert and key
-        generate_server2_priv = f'openssl genrsa -out {self.server2_key} 4096 ; ' \
-                               f'openssl req ' \
-                               f'-new ' \
-                               f'-key {self.server2_key} ' \
-                               f'-out {self.server2_csr} ' \
-                               f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={world.f_cfg.mgmt_address_2}"'
-        # Sign server cert
-        generate_server2 = f'openssl x509 -req ' \
-                          f'-days 1460 ' \
-                          f'-in {self.server2_csr} ' \
-                          f'-CA {self.ca_cert} ' \
-                          f'-CAkey {self.ca_key} ' \
-                          f'-CAcreateserial -out {self.server2_cert} ' \
-                          f'-extensions SAN ' \
-                          f'-extfile <(cat /etc/ssl/openssl.cnf' \
-                          f' <(printf "\n[SAN]\nsubjectAltName=IP:{world.f_cfg.mgmt_address_2}"))'
-
         # Generate client cert and key
         generate_client_priv = f'openssl genrsa -out {self.client_key} 4096 ; ' \
                                f'openssl req ' \
@@ -264,13 +249,38 @@ class CreateCert:
                           f'-CAkey {self.ca_key} ' \
                           f'-CAcreateserial -out {self.client_cert} ' \
 
+        if world.f_cfg.mgmt_address_2 != '':
+            # Generate server cert and key
+            generate_server2_priv = f'openssl genrsa -out {self.server2_key} 4096 ; ' \
+                                    f'openssl req ' \
+                                    f'-new ' \
+                                    f'-key {self.server2_key} ' \
+                                    f'-out {self.server2_csr} ' \
+                                    f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={world.f_cfg.mgmt_address_2}"'
+            # Sign server cert
+            generate_server2 = f'openssl x509 -req ' \
+                               f'-days 1460 ' \
+                               f'-in {self.server2_csr} ' \
+                               f'-CA {self.ca_cert} ' \
+                               f'-CAkey {self.ca_key} ' \
+                               f'-CAcreateserial -out {self.server2_cert} ' \
+                               f'-extensions SAN ' \
+                               f'-extfile <(cat /etc/ssl/openssl.cnf' \
+                               f' <(printf "\n[SAN]\nsubjectAltName=IP:{world.f_cfg.mgmt_address_2}"))'
+
         fabric_sudo_command(generate_ca)
         fabric_sudo_command(generate_server_priv)
         fabric_sudo_command(generate_server)
-        fabric_sudo_command(generate_server2_priv)
-        fabric_sudo_command(generate_server2)
         fabric_sudo_command(generate_client_priv)
         fabric_sudo_command(generate_client)
+
+        if world.f_cfg.mgmt_address_2 != '':
+            fabric_sudo_command(generate_server2_priv)
+            fabric_sudo_command(generate_server2)
+
+        # Ensure Kea can read certificates.
+        for name, path in self.__dict__.items():
+            fabric_sudo_command(f'chmod 644 {path}')
 
     def download(self, cert_name: str = None):
         """ This function downloads selected certificate to test result directory on forge machine
@@ -284,13 +294,11 @@ class CreateCert:
         if cert_name is None:
             certs = {}
             for name, path in self.__dict__.items():
-                fabric_sudo_command(f'chmod 644 {path}')
                 copy_file_from_server(path, f'{name}.pem')
                 certs[name] = path
             return certs
         else:
             if cert_name in self.__dict__.keys():
-                fabric_sudo_command(f'chmod 644 {self.__dict__[cert_name]}')
                 copy_file_from_server(self.__dict__[cert_name], f'{cert_name}.pem')
                 return f'{world.cfg["test_result_dir"]}/{cert_name}.pem'
             else:

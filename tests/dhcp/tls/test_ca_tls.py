@@ -33,7 +33,6 @@ def test_ca_tls_basic(dhcp_version, client_cert_required):
     # Create certificates.
     certificate = srv_control.generate_certificate()
     # Download required certificates.
-    server_cert = certificate.download('server_cert')
     ca_cert = certificate.download('ca_cert')
     if client_cert_required:
         client_cert = certificate.download('client_cert')
