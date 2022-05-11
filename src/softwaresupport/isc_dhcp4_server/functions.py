@@ -289,7 +289,7 @@ def remove_comma(string):
     return tmp
 
 
-def prepare_cfg_add_option(option_name, option_value, space='dhcp'):
+def prepare_cfg_add_option(option_name, option_value, space='dhcp', always_send=None):
     """
     Add option to global part of configuration
     :param option_name: string with option name
@@ -351,7 +351,7 @@ def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space
     pass #http://linux.die.net/man/5/dhcp-options
 
 
-def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space='dhcp'):
+def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space='dhcp', always_send=None):
     """
     Add option configuration in specific subnet
     :param option_name: string with option name

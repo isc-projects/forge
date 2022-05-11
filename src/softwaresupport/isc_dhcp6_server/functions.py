@@ -294,7 +294,7 @@ def config_srv_another_subnet(subnet, pool, eth):
     prepare_cfg_subnet(subnet, pool, eth)
 
 
-def prepare_cfg_add_option(option_name, option_value, space):
+def prepare_cfg_add_option(option_name, option_value, space, always_send=None):
     """
     Add option to global part of configuration
     :param option_name: string with option name
@@ -381,7 +381,7 @@ def config_client_classification(subnet, option_value):
     assert False, "TODO!"
 
 
-def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space='dhcp6'):
+def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space='dhcp6', always_send=None):
     """
     Add option configuration in specific subnet
     :param option_name: string with option name

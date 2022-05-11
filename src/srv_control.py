@@ -136,27 +136,27 @@ def global_add_siaddr(addr):
 
 
 @step(r'Server is configured with (\S+) option with value (\S+).')
-def config_srv_opt(option_name, option_value):
+def config_srv_opt(option_name, option_value, always_send=None):
     """
     Add to configuration options like: preference, dns servers..
     This step causes to set in to main space!
     """
     option_name, option_value = test_define_value(option_name, option_value)
-    dhcp.prepare_cfg_add_option(option_name, option_value, world.cfg["space"])
+    dhcp.prepare_cfg_add_option(option_name, option_value, world.cfg["space"], always_send=always_send)
 
 
 @step(r'On space (\S+) server is configured with (\S+) option with value (\S+).')
-def config_srv_opt_space(space, option_name, option_value):
+def config_srv_opt_space(space, option_name, option_value, always_send=None):
     """
     Add to configuration options like: preference, dns servers.. but you can specify
     to which space should that be included.
     """
     option_name, option_value, space = test_define_value(option_name, option_value, space)
-    dhcp.prepare_cfg_add_option(option_name, option_value, space)
+    dhcp.prepare_cfg_add_option(option_name, option_value, space, always_send=always_send)
 
 
 @step(r'Server is configured with custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
-def config_srv_custom_opt(opt_name, opt_code, opt_type, opt_value):
+def config_srv_custom_opt(opt_name, opt_code, opt_type, opt_value, always_send=None):
     """
     Prepare server configuration with the specified custom option.
     opt_name name of the option, e.g. foo
@@ -165,16 +165,17 @@ def config_srv_custom_opt(opt_name, opt_code, opt_type, opt_value):
     opt_value value of the option, e.g. 1
     """
     opt_name, opt_code, opt_type, opt_value = test_define_value(opt_name, opt_code, opt_type, opt_value)
-    dhcp.prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, world.cfg["space"])
+    dhcp.prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, world.cfg["space"],
+                                       always_send=always_send)
 
 
 @step(r'On space (\S+) server is configured with a custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
-def config_srv_custom_opt_space(space, opt_name, opt_code, opt_type, opt_value):
+def config_srv_custom_opt_space(space, opt_name, opt_code, opt_type, opt_value, always_send=None):
     """
     Same step like "Server is configured with custom option.." but specify that option on different space then main.
     """
     opt_name, opt_code, opt_type, opt_value, space = test_define_value(opt_name, opt_code, opt_type, opt_value, space)
-    dhcp.prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space)
+    dhcp.prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space, always_send=always_send)
 
 
 @step(r'Time (\S+) is configured with value (\S+).')
@@ -485,23 +486,47 @@ def new_pool(pool, subnet):
 
 
 @step(r'Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
-def config_srv(option_name, subnet, option_value):
+def config_srv(option_name, subnet, option_value, always_send=None):
     """
     Prepare server configuration with the specified option.
     option_name name of the option, e.g. dns-servers (number may be used here)
     option_value value of the configuration
     """
-    dhcp.prepare_cfg_add_option_subnet(option_name, subnet, option_value)
+    dhcp.prepare_cfg_add_option_subnet(option_name, subnet, option_value, always_send=always_send)
 
 
 @step(r'On space (\S+) server is configured with (\S+) option in subnet (\d+) with value (\S+).')
-def config_srv_on_space(space, option_name, subnet, option_value):
+def config_srv_on_space(space, option_name, subnet, option_value, always_send=None):
     """
     Prepare server configuration with the specified option.
     option_name name of the option, e.g. dns-servers (number may be used here)
     option_value value of the configuration
     """
-    dhcp.prepare_cfg_add_option_subnet(option_name, subnet, option_value, space)
+    dhcp.prepare_cfg_add_option_subnet(option_name, subnet, option_value, space, always_send=always_send)
+
+
+def option_in_shared_network(option_name: str, option_value: str, shared_network: int = 0, always_send=None):
+    """
+    Add option-data to shared network
+    :param option_name: string, option name
+    :param shared_network: int, list index of network that should be updated
+    :param option_value: string, option value
+    :param always_send: boolean, value of always_send parameter
+    """
+    dhcp.prepare_cfg_add_option_shared_network(option_name, option_value, shared_network=shared_network,
+                                               always_send=always_send)
+
+
+def add_option_to_pool(option_name: str, option_value: str, subnet: int = 0, pool: int = 0, always_send: bool = None):
+    """
+    Add option data to a pool
+    :param option_name: string, option name
+    :param option_value: string, option value
+    :param subnet: int, index of subnet in the list of subnets
+    :param pool: int, index of pool to be updated on the list of pools
+    :param always_send: boolean, value of parameter always_send added only if different than None
+    """
+    dhcp.prepare_cfg_add_option_pool(option_name, option_value, subnet=subnet, pool=pool, always_send=always_send)
 
 
 @step(r'Server is configured with client-classification option in subnet (\d+) with name (\S+).')

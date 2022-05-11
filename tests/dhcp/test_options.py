@@ -584,3 +584,119 @@ def test_v6_options_all():
     srv_msg.response_check_option_content(59, 'optdata', 'http://www.kea.isc.org')
     srv_msg.response_check_include_option(65)
     srv_msg.response_check_option_content(65, 'erpdomain', 'erp-domain.isc.org.')
+
+
+@pytest.mark.v6
+@pytest.mark.options
+def test_v6_options_always_send_all_levels():
+    """
+    Configure various options on all levels: global, shared network, subnet and pool. All with
+    always_send set to True. Check if all will be actually send to client when not requested.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.add_option_to_pool('domain-search', 'domain1.example.com,domain2.isc.org', always_send=True)  # pool opt
+    srv_control.config_srv_opt('preference', '123', always_send=True)  # global opt
+    srv_control.config_srv('sip-server-dns', 0, 'srv1.example.com,srv2.isc.org', always_send=True)  # subnet opt
+    srv_control.shared_subnet('2001:db8:1::/64', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
+    srv_control.option_in_shared_network('dns-servers', '2001:db8::1,2001:db8::2', always_send=True)  # network opt
+    srv_control.config_srv_custom_opt('foo', 189, 'uint8', 123, always_send=True)
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(24)
+    srv_msg.response_check_option_content(24, 'domains', 'domain1.example.com.,domain2.isc.org.')
+    srv_msg.response_check_include_option(7)
+    srv_msg.response_check_option_content(7, 'value', 123)
+    srv_msg.response_check_include_option(21)
+    srv_msg.response_check_option_content(21, 'addresses', 'srv1.example.com.,srv2.isc.org.')
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1,2001:db8::2')
+    srv_msg.response_check_include_option(189)
+
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(24)
+    srv_msg.response_check_option_content(24, 'domains', 'domain1.example.com.,domain2.isc.org.')
+    srv_msg.response_check_include_option(7)
+    srv_msg.response_check_option_content(7, 'value', 123)
+    srv_msg.response_check_include_option(21)
+    srv_msg.response_check_option_content(21, 'addresses', 'srv1.example.com.,srv2.isc.org.')
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1,2001:db8::2')
+    srv_msg.response_check_include_option(189)
+
+
+@pytest.mark.v4
+@pytest.mark.options
+def test_v4_options_always_send_all_levels():
+    """
+    Configure various options on all levels: global, shared network, subnet and pool. All with
+    always_send set to True. Check if all will be actually send to client when not requested.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
+    srv_control.add_option_to_pool('domain-name-servers', '199.199.199.1,100.100.100.1', always_send=True)
+    srv_control.config_srv_opt('name-servers', '199.199.199.1,100.100.100.1', always_send=True)
+    srv_control.config_srv('merit-dump', 0, 'some-string', always_send=True)
+    srv_control.shared_subnet('192.168.50.0/24', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
+    srv_control.option_in_shared_network('time-offset', '50', always_send=True)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(6, 'value', '100.100.100.1')
+    srv_msg.response_check_include_option(5)
+    srv_msg.response_check_option_content(5, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(5, 'value', '100.100.100.1')
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_option_content(2, 'value', 50)
+    srv_msg.response_check_include_option(14)
+    srv_msg.response_check_option_content(14, 'value', 'some-string')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(6, 'value', '100.100.100.1')
+    srv_msg.response_check_include_option(5)
+    srv_msg.response_check_option_content(5, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(5, 'value', '100.100.100.1')
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_option_content(2, 'value', 50)
+    srv_msg.response_check_include_option(14)
+    srv_msg.response_check_option_content(14, 'value', 'some-string')

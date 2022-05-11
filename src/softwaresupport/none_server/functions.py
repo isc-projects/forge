@@ -59,7 +59,7 @@ def add_line_to_shared_subnet(subnet_id, cfg_line):
     pass
 
 
-def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_value):
+def prepare_cfg_add_option_shared_subnet(*args):
     pass
 
 
@@ -87,11 +87,11 @@ def prepare_cfg_add_option(*args):
     pass
 
 
-def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
+def prepare_cfg_add_custom_option(*args):
     pass
 
 
-def prepare_cfg_add_option_subnet(option_name, subnet, option_value):
+def prepare_cfg_add_option_subnet(*args):
     pass
 
 

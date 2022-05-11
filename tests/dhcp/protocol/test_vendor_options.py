@@ -421,7 +421,6 @@ def test_v4_options_vendor_encapsulated_siemens_defined_in_class():
 @pytest.mark.options
 @pytest.mark.vendor
 def test_v4_options_vendor_encapsulated_options_space_siemens():
-    # kea gitlab #1682
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -434,7 +433,8 @@ def test_v4_options_vendor_encapsulated_options_space_siemens():
 
     my_class = [{"name": "VENDOR_CLASS_339",
                  "option-def": [{"name": "vendor-encapsulated-options", "code": 43,
-                                 "type": "empty"}],
+                                 "type": "empty",
+                                 "encapsulate": "vendor-encapsulated-options-space"}],
                  "option-data": [{"name": "vendor-encapsulated-options"},
                                  {"always-send": True, "data": "123", "name": "vlanid",
                                   "space": "vendor-encapsulated-options-space"},
@@ -459,6 +459,71 @@ def test_v4_options_vendor_encapsulated_options_space_siemens():
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
     srv_msg.response_check_include_option(43)
     srv_msg.response_check_option_content(43, 'value', 'HEX:02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
+
+
+@pytest.mark.v4
+@pytest.mark.options
+@pytest.mark.vendor
+def test_v4_options_vendor_encapsulated_options_space_global_level():
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+
+    option_def = [{"name": "vlanid", "code": 2, "array": False,
+                   "encapsulate": "", "record-types": "",
+                   "space": "vendor-encapsulated-options-space", "type": "uint32"},
+                  {"name": "dls", "code": 3, "array": False,
+                   "encapsulate": "", "record-types": "",
+                   "space": "vendor-encapsulated-options-space", "type": "string"}]
+
+    option_data = [{"name": "vendor-encapsulated-options"},
+                   {"always-send": True, "data": "123", "name": "vlanid",
+                    "space": "vendor-encapsulated-options-space"},
+                   {"always-send": True, "data": "sdlp://192.0.2.11:18443", "name": "dls",
+                    "space": "vendor-encapsulated-options-space"}]
+
+    world.dhcp_cfg["option-def"] = option_def
+    world.dhcp_cfg["option-data"] = option_data
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(43)
+    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:11:22')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(43)
+    srv_msg.response_check_option_content(43, 'value', 'HEX:02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
+
+
+@pytest.mark.disabled
+@pytest.mark.v4
+@pytest.mark.options
+@pytest.mark.vendor
+def test_v4_options_custom():
+    """
+    Check if v4 custom option is actually send back by Kea
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_custom_opt('foo', 189, 'uint8', 123, always_send=True)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(189)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(189)  # TODO this should be checked but scapy is unable to do it
+
 
 
 @pytest.mark.v6

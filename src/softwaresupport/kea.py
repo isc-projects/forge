@@ -309,6 +309,21 @@ def generate_certificate():
     return CreateCert()
 
 
+def _get_option_code(option_name: str):
+    """
+    Look for option code of standard option
+    :param option_name: string option name
+    :return: int, option code
+    """
+    if world.proto == 'v4':
+        option_code = world.kea_options4.get(option_name)
+    else:
+        option_code = world.kea_options6.get(option_name)
+        if option_code is None:
+            option_code = kea_otheroptions.get(option_name)
+    return option_code
+
+
 def _check_value(value):
     # test_define_value from protosupport.multi_protocol_functions mostly return strings
     # we want to check if string should be boolean or digit and correct type, if not return unchanged value
@@ -402,12 +417,7 @@ def add_test_to_class(class_number, parameter_name, parameter_value):
 
 def add_option_to_defined_class(class_no, option_name, option_value):
     space = world.cfg["space"]
-    if world.proto == 'v4':
-        option_code = world.kea_options4.get(option_name)
-    else:
-        option_code = world.kea_options6.get(option_name)
-        if option_code is None:
-            option_code = kea_otheroptions.get(option_name)
+    option_code = _get_option_code(option_name)
 
     if "option-data" not in world.dhcp_cfg["client-classes"][class_no - 1]:
         world.dhcp_cfg["client-classes"][class_no - 1]["option-data"] = []
@@ -530,8 +540,8 @@ def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
     add_interface(interface + "/" + address)
 
 
-def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
-    prepare_cfg_add_option(opt_name, opt_value, space, opt_code, 'user')
+def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space, always_send=None):
+    prepare_cfg_add_option(opt_name, opt_value, space, opt_code, 'user', always_send=always_send)
 
     if "option-def" not in world.dhcp_cfg.keys():
         world.dhcp_cfg["option-def"] = []
@@ -614,67 +624,132 @@ def _check_empty_value(val):
 
 
 def prepare_cfg_add_option(option_name, option_value, space,
-                           option_code=None, opt_type='default', where='options'):
+                           option_code=None, opt_type='default', always_send=None):
+    """
+    Add option data to global kea configuration
+    :param option_name: string option name
+    :param option_value: string, option value
+    :param space: string, option space
+    :param option_code: int, option code
+    :param opt_type: string, option type
+    :param always_send: boolean, value of a always_send parameter
+    """
+
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
     if opt_type == 'default':
-        if world.proto == 'v4':
-            option_code = world.kea_options4.get(option_name)
-        else:
-            option_code = world.kea_options6.get(option_name)
-            if option_code is None:
-                option_code = kea_otheroptions.get(option_name)
+        option_code = _get_option_code(option_name)
 
     if world.proto == 'v4':
         csv_format, option_value = _check_empty_value(option_value)
     else:
         csv_format = True
-    world.dhcp_cfg["option-data"].append({"csv-format": csv_format, "code": int(option_code),
-                                          "data": option_value, "name": option_name, "space": space})
+
+    my_opt = {"code": int(option_code),
+              "csv-format": csv_format,
+              "data": option_value,
+              "name": option_name,
+              "space": space}
+
+    if always_send:
+        my_opt.update({"always-send": True})
+
+    world.dhcp_cfg["option-data"].append(my_opt)
 
 
-def prepare_cfg_add_option_subnet(option_name, subnet, option_value):
-    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
+def prepare_cfg_add_option_subnet(option_name: str, subnet: int, option_value: str, always_send: bool = None):
+    """
+    Add option data to subnet
+    :param option_name: string, option name
+    :param subnet: int, index of a subnet that will be updated
+    :param option_value: string, option value
+    :param always_send: boolean, value of parameter always_send
+    """
     space = world.cfg["space"]
     subnet = int(subnet)
-    if world.proto == 'v4':
-        option_code = world.kea_options4.get(option_name)
-    else:
-        option_code = world.kea_options6.get(option_name)
-        if option_code is None:
-            option_code = kea_otheroptions.get(option_name)
+    option_code = _get_option_code(option_name)
 
     if world.proto == 'v4':
         csv_format, option_value = _check_empty_value(option_value)
     else:
         csv_format = True
+
+    my_opt = {"code": int(option_code),
+              "csv-format": csv_format,
+              "data": option_value,
+              "name": option_name,
+              "space": space}
+
+    if always_send:
+        my_opt.update({"always-send": True})
 
     sub = "subnet%s" % world.proto[1]
     if "option-data" not in world.dhcp_cfg[sub][subnet]:
         world.dhcp_cfg[sub][subnet]["option-data"] = []
-    world.dhcp_cfg[sub][subnet]["option-data"].append({"csv-format": csv_format, "code": int(option_code),
-                                                       "data": option_value, "name": option_name, "space": space})
+    world.dhcp_cfg[sub][subnet]["option-data"].append(my_opt)
 
 
-def prepare_cfg_add_option_shared_subnet(option_name, shared_subnet, option_value):
-    # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
+def prepare_cfg_add_option_pool(option_name: str, option_value: str, subnet: int = 0,
+                                pool: int = 0, always_send: bool = None):
+    """
+    Add option data to a pool
+    :param option_name: string, option name
+    :param option_value: string, option value
+    :param subnet: int, index of subnet in the list of subnets
+    :param pool: int, index of pool to be updated on the list of pools
+    :param always_send: bool, value of parameter always_send added only if different than None
+    """
     space = world.cfg["space"]
-    shared_subnet = int(shared_subnet)
+    subnet = int(subnet)
+
+    option_code = _get_option_code(option_name)
+
     if world.proto == 'v4':
-        option_code = world.kea_options4.get(option_name)
+        csv_format, option_value = _check_empty_value(option_value)
     else:
-        option_code = world.kea_options6.get(option_name)
-        if option_code is None:
-            option_code = kea_otheroptions.get(option_name)
+        csv_format = True
+
+    my_opt = {"code": int(option_code),
+              "csv-format": csv_format,
+              "data": option_value,
+              "name": option_name,
+              "space": space}
+
+    if always_send:
+        my_opt.update({"always-send": True})
+
+    sub = "subnet%s" % world.proto[1]
+    if "option-data" not in world.dhcp_cfg[sub][subnet]["pools"][pool]:
+        world.dhcp_cfg[sub][subnet]["pools"][pool]["option-data"] = []
+    world.dhcp_cfg[sub][subnet]["pools"][pool]["option-data"].append(my_opt)
+
+
+def prepare_cfg_add_option_shared_network(option_name: str, option_value: str,
+                                          shared_network: int = 0, always_send: bool = None):
+    """
+    Add option data to shared-network
+    :param option_name: string, option name
+    :param option_value: string, option value
+    :param shared_network: int, index of shared network to be updated in the list of shared networks
+    :param always_send: bool, value of always_send parameter, added only if changed.
+    """
+    space = world.cfg["space"]
+    shared_network = int(shared_network)
+    option_code = _get_option_code(option_name)
 
     assert option_code is not None, "Unsupported option name for other Kea4 options: " + option_name
 
-    if "option-data" not in world.dhcp_cfg["shared-networks"][shared_subnet]:
-        world.dhcp_cfg["shared-networks"][shared_subnet]["option-data"] = []
-    world.dhcp_cfg["shared-networks"][shared_subnet]["option-data"].append({"csv-format": True,
-                                                                            "code": int(option_code),
-                                                                            "data": option_value,
-                                                                            "name": option_name,
-                                                                            "space": space})
+    my_opt = {"code": int(option_code),
+              "csv-format": True,
+              "data": option_value,
+              "name": option_name,
+              "space": space}
+
+    if always_send:
+        my_opt.update({"always-send": True})
+
+    if "option-data" not in world.dhcp_cfg["shared-networks"][shared_network]:
+        world.dhcp_cfg["shared-networks"][shared_network]["option-data"] = []
+    world.dhcp_cfg["shared-networks"][shared_network]["option-data"].append(my_opt)
 
 
 def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, subnet):
@@ -771,7 +846,7 @@ def delete_hooks(hook_patterns):
 
 
 def add_parameter_to_hook(hook_number_or_name, parameter_name: str, parameter_value):
-    '''
+    """
     Determine the hook library with number {hook_number_or_name} if it's an int,
     or that contains pattern {hook_number_or_name} if it's a str.
     Add to the hook library's parameters: "{parameter_name}": {parameter_value}
@@ -779,7 +854,7 @@ def add_parameter_to_hook(hook_number_or_name, parameter_name: str, parameter_va
     :param hook_number_or_name: hook index starting with 1 or pattern contained in the library name
     :param parameter_name: the parameter's JSON key
     :param parameter_value: the parameter's JSON value
-    '''
+    """
 
     # Get the hook number.
     if isinstance(hook_number_or_name, int):
