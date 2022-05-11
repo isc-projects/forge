@@ -525,7 +525,6 @@ def test_v4_options_custom():
     srv_msg.response_check_include_option(189)  # TODO this should be checked but scapy is unable to do it
 
 
-
 @pytest.mark.v6
 @pytest.mark.options
 @pytest.mark.vendor
