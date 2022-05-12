@@ -52,8 +52,8 @@ def test_ca_tls_basic(dhcp_version, client_cert_required):
     cmd = {"command": "status-get", "arguments": {}}
 
     if client_cert_required:
-        # Send command using server_cert  and ca_cert to verify Kea server,
-        # and client_cert+client_key to authorize message.
+        # Send command using ca_cert to verify Kea server,
+        # Use client_cert+client_key to authorize message.
         response = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert, client_key))
     else:
         # Send command using server_cert and ca_cert to verify Kea server.
