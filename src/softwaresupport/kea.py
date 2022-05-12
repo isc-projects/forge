@@ -205,7 +205,7 @@ class CreateCert:
             remove_file_from_server(self.server2_key)
 
     def generate(self):
-        # Generate CA cert and key
+        # Generate CA ( Certificate authority ) cert and key
         generate_ca = f'openssl req ' \
                       f'-x509 ' \
                       f'-nodes ' \
