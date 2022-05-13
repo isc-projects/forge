@@ -1109,6 +1109,7 @@ def test_ddns6_notsig_rev_success_withoutflag():
     # Response MUST include option 39.
     # Response option 39 MUST contain flags 0. #later make it 's' 'n' and 'o'
     # Response option 39 MUST contain fqdn sth6.six.example.com.
+    # Optional DNS tests
     # srv_msg.dns_log_contains(None,
     #                          'adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.')
 
