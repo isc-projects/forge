@@ -334,7 +334,7 @@ def load_hook_libraries(dhcp_version, hook_order):
 
 def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str, secondary_state: str, primary_role: str,
                   secondary_role: str, primary_scopes: list, secondary_scopes: list,
-                  comm_interrupt: bool, in_touch=True, channel='http'):
+                  comm_interrupt: bool, in_touch=True, channel='http', verify=None):
     """Check HA dependent status returned by 'status-get' command according to parameters.
     This function checks 2 servers in HA pair.
 
@@ -349,13 +349,14 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
     :param secondary_scopes: Server2 scopes
     :param comm_interrupt: Is communication interrupted on any server.
     :param in_touch: Are servers in 'in touch' state.
-    :param channel: Communication channel for 'status-get' command ('http', 'socket')
+    :param channel: Communication channel for 'status-get' command ('http', 'socket', 'https')
+    :param verify: CA certificate for https
     :return:
     """
     if server1:
         # Get status from Server1 and test the response
         cmd = {"command": "status-get", "arguments": {}}
-        response = srv_msg.send_ctrl_cmd(cmd, channel=channel,
+        response = srv_msg.send_ctrl_cmd(cmd, channel=channel, verify=verify,
                                          address=world.f_cfg.mgmt_address)['arguments']['high-availability'][0]
 
         assert response['ha-mode'] == ha_mode
@@ -375,7 +376,7 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
     if server2:
         # Get status from Server2 and test the response
         cmd = {"command": "status-get", "arguments": {}}
-        response = srv_msg.send_ctrl_cmd(cmd, channel=channel,
+        response = srv_msg.send_ctrl_cmd(cmd, channel=channel, verify=verify,
                                          address=world.f_cfg.mgmt_address_2)['arguments']['high-availability'][0]
 
         assert response['ha-mode'] == ha_mode

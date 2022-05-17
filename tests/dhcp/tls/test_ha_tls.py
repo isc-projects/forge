@@ -16,8 +16,9 @@ from src import srv_msg
 
 from src.forge_cfg import world
 from src.softwaresupport.multi_server_functions import fabric_send_file
-from tests.HA.steps import generate_leases, wait_until_ha_state, send_increased_elapsed_time, send_heartbeat
-from tests.HA.steps import HOT_STANDBY, LOAD_BALANCING
+# from tests.HA.steps import generate_leases, wait_until_ha_state, send_increased_elapsed_time, send_heartbeat
+# from tests.HA.steps import HOT_STANDBY, LOAD_BALANCING
+from tests.HA.steps import get_status_HA
 
 HA_CONFIG = {
     "mode": "hot-standby",
@@ -37,6 +38,7 @@ HA_CONFIG = {
     }
 }
 
+
 @pytest.fixture(autouse=True)
 def kill_kea_on_second_system():
     # kill kea and clear data at the beginning and at the end
@@ -50,7 +52,7 @@ def kill_kea_on_second_system():
 @pytest.mark.v4
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile'])
-def test_HA_tls(dhcp_version, backend):
+def test_ha_tls(dhcp_version, backend):
     # HA SERVER 1
 
     # Create certificates.
@@ -60,8 +62,6 @@ def test_HA_tls(dhcp_version, backend):
     server_key = certificate.download('server_key')
     server2_cert = certificate.download('server2_cert')
     server2_key = certificate.download('server2_key')
-    client_key = certificate.download('client_key')
-    client_cert = certificate.download('client_cert')
 
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -77,6 +77,7 @@ def test_HA_tls(dhcp_version, backend):
     world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
     world.ca_cfg["Control-agent"]["cert-file"] = certificate.server_cert
     world.ca_cfg["Control-agent"]["key-file"] = certificate.server_key
+    world.ca_cfg["Control-agent"]["cert-required"] = False
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -92,7 +93,6 @@ def test_HA_tls(dhcp_version, backend):
                                           "key-file": certificate.server_key
                                           })
 
-
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -101,8 +101,6 @@ def test_HA_tls(dhcp_version, backend):
     srv_control.define_temporary_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
-
-
 
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',
@@ -121,6 +119,7 @@ def test_HA_tls(dhcp_version, backend):
     world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
     world.ca_cfg["Control-agent"]["cert-file"] = certificate.server2_cert
     world.ca_cfg["Control-agent"]["key-file"] = certificate.server2_key
+    world.ca_cfg["Control-agent"]["cert-required"] = False
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -149,8 +148,10 @@ def test_HA_tls(dhcp_version, backend):
 
     srv_msg.forge_sleep(3, 'seconds')
 
-    cmd = {"command": "status-get", "arguments": {}}
-    response = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert, client_key))
-    print(response)
+    # cmd = {"command": "status-get", "arguments": {}}
+    # response = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert)
 
-
+    get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
+                  primary_role='primary', secondary_role='standby',
+                  primary_scopes=['server1'], secondary_scopes=[],
+                  comm_interrupt=False, in_touch=True, channel='https', verify=ca_cert)
