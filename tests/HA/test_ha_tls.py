@@ -16,9 +16,7 @@ from src import srv_msg
 
 from src.forge_cfg import world
 from src.softwaresupport.multi_server_functions import fabric_send_file
-# from tests.HA.steps import generate_leases, wait_until_ha_state, send_increased_elapsed_time, send_heartbeat
-# from tests.HA.steps import HOT_STANDBY, LOAD_BALANCING
-from tests.HA.steps import get_status_HA
+from .steps import get_status_HA
 
 HA_CONFIG = {
     "mode": "hot-standby",
@@ -50,11 +48,19 @@ def kill_kea_on_second_system():
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ha
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_ha_tls(dhcp_version, backend):
+    """
+    Basic test of TLS functionality in HA Setup.
+    Test generates certificate for both HA peers and their Control Agent.
+    We check for hot-standby HA status after server start and then try top get a lease
+    and check both databases for it.
+    If status is acquired and lease is propagated to both backends
+    we can assume TLS connection is working.
+    """
     # HA SERVER 1
-
     # Create certificates.
     certificate = srv_control.generate_certificate()
     ca_cert = certificate.download('ca_cert')
@@ -82,6 +88,7 @@ def test_ha_tls(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
+    # Configure HA hook to use TLS.
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -124,6 +131,7 @@ def test_ha_tls(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
+    # Configure HA hook to use TLS.
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -138,6 +146,7 @@ def test_ha_tls(dhcp_version, backend):
     world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
 
+    # Send certificates to second server
     fabric_send_file(ca_cert, certificate.ca_cert, destination_host=world.f_cfg.mgmt_address_2)
     fabric_send_file(server_cert, certificate.server_cert, destination_host=world.f_cfg.mgmt_address_2)
     fabric_send_file(server_key, certificate.server_key, destination_host=world.f_cfg.mgmt_address_2)
@@ -146,12 +155,22 @@ def test_ha_tls(dhcp_version, backend):
 
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
+    # Wait for HA pair to communicate
     srv_msg.forge_sleep(3, 'seconds')
 
-    # cmd = {"command": "status-get", "arguments": {}}
-    # response = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert)
-
+    # Check if desired status is met.
     get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
                   primary_role='primary', secondary_role='standby',
                   primary_scopes=['server1'], secondary_scopes=[],
                   comm_interrupt=False, in_touch=True, channel='https', verify=ca_cert)
+
+    # Acquire a lese and check it in both backends.
+    if dhcp_version == 'v6':
+        srv_msg.SARR(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11')
+        srv_msg.check_leases({'address': '2001:db8:1::1', 'duid': '00:03:00:01:66:55:44:33:22:11'}, backend=backend)
+        srv_msg.check_leases({'address': '2001:db8:1::1', 'duid': '00:03:00:01:66:55:44:33:22:11'}, backend=backend,
+                             dest=world.f_cfg.mgmt_address_2)
+    else:
+        srv_msg.DORA('192.168.50.1')
+        srv_msg.check_leases({'address': '192.168.50.1'}, backend=backend)
+        srv_msg.check_leases({'address': '192.168.50.1'}, backend=backend, dest=world.f_cfg.mgmt_address_2)
