@@ -9,9 +9,8 @@
 """Kea Limits Hook"""
 
 # pylint: disable=invalid-name,line-too-long,unused-argument
-
-import pytest
 import time
+import pytest
 
 from src import misc
 from src import srv_control
@@ -28,10 +27,11 @@ def _get_address_v4(address, chaddr):
     misc.pass_criteria()
     try:
         srv_msg.send_wait_for_message('MUST', 'OFFER')
-    except AssertionError:
-        return 0
-    else:
-        return 1
+    except AssertionError as e:
+        if e.args[0] == 'No response received.':
+            return 0
+        raise AssertionError(e) from e
+    return 1
     #
     # misc.test_procedure()
     # srv_msg.client_sets_value('Client', 'chaddr', chaddr)
@@ -42,6 +42,7 @@ def _get_address_v4(address, chaddr):
     # misc.pass_criteria()
     # srv_msg.send_wait_for_message('MUST', 'ACK')
     # srv_msg.response_check_content('yiaddr', address)
+
 
 @pytest.mark.v4
 @pytest.mark.hook
@@ -81,4 +82,3 @@ def test_limits_basic(dhcp_version, backend):
     print(f"Runtime of the program is {run1}")
     print(f"Packets received {success}/{packets}")
     print(f"Packets per second {success / run1}")
-
