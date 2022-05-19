@@ -6,7 +6,7 @@
 
 # Author: Marcin Godzina
 
-"""Kea HA syncing"""
+"""Kea Limits Hook"""
 
 # pylint: disable=invalid-name,line-too-long,unused-argument
 
@@ -26,8 +26,12 @@ def _get_address_v4(address, chaddr):
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.response_check_content('yiaddr', address)
+    try:
+        srv_msg.send_wait_for_message('MUST', 'OFFER')
+    except AssertionError:
+        return 0
+    else:
+        return 1
     #
     # misc.test_procedure()
     # srv_msg.client_sets_value('Client', 'chaddr', chaddr)
@@ -45,31 +49,36 @@ def _get_address_v4(address, chaddr):
 def test_limits_basic(dhcp_version, backend):
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.config_srv_subnet('192.168.0.0/16', '192.168.51.1-192.168.255.255')
+    srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
     srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_limits.so')
+
+    srv_control.add_parameter_to_hook(1, 'limits', 'placeholder')
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"]["limits"] = [
+            {
+                "client-classes": ["ALL"],
+                "rate-limit": "10 packets per second"
+            }
+            ]
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
-    world.cfg['wait_interval'] = 0.01
+
+    success = 0
+    packets = 0
+
+    world.cfg['wait_interval'] = 0.002
     start = time.time()
-    for i in range(1, 30):
-        _get_address_v4(f'192.168.51.{i}', chaddr=f'ff:01:02:03:ff:{i:0>2x}')
+    for k in range(1, 30):
+        for i in range(1, 30):
+            success += _get_address_v4(f'192.168.{k}.{i}', chaddr=f'ff:01:02:03:{k:0>2x}:{i:0>2x}')
+            packets += 1
     end = time.time()
     run1 = end - start
 
-    print(f"Runtime of the program is {end - start}")
-
-    world.cfg['wait_interval'] = 0.001
-    start = time.time()
-    for i in range(30, 59):
-        _get_address_v4(f'192.168.51.{i}', chaddr=f'ff:01:02:03:ff:{i:0>2x}')
-    end = time.time()
-
-    print(f"Runtime of the program is {end - start}")
-
-    run2 = end - start
-
-    print(f"Run1: {run1}")
-    print(f"Run2: {run2}")
+    print(f"Runtime of the program is {run1}")
+    print(f"Packets received {success}/{packets}")
+    print(f"Packets per second {success / run1}")
 
