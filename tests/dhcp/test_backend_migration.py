@@ -16,6 +16,7 @@ from src import misc
 from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
+from src.softwaresupport.multi_server_functions import fabric_sudo_command
 
 
 @pytest.mark.v4
@@ -86,6 +87,7 @@ def test_v4_lease_dump(backend):
 
     # dump database to CSV file to memfile path
     dump_file_path = srv_msg.lease_dump(backend, out=world.f_cfg.get_leases_path())
+    fabric_sudo_command(f'chmod 666 {dump_file_path}')
 
     # Check CSV contents for header - column names
     srv_msg.file_contains_line(dump_file_path, None,
@@ -496,6 +498,7 @@ def test_v6_lease_dump(backend):
 
     # dump database to CSV file to memfile path
     dump_file_path = srv_msg.lease_dump(backend, out=world.f_cfg.get_leases_path())
+    fabric_sudo_command(f'chmod 666 {dump_file_path}')
 
     # Check CSV contents for header - column names
     srv_msg.file_contains_line(dump_file_path, None,
