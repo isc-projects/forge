@@ -105,6 +105,7 @@ def test_ha_tls(dhcp_version, backend):
 
     # HA SERVER 2
     misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
 
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',
