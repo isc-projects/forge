@@ -56,7 +56,7 @@ def _get_address_v6(address, duid, vendor=None):
     return 1
 
 
-# @pytest.mark.v4
+@pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
 @pytest.mark.parametrize('backend', ['memfile'])
