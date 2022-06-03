@@ -105,9 +105,6 @@ def test_ha_tls(dhcp_version, backend):
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
-    # we have to clear data on second system, before test forge does not know that we have multiple systems
-    srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',
