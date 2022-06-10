@@ -91,12 +91,12 @@ def test_limits_subnet(dhcp_version, backend):
         world.cfg['wait_interval'] = 0.1
     start = time.time()
     if dhcp_version == 'v4':
-        for i in range(1, 90):
-            success += _get_address_v4(chaddr=f'ff:01:02:03:04:05')
+        for _ in range(1, 90):
+            success += _get_address_v4(chaddr='ff:01:02:03:04:05')
             packets += 1
     else:
-        for i in range(1, 20):
-            success += _get_address_v6(duid=f'00:03:00:01:ff:ff:ff:ff:ff:ff')
+        for _ in range(1, 20):
+            success += _get_address_v6(duid='00:03:00:01:ff:ff:ff:ff:ff:ff')
             packets += 1
     end = time.time()
     run1 = end - start
@@ -133,7 +133,7 @@ def test_limits_class(dhcp_version, backend):
                 "test": "option[60].text == 'PXE'",
                 "user-context": {
                     "limits": {
-                        "rate-limit": "15 packets per second"
+                        "rate-limit": f"{limit} packets per second"
                     }
                 }
             }
@@ -145,7 +145,7 @@ def test_limits_class(dhcp_version, backend):
                 "name": "VENDOR_CLASS_eRouter2.0",
                 "user-context": {
                     "limits": {
-                        "rate-limit": "3 packets per second"
+                        "rate-limit": f"{limit} packets per second"
                     }
                 }
             }
@@ -164,12 +164,12 @@ def test_limits_class(dhcp_version, backend):
         world.cfg['wait_interval'] = 0.1
     start = time.time()
     if dhcp_version == 'v4':
-        for i in range(1, 90):
-            success += _get_address_v4(chaddr=f'ff:01:02:03:04:05', vendor='PXE')
+        for _ in range(1, 90):
+            success += _get_address_v4(chaddr='ff:01:02:03:04:05', vendor='PXE')
             packets += 1
     else:
-        for i in range(1, 20):
-            success += _get_address_v6(duid=f'00:03:00:01:ff:ff:ff:ff:ff:ff', vendor='eRouter2.0')
+        for _ in range(1, 20):
+            success += _get_address_v6(duid='00:03:00:01:ff:ff:ff:ff:ff:ff', vendor='eRouter2.0')
             packets += 1
     end = time.time()
     run1 = end - start
