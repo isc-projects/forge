@@ -91,7 +91,7 @@ def test_limits_subnet(dhcp_version, backend, unit):
         srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
         srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
         # define limit for hook
-        limit = 15 if unit == 'second' else 200
+        limit = 7 if unit == 'second' else 200
 
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
@@ -116,7 +116,7 @@ def test_limits_subnet(dhcp_version, backend, unit):
 
     # Wait time for response for v4 and v6
     if dhcp_version == 'v4':
-        world.cfg['wait_interval'] = 0.002
+        world.cfg['wait_interval'] = 0.08
     else:
         world.cfg['wait_interval'] = 0.1
 
@@ -172,7 +172,7 @@ def test_limits_class(dhcp_version, backend, unit):
     # hook configuration in user context for classes with limit
     if dhcp_version == 'v4':
         # define limit for hook
-        limit = 15 if unit == 'second' else 200
+        limit = 7 if unit == 'second' else 200
         classes = [
             {
                 "name": "gold",
@@ -207,7 +207,7 @@ def test_limits_class(dhcp_version, backend, unit):
 
     # Wait time for response for v4 and v6
     if dhcp_version == 'v4':
-        world.cfg['wait_interval'] = 0.002
+        world.cfg['wait_interval'] = 0.08
     else:
         world.cfg['wait_interval'] = 0.1
 
@@ -244,7 +244,7 @@ def test_limits_mix(dhcp_version, backend):
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
         srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
-        limit = 400
+        limit = 200
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
         limit = 200
@@ -258,8 +258,8 @@ def test_limits_mix(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_class_cmds.so')
 
     if dhcp_version == 'v4':
-        gold = 10
-        silver = 100
+        gold = 7
+        silver = 50
         classes = [
             {
                 "name": "gold",
@@ -315,7 +315,7 @@ def test_limits_mix(dhcp_version, backend):
     packets_noclass = 0
 
     if dhcp_version == 'v4':
-        world.cfg['wait_interval'] = 0.002
+        world.cfg['wait_interval'] = 0.08
     else:
         world.cfg['wait_interval'] = 0.1
     start = time.time()
@@ -356,4 +356,3 @@ def test_limits_mix(dhcp_version, backend):
     assert abs(limit - all_success) <= 1
     assert abs(gold - success_gold) <= 1
     assert abs(silver - success_silver) <= 1
-
