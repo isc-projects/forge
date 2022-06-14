@@ -73,29 +73,35 @@ def _get_address_v6(duid, vendor=None):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.parametrize('unit', ['second', 'minute'])
 @pytest.mark.parametrize('backend', ['memfile'])
-def test_limits_subnet(dhcp_version, backend):
+def test_limits_subnet(dhcp_version, backend, unit):
     """
     Test of subnets limit of Rate Limiting Hook.
-    The test makes DO or SA exchange in the fastest way possible and checks how many packets
-    are being dropped per Kea server.
+    The test makes DO or SA exchange in the fastest way possible in a unit of time
+    and checks how many packets are being dropped per Kea server.
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
+
+    # define test duration in seconds
+    duration = 1 if unit == 'second' else 60
+
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
         srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
         # define limit for hook
-        limit = 15
+        limit = 15 if unit == 'second' else 200
+
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
         # define limit for hook
-        limit = 3
+        limit = 3 if unit == 'second' else 200
 
     # hook configuration in user context for subnet with limit defined above
     srv_control.add_line_to_subnet(0, {"user-context": {
         "limits": {
-            "rate-limit": f"{limit} packets per second"
+            "rate-limit": f"{limit} packets per {unit}"
         }}})
 
     srv_control.open_control_channel()
@@ -115,34 +121,38 @@ def test_limits_subnet(dhcp_version, backend):
         world.cfg['wait_interval'] = 0.1
 
     start = time.time()
+    elapsed = 0
     if dhcp_version == 'v4':
-        for _ in range(1, 90):
+        while elapsed < duration:
             success += _get_address_v4(chaddr='ff:01:02:03:04:05')
             packets += 1
+            elapsed = time.time() - start
     else:
-        for _ in range(1, 20):
+        while elapsed < duration:
             success += _get_address_v6(duid='00:03:00:01:ff:ff:ff:ff:ff:ff')
             packets += 1
-    end = time.time()
-    run1 = end - start
+            elapsed = time.time() - start
 
-    print(f"Runtime of the program is {run1}")
+    print(f"Runtime of the program is {elapsed} seconds")
     print(f"Packets received {success}/{packets}")
-    print(f"Packets per second {success / run1}")
+    if unit == 'second':
+        print(f"Average Packets per second {success / elapsed}")
+    else:
+        print(f"Average Packets per minute {success / elapsed * 60}")
 
-    score = success / run1
-    assert abs(limit-score) < 1
+    assert abs(limit - success) <= 1
 
 
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.parametrize('unit', ['second', 'minute'])
 @pytest.mark.parametrize('backend', ['memfile'])
-def test_limits_class(dhcp_version, backend):
+def test_limits_class(dhcp_version, backend, unit):
     """
     Test of client class limit of Rate Limiting Hook.
-    The test makes DO or SA exchange in the fastest way possible and checks how many packets
-    are being dropped per Kea server.
+    The test makes DO or SA exchange in the fastest way possible in a unit of time
+    and checks how many packets are being dropped per Kea server.
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -155,30 +165,34 @@ def test_limits_class(dhcp_version, backend):
     srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
     srv_control.add_hooks('libdhcp_class_cmds.so')
+
+    # define test duration in seconds
+    duration = 1 if unit == 'second' else 60
+
     # hook configuration in user context for classes with limit
     if dhcp_version == 'v4':
         # define limit for hook
-        limit = 15
+        limit = 15 if unit == 'second' else 200
         classes = [
             {
                 "name": "gold",
                 "test": "option[60].text == 'PXE'",
                 "user-context": {
                     "limits": {
-                        "rate-limit": f"{limit} packets per second"
+                        "rate-limit": f"{limit} packets per {unit}"
                     }
                 }
             }
         ]
     else:
         # define limit for hook
-        limit = 3
+        limit = 3 if unit == 'second' else 200
         classes = [
             {
                 "name": "VENDOR_CLASS_eRouter2.0",
                 "user-context": {
                     "limits": {
-                        "rate-limit": f"{limit} packets per second"
+                        "rate-limit": f"{limit} packets per {unit}"
                     }
                 }
             }
@@ -198,23 +212,26 @@ def test_limits_class(dhcp_version, backend):
         world.cfg['wait_interval'] = 0.1
 
     start = time.time()
+    elapsed = 0
     if dhcp_version == 'v4':
-        for _ in range(90):
+        while elapsed < duration:
             success += _get_address_v4(chaddr='ff:01:02:03:04:05', vendor='PXE')
             packets += 1
+            elapsed = time.time() - start
     else:
-        for _ in range(20):
+        while elapsed < duration:
             success += _get_address_v6(duid='00:03:00:01:ff:ff:ff:ff:ff:ff', vendor='eRouter2.0')
             packets += 1
-    end = time.time()
-    run1 = end - start
+            elapsed = time.time() - start
 
-    print(f"Runtime of the program is {run1}")
+    print(f"Runtime of the program is {elapsed} seconds")
     print(f"Packets received {success}/{packets}")
-    print(f"Packets per second {success / run1}")
+    if unit == 'second':
+        print(f"Average Packets per second {success / elapsed}")
+    else:
+        print(f"Average Packets per minute {success / elapsed * 60}")
 
-    score = success / run1
-    assert abs(limit-score) < 1
+    assert abs(limit - success) <= 1
 
 
 @pytest.mark.v4
@@ -227,10 +244,10 @@ def test_limits_mix(dhcp_version, backend):
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
         srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
-        limit = 20
+        limit = 400
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
-        limit = 50
+        limit = 200
     srv_control.add_line_to_subnet(0, {"user-context": {
         "limits": {
             "rate-limit": f"{limit} packets per minute"
@@ -239,14 +256,17 @@ def test_limits_mix(dhcp_version, backend):
     srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
     srv_control.add_hooks('libdhcp_class_cmds.so')
+
     if dhcp_version == 'v4':
+        gold = 10
+        silver = 100
         classes = [
             {
                 "name": "gold",
                 "test": "option[60].text == 'PXE'",
                 "user-context": {
                     "limits": {
-                        "rate-limit": "10 packets per second"
+                        "rate-limit": f"{gold} packets per second"
                     }
                 }
             },
@@ -255,27 +275,29 @@ def test_limits_mix(dhcp_version, backend):
                 "test": "option[60].text == 'PXA'",
                 "user-context": {
                     "limits": {
-                        "rate-limit": "5 packets per second"
+                        "rate-limit": f"{silver} packets per minute"
                     }
                 }
             }
 
         ]
     else:
+        gold = 3
+        silver = 50
         classes = [
-            {
-                "name": "VENDOR_CLASS_eRouter1.0",
-                "user-context": {
-                    "limits": {
-                        "rate-limit": "50 packets per minute"
-                    }
-                }
-            },
             {
                 "name": "VENDOR_CLASS_eRouter2.0",
                 "user-context": {
                     "limits": {
-                        "rate-limit": "50 packets per minute"
+                        "rate-limit": f"{gold} packets per second"
+                    }
+                }
+            },
+            {
+                "name": "VENDOR_CLASS_eRouter1.0",
+                "user-context": {
+                    "limits": {
+                        "rate-limit": f"{silver} packets per minute"
                     }
                 }
             }
@@ -289,29 +311,49 @@ def test_limits_mix(dhcp_version, backend):
     packets_gold = 0
     success_silver = 0
     packets_silver = 0
+    success_noclass = 0
+    packets_noclass = 0
 
     if dhcp_version == 'v4':
         world.cfg['wait_interval'] = 0.002
     else:
         world.cfg['wait_interval'] = 0.1
     start = time.time()
+    elapsed = 0
     if dhcp_version == 'v4':
-        for _ in range(90):
+        while elapsed < 1:
             success_gold += _get_address_v4(chaddr='ff:01:02:03:04:05', vendor='PXE')
+            packets_gold += 1
+            elapsed = time.time() - start
+        while elapsed < 60:
             success_silver += _get_address_v4(chaddr='ff:01:02:03:04:05', vendor='PXA')
-            packets_gold += 1
+            success_noclass += _get_address_v4(chaddr='ff:01:02:03:04:05')
             packets_silver += 1
+            packets_noclass += 1
+            elapsed = time.time() - start
     else:
-        for _ in range(200):
+        while elapsed < 1:
             success_gold += _get_address_v6(duid='00:03:00:01:ff:ff:ff:ff:ff:ff', vendor='eRouter2.0')
-            success_silver += _get_address_v6(duid='00:03:00:01:ff:ff:ff:ff:ff:ff', vendor='eRouter1.0')
             packets_gold += 1
+            elapsed = time.time() - start
+        while elapsed < 60:
+            success_silver += _get_address_v6(duid='00:03:00:01:ff:ff:ff:ff:ff:ff', vendor='eRouter1.0')
+            success_noclass += _get_address_v6(duid='00:03:00:01:ff:ff:ff:ff:ff:ff')
             packets_silver += 1
-    end = time.time()
-    run1 = end - start
+            packets_noclass += 1
+            elapsed = time.time() - start
 
-    print(f"Runtime of the program is {run1}")
+    all_success = success_gold + success_silver + success_noclass
+    all_packets = packets_gold + packets_silver + packets_noclass
+
+    print(f"Runtime of the program is {elapsed}")
+    print(f"All packets received {all_success}/{all_packets}")
     print(f"Gold Packets received {success_gold}/{packets_gold}")
-    print(f"Gold Packets per minute {success_gold / run1 * 60}")
+    print(f"Gold Packets per second {success_gold / elapsed}")
     print(f"Silver Packets received {success_silver}/{packets_silver}")
-    print(f"Silver Packets per minute {success_silver / run1 * 60}")
+    print(f"Silver Packets per minute {success_silver / elapsed * 60}")
+
+    assert abs(limit - all_success) <= 1
+    assert abs(gold - success_gold) <= 1
+    assert abs(silver - success_silver) <= 1
+
