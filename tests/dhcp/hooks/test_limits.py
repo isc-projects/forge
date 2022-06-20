@@ -386,16 +386,16 @@ def test_limits_mix(dhcp_version, backend):
             # set timer to actual duration of test.
             elapsed = time.time() - start
 
-    # Sum up all successes and sent packect for subnet test.
+    # Sum up all successes and sent packets for subnet test.
     all_success = success_gold + success_silver + success_noclass
     all_packets = packets_gold + packets_silver + packets_noclass
 
-    print(f"Runtime of the program is {elapsed}")
-    print(f"All packets received {all_success}/{all_packets}")
-    print(f"Gold Packets received {success_gold}/{packets_gold}")
-    print(f"Gold Packets per second {success_gold / elapsed}")
-    print(f"Silver Packets received {success_silver}/{packets_silver}")
-    print(f"Silver Packets per minute {success_silver / elapsed * 60}")
+    print(f"Runtime of the program is {elapsed} seconds")
+    print(f"All packets received {all_success} from {all_packets} sent")
+    print(f"Gold Packets received {success_gold} from {packets_gold} sent")
+    print(f"Average Gold Packets per second {success_gold / elapsed * 60}")
+    print(f"Silver Packets received {success_silver} from {packets_silver} sent")
+    print(f"Average Silver Packets per minute {success_silver / elapsed * 60}")
 
     # Set threshold to account for small errors in receiving packets.
     threshold_subnet = 5
