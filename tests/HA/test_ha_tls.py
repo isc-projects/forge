@@ -24,12 +24,12 @@ HA_CONFIG = {
         "auto-failover": True,
         "name": "server1",
         "role": "primary",
-        "url": f"https://{world.f_cfg.mgmt_address}:8080/"
+        "url": f"https://{world.f_cfg.mgmt_address}:8000/"
     }, {
         "auto-failover": True,
         "name": "server2",
         "role": "standby",
-        "url": f"https://{world.f_cfg.mgmt_address_2}:8080/"
+        "url": f"https://{world.f_cfg.mgmt_address_2}:8000/"
     }],
     "state-machine": {
         "states": []
@@ -177,7 +177,7 @@ def test_ha_tls_with_ca(dhcp_version, backend):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ha
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_ha_tls(dhcp_version, backend):
     """
     Basic test of TLS functionality in HA Setup.
@@ -211,8 +211,8 @@ def test_ha_tls(dhcp_version, backend):
     # Configure HA hook to use TLS.
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 100,
-                                          "max-response-delay": 1500,
+                                          "max-ack-delay": 500,
+                                          "max-response-delay": 2000,
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server1",
                                           "trust-anchor": certificate.ca_cert,
@@ -222,8 +222,8 @@ def test_ha_tls(dhcp_version, backend):
                                           "multi-threading": {
                                               "enable-multi-threading": True,
                                               "http-dedicated-listener": True,
-                                              "http-listener-threads": 0,
-                                              "http-client-threads": 0
+                                              "http-listener-threads": 2,
+                                              "http-client-threads": 1
                                               }
                                           })
 
@@ -251,8 +251,8 @@ def test_ha_tls(dhcp_version, backend):
     # Configure HA hook to use TLS.
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 100,
-                                          "max-response-delay": 1500,
+                                          "max-ack-delay": 500,
+                                          "max-response-delay": 2000,
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server2",
                                           "trust-anchor": certificate.ca_cert,
@@ -262,8 +262,8 @@ def test_ha_tls(dhcp_version, backend):
                                           "multi-threading": {
                                               "enable-multi-threading": True,
                                               "http-dedicated-listener": True,
-                                              "http-listener-threads": 0,
-                                              "http-client-threads": 0
+                                              "http-listener-threads": 2,
+                                              "http-client-threads": 1
                                           }
                                           })
 
@@ -283,10 +283,10 @@ def test_ha_tls(dhcp_version, backend):
     srv_msg.forge_sleep(3, 'seconds')
 
     # Check if desired status is met.
-    # get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
-    #               primary_role='primary', secondary_role='standby',
-    #               primary_scopes=['server1'], secondary_scopes=[],
-    #               comm_interrupt=False, in_touch=True, channel='https', verify=ca_cert)
+    get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
+                  primary_role='primary', secondary_role='standby',
+                  primary_scopes=['server1'], secondary_scopes=[],
+                  comm_interrupt=False, in_touch=True, channel='https', verify=ca_cert)
 
     # Acquire a lese and check it in both backends.
     if dhcp_version == 'v6':
