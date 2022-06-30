@@ -786,7 +786,8 @@ def test_v4_hosts_cmds_reservation_get_page(channel):
                     "hw-address": "f6:f5:f4:f3:f2:01",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 },
                 {
                     "boot-file-name": "",
@@ -795,7 +796,8 @@ def test_v4_hosts_cmds_reservation_get_page(channel):
                     "hw-address": "f6:f5:f4:f3:f2:02",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 },
                 {
                     "boot-file-name": "",
@@ -804,7 +806,8 @@ def test_v4_hosts_cmds_reservation_get_page(channel):
                     "hw-address": "f6:f5:f4:f3:f2:03",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 }
             ],
             "next": {
@@ -836,7 +839,8 @@ def test_v4_hosts_cmds_reservation_get_page(channel):
                     "hw-address": "f6:f5:f4:f3:f2:06",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 },
                 {
                     "boot-file-name": "",
@@ -845,7 +849,8 @@ def test_v4_hosts_cmds_reservation_get_page(channel):
                     "hw-address": "f6:f5:f4:f3:f2:07",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 }
             ],
             "next": {
@@ -923,7 +928,8 @@ def test_v4_hosts_cmds_reservation_get_all_page_database(channel, host_database)
                     "hw-address": "f6:f5:f4:f3:f2:07",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 },
                 {
                     "boot-file-name": "",
@@ -932,7 +938,8 @@ def test_v4_hosts_cmds_reservation_get_all_page_database(channel, host_database)
                     "hw-address": "f6:f5:f4:f3:f2:06",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 },
                 {
                     "boot-file-name": "",
@@ -941,7 +948,8 @@ def test_v4_hosts_cmds_reservation_get_all_page_database(channel, host_database)
                     "hw-address": "f6:f5:f4:f3:f2:03",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 }
             ],
             "next": {
@@ -1455,7 +1463,8 @@ def test_v4_hosts_cmds_reservation_get_by_hostname(channel):
                     'hw-address': 'f6:f5:f4:f3:f2:02',
                     'next-server': '0.0.0.0',
                     'option-data': [],
-                    'server-hostname': ''
+                    'server-hostname': '',
+                    'subnet-id': 1
                 }
             ]
         },
@@ -1482,7 +1491,8 @@ def test_v4_hosts_cmds_reservation_get_by_hostname(channel):
                     'hw-address': 'f6:f5:f4:f3:f2:11',
                     'next-server': '0.0.0.0',
                     'option-data': [],
-                    'server-hostname': ''
+                    'server-hostname': '',
+                    'subnet-id': 1
                 },
                 {
                     'boot-file-name': '',
@@ -1491,7 +1501,8 @@ def test_v4_hosts_cmds_reservation_get_by_hostname(channel):
                     'hw-address': 'f6:f5:f4:f3:f2:22',
                     'next-server': '0.0.0.0',
                     'option-data': [],
-                    'server-hostname': ''
+                    'server-hostname': '',
+                    'subnet-id': 1
                 }
             ]
         },
@@ -2665,7 +2676,8 @@ def test_v6_hosts_cmds_reservation_get_page(channel):
                     "hw-address": "f6:f5:f4:f3:f2:01",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 },
                 {
                     "client-classes": [],
@@ -2673,7 +2685,8 @@ def test_v6_hosts_cmds_reservation_get_page(channel):
                     "hw-address": "f6:f5:f4:f3:f2:02",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 },
                 {
                     "client-classes": [],
@@ -2681,7 +2694,8 @@ def test_v6_hosts_cmds_reservation_get_page(channel):
                     "hw-address": "f6:f5:f4:f3:f2:03",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 }
             ],
             "next": {
@@ -2712,7 +2726,8 @@ def test_v6_hosts_cmds_reservation_get_page(channel):
                     "hw-address": "f6:f5:f4:f3:f2:06",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 },
                 {
                     "client-classes": [],
@@ -2720,7 +2735,8 @@ def test_v6_hosts_cmds_reservation_get_page(channel):
                     "hw-address": "f6:f5:f4:f3:f2:07",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 }
             ],
             "next": {
@@ -2797,7 +2813,8 @@ def test_v6_hosts_cmds_reservation_get_all_page_database(channel, host_database)
                     "hw-address": "f6:f5:f4:f3:f2:07",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 },
                 {
                     "client-classes": [],
@@ -2805,7 +2822,8 @@ def test_v6_hosts_cmds_reservation_get_all_page_database(channel, host_database)
                     "hw-address": "f6:f5:f4:f3:f2:06",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 },
                 {
                     "client-classes": [],
@@ -2813,7 +2831,8 @@ def test_v6_hosts_cmds_reservation_get_all_page_database(channel, host_database)
                     "hw-address": "f6:f5:f4:f3:f2:03",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 }
             ],
             "next": {
@@ -3343,7 +3362,8 @@ def test_v6_hosts_cmds_reservation_get_by_hostname(channel):
                     'hw-address': 'f6:f5:f4:f3:f2:02',
                     'ip-addresses': [],
                     'option-data': [],
-                    'prefixes': []
+                    'prefixes': [],
+                    'subnet-id': 1
                 }
             ]
         },
@@ -3369,7 +3389,8 @@ def test_v6_hosts_cmds_reservation_get_by_hostname(channel):
                     'hw-address': 'f6:f5:f4:f3:f2:11',
                     'ip-addresses': [],
                     'option-data': [],
-                    'prefixes': []
+                    'prefixes': [],
+                    'subnet-id': 1
                 },
                 {
                     'client-classes': [],
@@ -3377,7 +3398,8 @@ def test_v6_hosts_cmds_reservation_get_by_hostname(channel):
                     'hw-address': 'f6:f5:f4:f3:f2:22',
                     'ip-addresses': [],
                     'option-data': [],
-                    'prefixes': []
+                    'prefixes': [],
+                    'subnet-id': 1
                 }
             ]
         },
