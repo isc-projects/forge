@@ -70,12 +70,46 @@ def _get_address_v6(duid, vendor=None):
     return 1
 
 
+def _get_lease_v4(address, chaddr, vendor=None):
+    """
+    Local function used to send Discover and check if Offer is send back.
+    If Offer is recieved, function continues with Request and Acknowledge
+    Can add vendor option to trigger client class in Kea.
+    :param address: expected ip
+    :param chaddr: MAC address
+    :param vendor: Vendor name
+    :return: 1 if Offer is received.
+    """
+    misc.test_procedure()
+
+    srv_msg.client_sets_value('Client', 'chaddr', chaddr)
+    if vendor is not None:
+        srv_msg.client_does_include_with_value('vendor_class_id', vendor)
+    srv_msg.client_send_msg('DISCOVER')
+
+    try:
+        srv_msg.send_wait_for_message('MUST', 'OFFER')
+    except AssertionError as e:
+        if e.args[0] == 'No response received.':
+            return 0
+        raise AssertionError(e) from e
+
+    srv_msg.client_save_option_count(1, 'server_id')
+    srv_msg.client_add_saved_option_count(1)
+    srv_msg.client_does_include_with_value('requested_addr', address)
+
+    srv_msg.client_send_msg('REQUEST')
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', address)
+
+    return 1
+
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
 @pytest.mark.parametrize('unit', ['second', 'minute'])
 @pytest.mark.parametrize('backend', ['memfile'])
-def test_limits_subnet(dhcp_version, backend, unit):
+def test_rate_limits_subnet(dhcp_version, backend, unit):
     """
     Test of subnets limit of Rate Limiting Hook.
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
@@ -160,7 +194,7 @@ def test_limits_subnet(dhcp_version, backend, unit):
 @pytest.mark.hook
 @pytest.mark.parametrize('unit', ['second', 'minute'])
 @pytest.mark.parametrize('backend', ['memfile'])
-def test_limits_class(dhcp_version, backend, unit):
+def test_rate_limits_class(dhcp_version, backend, unit):
     """
     Test of class limit of Rate Limiting Hook.
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
@@ -262,7 +296,7 @@ def test_limits_class(dhcp_version, backend, unit):
 @pytest.mark.v6
 @pytest.mark.hook
 @pytest.mark.parametrize('backend', ['memfile'])
-def test_limits_mix(dhcp_version, backend):
+def test_rate_limits_mix(dhcp_version, backend):
     """
     Test of subnet and class mixed limit of Rate Limiting Hook.
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
@@ -406,3 +440,57 @@ def test_limits_mix(dhcp_version, backend):
     assert abs(limit - all_success) <= threshold_subnet
     assert abs(gold - success_gold) <= threshold_gold
     assert abs(silver - success_silver) <= threshold_silver
+
+
+@pytest.mark.v4
+# @pytest.mark.v6
+@pytest.mark.hook
+@pytest.mark.parametrize('backend', ['memfile'])
+def test_lease_limits_subnet(dhcp_version, backend):
+    misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
+
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
+        srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
+        # define limit for hook and test
+        limit = 3
+
+    # hook configuration in user context for subnet with limit defined above
+    # srv_control.add_line_to_subnet(0, {"user-context": {
+    #     "limits": {
+    #         "address-limit": limit
+    #     }}})
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    # srv_control.add_hooks('libdhcp_limits.so')
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    success = 0
+    exchanges = 0
+
+    # Wait time for response for v4 and v6
+#    if dhcp_version == 'v4':
+#        world.cfg['wait_interval'] = 0.1
+#    else:
+#        world.cfg['wait_interval'] = 0.1
+
+#    start = time.time()
+    elapsed = 0
+    to_send = 20
+
+    if dhcp_version == 'v4':
+        for i in range(1, 5):
+            #success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor=None)
+            srv_msg.DORA(address=f'192.168.1.{i}', chaddr=f'ff:01:02:03:04:{i:02}', subnet_mask='255.255.0.0')
+            exchanges += 1
+
+    # Set threshold to account for small errors in receiving packets.
+    threshold = 1
+
+    # Check if difference between limit and received packets is within threshold.
+    print(f"exchanges made: {exchanges}")
+    print(f"successes made: {success}")
