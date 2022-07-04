@@ -81,28 +81,32 @@ def _get_lease_v4(address, chaddr, vendor=None):
     :return: 1 if Offer is received.
     """
     misc.test_procedure()
-
     srv_msg.client_sets_value('Client', 'chaddr', chaddr)
     if vendor is not None:
         srv_msg.client_does_include_with_value('vendor_class_id', vendor)
     srv_msg.client_send_msg('DISCOVER')
 
+    misc.pass_criteria()
     try:
         srv_msg.send_wait_for_message('MUST', 'OFFER')
     except AssertionError as e:
         if e.args[0] == 'No response received.':
             return 0
         raise AssertionError(e) from e
+    srv_msg.response_check_content('yiaddr', address)
 
-    srv_msg.client_save_option_count(1, 'server_id')
-    srv_msg.client_add_saved_option_count(1)
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', chaddr)
+    srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', address)
 
     srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', address)
-
     return 1
+
 
 @pytest.mark.v4
 @pytest.mark.v6
@@ -478,14 +482,11 @@ def test_lease_limits_subnet(dhcp_version, backend):
 #    else:
 #        world.cfg['wait_interval'] = 0.1
 
-#    start = time.time()
-    elapsed = 0
-    to_send = 20
+    to_send = 5
 
     if dhcp_version == 'v4':
-        for i in range(1, 5):
-            #success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor=None)
-            srv_msg.DORA(address=f'192.168.1.{i}', chaddr=f'ff:01:02:03:04:{i:02}', subnet_mask='255.255.0.0')
+        for i in range(1, to_send + 1):
+            success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor=None)
             exchanges += 1
 
     # Set threshold to account for small errors in receiving packets.
@@ -494,3 +495,5 @@ def test_lease_limits_subnet(dhcp_version, backend):
     # Check if difference between limit and received packets is within threshold.
     print(f"exchanges made: {exchanges}")
     print(f"successes made: {success}")
+
+    assert abs(limit - success) <= threshold
