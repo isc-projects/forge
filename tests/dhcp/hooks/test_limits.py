@@ -73,7 +73,7 @@ def _get_address_v6(duid, vendor=None):
 def _get_lease_v4(address, chaddr, vendor=None):
     """
     Local function used to send Discover and check if Offer is send back.
-    If Offer is recieved, function continues with Request and Acknowledge
+    If Offer is received, function continues with Request and Acknowledge
     Can add vendor option to trigger client class in Kea.
     :param address: expected ip
     :param chaddr: MAC address
@@ -105,6 +105,54 @@ def _get_lease_v4(address, chaddr, vendor=None):
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', address)
+    return 1
+
+
+def _get_lease_v6(address, duid, vendor=None):
+    """
+    Local function used to send Solicit and check if Advertise is send back.
+    If Advertise is received with address, function continues with Request and Reply
+    Can add vendor option to trigger client class in Kea.
+    :param address: expected ip
+    :param chaddr: MAC address
+    :param vendor: Vendor name
+    :return: 1 if Offer is received.
+    """
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', duid)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA_Address')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    if vendor is not None:
+        srv_msg.client_sets_value('Client', 'vendor_class_data', vendor)
+        srv_msg.client_does_include('Client', 'vendor-class')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    try:
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    except AssertionError as e:
+        if e.args[0] == 'No response received.':
+            return 0
+        raise AssertionError(e) from e
+
+    try:
+        srv_msg.check_IA_NA(address)
+    except AssertionError as e:
+        if e.args[0] == 'Invalid DHCP6OptIA_NA[3] option, received statuscode: 2, but expected 0':
+            return 0
+        raise AssertionError(e) from e
+
+    # Build and send a request.
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'DUID', duid)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    # Expect a reply.
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
     return 1
 
 
@@ -447,16 +495,28 @@ def test_rate_limits_mix(dhcp_version, backend):
 
 
 @pytest.mark.v4
-# @pytest.mark.v6
+@pytest.mark.v6
 @pytest.mark.hook
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_lease_limits_subnet(dhcp_version, backend):
+    """
+    Test of subnets lease limit of Lease Limiting Hook.
+    The test makes DORA or SARR exchange to acquire leases and counts if dropped or returned
+    "no leases available".
+    Test removes leases and tries again to check if the limit is restored.
+    If the received leases is the same as limit, the test passes.
+    Some error in number of packets is accounted for.
+    """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
 
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
         srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
+        # define limit for hook and test
+        limit = 5
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
         # define limit for hook and test
         limit = 5
 
@@ -483,10 +543,23 @@ def test_lease_limits_subnet(dhcp_version, backend):
             exchanges += 1
 
         cmd = {"command": "lease4-wipe", "arguments": {"subnet-id": 1}}
-        resp = srv_msg.send_ctrl_cmd(cmd)
+        srv_msg.send_ctrl_cmd(cmd)
 
         for i in range(to_send + 1, 2 * to_send + 1):
             success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor=None)
+            exchanges += 1
+
+    else:
+        for i in range(1, to_send + 1):
+            success += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
+            exchanges += 1
+
+        for i in range(1, success + 1):
+            cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:1::{hex(i)[2:]}'}}
+            srv_msg.send_ctrl_cmd(cmd)
+
+        for i in range(to_send + 1, 2 * to_send + 1):
+            success += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
             exchanges += 1
 
     # Set threshold to account for small errors in receiving packets.
