@@ -458,34 +458,34 @@ def test_lease_limits_subnet(dhcp_version, backend):
         srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
         srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
         # define limit for hook and test
-        limit = 3
+        limit = 5
 
     # hook configuration in user context for subnet with limit defined above
-    # srv_control.add_line_to_subnet(0, {"user-context": {
-    #     "limits": {
-    #         "address-limit": limit
-    #     }}})
+    srv_control.add_line_to_subnet(0, {"user-context": {
+        "limits": {
+            "address-limit": limit
+        }}})
 
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
-    # srv_control.add_hooks('libdhcp_limits.so')
-
+    srv_control.add_hooks('libdhcp_limits.so')
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     success = 0
     exchanges = 0
-
-    # Wait time for response for v4 and v6
-#    if dhcp_version == 'v4':
-#        world.cfg['wait_interval'] = 0.1
-#    else:
-#        world.cfg['wait_interval'] = 0.1
-
-    to_send = 5
+    to_send = 9
 
     if dhcp_version == 'v4':
         for i in range(1, to_send + 1):
+            success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor=None)
+            exchanges += 1
+
+        cmd = {"command": "lease4-wipe", "arguments": {"subnet-id": 1}}
+        resp = srv_msg.send_ctrl_cmd(cmd)
+
+        for i in range(to_send + 1, 2 * to_send + 1):
             success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor=None)
             exchanges += 1
 
@@ -496,4 +496,4 @@ def test_lease_limits_subnet(dhcp_version, backend):
     print(f"exchanges made: {exchanges}")
     print(f"successes made: {success}")
 
-    assert abs(limit - success) <= threshold
+    assert abs(2 * limit - success) <= threshold
