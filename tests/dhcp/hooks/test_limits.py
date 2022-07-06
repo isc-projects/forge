@@ -108,7 +108,7 @@ def _get_lease_v4(address, chaddr, vendor=None):
     return 1
 
 
-def _get_lease_v6(address, duid, vendor=None):
+def _get_lease_v6(address, duid, iaid=None, vendor=None, ia_pd=None):
     """
     Local function used to send Solicit and check if Advertise is send back.
     If Advertise is received with address, function continues with Request and Reply
@@ -121,8 +121,15 @@ def _get_lease_v6(address, duid, vendor=None):
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
     srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA_Address')
-    srv_msg.client_does_include('Client', 'IA-NA')
+    if iaid is not None:
+        srv_msg.client_sets_value('Client', 'ia_id', iaid)
+        srv_msg.client_does_include('Client', 'ia_id')
+    if ia_pd is None:
+        srv_msg.client_does_include('Client', 'IA_Address')
+        srv_msg.client_does_include('Client', 'IA-NA')
+    else:
+        srv_msg.client_does_include('Client', 'IA-PD')
+
     if vendor is not None:
         srv_msg.client_sets_value('Client', 'vendor_class_data', vendor)
         srv_msg.client_does_include('Client', 'vendor-class')
@@ -136,15 +143,27 @@ def _get_lease_v6(address, duid, vendor=None):
             return 0
         raise AssertionError(e) from e
 
-    try:
-        srv_msg.check_IA_NA(address)
-    except AssertionError as e:
-        if e.args[0] == 'Invalid DHCP6OptIA_NA[3] option, received statuscode: 2, but expected 0':
-            return 0
-        raise AssertionError(e) from e
+    if ia_pd is None:
+        try:
+            srv_msg.check_IA_NA(address)
+        except AssertionError as e:
+            if e.args[0] == 'Invalid DHCP6OptIA_NA[3] option, received statuscode: 2, but expected 0':
+                return 0
+            raise AssertionError(e) from e
+    else:
+        srv_msg.response_check_include_option(25)
+        try:
+            srv_msg.response_check_option_content(25, 'sub-option', 26)
+        except AssertionError as e:
+            if e.args[0] == 'Expected sub-option DHCP6OptIAPrefix[26] not present in the option DHCP6OptIA_PD[25]':
+                return 0
+            raise AssertionError(e) from e
 
     # Build and send a request.
-    srv_msg.client_copy_option('IA_NA')
+    if ia_pd is None:
+        srv_msg.client_copy_option('IA_NA')
+    else:
+        srv_msg.client_copy_option('IA_PD')
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', duid)
     srv_msg.client_does_include('Client', 'client-id')
@@ -517,13 +536,15 @@ def test_lease_limits_subnet(dhcp_version, backend):
         limit = 5
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
+        srv_control.config_srv_prefix('2002:db8:1::', 0, 90, 96)
         # define limit for hook and test
         limit = 5
 
     # hook configuration in user context for subnet with limit defined above
     srv_control.add_line_to_subnet(0, {"user-context": {
         "limits": {
-            "address-limit": limit
+            "address-limit": limit,
+            "prefix-limit": limit
         }}})
 
     srv_control.open_control_channel()
@@ -534,6 +555,9 @@ def test_lease_limits_subnet(dhcp_version, backend):
     srv_control.start_srv('DHCP', 'started')
 
     success = 0
+    if dhcp_version == 'v6':
+        success_na = 0
+        success_pd = 0
     exchanges = 0
     to_send = 9
 
@@ -550,23 +574,48 @@ def test_lease_limits_subnet(dhcp_version, backend):
             exchanges += 1
 
     else:
+        # IA_NA
         for i in range(1, to_send + 1):
-            success += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
             exchanges += 1
 
-        for i in range(1, success + 1):
+        for i in range(1, success_na + 1):
             cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:1::{hex(i)[2:]}'}}
             srv_msg.send_ctrl_cmd(cmd)
 
         for i in range(to_send + 1, 2 * to_send + 1):
-            success += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', iaid=i)
             exchanges += 1
+
+        # IA_PD
+        for i in range(2 * to_send + 1, 3 * to_send + 1):
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1)
+            exchanges += 1
+
+        for i in range(2 * to_send + 1, 2 * to_send + 1 + success_pd):
+            cmd = {"command": "lease6-get-by-duid", "arguments": {"duid": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}'}}
+            response = srv_msg.send_ctrl_cmd(cmd)
+            iaid = response['arguments']['leases'][0]['iaid']
+
+            cmd = {"command": "lease6-del",
+                   "arguments": {"subnet-id": 1,
+                                 "identifier": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                 "identifier-type": "duid",
+                                 "iaid": iaid,
+                                 "type": "IA_PD"}}
+            srv_msg.send_ctrl_cmd(cmd)
+
+        for i in range(3 * to_send + 1, 4 * to_send + 1):
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1)
+            exchanges += 1
+
+        success = success_na + success_pd
 
     # Set threshold to account for small errors in receiving packets.
     threshold = 1
 
-    # Check if difference between limit and received packets is within threshold.
     print(f"exchanges made: {exchanges}")
     print(f"successes made: {success}")
 
-    assert abs(2 * limit - success) <= threshold
+    # Check if difference between limit and received packets is within threshold.
+    assert abs(4 * limit - success) <= threshold
