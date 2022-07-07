@@ -8,7 +8,7 @@
 
 """Kea Limits Hook tests"""
 
-# pylint: disable=invalid-name,line-too-long,unused-argument
+# pylint: disable=invalid-name,line-too-long,unused-argument,too-many-branches
 import time
 import pytest
 
