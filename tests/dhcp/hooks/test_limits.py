@@ -516,7 +516,7 @@ def test_rate_limits_mix(dhcp_version, backend):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_subnet(dhcp_version, backend):
     """
     Test of subnets lease limit of Lease Limiting Hook.
@@ -566,8 +566,9 @@ def test_lease_limits_subnet(dhcp_version, backend):
             success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor=None)
             exchanges += 1
 
-        cmd = {"command": "lease4-wipe", "arguments": {"subnet-id": 1}}
-        srv_msg.send_ctrl_cmd(cmd)
+        for i in range(1, success + 1):
+            cmd = {"command": "lease4-del", "arguments": {"ip-address": f'192.168.1.{i}'}}
+            srv_msg.send_ctrl_cmd(cmd)
 
         for i in range(to_send + 1, 2 * to_send + 1):
             success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor=None)
@@ -618,4 +619,7 @@ def test_lease_limits_subnet(dhcp_version, backend):
     print(f"successes made: {success}")
 
     # Check if difference between limit and received packets is within threshold.
-    assert abs(4 * limit - success) <= threshold
+    if dhcp_version == 'v4':
+        assert abs(2 * limit - success) <= threshold
+    else:
+        assert abs(4 * limit - success) <= threshold
