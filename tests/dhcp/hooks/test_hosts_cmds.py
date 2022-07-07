@@ -326,7 +326,8 @@ def test_v4_hosts_cmds_get_reservation(channel, host_database):
             "ip-address": "192.168.50.100",
             "next-server": "0.0.0.0",
             "option-data": [],
-            "server-hostname": ""
+            "server-hostname": "",
+            "subnet-id": 1
         },
         "result": 0,
         "text": "Host found."
@@ -378,7 +379,8 @@ def test_v4_hosts_cmds_get_reservation_2(channel, host_database):
             "ip-address": "192.168.50.100",
             "next-server": "0.0.0.0",
             "option-data": [],
-            "server-hostname": ""
+            "server-hostname": "",
+            "subnet-id": 1
         },
         "result": 0,
         "text": "Host found."
@@ -610,7 +612,8 @@ def test_v4_hosts_cmds_reservation_get_all(channel):
                     "hw-address": "f6:f5:f4:f3:f2:01",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 },
                 {
                     "boot-file-name": "",
@@ -619,7 +622,8 @@ def test_v4_hosts_cmds_reservation_get_all(channel):
                     "hw-address": "f6:f5:f4:f3:f2:02",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 },
                 {
                     "boot-file-name": "",
@@ -628,7 +632,8 @@ def test_v4_hosts_cmds_reservation_get_all(channel):
                     "hw-address": "f6:f5:f4:f3:f2:03",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 }
             ]
         },
@@ -689,7 +694,8 @@ def test_v4_hosts_cmds_reservation_get_all_database(channel, host_database):
                     "hw-address": "f6:f5:f4:f3:f2:03",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 },
                 {
                     "boot-file-name": "",
@@ -698,7 +704,8 @@ def test_v4_hosts_cmds_reservation_get_all_database(channel, host_database):
                     "hw-address": "f6:f5:f4:f3:f2:02",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 },
                 {
                     "boot-file-name": "",
@@ -707,7 +714,8 @@ def test_v4_hosts_cmds_reservation_get_all_database(channel, host_database):
                     "hw-address": "f6:f5:f4:f3:f2:01",
                     "next-server": "0.0.0.0",
                     "option-data": [],
-                    "server-hostname": ""
+                    "server-hostname": "",
+                    "subnet-id": 1
                 }
             ]
         },
@@ -2224,7 +2232,8 @@ def test_v6_hosts_cmds_get_reservation(channel, host_database):
             "hostname": "",
             "ip-addresses": ["2001:db8:1::100"],
             "option-data": [],
-            "prefixes": []
+            "prefixes": [],
+            "subnet-id": 1
         },
         "result": 0,
         "text": "Host found."
@@ -2274,7 +2283,8 @@ def test_v6_hosts_cmds_get_reservation_2(channel, host_database):
             "hostname": "reserved-hostname",
             "ip-addresses": ["2001:db8:1::100"],
             "option-data": [],
-            "prefixes": []
+            "prefixes": [],
+            "subnet-id": 1
         },
         "result": 0,
         "text": "Host found."
@@ -2508,7 +2518,8 @@ def test_v6_hosts_cmds_reservation_get_all(channel):
                     "hw-address": "f6:f5:f4:f3:f2:01",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 },
                 {
                     "client-classes": [],
@@ -2516,7 +2527,8 @@ def test_v6_hosts_cmds_reservation_get_all(channel):
                     "hw-address": "f6:f5:f4:f3:f2:02",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 },
                 {
                     "client-classes": [],
@@ -2524,7 +2536,8 @@ def test_v6_hosts_cmds_reservation_get_all(channel):
                     "hw-address": "f6:f5:f4:f3:f2:03",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 }
             ]
         },
@@ -2583,7 +2596,8 @@ def test_v6_hosts_cmds_reservation_get_all_database(channel, host_database):
                     "hw-address": "f6:f5:f4:f3:f2:03",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 },
                 {
                     "client-classes": [],
@@ -2591,7 +2605,8 @@ def test_v6_hosts_cmds_reservation_get_all_database(channel, host_database):
                     "hw-address": "f6:f5:f4:f3:f2:02",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 },
                 {
                     "client-classes": [],
@@ -2599,7 +2614,8 @@ def test_v6_hosts_cmds_reservation_get_all_database(channel, host_database):
                     "hw-address": "f6:f5:f4:f3:f2:01",
                     "ip-addresses": [],
                     "option-data": [],
-                    "prefixes": []
+                    "prefixes": [],
+                    "subnet-id": 1
                 }
             ]
         },
