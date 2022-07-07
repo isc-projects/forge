@@ -99,6 +99,8 @@ def _get_lease_v4(address, chaddr, vendor=None):
     srv_msg.client_sets_value('Client', 'chaddr', chaddr)
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', address)
+    if vendor is not None:
+        srv_msg.client_does_include_with_value('vendor_class_id', vendor)
 
     srv_msg.client_send_msg('REQUEST')
 
@@ -108,7 +110,7 @@ def _get_lease_v4(address, chaddr, vendor=None):
     return 1
 
 
-def _get_lease_v6(address, duid, iaid=None, vendor=None, ia_pd=None):
+def _get_lease_v6(address, duid, vendor=None, ia_pd=None):
     """
     Local function used to send Solicit and check if Advertise is send back.
     If Advertise is received with address, function continues with Request and Reply
@@ -121,9 +123,6 @@ def _get_lease_v6(address, duid, iaid=None, vendor=None, ia_pd=None):
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
     srv_msg.client_does_include('Client', 'client-id')
-    if iaid is not None:
-        srv_msg.client_sets_value('Client', 'ia_id', iaid)
-        srv_msg.client_does_include('Client', 'ia_id')
     if ia_pd is None:
         srv_msg.client_does_include('Client', 'IA_Address')
         srv_msg.client_does_include('Client', 'IA-NA')
@@ -167,6 +166,9 @@ def _get_lease_v6(address, duid, iaid=None, vendor=None, ia_pd=None):
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', duid)
     srv_msg.client_does_include('Client', 'client-id')
+    if vendor is not None:
+        srv_msg.client_sets_value('Client', 'vendor_class_data', vendor)
+        srv_msg.client_does_include('Client', 'vendor-class')
     srv_msg.client_send_msg('REQUEST')
 
     # Expect a reply.
@@ -585,7 +587,7 @@ def test_lease_limits_subnet(dhcp_version, backend):
             srv_msg.send_ctrl_cmd(cmd)
 
         for i in range(to_send + 1, 2 * to_send + 1):
-            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', iaid=i)
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
             exchanges += 1
 
         # IA_PD
@@ -626,9 +628,9 @@ def test_lease_limits_subnet(dhcp_version, backend):
 
 
 @pytest.mark.v4
-# @pytest.mark.v6
+@pytest.mark.v6
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_class(dhcp_version, backend):
     """
     Test of class lease limit of Lease Limiting Hook.
@@ -727,10 +729,14 @@ def test_lease_limits_class(dhcp_version, backend):
             success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXE')
             exchanges += 1
 
+        for i in range(2 * to_send + 1, 3 * to_send + 1):
+            success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXA')
+            exchanges += 1
+
     else:
         # IA_NA
         for i in range(1, to_send + 1):
-            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', vendor='eRouter2.0')
             exchanges += 1
 
         for i in range(1, success_na + 1):
@@ -738,15 +744,19 @@ def test_lease_limits_class(dhcp_version, backend):
             srv_msg.send_ctrl_cmd(cmd)
 
         for i in range(to_send + 1, 2 * to_send + 1):
-            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', iaid=i)
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', vendor='eRouter2.0')
+            exchanges += 1
+
+        for i in range(2 * to_send + 1, 3 * to_send + 1):
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', vendor='eRouter1.0')
             exchanges += 1
 
         # IA_PD
-        for i in range(2 * to_send + 1, 3 * to_send + 1):
-            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1)
+        for i in range(3 * to_send + 1, 4 * to_send + 1):
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1, vendor='eRouter2.0')
             exchanges += 1
 
-        for i in range(2 * to_send + 1, 2 * to_send + 1 + success_pd):
+        for i in range(3 * to_send + 1, 3 * to_send + 1 + success_pd):
             cmd = {"command": "lease6-get-by-duid", "arguments": {"duid": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}'}}
             response = srv_msg.send_ctrl_cmd(cmd)
             iaid = response['arguments']['leases'][0]['iaid']
@@ -759,8 +769,12 @@ def test_lease_limits_class(dhcp_version, backend):
                                  "type": "IA_PD"}}
             srv_msg.send_ctrl_cmd(cmd)
 
-        for i in range(3 * to_send + 1, 4 * to_send + 1):
-            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1)
+        for i in range(4 * to_send + 1, 5 * to_send + 1):
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1, vendor='eRouter2.0')
+            exchanges += 1
+
+        for i in range(5 * to_send + 1, 6 * to_send + 1):
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1, vendor='eRouter1.0')
             exchanges += 1
 
         success = success_na + success_pd
@@ -773,6 +787,6 @@ def test_lease_limits_class(dhcp_version, backend):
 
     # Check if difference between limit and received packets is within threshold.
     if dhcp_version == 'v4':
-        assert abs(2 * limit - success) <= threshold
+        assert abs(3 * limit - success) <= threshold
     else:
-        assert abs(4 * limit - success) <= threshold
+        assert abs(6 * limit - success) <= threshold
