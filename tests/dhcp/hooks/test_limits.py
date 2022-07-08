@@ -564,42 +564,47 @@ def test_lease_limits_subnet(dhcp_version, backend):
     to_send = 9
 
     if dhcp_version == 'v4':
-        for i in range(1, to_send + 1):
+        for i in range(1, to_send + 1):  # Try to acquire more leases than the limit.
+            # Try exchanging DORA and add 1 to success counter if Forge got ACK.
             success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor=None)
+            # Add 1 to exchanges counter
             exchanges += 1
 
-        for i in range(1, success + 1):
+        for i in range(1, success + 1):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease4-del", "arguments": {"ip-address": f'192.168.1.{i}'}}
             srv_msg.send_ctrl_cmd(cmd)
 
-        for i in range(to_send + 1, 2 * to_send + 1):
+        for i in range(to_send + 1, 2 * to_send + 1):  # Try to acquire more leases than the limit.
             success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor=None)
             exchanges += 1
 
     else:
         # IA_NA
-        for i in range(1, to_send + 1):
+        for i in range(1, to_send + 1):  # Try to acquire more IA_NA leases than the limit.
+            # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
+            # Add 1 to exchanges counter
             exchanges += 1
 
-        for i in range(1, success_na + 1):
+        for i in range(1, success_na + 1):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:1::{hex(i)[2:]}'}}
             srv_msg.send_ctrl_cmd(cmd)
 
-        for i in range(to_send + 1, 2 * to_send + 1):
+        for i in range(to_send + 1, 2 * to_send + 1):  # Try to acquire more leases than the limit.
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
             exchanges += 1
 
         # IA_PD
-        for i in range(2 * to_send + 1, 3 * to_send + 1):
+        for i in range(2 * to_send + 1, 3 * to_send + 1):  # Try to acquire more IA_PD leases than the limit
+            # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
             success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1)
+            # Add 1 to exchanges counter
             exchanges += 1
 
-        for i in range(2 * to_send + 1, 2 * to_send + 1 + success_pd):
+        for i in range(2 * to_send + 1, 2 * to_send + 1 + success_pd):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease6-get-by-duid", "arguments": {"duid": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}'}}
             response = srv_msg.send_ctrl_cmd(cmd)
             iaid = response['arguments']['leases'][0]['iaid']
-
             cmd = {"command": "lease6-del",
                    "arguments": {"subnet-id": 1,
                                  "identifier": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
@@ -608,7 +613,7 @@ def test_lease_limits_subnet(dhcp_version, backend):
                                  "type": "IA_PD"}}
             srv_msg.send_ctrl_cmd(cmd)
 
-        for i in range(3 * to_send + 1, 4 * to_send + 1):
+        for i in range(3 * to_send + 1, 4 * to_send + 1):  # Try to acquire more leases than the limit.
             success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1)
             exchanges += 1
 
@@ -717,46 +722,51 @@ def test_lease_limits_class(dhcp_version, backend):
     to_send = 9
 
     if dhcp_version == 'v4':
-        for i in range(1, to_send + 1):
+        for i in range(1, to_send + 1):  # Try to acquire more leases than the limit.
+            # Try exchanging DORA and add 1 to success counter if Forge got ACK.
             success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXE')
+            # Add 1 to exchanges counter
             exchanges += 1
 
-        for i in range(1, success + 1):
+        for i in range(1, success + 1):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease4-del", "arguments": {"ip-address": f'192.168.1.{i}'}}
             srv_msg.send_ctrl_cmd(cmd)
 
-        for i in range(to_send + 1, 2 * to_send + 1):
+        for i in range(to_send + 1, 2 * to_send + 1):  # Try to acquire more leases than the limit.
             success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXE')
             exchanges += 1
 
-        for i in range(2 * to_send + 1, 3 * to_send + 1):
+        for i in range(2 * to_send + 1, 3 * to_send + 1):  # Try to acquire more leases than the limit with second class.
             success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXA')
             exchanges += 1
 
     else:
         # IA_NA
-        for i in range(1, to_send + 1):
+        for i in range(1, to_send + 1):  # Try to acquire more IA_NA leases than the limit.
+            # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', vendor='eRouter2.0')
+            # Add 1 to exchanges counter
             exchanges += 1
 
-        for i in range(1, success_na + 1):
+        for i in range(1, success_na + 1):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:1::{hex(i)[2:]}'}}
             srv_msg.send_ctrl_cmd(cmd)
 
-        for i in range(to_send + 1, 2 * to_send + 1):
+        for i in range(to_send + 1, 2 * to_send + 1):  # Try to acquire more IA_NA leases than the limit.
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', vendor='eRouter2.0')
             exchanges += 1
 
-        for i in range(2 * to_send + 1, 3 * to_send + 1):
+        for i in range(2 * to_send + 1, 3 * to_send + 1):  # Try to acquire more IA_NA leases than the limit of second class.
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', vendor='eRouter1.0')
             exchanges += 1
 
         # IA_PD
-        for i in range(3 * to_send + 1, 4 * to_send + 1):
+        for i in range(3 * to_send + 1, 4 * to_send + 1):  # Try to acquire more IA_PD leases than the limit
+            # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
             success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1, vendor='eRouter2.0')
             exchanges += 1
 
-        for i in range(3 * to_send + 1, 3 * to_send + 1 + success_pd):
+        for i in range(3 * to_send + 1, 3 * to_send + 1 + success_pd):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease6-get-by-duid", "arguments": {"duid": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}'}}
             response = srv_msg.send_ctrl_cmd(cmd)
             iaid = response['arguments']['leases'][0]['iaid']
@@ -773,7 +783,7 @@ def test_lease_limits_class(dhcp_version, backend):
             success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1, vendor='eRouter2.0')
             exchanges += 1
 
-        for i in range(5 * to_send + 1, 6 * to_send + 1):
+        for i in range(5 * to_send + 1, 6 * to_send + 1):  # Try to acquire more IA_PD leases than the limit of second class.
             success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1, vendor='eRouter1.0')
             exchanges += 1
 
@@ -797,6 +807,14 @@ def test_lease_limits_class(dhcp_version, backend):
 @pytest.mark.hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_mix(dhcp_version, backend):
+    """
+    Test of subnet and class lease limit of Lease Limiting Hook.
+    The test makes DORA or SARR exchange to acquire leases and counts if dropped or returned
+    "no leases available".
+    Test removes leases and tries again to check if the limit is restored.
+    If the received leases is the same as limit, the test passes.
+    Some error in number of packets is accounted for.
+    """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
 
@@ -887,23 +905,25 @@ def test_lease_limits_mix(dhcp_version, backend):
     to_send = 9
 
     if dhcp_version == 'v4':
-        for i in range(1, to_send + 1):
+        for i in range(1, to_send + 1):  # Try to acquire more leases than the limit.
+            # Try exchanging DORA and add 1 to success counter if Forge got ACK.
             success_class += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXE')
+            # Add 1 to exchanges counter
             exchanges += 1
 
-        for i in range(1, success_class + 1):
+        for i in range(1, success_class + 1):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease4-del", "arguments": {"ip-address": f'192.168.1.{i}'}}
             srv_msg.send_ctrl_cmd(cmd)
 
-        for i in range(to_send + 1, 2 * to_send + 1):
+        for i in range(to_send + 1, 2 * to_send + 1):  # Try to acquire more leases than the limit.
             success_class += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXE')
             exchanges += 1
 
-        for i in range(2 * to_send + 1, 3 * to_send + 1):
+        for i in range(2 * to_send + 1, 3 * to_send + 1):  # Try to acquire more leases than the limit of second class
             success_class += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXA')
             exchanges += 1
 
-        for i in range(3 * to_send + 1, 4 * to_send + 1):
+        for i in range(3 * to_send + 1, 4 * to_send + 1):  # Try to acquire more leases than the limit of subnet.
             success_noclass += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}')
             exchanges += 1
 
@@ -923,12 +943,12 @@ def test_lease_limits_mix(dhcp_version, backend):
                                         vendor='eRouter2.0')
             exchanges += 1
 
-        for i in range(2 * to_send + 1, 3 * to_send + 1):
+        for i in range(2 * to_send + 1, 3 * to_send + 1):  # Try to acquire more leases than the limit second class.
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
                                         vendor='eRouter1.0')
             exchanges += 1
 
-        for i in range(3 * to_send + 1, 4 * to_send + 1):
+        for i in range(3 * to_send + 1, 4 * to_send + 1):  # Try to acquire more leases than the limit of IA_NA.
             success_noclass += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
             exchanges += 1
 
@@ -956,11 +976,11 @@ def test_lease_limits_mix(dhcp_version, backend):
                                         vendor='eRouter2.0')
             exchanges += 1
 
-        for i in range(6 * to_send + 1, 7 * to_send + 1):
+        for i in range(6 * to_send + 1, 7 * to_send + 1):  # Try to acquire more leases than the limit second class.
             success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1,
                                         vendor='eRouter1.0')
 
-        for i in range(7 * to_send + 1, 8 * to_send + 1):
+        for i in range(7 * to_send + 1, 8 * to_send + 1):  # Try to acquire more leases than the limit of IA_PD.
             success_noclass += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1)
             exchanges += 1
 
