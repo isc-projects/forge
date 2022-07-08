@@ -645,16 +645,18 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
 
 
 @step(r'Send ctrl cmd (.+) using HTTP (\S+):(\S+) connection.')
-def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_result=0, exp_failed=False, https=False, verify=None, cert=None):
+def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_result=0, exp_failed=False, https=False, verify=None, cert=None,
+                           headers=None):
     if isinstance(command, dict):
         substitute_vars(command)
         address, port = test_define_value(address, port)
     else:
         address, port, command = test_define_value(address, port, command)
-    return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result, exp_failed, https, verify, cert)
+    return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result, exp_failed, https, verify, cert, headers)
 
 
-def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=False, address=world.f_cfg.mgmt_address, verify=None, cert=None):
+def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=False, address=world.f_cfg.mgmt_address, verify=None, cert=None,
+                  headers=None):
     """Send request to DHCP Kea server over Unix socket or over HTTP via CA."""
 
     if channel in ['http', 'https']:
@@ -768,6 +770,16 @@ def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
     return dhcpmsg.BOOTP_REQUEST_and_BOOTP_REPLY(address=address,
                                                  chaddr=chaddr,
                                                  client_id=client_id)
+
+
+def get_address_facing_remote_address(addr: str = world.f_cfg.mgmt_address):
+    """
+    Get address of an interface that is facing other address in forge setup
+    :param addr: ip address of remote system
+    :return: string, local ip address
+    """
+    addr = test_define_value(addr)[0]
+    return multi_protocol_functions.get_address_of_local_vm(addr)
 
 
 def start_fuzzing():

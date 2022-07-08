@@ -231,7 +231,14 @@ class ForgeConfiguration:
         else:
             return os.path.join('/run/kea', sub_path)
 
-    def tmp_join(self, sub_path):
+    def get_share_path(self):
+        if self.install_method == 'make':
+            return os.path.join(self.software_install_path, 'share/kea')
+        else:
+            return '/usr/share/kea'
+
+    @staticmethod
+    def tmp_join(sub_path):
         return os.path.join('/tmp', sub_path)
 
     def get_leases_path(self, proto=None):

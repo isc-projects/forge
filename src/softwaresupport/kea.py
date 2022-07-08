@@ -183,13 +183,25 @@ class CreateCert:
             self.server2_csr = world.f_cfg.data_join('server2_csr.csr')
             self.server2_key = world.f_cfg.data_join('server2_key.pem')
 
-
         # Delete leftover certificates.
         self.clear()
         # Generate certificates.
         self.generate()
 
-    def clear(self):
+    @staticmethod
+    def change_access(p):
+        if isinstance(p, list):
+            p = " ".join(p)
+        fabric_sudo_command(f'chmod 644 {p}')
+
+    def clear(self, name: str = None):
+        """
+        Remove all default keys and certs or just one singled out by name
+        :param name: name of a cert/key to be removed
+        """
+        if name is not None:
+            remove_file_from_server(name)
+            return
         # Delete leftover certificates.
         remove_file_from_server(self.ca_key)
         remove_file_from_server(self.ca_cert)
@@ -205,82 +217,162 @@ class CreateCert:
             remove_file_from_server(self.server2_key)
 
     def generate(self):
-        # Generate CA ( Certificate authority ) cert and key
+        """
+        Generate certs and keys with default names and location
+        """
+        self.generate_ca()
+        self.generate_server()
+        self.generate_client()
+        if world.f_cfg.mgmt_address_2 != '':
+            self.generate_server_2()
+
+    def generate_ca(self,
+                    ca_name: str = "Kea",
+                    ca_key_name: str = None,
+                    ca_cert_name: str = None):
+        """
+        Generate CA ( Certificate authority ) cert and key on remote system, and change access right of generated files
+        :param ca_name: CN name of cert
+        :param ca_key_name: name of key output file
+        :param ca_cert_name: name of cert output file
+        """
+        key = self.ca_key if ca_key_name is None else world.f_cfg.data_join(ca_key_name)
+        cert = self.ca_cert if ca_cert_name is None else world.f_cfg.data_join(ca_cert_name)
+
         generate_ca = f'openssl req ' \
                       f'-x509 ' \
                       f'-nodes ' \
                       f'-days 3650 ' \
                       f'-newkey rsa:4096 ' \
-                      f'-keyout {self.ca_key} ' \
-                      f'-out {self.ca_cert} ' \
-                      f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN=Kea"'
+                      f'-keyout {key} ' \
+                      f'-out {cert} ' \
+                      f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={ca_name}"'
+        fabric_sudo_command(generate_ca)
+        self.change_access([key, cert])
 
-        # Generate server cert and key
-        generate_server_priv = f'openssl genrsa -out {self.server_key} 4096 ; ' \
-                               f'openssl req ' \
-                               f'-new ' \
-                               f'-key {self.server_key} ' \
-                               f'-out {self.server_csr} ' \
-                               f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={world.f_cfg.mgmt_address}"'
+    def generate_server(self,
+                        cn: str = world.f_cfg.mgmt_address,
+                        server_key_name: str = None,
+                        server_csr_name: str = None,
+                        server_cert_name: str = None,
+                        ca_cert_name: str = None,
+                        ca_key_name: str = None):
+        """
+        Generate server cert and key, sign it with previously generated CA, change access rights
+        :param cn: CN parameter of a key
+        :param server_key_name: name of server key output file
+        :param server_csr_name: name of server csr output file
+        :param server_cert_name: name of server cert output file
+        :param ca_cert_name: name of CA cert file
+        :param ca_key_name: name of CA key file
+        """
+        s_key = self.server_key if server_key_name is None else world.f_cfg.data_join(server_key_name)
+        s_csr = self.server_csr if server_csr_name is None else world.f_cfg.data_join(server_csr_name)
+        s_crt = self.server_cert if server_cert_name is None else world.f_cfg.data_join(server_cert_name)
+
+        serv_prv = f'openssl genrsa -out {s_key} 4096 ; ' \
+                   f'openssl req ' \
+                   f'-new ' \
+                   f'-key {s_key} ' \
+                   f'-out {s_csr} ' \
+                   f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={cn}"'
+
         # Sign server cert
-        generate_server = f'openssl x509 -req ' \
-                          f'-days 1460 ' \
-                          f'-in {self.server_csr} ' \
-                          f'-CA {self.ca_cert} ' \
-                          f'-CAkey {self.ca_key} ' \
-                          f'-CAcreateserial -out {self.server_cert} ' \
-                          f'-extensions SAN ' \
-                          f'-extfile <(cat /etc/ssl/openssl.cnf' \
-                          f' <(printf "\n[SAN]\nsubjectAltName=IP:{world.f_cfg.mgmt_address}"))'
+        server = f'openssl x509 -req ' \
+                 f'-days 1460 ' \
+                 f'-in {s_csr} ' \
+                 f'-CA {self.ca_cert if ca_cert_name is None else world.f_cfg.data_join(ca_cert_name)} ' \
+                 f'-CAkey {self.ca_key if ca_key_name is None else world.f_cfg.data_join(ca_key_name)} ' \
+                 f'-CAcreateserial -out {s_crt} ' \
+                 f'-extensions SAN ' \
+                 f'-extfile <(cat /etc/ssl/openssl.cnf' \
+                 f' <(printf "\n[SAN]\nsubjectAltName=IP:{world.f_cfg.mgmt_address}"))'
 
+        fabric_sudo_command(serv_prv)
+        fabric_sudo_command(server)
+        self.change_access([s_key, s_csr, s_crt])
+
+    def generate_client(self, cn: str = 'client',
+                        client_key_name: str = None,
+                        client_csr_name: str = None,
+                        ca_cert_name: str = None,
+                        ca_key_name: str = None,
+                        client_cert_name: str = None):
+        """
+        Generate client cert and key, sign it with previously generated CA, change access rights
+        :param cn: CN parameter of a key
+        :param client_key_name:
+        :param client_csr_name:
+        :param ca_cert_name:
+        :param ca_key_name:
+        :param client_cert_name:
+        :return:
+        """
+        c_key = self.client_key if client_key_name is None else world.f_cfg.data_join(client_key_name)
+        c_crt = self.client_cert if client_cert_name is None else world.f_cfg.data_join(client_cert_name)
+        c_csr = self.client_csr if client_csr_name is None else world.f_cfg.data_join(client_csr_name)
+        remove_file_from_server(f'{c_key} {c_crt} {c_csr}')
         # Generate client cert and key
-        generate_client_priv = f'openssl genrsa -out {self.client_key} 4096 ; ' \
-                               f'openssl req ' \
-                               f'-new ' \
-                               f'-key {self.client_key} ' \
-                               f'-out {self.client_csr} ' \
-                               f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN=client"'
+        cli_prv = f'openssl genrsa -out {c_key} 4096 ; ' \
+                  f'openssl req ' \
+                  f'-new ' \
+                  f'-key {c_key} ' \
+                  f'-out {c_csr} ' \
+                  f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={cn}"'
 
         # Sign client cert
-        generate_client = f'openssl x509 -req ' \
-                          f'-days 1460 ' \
-                          f'-in {self.client_csr} ' \
-                          f'-CA {self.ca_cert} ' \
-                          f'-CAkey {self.ca_key} ' \
-                          f'-CAcreateserial -out {self.client_cert} ' \
+        cli_crt = f'openssl x509 -req ' \
+                  f'-days 1460 ' \
+                  f'-in {c_csr} ' \
+                  f'-CA {self.ca_cert if ca_cert_name is None else world.f_cfg.data_join(ca_cert_name)} ' \
+                  f'-CAkey {self.ca_key if ca_key_name is None else world.f_cfg.data_join(ca_key_name)} ' \
+                  f'-CAcreateserial -out {c_crt} '
 
-        if world.f_cfg.mgmt_address_2 != '':
-            # Generate server cert and key
-            generate_server2_priv = f'openssl genrsa -out {self.server2_key} 4096 ; ' \
-                                    f'openssl req ' \
-                                    f'-new ' \
-                                    f'-key {self.server2_key} ' \
-                                    f'-out {self.server2_csr} ' \
-                                    f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={world.f_cfg.mgmt_address_2}"'
-            # Sign server cert
-            generate_server2 = f'openssl x509 -req ' \
-                               f'-days 1460 ' \
-                               f'-in {self.server2_csr} ' \
-                               f'-CA {self.ca_cert} ' \
-                               f'-CAkey {self.ca_key} ' \
-                               f'-CAcreateserial -out {self.server2_cert} ' \
-                               f'-extensions SAN ' \
-                               f'-extfile <(cat /etc/ssl/openssl.cnf' \
-                               f' <(printf "\n[SAN]\nsubjectAltName=IP:{world.f_cfg.mgmt_address_2}"))'
+        fabric_sudo_command(cli_prv)
+        fabric_sudo_command(cli_crt)
+        self.change_access([c_key, c_crt, c_csr])
 
-        fabric_sudo_command(generate_ca)
-        fabric_sudo_command(generate_server_priv)
-        fabric_sudo_command(generate_server)
-        fabric_sudo_command(generate_client_priv)
-        fabric_sudo_command(generate_client)
+    def generate_server_2(self, cn: str = world.f_cfg.mgmt_address_2,
+                          server_key_name: str = None,
+                          server_csr_name: str = None,
+                          server_cert_name: str = None,
+                          ca_cert_name: str = None,
+                          ca_key_name: str = None):
+        """
 
-        if world.f_cfg.mgmt_address_2 != '':
-            fabric_sudo_command(generate_server2_priv)
-            fabric_sudo_command(generate_server2)
+        :param cn:
+        :param server_key_name:
+        :param server_csr_name:
+        :param server_cert_name:
+        :param ca_cert_name:
+        :param ca_key_name:
+        :return:
+        """
+        s_key = self.server2_key if server_key_name is None else world.f_cfg.data_join(server_key_name)
+        s_csr = self.server2_csr if server_csr_name is None else world.f_cfg.data_join(server_csr_name)
+        s_crt = self.server2_cert if server_cert_name is None else world.f_cfg.data_join(server_cert_name)
+        # Generate server cert and key
+        serv_prv = f'openssl genrsa -out {s_key} 4096 ; ' \
+                   f'openssl req ' \
+                   f'-new ' \
+                   f'-key {self.server2_key} ' \
+                   f'-out {s_csr} ' \
+                   f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={cn}"'
 
-        # Ensure Kea can read certificates.
-        for name, path in self.__dict__.items():
-            fabric_sudo_command(f'chmod 644 {path}')
+        # Sign server cert
+        serv = f'openssl x509 -req ' \
+               f'-days 1460 ' \
+               f'-in {s_csr} ' \
+               f'-CA {self.ca_cert if ca_cert_name is None else world.f_cfg.data_join(ca_cert_name)} ' \
+               f'-CAkey {self.ca_key if ca_key_name is None else world.f_cfg.data_join(ca_key_name)} ' \
+               f'-CAcreateserial -out {s_crt} ' \
+               f'-extensions SAN ' \
+               f'-extfile <(cat /etc/ssl/openssl.cnf' \
+               f' <(printf "\n[SAN]\nsubjectAltName=IP:{world.f_cfg.mgmt_address_2}"))'
+
+        fabric_sudo_command(serv_prv)
+        fabric_sudo_command(serv)
+        self.change_access([s_key, s_csr, s_crt])
 
     def download(self, cert_name: str = None):
         """ This function downloads selected certificate to test result directory on forge machine
@@ -300,9 +392,10 @@ class CreateCert:
         else:
             if cert_name in self.__dict__.keys():
                 copy_file_from_server(self.__dict__[cert_name], f'{cert_name}.pem')
-                return f'{world.cfg["test_result_dir"]}/{cert_name}.pem'
+                return os.path.join(world.cfg["test_result_dir"], f'{cert_name}.pem')
             else:
-                assert False, f'There is no "{cert_name}" certificate to download.'
+                copy_file_from_server(world.f_cfg.data_join(cert_name), cert_name)
+                return os.path.join(world.cfg["test_result_dir"], cert_name)
 
 
 def generate_certificate():
