@@ -23,7 +23,7 @@ def _send_directly_to_ca(cmd, exp_result=0, address='$(SRV4_ADDR)', exp_failed=F
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-def test_ca_control_channel_list():
+def test_ca_list():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
@@ -50,7 +50,7 @@ def test_ca_control_channel_list():
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-def test_ca_control_channel_config_get_set():
+def test_ca_config_get_set():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
@@ -79,7 +79,7 @@ def test_ca_control_channel_config_get_set():
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-def test_ca_control_channel_config_set():
+def test_ca_config_set():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
@@ -149,7 +149,7 @@ def test_ca_control_channel_config_set():
 @pytest.mark.ca
 @pytest.mark.disabled
 @pytest.mark.controlchannel
-def test_ca_control_channel_config_test():
+def test_ca_config_test():
     # this is bug, won't be fixed #910
     # let's check minimal configuration
     misc.test_setup()
@@ -214,7 +214,7 @@ def test_ca_control_channel_config_test():
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-def test_ca_control_channel_config_reload():
+def test_ca_config_reload():
     # let's check minimal configuration
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -266,7 +266,7 @@ def test_ca_control_channel_config_reload():
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-def test_ca_control_channel_build_report():
+def test_ca_build_report():
     # let's check minimal configuration
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -289,7 +289,7 @@ def test_ca_control_channel_build_report():
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-def test_ca_control_channel_config_write():
+def test_ca_config_write():
     # let's check minimal configuration
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -317,7 +317,7 @@ def test_ca_control_channel_config_write():
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-def test_ca_control_channel_shutdown():
+def test_ca_shutdown():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
@@ -334,7 +334,7 @@ def test_ca_control_channel_shutdown():
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-def test_ca_control_channel_version_get():
+def test_ca_version_get():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()
