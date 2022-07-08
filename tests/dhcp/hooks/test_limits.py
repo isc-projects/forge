@@ -790,3 +790,194 @@ def test_lease_limits_class(dhcp_version, backend):
         assert abs(3 * limit - success) <= threshold
     else:
         assert abs(6 * limit - success) <= threshold
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.hook
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_lease_limits_mix(dhcp_version, backend):
+    misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
+
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
+        srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
+        # define limit for hook and test
+        limit_subnet = 15
+        limit_class = 5
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
+        srv_control.config_srv_prefix('2002:db8:1::', 0, 90, 96)
+        # define limit for hook and test
+        limit_subnet = 15
+        limit_class = 5
+
+    srv_control.add_hooks('libdhcp_class_cmds.so')
+
+    # hook configuration in user context for subnet with limit defined above
+    srv_control.add_line_to_subnet(0, {"user-context": {
+        "limits": {
+            "address-limit": limit_subnet,
+            "prefix-limit": limit_subnet
+        }}})
+
+    # hook configuration in user context for classes with limit
+    if dhcp_version == 'v4':
+        classes = [
+            {
+                "name": "gold",
+                "test": "option[60].text == 'PXE'",
+                "user-context": {
+                    "limits": {
+                        "address-limit": limit_class
+                    }
+                }
+            },
+            {
+                "name": "silver",
+                "test": "option[60].text == 'PXA'",
+                "user-context": {
+                    "limits": {
+                        "address-limit": limit_class
+                    }
+                }
+            }
+
+        ]
+    else:
+        classes = [
+            {
+                "name": "VENDOR_CLASS_eRouter2.0",
+                "user-context": {
+                    "limits": {
+                        "address-limit": limit_class,
+                        "prefix-limit": limit_class
+                    }
+                }
+            },
+            {
+                "name": "VENDOR_CLASS_eRouter1.0",
+                "user-context": {
+                    "limits": {
+                        "address-limit": limit_class,
+                        "prefix-limit": limit_class
+                    }
+                }
+            }
+        ]
+    world.dhcp_cfg["client-classes"] = classes
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_limits.so')
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    success = 0
+    if dhcp_version == 'v4':
+        success_class = 0
+        success_noclass = 0
+    else:
+        success_na = 0
+        success_pd = 0
+        success_noclass = 0
+    exchanges = 0
+    to_send = 9
+
+    if dhcp_version == 'v4':
+        for i in range(1, to_send + 1):
+            success_class += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXE')
+            exchanges += 1
+
+        for i in range(1, success_class + 1):
+            cmd = {"command": "lease4-del", "arguments": {"ip-address": f'192.168.1.{i}'}}
+            srv_msg.send_ctrl_cmd(cmd)
+
+        for i in range(to_send + 1, 2 * to_send + 1):
+            success_class += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXE')
+            exchanges += 1
+
+        for i in range(2 * to_send + 1, 3 * to_send + 1):
+            success_class += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXA')
+            exchanges += 1
+
+        for i in range(3 * to_send + 1, 4 * to_send + 1):
+            success_noclass += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}')
+            exchanges += 1
+
+    else:
+        # IA_NA
+        for i in range(1, to_send + 1):
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        vendor='eRouter2.0')
+            exchanges += 1
+
+        for i in range(1, success_na + 1):
+            cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:1::{hex(i)[2:]}'}}
+            srv_msg.send_ctrl_cmd(cmd)
+
+        for i in range(to_send + 1, 2 * to_send + 1):
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        vendor='eRouter2.0')
+            exchanges += 1
+
+        for i in range(2 * to_send + 1, 3 * to_send + 1):
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        vendor='eRouter1.0')
+            exchanges += 1
+
+        for i in range(3 * to_send + 1, 4 * to_send + 1):
+            success_noclass += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
+            exchanges += 1
+
+        # IA_PD
+        for i in range(4 * to_send + 1, 5 * to_send + 1):
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1,
+                                        vendor='eRouter2.0')
+            exchanges += 1
+
+        for i in range(4 * to_send + 1, 4 * to_send + 1 + success_pd):
+            cmd = {"command": "lease6-get-by-duid", "arguments": {"duid": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}'}}
+            response = srv_msg.send_ctrl_cmd(cmd)
+            iaid = response['arguments']['leases'][0]['iaid']
+
+            cmd = {"command": "lease6-del",
+                   "arguments": {"subnet-id": 1,
+                                 "identifier": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                 "identifier-type": "duid",
+                                 "iaid": iaid,
+                                 "type": "IA_PD"}}
+            srv_msg.send_ctrl_cmd(cmd)
+
+        for i in range(5 * to_send + 1, 6 * to_send + 1):
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1,
+                                        vendor='eRouter2.0')
+            exchanges += 1
+
+        for i in range(6 * to_send + 1, 7 * to_send + 1):
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1,
+                                        vendor='eRouter1.0')
+
+        for i in range(7 * to_send + 1, 8 * to_send + 1):
+            success_noclass += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1)
+            exchanges += 1
+
+        success = success_na + success_pd
+    # Set threshold to account for small errors in receiving packets.
+    threshold = 1
+
+    # Check if difference between limit and received packets is within threshold.
+    if dhcp_version == 'v4':
+        print(f"exchanges made: {exchanges}")
+        print(f"class successes made: {success_class}")
+        print(f"noclass successes made: {success_noclass}")
+        assert abs(3 * limit_class - success_class) <= threshold
+        assert abs((limit_subnet + limit_class) - (success_class + success_noclass)) <= threshold
+    else:
+        print(f"exchanges made: {exchanges}")
+        print(f"class successes made: {success}")
+        print(f"noclass successes made: {success_noclass}")
+        assert abs(6 * limit_class - success) <= threshold
+        assert abs(2 * (limit_subnet + limit_class) - (success + success_noclass)) <= threshold
