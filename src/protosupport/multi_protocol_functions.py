@@ -17,6 +17,7 @@ import locale
 import pprint
 import termios
 import shutil
+import socket
 import logging
 import codecs
 import ipaddress
@@ -578,8 +579,9 @@ def _process_ctrl_response(response, exp_result):
         elif isinstance(result, list):
             res = result[0]
         else:
-            assert False, 'unexpected result: "%s"' % str(result)
-        assert 'result' in res and res['result'] == exp_result
+            assert False, 'result is incorrectly formatted'
+        assert 'result' in res and res['result'] == exp_result,\
+            f'unexpected result: {res["result"]} we were expecting {exp_result}'
         if res['result'] == 1:
             assert len(res) == 2 and 'text' in res
 
@@ -630,12 +632,30 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
     return result
 
 
-def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=False, https=False, verify=None, cert=None):
+def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=False, https=False, verify=None, cert=None,
+                           headers=None):
+    """
+    Send command to Control Agent using http or https
+    :param command: dict, command
+    :param address: string, IP address of Control Agent
+    :param port: int, port number on which Control Agent is listening
+    :param exp_result: int, value of result parameter send back by Control Agent
+    :param exp_failed: boolean, set to True if we expect that message over http/https will be failed to deliver
+    :param https: boolean, True if command should be send using https (default False)
+    :param verify: boolean, verification of certificate
+    :param cert: tuple, contain client cert and key
+    :param headers: dict, dictionary that should be added to message headers
+    return dict, json struct response from Control Agent
+    """
     if exp_failed:
         # expected result should be default (0) or None
         assert exp_result in [0, None]
         # force expected result to None so it is not checked
         exp_result = None
+
+    d_headers = {"Content-Type": "application/json"}
+    if headers is not None:
+        d_headers.update(headers)
 
     log.info(pprint.pformat(command))
     if isinstance(command, dict):
@@ -644,17 +664,13 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
         if https:
             if cert:
                 response = requests.post("https://" + address + ":" + locale.str(port),
-                                         headers={"Content-Type": "application/json"},
-                                         data=command, verify=verify, cert=cert)
+                                         headers=d_headers, data=command, verify=verify, cert=cert)
             else:
                 response = requests.post("https://" + address + ":" + locale.str(port),
-                                         headers={"Content-Type": "application/json"},
-                                         data=command, verify=verify)
+                                         headers=d_headers, data=command, verify=verify)
         else:
             response = requests.post("http://" + address + ":" + locale.str(port),
-                                     headers={"Content-Type": "application/json"},
-                                     data=command)
-        # print response.status_code
+                                     headers=d_headers, data=command)
     except requests.exceptions.ConnectionError:
         # this is weird, if post fail it should have 400 or 500 but it's not created instead
         response = None
@@ -666,9 +682,9 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
         if response is None:
             assert False, "Connection failed, but we expected success"
         elif 200 <= response.status_code < 300:
-            response = response.text
-            result = _process_ctrl_response(response, exp_result)
-            return result
+            return _process_ctrl_response(response.text, exp_result)
+        elif response.status_code in [401, 403]:
+            return _process_ctrl_response(response._content, exp_result)
 
 
 def assert_result(condition, result, value):
@@ -821,3 +837,16 @@ def increase_address(address, prefix_length):
             new_address.compressed + '/' + prefix_length)
         return str(new_network.network_address)
     raise Exception('%s is not a valid IPv4 or IPv6 address' % address)
+
+
+def get_address_of_local_vm(addr: str = None):
+    """
+    Get address of an interface that is facing other address in forge setup
+    :param addr: ip address of remote system
+    :return: string, local ip address
+    """
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect((addr, 80))
+    a = s.getsockname()[0]
+    s.close()
+    return a

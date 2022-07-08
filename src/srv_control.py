@@ -652,7 +652,7 @@ def start_srv(name: str, action: str, config_set=None,
         elif name == "DNS":
             dns.reconfigure_srv(should_succeed, destination_address=dest)
     else:
-        assert False, "we don't support '%s' action." % str(type_of_action)
+        assert False, "we don't support '%s' action." % str(action)
 
 
 def check_remote_address(remote_address):
@@ -763,6 +763,9 @@ def print_cfg(service='DHCP'):
     elif service.lower() == 'ddns':
         print("DDNS config:")
         print(json.dumps(world.ddns_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
+    elif service.lower() == 'ca':
+        print("Control Agent config:")
+        print(json.dumps(world.ca_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
 
 
 def generate_certificate():
