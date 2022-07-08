@@ -449,6 +449,10 @@ def _preconfigure_test():
                 {
                     "user": "admin2",
                     "password": "1234"
+                },
+                {
+                    "user": "admin3",
+                    "password": "1234"
                 }
             ]
     }})
@@ -592,6 +596,78 @@ def test_rbac_access_by_name_removed_file(make_sure_file_is_correct):
 
     # start without dhcp-disable file, agent should log an error and exit
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
+
+
+@pytest.mark.v4
+@pytest.mark.ca
+def test_rbac_access_by_name_removed_file_2(make_sure_file_is_correct):
+    """
+    Check how Control Agent reacts on removed command definition file from share/api
+    :param make_sure_file_is_correct: fixture that will backup and restore dhcp-disable.json file
+    """
+    # remove file that define access level
+    f = os.path.join(world.f_cfg.get_share_path(), 'api/dhcp-disable.json')
+    srv_msg.execute_shell_cmd(f"rm -f {f}")
+
+    roles = [
+        {
+            "name": "admin",
+            "accept-commands": {"commands": ["dhcp-disable"]},
+            "reject-commands": "READ",
+            "list-match-first": "accept"
+        },
+        {
+            "name": "admin2",
+            "accept-commands": "READ",
+            "reject-commands": "WRITE",
+            "list-match-first": "reject"
+        }
+    ]
+
+    hook = _preconfigure_test()
+    hook[0]["parameters"]["roles"] = roles
+    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    srv_control.build_and_send_config_files()
+
+    # start without dhcp-disable file, agent should log an error and exit
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
+
+    # now let's add dhcp-disable as our custom command in custom hook, and add 3rd admin based on
+    # our new my-custom-hook
+    roles.append(
+        {
+            "name": "admin3",
+            "accept-commands": {"hook": "my-custom-hook"},
+            "reject-commands": "ALL",
+            "list-match-first": "accept"
+        })
+    hook = _preconfigure_test()
+    hook[0]["parameters"]["roles"] = roles
+
+    # add dhcp-disable as custom command, from custom hook
+    hook[0]["parameters"].update(
+        {
+            "commands": [
+                {
+                    "name": "dhcp-disable",
+                    "access": "write",
+                    "hook": "my-custom-hook"
+                }
+            ]
+        }
+    )
+
+    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # before restart admin2 should be rejected but admin right is based on command name, should work
+    _send_cmd({"command": "dhcp-disable", "arguments": {}}, user='admin2', result=403)
+    _send_cmd({"command": "dhcp-disable", "arguments": {}})
+
+    # admin3 should be able to use just dhcp-disable
+    _send_cmd({"command": "dhcp-enable", "arguments": {}}, user='admin3', result=403)
+    _send_cmd({"command": "dhcp-disable", "arguments": {}}, user='admin3')
 
 
 @pytest.mark.v4
