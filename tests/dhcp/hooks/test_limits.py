@@ -110,7 +110,7 @@ def _get_lease_v4(address, chaddr, vendor=None):
     return 1
 
 
-def _get_lease_v6(address, duid, vendor=None, ia_pd=None):
+def _get_lease_v6(address, duid, vendor=None, ia_na=None, ia_pd=None):
     """
     Local function used to send Solicit and check if Advertise is send back.
     If Advertise is received with address, function continues with Request and Reply
@@ -123,10 +123,10 @@ def _get_lease_v6(address, duid, vendor=None, ia_pd=None):
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
     srv_msg.client_does_include('Client', 'client-id')
-    if ia_pd is None:
+    if ia_na is not None:
         srv_msg.client_does_include('Client', 'IA_Address')
         srv_msg.client_does_include('Client', 'IA-NA')
-    else:
+    if ia_pd is not None:
         srv_msg.client_does_include('Client', 'IA-PD')
 
     if vendor is not None:
@@ -142,14 +142,14 @@ def _get_lease_v6(address, duid, vendor=None, ia_pd=None):
             return 0
         raise AssertionError(e) from e
 
-    if ia_pd is None:
+    if ia_na is not None:
         try:
             srv_msg.check_IA_NA(address)
         except AssertionError as e:
             if e.args[0] == 'Invalid DHCP6OptIA_NA[3] option, received statuscode: 2, but expected 0':
                 return 0
             raise AssertionError(e) from e
-    else:
+    if ia_pd is not None:
         srv_msg.response_check_include_option(25)
         try:
             srv_msg.response_check_option_content(25, 'sub-option', 26)
@@ -159,9 +159,9 @@ def _get_lease_v6(address, duid, vendor=None, ia_pd=None):
             raise AssertionError(e) from e
 
     # Build and send a request.
-    if ia_pd is None:
+    if ia_na is not None:
         srv_msg.client_copy_option('IA_NA')
-    else:
+    if ia_pd is not None:
         srv_msg.client_copy_option('IA_PD')
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', duid)
@@ -174,6 +174,12 @@ def _get_lease_v6(address, duid, vendor=None, ia_pd=None):
     # Expect a reply.
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    if ia_na is not None:
+        srv_msg.check_IA_NA(address)
+    if ia_pd is not None:
+        srv_msg.response_check_include_option(25)
+        srv_msg.response_check_option_content(25, 'sub-option', 26)
+
     return 1
 
 
@@ -195,17 +201,16 @@ def test_rate_limits_subnet(dhcp_version, backend, unit):
 
     # define test duration in seconds
     duration = 1 if unit == 'second' else 60
+    limit = 3 if unit == 'second' else 200
 
     if dhcp_version == 'v4':
-        srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
-        srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
+        srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
+        srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
         # define limit for hook and test
-        limit = 3 if unit == 'second' else 200
 
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
         # define limit for hook and test
-        limit = 3 if unit == 'second' else 200
 
     # hook configuration in user context for subnet with limit defined above
     srv_control.add_line_to_subnet(0, {"user-context": {
@@ -224,9 +229,8 @@ def test_rate_limits_subnet(dhcp_version, backend, unit):
     packets = 0
 
     # Wait time for response for v4 and v6
-    if dhcp_version == 'v4':
-        world.cfg['wait_interval'] = 0.1
-    else:
+    world.cfg['wait_interval'] = 0.1
+    if dhcp_version == 'v6':
         world.cfg['wait_interval'] = 0.1
 
     start = time.time()
@@ -259,7 +263,8 @@ def test_rate_limits_subnet(dhcp_version, backend, unit):
     threshold = 1 if unit == 'second' else 5
 
     # Check if difference between limit and received packets is within threshold.
-    assert abs(limit - success) <= threshold
+    assert abs(limit - success) <= threshold, f'Difference between responses and limit ({abs(limit - success)})' \
+                                              f' exceeds threshold ({threshold})'
 
 
 @pytest.mark.v4
@@ -278,8 +283,8 @@ def test_rate_limits_class(dhcp_version, backend, unit):
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
     if dhcp_version == 'v4':
-        srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
-        srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
+        srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
+        srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
     srv_control.open_control_channel()
@@ -291,9 +296,9 @@ def test_rate_limits_class(dhcp_version, backend, unit):
     duration = 1 if unit == 'second' else 60
 
     # hook configuration in user context for classes with limit
+    limit = 3 if unit == 'second' else 200
     if dhcp_version == 'v4':
         # define limit for hook and test
-        limit = 3 if unit == 'second' else 200
         classes = [
             {
                 "name": "gold",
@@ -307,7 +312,6 @@ def test_rate_limits_class(dhcp_version, backend, unit):
         ]
     else:
         # define limit for hook and test
-        limit = 3 if unit == 'second' else 200
         classes = [
             {
                 "name": "VENDOR_CLASS_eRouter2.0",
@@ -327,9 +331,8 @@ def test_rate_limits_class(dhcp_version, backend, unit):
     packets = 0
 
     # Wait time for response for v4 and v6
-    if dhcp_version == 'v4':
-        world.cfg['wait_interval'] = 0.1
-    else:
+    world.cfg['wait_interval'] = 0.1
+    if dhcp_version == 'v6':
         world.cfg['wait_interval'] = 0.1
 
     start = time.time()
@@ -362,7 +365,8 @@ def test_rate_limits_class(dhcp_version, backend, unit):
     threshold = 1 if unit == 'second' else 5
 
     # Check if difference between limit and received packets is within threshold.
-    assert abs(limit - success) <= threshold
+    assert abs(limit - success) <= threshold, f'Difference between responses and limit ({abs(limit - success)})' \
+                                              f' exceeds threshold ({threshold})'
 
 
 @pytest.mark.v4
@@ -378,15 +382,14 @@ def test_rate_limits_mix(dhcp_version, backend):
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
+    limit = 200
     if dhcp_version == 'v4':
-        srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
-        srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
+        srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
+        srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
         # define limit for hook and test
-        limit = 200
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
         # define limit for hook and test
-        limit = 200
     srv_control.add_line_to_subnet(0, {"user-context": {
         "limits": {
             "rate-limit": f"{limit} packets per minute"
@@ -397,9 +400,9 @@ def test_rate_limits_mix(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_class_cmds.so')
 
     # hook configuration in user context for classes with limit
+    gold = 3
+    silver = 50
     if dhcp_version == 'v4':
-        gold = 3
-        silver = 50
         classes = [
             {
                 "name": "gold",
@@ -422,8 +425,6 @@ def test_rate_limits_mix(dhcp_version, backend):
 
         ]
     else:
-        gold = 3
-        silver = 50
         classes = [
             {
                 "name": "VENDOR_CLASS_eRouter2.0",
@@ -454,10 +455,10 @@ def test_rate_limits_mix(dhcp_version, backend):
     success_noclass = 0
     packets_noclass = 0
 
-    if dhcp_version == 'v4':
+    world.cfg['wait_interval'] = 0.1
+    if dhcp_version == 'v6':
         world.cfg['wait_interval'] = 0.1
-    else:
-        world.cfg['wait_interval'] = 0.1
+
     start = time.time()
     elapsed = 0
     if dhcp_version == 'v4':
@@ -510,9 +511,12 @@ def test_rate_limits_mix(dhcp_version, backend):
     threshold_silver = 1
 
     # Check if difference between limit and received packets is within threshold.
-    assert abs(limit - all_success) <= threshold_subnet
-    assert abs(gold - success_gold) <= threshold_gold
-    assert abs(silver - success_silver) <= threshold_silver
+    assert abs(limit - all_success) <= threshold_subnet,\
+        f'Difference between responses and limit ({abs(limit - all_success)}) exceeds Subnet threshold ({threshold_subnet})'
+    assert abs(gold - success_gold) <= threshold_gold,\
+        f'Difference between responses and limit ({abs(gold - success_gold)}) exceeds Gold Class threshold ({threshold_gold})'
+    assert abs(silver - success_silver) <= threshold_silver,\
+        f'Difference between responses and limit ({abs(silver - success_silver)}) exceeds Silver Class threshold ({threshold_silver})'
 
 
 @pytest.mark.v4
@@ -530,17 +534,14 @@ def test_lease_limits_subnet(dhcp_version, backend):
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
-
+    # define limit for hook and test
+    limit = 5
     if dhcp_version == 'v4':
-        srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
-        srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
-        # define limit for hook and test
-        limit = 5
+        srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
+        srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
         srv_control.config_srv_prefix('2002:db8:1::', 0, 90, 96)
-        # define limit for hook and test
-        limit = 5
 
     # hook configuration in user context for subnet with limit defined above
     srv_control.add_line_to_subnet(0, {"user-context": {
@@ -582,7 +583,7 @@ def test_lease_limits_subnet(dhcp_version, backend):
         # IA_NA
         for i in range(1, to_send + 1):  # Try to acquire more IA_NA leases than the limit.
             # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
-            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_na=True)
             # Add 1 to exchanges counter
             exchanges += 1
 
@@ -591,7 +592,7 @@ def test_lease_limits_subnet(dhcp_version, backend):
             srv_msg.send_ctrl_cmd(cmd)
 
         for i in range(to_send + 1, 2 * to_send + 1):  # Try to acquire more leases than the limit.
-            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_na=True)
             exchanges += 1
 
         # IA_PD
@@ -627,9 +628,11 @@ def test_lease_limits_subnet(dhcp_version, backend):
 
     # Check if difference between limit and received packets is within threshold.
     if dhcp_version == 'v4':
-        assert abs(2 * limit - success) <= threshold
+        assert abs(2 * limit - success) <= threshold,\
+            f'Difference between responses and limit ({abs(2 * limit - success)}) exceeds threshold ({threshold})'
     else:
-        assert abs(4 * limit - success) <= threshold
+        assert abs(4 * limit - success) <= threshold,\
+            f'Difference between responses and limit ({abs(4 * limit - success)}) exceeds threshold ({threshold})'
 
 
 @pytest.mark.v4
@@ -647,17 +650,14 @@ def test_lease_limits_class(dhcp_version, backend):
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
-
+    # define limit for hook and test
+    limit = 5
     if dhcp_version == 'v4':
-        srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
-        srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
-        # define limit for hook and test
-        limit = 5
+        srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
+        srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
         srv_control.config_srv_prefix('2002:db8:1::', 0, 90, 96)
-        # define limit for hook and test
-        limit = 5
 
     srv_control.add_hooks('libdhcp_class_cmds.so')
 
@@ -744,7 +744,8 @@ def test_lease_limits_class(dhcp_version, backend):
         # IA_NA
         for i in range(1, to_send + 1):  # Try to acquire more IA_NA leases than the limit.
             # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
-            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', vendor='eRouter2.0')
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        vendor='eRouter2.0', ia_na=True)
             # Add 1 to exchanges counter
             exchanges += 1
 
@@ -753,17 +754,20 @@ def test_lease_limits_class(dhcp_version, backend):
             srv_msg.send_ctrl_cmd(cmd)
 
         for i in range(to_send + 1, 2 * to_send + 1):  # Try to acquire more IA_NA leases than the limit.
-            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', vendor='eRouter2.0')
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        vendor='eRouter2.0', ia_na=True)
             exchanges += 1
 
         for i in range(2 * to_send + 1, 3 * to_send + 1):  # Try to acquire more IA_NA leases than the limit of second class.
-            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', vendor='eRouter1.0')
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        vendor='eRouter1.0', ia_na=True)
             exchanges += 1
 
         # IA_PD
         for i in range(3 * to_send + 1, 4 * to_send + 1):  # Try to acquire more IA_PD leases than the limit
             # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
-            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1, vendor='eRouter2.0')
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        ia_pd=1, vendor='eRouter2.0')
             exchanges += 1
 
         for i in range(3 * to_send + 1, 3 * to_send + 1 + success_pd):  # Delete all acquired leases to reset limit.
@@ -780,11 +784,13 @@ def test_lease_limits_class(dhcp_version, backend):
             srv_msg.send_ctrl_cmd(cmd)
 
         for i in range(4 * to_send + 1, 5 * to_send + 1):
-            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1, vendor='eRouter2.0')
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        ia_pd=1, vendor='eRouter2.0')
             exchanges += 1
 
         for i in range(5 * to_send + 1, 6 * to_send + 1):  # Try to acquire more IA_PD leases than the limit of second class.
-            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1, vendor='eRouter1.0')
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        ia_pd=1, vendor='eRouter1.0')
             exchanges += 1
 
         success = success_na + success_pd
@@ -797,9 +803,11 @@ def test_lease_limits_class(dhcp_version, backend):
 
     # Check if difference between limit and received packets is within threshold.
     if dhcp_version == 'v4':
-        assert abs(3 * limit - success) <= threshold
+        assert abs(3 * limit - success) <= threshold,\
+            f'Difference between responses and limit ({abs(3 * limit - success)}) exceeds threshold ({threshold})'
     else:
-        assert abs(6 * limit - success) <= threshold
+        assert abs(6 * limit - success) <= threshold,\
+            f'Difference between responses and limit ({abs(6 * limit - success)}) exceeds threshold ({threshold})'
 
 
 @pytest.mark.v4
@@ -817,19 +825,15 @@ def test_lease_limits_mix(dhcp_version, backend):
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
-
+    # define limit for hook and test
+    limit_subnet = 15
+    limit_class = 5
     if dhcp_version == 'v4':
-        srv_control.config_srv_subnet('192.168.0.0/16', '192.168.1.1-192.168.255.255')
-        srv_control.config_srv_opt('subnet-mask', '255.255.0.0')
-        # define limit for hook and test
-        limit_subnet = 15
-        limit_class = 5
+        srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
+        srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
         srv_control.config_srv_prefix('2002:db8:1::', 0, 90, 96)
-        # define limit for hook and test
-        limit_subnet = 15
-        limit_class = 5
 
     srv_control.add_hooks('libdhcp_class_cmds.so')
 
@@ -931,7 +935,7 @@ def test_lease_limits_mix(dhcp_version, backend):
         # IA_NA
         for i in range(1, to_send + 1):
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
-                                        vendor='eRouter2.0')
+                                        vendor='eRouter2.0', ia_na=True)
             exchanges += 1
 
         for i in range(1, success_na + 1):
@@ -940,16 +944,16 @@ def test_lease_limits_mix(dhcp_version, backend):
 
         for i in range(to_send + 1, 2 * to_send + 1):
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
-                                        vendor='eRouter2.0')
+                                        vendor='eRouter2.0', ia_na=True)
             exchanges += 1
 
         for i in range(2 * to_send + 1, 3 * to_send + 1):  # Try to acquire more leases than the limit second class.
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
-                                        vendor='eRouter1.0')
+                                        vendor='eRouter1.0', ia_na=True)
             exchanges += 1
-
+        simultaneous
         for i in range(3 * to_send + 1, 4 * to_send + 1):  # Try to acquire more leases than the limit of IA_NA.
-            success_noclass += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}')
+            success_noclass += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_na=True)
             exchanges += 1
 
         # IA_PD
@@ -993,11 +997,15 @@ def test_lease_limits_mix(dhcp_version, backend):
         print(f"exchanges made: {exchanges}")
         print(f"class successes made: {success_class}")
         print(f"noclass successes made: {success_noclass}")
-        assert abs(3 * limit_class - success_class) <= threshold
-        assert abs((limit_subnet + limit_class) - (success_class + success_noclass)) <= threshold
+        assert abs(3 * limit_class - success_class) <= threshold,\
+            f'Difference between Class responses and limit ({abs(3 * limit_class - success_class)}) exceeds threshold ({threshold})'
+        assert abs((limit_subnet + limit_class) - (success_class + success_noclass)) <= threshold,\
+            f'Difference between All responses and limit ({abs((limit_subnet + limit_class) - (success_class + success_noclass))}) exceeds threshold ({threshold})'
     else:
         print(f"exchanges made: {exchanges}")
         print(f"class successes made: {success}")
         print(f"noclass successes made: {success_noclass}")
-        assert abs(6 * limit_class - success) <= threshold
-        assert abs(2 * (limit_subnet + limit_class) - (success + success_noclass)) <= threshold
+        assert abs(6 * limit_class - success) <= threshold,\
+            f'Difference between Class responses and limit ({abs(6 * limit_class - success)}) exceeds threshold ({threshold})'
+        assert abs(2 * (limit_subnet + limit_class) - (success + success_noclass)) <= threshold,\
+            f'Difference between All responses and limit ({abs(2 * (limit_subnet + limit_class) - (success + success_noclass))}) exceeds threshold ({threshold})'
