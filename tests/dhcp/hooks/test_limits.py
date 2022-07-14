@@ -951,7 +951,7 @@ def test_lease_limits_mix(dhcp_version, backend):
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
                                         vendor='eRouter1.0', ia_na=True)
             exchanges += 1
-        simultaneous
+
         for i in range(3 * to_send + 1, 4 * to_send + 1):  # Try to acquire more leases than the limit of IA_NA.
             success_noclass += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_na=True)
             exchanges += 1
