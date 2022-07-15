@@ -120,6 +120,7 @@ def _get_lease_v6(address, duid, vendor=None, ia_na=None, ia_pd=None):
     :param vendor: Vendor name
     :return: 1 if Offer is received.
     """
+    successes = 0
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
     srv_msg.client_does_include('Client', 'client-id')
@@ -145,19 +146,24 @@ def _get_lease_v6(address, duid, vendor=None, ia_na=None, ia_pd=None):
     if ia_na is not None:
         try:
             srv_msg.check_IA_NA(address)
+            successes += 1
         except AssertionError as e:
             if e.args[0] == 'Invalid DHCP6OptIA_NA[3] option, received statuscode: 2, but expected 0':
-                return 0
-            raise AssertionError(e) from e
+                ia_na = None
+            else:
+                raise AssertionError(e) from e
     if ia_pd is not None:
         srv_msg.response_check_include_option(25)
         try:
             srv_msg.response_check_option_content(25, 'sub-option', 26)
+            successes += 1
         except AssertionError as e:
             if e.args[0] == 'Expected sub-option DHCP6OptIAPrefix[26] not present in the option DHCP6OptIA_PD[25]':
-                return 0
-            raise AssertionError(e) from e
-
+                ia_pd = None
+            else:
+                raise AssertionError(e) from e
+    if successes == 0:
+        return 0
     # Build and send a request.
     if ia_na is not None:
         srv_msg.client_copy_option('IA_NA')
@@ -180,7 +186,7 @@ def _get_lease_v6(address, duid, vendor=None, ia_na=None, ia_pd=None):
         srv_msg.response_check_include_option(25)
         srv_msg.response_check_option_content(25, 'sub-option', 26)
 
-    return 1
+    return successes
 
 
 @pytest.mark.v4
@@ -587,6 +593,8 @@ def test_lease_limits_subnet(dhcp_version, backend):
             # Add 1 to exchanges counter
             exchanges += 1
 
+        batch1 = success_na
+
         for i in range(1, success_na + 1):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:1::{hex(i)[2:]}'}}
             srv_msg.send_ctrl_cmd(cmd)
@@ -595,17 +603,21 @@ def test_lease_limits_subnet(dhcp_version, backend):
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_na=True)
             exchanges += 1
 
+        for i in range(to_send + 1, to_send + success_na - batch1 + 1):  # Delete all acquired leases to reset limit.
+            cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:1::{hex(i)[2:]}'}}
+            srv_msg.send_ctrl_cmd(cmd)
+
         # IA_PD
         for i in range(2 * to_send + 1, 3 * to_send + 1):  # Try to acquire more IA_PD leases than the limit
             # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
-            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1)
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1, ia_na=True)
             # Add 1 to exchanges counter
             exchanges += 1
 
-        for i in range(2 * to_send + 1, 2 * to_send + 1 + success_pd):  # Delete all acquired leases to reset limit.
+        for i in range(2 * to_send + 1, 2 * to_send + 1 + int(success_pd/2)):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease6-get-by-duid", "arguments": {"duid": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}'}}
             response = srv_msg.send_ctrl_cmd(cmd)
-            iaid = response['arguments']['leases'][0]['iaid']
+            iaid = response['arguments']['leases'][1]['iaid']
             cmd = {"command": "lease6-del",
                    "arguments": {"subnet-id": 1,
                                  "identifier": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
@@ -631,7 +643,7 @@ def test_lease_limits_subnet(dhcp_version, backend):
         assert abs(2 * limit - success) <= threshold,\
             f'Difference between responses and limit ({abs(2 * limit - success)}) exceeds threshold ({threshold})'
     else:
-        assert abs(4 * limit - success) <= threshold,\
+        assert abs(5 * limit - success) <= threshold,\
             f'Difference between responses and limit ({abs(4 * limit - success)}) exceeds threshold ({threshold})'
 
 
