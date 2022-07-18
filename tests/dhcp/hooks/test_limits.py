@@ -1021,3 +1021,80 @@ def test_lease_limits_mix(dhcp_version, backend):
             f'Difference between Class responses and limit ({abs(6 * limit_class - success)}) exceeds threshold ({threshold})'
         assert abs(2 * (limit_subnet + limit_class) - (success + success_noclass)) <= threshold,\
             f'Difference between All responses and limit ({abs(2 * (limit_subnet + limit_class) - (success + success_noclass))}) exceeds threshold ({threshold})'
+
+
+@pytest.mark.v6
+@pytest.mark.hook
+@pytest.mark.parametrize('backend', ['memfile'])
+def test_lease_limits_v6_multipleIA(backend):
+    misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
+    # define limit for hook and test
+    limit = 2
+
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
+    srv_control.config_srv_prefix('2002:db8:1::', 0, 90, 96)
+
+    # hook configuration in user context for subnet with limit defined above
+    srv_control.add_line_to_subnet(0, {"user-context": {
+        "limits": {
+            "address-limit": limit
+        }}})
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_limits.so')
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+
+    misc.test_procedure()
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.generate_new('IA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+
+    misc.test_procedure()
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.generate_new('IA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+
+    misc.test_procedure()
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_add_saved_option(erase=True)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
+    srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
