@@ -18,6 +18,7 @@ from src import srv_msg
 from src import misc
 from src.forge_cfg import world
 
+
 def _get_address_v4(yiaddr, chaddr):
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', chaddr)
