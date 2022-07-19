@@ -18,6 +18,27 @@ from src import srv_msg
 from src import misc
 from src.forge_cfg import world
 
+def _get_address_v4(yiaddr, chaddr):
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', chaddr)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', yiaddr)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', yiaddr)
+    srv_msg.client_sets_value('Client', 'chaddr', chaddr)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', yiaddr)
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
 
 @pytest.mark.v4
 @pytest.mark.host_reservation
@@ -33,7 +54,8 @@ def test_host():
                     'pool': '192.168.50.1-192.168.50.50'
                 }
             ],
-            'subnet': '192.168.50.0/24'
+            'subnet': '192.168.50.0/24',
+            'client-class': 'first'
         },
         {
             'id': 2,
@@ -47,36 +69,29 @@ def test_host():
         }
     ]
 
+    client_classes = [
+        {
+            'name': 'first'
+        }
+    ]
+
     reservations = [
         {
-            'ip-address': '192.168.50.10',
+            'client-classes': ['first'],
             'hw-address': 'ff:01:02:03:ff:04'
         }
 
     ]
+    # world.dhcp_cfg['reservations-global'] = True
+    # world.dhcp_cfg['reservations-in-subnet'] = False
     world.dhcp_cfg['early-global-reservations-lookup'] = True
+
     world.dhcp_cfg.update({'subnet4': copy.deepcopy(subnets)})
+    world.dhcp_cfg.update({'client-classes': copy.deepcopy(client_classes)})
     world.dhcp_cfg.update({'reservations': copy.deepcopy(reservations)})
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_send_msg('DISCOVER')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.response_check_content('yiaddr', '192.168.50.10')
-
-    misc.test_procedure()
-    srv_msg.client_copy_option('server_id')
-    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ACK')
-    srv_msg.response_check_content('yiaddr', '192.168.50.10')
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    _get_address_v4('192.168.50.1', 'ff:01:02:03:ff:04')
+    _get_address_v4('192.168.51.1', 'ff:01:02:03:ff:05')
