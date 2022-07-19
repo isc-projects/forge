@@ -1025,8 +1025,11 @@ def test_lease_limits_mix(dhcp_version, backend):
 
 @pytest.mark.v6
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_v6_multipleIA(backend):
+    """
+    Test to check correct behaviour when multiple IA-NA address request is made that exceeds limit.
+    """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
     # define limit for hook and test
@@ -1048,6 +1051,7 @@ def test_lease_limits_v6_multipleIA(backend):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Send first Solicit
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_does_include('Client', 'IA-NA')
@@ -1058,19 +1062,7 @@ def test_lease_limits_v6_multipleIA(backend):
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    misc.test_procedure()
-    srv_msg.client_save_option('IA_NA')
-    srv_msg.generate_new('IA')
-    srv_msg.client_requests_option(7)
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    srv_msg.response_check_include_option(3)
-    srv_msg.response_check_option_content(3, 'sub-option', 5)
-
+    # Send second Solicit
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
     srv_msg.generate_new('IA')
@@ -1084,6 +1076,21 @@ def test_lease_limits_v6_multipleIA(backend):
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
+    # Send third Solicit
+    misc.test_procedure()
+    srv_msg.client_save_option('IA_NA')
+    srv_msg.generate_new('IA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+
+    # Send request for all three addressees
     misc.test_procedure()
     srv_msg.client_save_option('IA_NA')
     srv_msg.client_copy_option('server-id')
@@ -1091,6 +1098,7 @@ def test_lease_limits_v6_multipleIA(backend):
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
+    # check if got 2 addressees and a decline
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
