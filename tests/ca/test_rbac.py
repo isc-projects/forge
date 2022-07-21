@@ -128,6 +128,7 @@ def test_rbac_cert_subject():
 def test_rbac_cert_issuer():
     """
     Test assign-role-method set to cert issuer
+    issue https://gitlab.isc.org/isc-projects/kea/-/issues/2475
     """
     # Create certificates.
     certificate = srv_control.generate_certificate()
@@ -202,6 +203,7 @@ def test_rbac_cert_issuer():
 def test_rbac_remote_address(tls):
     """
     Test assign-role-method set to remote-address, with tls or without
+    issue https://gitlab.isc.org/isc-projects/kea/-/issues/2475
     """
     if tls:
         # Create certificates.
@@ -881,6 +883,7 @@ def test_rbac_access_by_commands_with_other_list():
 def test_rbac_filter_responses():
     """
     Check response filtering defined in "response-filters": ["list-commands"]
+    issue https://gitlab.isc.org/isc-projects/kea/-/issues/2483
     """
     roles = [
         {
