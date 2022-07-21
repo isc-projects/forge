@@ -10,6 +10,7 @@
 
 # pylint: disable=invalid-name,line-too-long,unused-argument,too-many-branches
 import time
+import random
 import pytest
 
 from src import misc
@@ -1028,20 +1029,22 @@ def test_lease_limits_mix(dhcp_version, backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_v6_multipleIA(backend):
     """
-    Test to check correct behaviour when multiple IA-NA address request is made that exceeds limit.
+    Test to check correct behaviour when multiple IA-NA and IA-PD address request is made that exceeds limit.
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
     # define limit for hook and test
     limit = 2
-
+    # define addresses number to try to get
+    iaid = iapd = 3
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
     srv_control.config_srv_prefix('2002:db8:1::', 0, 90, 96)
 
     # hook configuration in user context for subnet with limit defined above
     srv_control.add_line_to_subnet(0, {"user-context": {
         "limits": {
-            "address-limit": limit
+            "address-limit": limit,
+            "prefix-limit": limit
         }}})
 
     srv_control.open_control_channel()
@@ -1051,58 +1054,59 @@ def test_lease_limits_v6_multipleIA(backend):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # Send first Solicit
+    ia_1 = random.randint(2000, 7000)
+    pd_1 = random.randint(7001, 9999)
+
     misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:00')
     srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
+
+    # Generate ia-na and ia-pd requests
+    for ia in range(iaid):
+        srv_msg.client_sets_value('Client', 'ia_id', ia_1 + ia)
+        srv_msg.client_does_include('Client', 'IA-NA')
+    for pd in range(iapd):
+        srv_msg.client_sets_value('Client', 'ia_pd', pd_1 + pd)
+        srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
-    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_include_option(25)
 
-    # Send second Solicit
     misc.test_procedure()
-    srv_msg.client_save_option('IA_NA')
-    srv_msg.generate_new('IA')
-    srv_msg.client_requests_option(7)
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:00')
     srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_send_msg('SOLICIT')
 
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    srv_msg.response_check_include_option(3)
-    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    # Include expected addresses in Request
+    for ia in range(iaid):
+        srv_msg.client_sets_value('Client', 'ia_id', ia_1 + ia)
+        srv_msg.client_sets_value('Client', 'IA_Address', f'2001:db8:1::{ia+1}')
+        srv_msg.client_does_include('Client', 'IA_Address')
+        srv_msg.client_does_include('Client', 'IA-NA')
 
-    # Send third Solicit
-    misc.test_procedure()
-    srv_msg.client_save_option('IA_NA')
-    srv_msg.generate_new('IA')
-    srv_msg.client_requests_option(7)
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_send_msg('SOLICIT')
+    prefixes = ['2002:db8:1::', '2002:db8:1::1:0:0', '2002:db8:1::2:0:0']
+    for pd in range(iapd):
+        srv_msg.client_sets_value('Client', 'ia_pd', pd_1 + pd)
+        srv_msg.client_sets_value('Client', 'plen', 96)
+        srv_msg.client_sets_value('Client', 'prefix', prefixes[pd])
+        srv_msg.client_does_include('Client', 'IA_Prefix')
+        srv_msg.client_does_include('Client', 'IA-PD')
 
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    srv_msg.response_check_include_option(3)
-    srv_msg.response_check_option_content(3, 'sub-option', 5)
-
-    # Send request for all three addressees
-    misc.test_procedure()
-    srv_msg.client_save_option('IA_NA')
     srv_msg.client_copy_option('server-id')
-    srv_msg.client_add_saved_option(erase=True)
-    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
-    # check if got 2 addressees and a decline
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
+    # Check for acquired and refused addresses
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
-    srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
+    srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)  # NoAddrAvail
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2002:db8:1::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2002:db8:1::1:0:0')
+    srv_msg.response_check_suboption_content(13, 25, 'statuscode', 6)  # NoPrefixAvail
