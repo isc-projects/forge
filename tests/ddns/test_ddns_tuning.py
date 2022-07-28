@@ -120,6 +120,22 @@ def _check_fqdn_record(fqdn, address='', expect='notempty'):
         srv_msg.dns_option_content('ANSWER', 'rrname', fqdn)
 
 
+def _check_fqdn_record_v6(fqdn, address='', expect='notempty'):
+    # check new DNS entry
+    misc.test_procedure()
+    srv_msg.dns_question_record(fqdn, 'AAAA', 'IN')
+    srv_msg.client_send_dns_query()
+    if expect == 'empty':
+        misc.pass_criteria()
+        srv_msg.send_wait_for_query('MUST')
+        srv_msg.dns_option('ANSWER', expect_include=False)
+    else:
+        misc.pass_criteria()
+        srv_msg.send_wait_for_query('MUST')
+        srv_msg.dns_option('ANSWER')
+        srv_msg.dns_option_content('ANSWER', 'rdata', address)
+
+
 @pytest.mark.v4
 @pytest.mark.ddns
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
@@ -458,3 +474,74 @@ def test_v4_ddns_tuning_skip(backend, option):
     # Check if lease has proper fqdn/hostname in backend
     srv_msg.check_leases({'hostname': fqdn1, "address": "192.168.50.1"}, backend)
     srv_msg.check_leases({'hostname': fqdn2, "address": "192.168.50.2"}, backend)
+
+
+@pytest.mark.v6
+@pytest.mark.ddns
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_v6_ddns_tuning_skip(backend):
+    """
+    Test of the "ddns-tuning" premium hook's SKIP_DDNS class in v6
+    This test sets ddns-tuning hook parameter to replace hostname with expression
+    including text and hardware address.
+    Reservation with SKIP_DDNS class is made for one MAC address.
+    Two leases are acquired and ddns server is checked if records are updated only for one lease.
+    """
+    misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
+
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::21')
+
+    # Define reservation with SKIP_DDNS for one MAC
+    reservations = [
+        {
+            "client-classes": ["SKIP_DDNS"],
+            'duid': '00:03:00:01:66:55:44:33:22:22',
+        }
+    ]
+    world.dhcp_cfg.update({'reservations': copy.deepcopy(reservations)})
+    world.dhcp_cfg['reservations-global'] = True
+
+    # kea-ddns config
+    world.dhcp_cfg.update({"ddns-send-updates": True,
+                           "ddns-qualifying-suffix": "example.com"})
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
+    srv_control.start_srv('DNS', 'started', config_set=32)
+
+    # Import hook and set parameters.
+    srv_control.add_hooks('libdhcp_ddns_tuning.so')
+    srv_control.add_parameter_to_hook(1, "hostname-expr",
+                                      "'host-'+hexstring(option[1].hex, '-')+'.four.example.com.'")
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Defining expected hostnames
+    fqdn1 = 'host-00-03-00-01-66-55-44-33-22-11.four.example.com.'
+    fqdn2 = 'host-00-03-00-01-66-55-44-33-22-22.four.example.com.'
+
+    # Acquire leases
+    _get_address_v6(duid='00:03:00:01:66:55:44:33:22:11', fqdn='test.com.', expected_fqdn=fqdn1)
+    _get_address_v6(duid='00:03:00:01:66:55:44:33:22:22', fqdn='test.com.', expected_fqdn=fqdn2)
+
+    # Check for dns records in ddns server
+    _check_fqdn_record_v6("host-00-03-00-01-66-55-44-33-22-11.four.example.com.", address="2001:db8:1::1")
+    # Second lease should not update dns records according to class
+    _check_fqdn_record_v6("host-00-03-00-01-66-55-44-33-22-22.four.example.com.", expect='empty')
+
+    # get lease details from Kea using Control Agent
+    cmd = {"command": "lease6-get-all"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+
+    # Check fqdn/hostname returned by Control Channel
+    assert response['arguments']['leases'][0]['hostname'] == fqdn1
+    assert response['arguments']['leases'][1]['hostname'] == fqdn2
+
+    # Check if lease has proper fqdn/hostname in backend
+    srv_msg.check_leases({'hostname': fqdn1, 'address': '2001:db8:1::1'}, backend)
+    srv_msg.check_leases({'hostname': fqdn2, 'address': '2001:db8:1::2'}, backend)
