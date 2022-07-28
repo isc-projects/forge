@@ -10,6 +10,7 @@
 
 # pylint: disable=invalid-name,line-too-long
 
+import copy
 import pytest
 from src import misc
 from src import srv_msg
@@ -361,3 +362,72 @@ def test_v6_ddns_tuning_subnets(backend, hostname_type):
         assert response['arguments']['hostname'] == fqdn
         # Check if lease has proper hostname in backend
         srv_msg.check_leases({'hostname': fqdn, 'address': f'2001:db8:{i}::1'}, backend)
+
+
+@pytest.mark.v4
+@pytest.mark.ddns
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('option', ['fqdn', 'hostname'])
+def test_v4_ddns_tuning_skip(backend, option):
+    """
+    """
+    misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
+
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
+
+    reservations = [
+        {
+            "client-classes": ["SKIP_DDNS"],
+            'hw-address': 'ff:01:02:03:ff:05'
+        }
+    ]
+    world.dhcp_cfg.update({'reservations': copy.deepcopy(reservations)})
+    world.dhcp_cfg['reservations-global'] = True
+    world.dhcp_cfg['reservations-in-subnet'] = True
+
+    # Import hook and set parameters.
+    srv_control.add_hooks('libdhcp_ddns_tuning.so')
+    srv_control.add_parameter_to_hook(1, "hostname-expr", "'ddns-tuning.'")
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    fqdn = 'ddns-tuning.'
+    fqdn2 = 'test.com.'
+
+    # Acquire lease
+    if option == 'fqdn':
+        _get_address_v4_fqdn('192.168.50.1', chaddr='ff:01:02:03:ff:04', fqdn='test.com',
+                             expected_fqdn="ddns-tuning.")
+    elif option == 'hostname':
+        # remove trailing dot from fqdn for hostname
+        _get_address_v4_hostname('192.168.50.1', chaddr='ff:01:02:03:ff:04', hostname='test.com',
+                                 expected_hostname="ddns-tuning."[:-1])
+
+    if option == 'fqdn':
+        _get_address_v4_fqdn('192.168.50.2', chaddr='ff:01:02:03:ff:05', fqdn='test.com',
+                             expected_fqdn="test.com.")
+    elif option == 'hostname':
+        # remove trailing dot from fqdn for hostname
+        _get_address_v4_hostname('192.168.50.2', chaddr='ff:01:02:03:ff:05', hostname='test.com',
+                                 expected_hostname="test.com."[:-1])
+
+    # get lease details from Kea using Control Agent
+    cmd = {"command": "lease4-get-all"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+
+    # remove trailing dot from fqdn for hostname
+    fqdn = fqdn[:-1] if option == 'hostname' else fqdn
+    fqdn2 = fqdn2[:-1] if option == 'hostname' else fqdn2
+
+    # Check fqdn/hostname returned by Control Channel
+    assert response['arguments']['leases'][0]['hostname'] == fqdn
+    assert response['arguments']['leases'][1]['hostname'] == fqdn2
+
+    # Check if lease has proper fqdn/hostname in backend
+    srv_msg.check_leases({'hostname': fqdn, "address": "192.168.50.1"}, backend)
+    srv_msg.check_leases({'hostname': fqdn2, "address": "192.168.50.2"}, backend)
