@@ -90,13 +90,11 @@ def _get_address_v6(ia_na, duid, drop=False):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.host_reservation
-@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_drop_subnet_reservation(backend, dhcp_version):
+def test_drop_subnet_reservation(dhcp_version):
     """
-    Test to check if Kea assigns DROP class and drops packets.
+    Test to check if Kea assigns DROP class from subnet reservation and drops packets.
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
     # Define subnet.
     subnets_v4 = [
         {
@@ -145,6 +143,52 @@ def test_drop_subnet_reservation(backend, dhcp_version):
     srv_control.start_srv('DHCP', 'started')
 
     # Check if classless MAC gets IP and reserved host is dropped.
+    if dhcp_version == 'v4':
+        _get_address_v4('192.168.50.1', 'ff:01:02:03:ff:04')
+        _get_address_v4(None, 'ff:01:02:03:ff:05', drop=True)
+    else:
+        _get_address_v6('2001:db8:1::1', '00:03:00:01:f6:f5:f4:f3:f2:04')
+        _get_address_v6(None, '00:03:00:01:f6:f5:f4:f3:f2:05', drop=True)
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.host_reservation
+def test_drop_class(dhcp_version):
+    """
+    Test to check if Kea assigns DROP class and drops packets.
+    """
+    misc.test_setup()
+    # Define subnet.
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::50')
+
+    # Define client class to drop.
+    client_classes_v4 = [
+        {
+            'name': 'DROP',
+            'test': "hexstring(pkt4.mac, ':') == 'ff:01:02:03:ff:05'"
+        }
+    ]
+    client_classes_v6 = [
+        {
+            'name': 'DROP',
+            'test': "hexstring(option[1].hex, ':') == '00:03:00:01:f6:f5:f4:f3:f2:05'"
+        }
+    ]
+
+    # Apply definitions to server configuration.
+    if dhcp_version == 'v4':
+        world.dhcp_cfg.update({'client-classes': copy.deepcopy(client_classes_v4)})
+    else:
+        world.dhcp_cfg.update({'client-classes': copy.deepcopy(client_classes_v6)})
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Check if classless MAC gets IP and class allocated host is dropped.
     if dhcp_version == 'v4':
         _get_address_v4('192.168.50.1', 'ff:01:02:03:ff:04')
         _get_address_v4(None, 'ff:01:02:03:ff:05', drop=True)
