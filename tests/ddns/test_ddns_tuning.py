@@ -103,6 +103,23 @@ def _get_address_v6(duid, fqdn, expected_fqdn=None):
         srv_msg.response_check_option_content(39, 'fqdn', expected_fqdn)
 
 
+def _check_fqdn_record(fqdn, address='', expect='notempty'):
+    # check new DNS entry
+    misc.test_procedure()
+    srv_msg.dns_question_record(fqdn, 'A', 'IN')
+    srv_msg.client_send_dns_query()
+    if expect == 'empty':
+        misc.pass_criteria()
+        srv_msg.send_wait_for_query('MUST')
+        srv_msg.dns_option('ANSWER', expect_include=False)
+    else:
+        misc.pass_criteria()
+        srv_msg.send_wait_for_query('MUST')
+        srv_msg.dns_option('ANSWER')
+        srv_msg.dns_option_content('ANSWER', 'rdata', address)
+        srv_msg.dns_option_content('ANSWER', 'rrname', fqdn)
+
+
 @pytest.mark.v4
 @pytest.mark.ddns
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
@@ -370,25 +387,38 @@ def test_v6_ddns_tuning_subnets(backend, hostname_type):
 @pytest.mark.parametrize('option', ['fqdn', 'hostname'])
 def test_v4_ddns_tuning_skip(backend, option):
     """
+    Test of the "ddns-tuning" premium hook's SKIP_DDNS class in v4
+    This test sets ddns-tuning hook parameter to replace hostname with expression
+    including text and hardware address.
+    Reservation with SKIP_DDNS class is made for one MAC address.
+    Two leases are acquired and ddns server is checked if records are updated only for one lease.
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
 
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
 
+    # Define reservation with SKIP_DDNS for one MAC
     reservations = [
         {
             "client-classes": ["SKIP_DDNS"],
-            'hw-address': 'ff:01:02:03:ff:05'
+            'hw-address': 'ff:01:02:03:ff:05',
         }
     ]
     world.dhcp_cfg.update({'reservations': copy.deepcopy(reservations)})
     world.dhcp_cfg['reservations-global'] = True
-    world.dhcp_cfg['reservations-in-subnet'] = True
+
+    # kea-ddns config
+    world.dhcp_cfg.update({"ddns-send-updates": True,
+                           "ddns-qualifying-suffix": "example.com"})
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
+    srv_control.start_srv('DNS', 'started', config_set=32)
 
     # Import hook and set parameters.
     srv_control.add_hooks('libdhcp_ddns_tuning.so')
-    srv_control.add_parameter_to_hook(1, "hostname-expr", "'ddns-tuning.'")
+    srv_control.add_parameter_to_hook(1, "hostname-expr", "'host-'+hexstring(pkt4.mac,'-')+'.four.example.com.'")
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.open_control_channel()
@@ -396,38 +426,35 @@ def test_v4_ddns_tuning_skip(backend, option):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    fqdn = 'ddns-tuning.'
-    fqdn2 = 'test.com.'
+    # Defining expected hostnames
+    fqdn1 = 'host-ff-01-02-03-ff-04.four.example.com.'
+    fqdn2 = 'host-ff-01-02-03-ff-05.four.example.com.'
 
-    # Acquire lease
+    # Acquire leases
     if option == 'fqdn':
         _get_address_v4_fqdn('192.168.50.1', chaddr='ff:01:02:03:ff:04', fqdn='test.com',
-                             expected_fqdn="ddns-tuning.")
-    elif option == 'hostname':
-        # remove trailing dot from fqdn for hostname
-        _get_address_v4_hostname('192.168.50.1', chaddr='ff:01:02:03:ff:04', hostname='test.com',
-                                 expected_hostname="ddns-tuning."[:-1])
-
-    if option == 'fqdn':
+                             expected_fqdn=fqdn1)
         _get_address_v4_fqdn('192.168.50.2', chaddr='ff:01:02:03:ff:05', fqdn='test.com',
-                             expected_fqdn="test.com.")
+                             expected_fqdn=fqdn2)
     elif option == 'hostname':
-        # remove trailing dot from fqdn for hostname
+        _get_address_v4_hostname('192.168.50.1', chaddr='ff:01:02:03:ff:04', hostname='test.com',
+                                 expected_hostname=fqdn1)
         _get_address_v4_hostname('192.168.50.2', chaddr='ff:01:02:03:ff:05', hostname='test.com',
-                                 expected_hostname="test.com."[:-1])
+                                 expected_hostname=fqdn2)
+
+    # Check for dns records in ddns server
+    _check_fqdn_record("host-ff-01-02-03-ff-04.four.example.com.", address="192.168.50.1")
+    # Second lease should not update dns records according to class
+    _check_fqdn_record("host-ff-01-02-03-ff-05.four.example.com.", expect='empty')
 
     # get lease details from Kea using Control Agent
     cmd = {"command": "lease4-get-all"}
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
 
-    # remove trailing dot from fqdn for hostname
-    fqdn = fqdn[:-1] if option == 'hostname' else fqdn
-    fqdn2 = fqdn2[:-1] if option == 'hostname' else fqdn2
-
     # Check fqdn/hostname returned by Control Channel
-    assert response['arguments']['leases'][0]['hostname'] == fqdn
+    assert response['arguments']['leases'][0]['hostname'] == fqdn1
     assert response['arguments']['leases'][1]['hostname'] == fqdn2
 
     # Check if lease has proper fqdn/hostname in backend
-    srv_msg.check_leases({'hostname': fqdn, "address": "192.168.50.1"}, backend)
+    srv_msg.check_leases({'hostname': fqdn1, "address": "192.168.50.1"}, backend)
     srv_msg.check_leases({'hostname': fqdn2, "address": "192.168.50.2"}, backend)
