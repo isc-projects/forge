@@ -8,7 +8,6 @@
 
 """DDNS Tuning Hook basic tests"""
 
-# pylint: disable=invalid-name,line-too-long
 
 import copy
 import pytest
@@ -468,8 +467,10 @@ def test_v4_ddns_tuning_skip(backend, option):
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
 
     # Check fqdn/hostname returned by Control Channel
-    assert response['arguments']['leases'][0]['hostname'] == fqdn1
-    assert response['arguments']['leases'][1]['hostname'] == fqdn2
+    all_leases = response["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['hw-address'])
+    assert all_leases[0]['hostname'] == fqdn1
+    assert all_leases[1]['hostname'] == fqdn2
 
     # Check if lease has proper fqdn/hostname in backend
     srv_msg.check_leases({'hostname': fqdn1, "address": "192.168.50.1"}, backend)
@@ -539,8 +540,10 @@ def test_v6_ddns_tuning_skip(backend):
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
 
     # Check fqdn/hostname returned by Control Channel
-    assert response['arguments']['leases'][0]['hostname'] == fqdn1
-    assert response['arguments']['leases'][1]['hostname'] == fqdn2
+    all_leases = response["arguments"]["leases"]
+    all_leases = sorted(all_leases, key=lambda d: d['duid'])
+    assert all_leases[0]['hostname'] == fqdn1
+    assert all_leases[1]['hostname'] == fqdn2
 
     # Check if lease has proper fqdn/hostname in backend
     srv_msg.check_leases({'hostname': fqdn1, 'address': '2001:db8:1::1'}, backend)
