@@ -8,9 +8,6 @@
 
 """Early Global Host Reservation Lookup Tests"""
 
-# pylint: disable=invalid-name,line-too-long
-
-import copy
 import pytest
 
 from src import srv_control
@@ -90,14 +87,14 @@ def _get_address_v6(ia_na, duid, drop=False):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.host_reservation
-@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('backend', ['memfile', 'MySQL', 'PostgreSQL'])
 def test_early_hr_lookup_class(backend, dhcp_version):
     """
     Test to check if Kea looks up Global Host Reservations and assigns client class before subnet allocation.
     After assigning client class, the subnet should be allocated according to class.
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.enable_db_backend_reservation(backend)
 
     # Define 2 subnets, with one guarded by class.
     subnets_v4 = [
@@ -148,13 +145,9 @@ def test_early_hr_lookup_class(backend, dhcp_version):
     ]
 
     # Define client class to guard subnet.
-    client_classes = [
-        {
-            'name': 'first'
-        }
-    ]
+    srv_control.create_new_class('first')
 
-    # Define host reservation that can access "first" subnet.
+    # Define host reservation that can access "first" subnet, for memfile
     reservations_v4 = [
         {
             'client-classes': ['first'],
@@ -172,13 +165,28 @@ def test_early_hr_lookup_class(backend, dhcp_version):
     world.dhcp_cfg['early-global-reservations-lookup'] = True
 
     # apply definitions to server configuration.
-    if dhcp_version == 'v4':
-        world.dhcp_cfg.update({'subnet4': copy.deepcopy(subnets_v4)})
-        world.dhcp_cfg.update({'reservations': copy.deepcopy(reservations_v4)})
+    if backend != 'memfile':
+        if dhcp_version == 'v4':
+            world.dhcp_cfg.update({'subnet4': subnets_v4})
+            # Define host reservation for database, that should be assigned first class.
+            srv_control.new_db_backend_reservation(backend, 'hw-address', 'ff:01:02:03:ff:04')
+            srv_control.update_db_backend_reservation('dhcp4_subnet_id', 0, backend, 1)
+            srv_control.update_db_backend_reservation('dhcp4_client_classes', 'first', backend, 1)
+            srv_control.upload_db_reservation(backend)
+        else:
+            world.dhcp_cfg.update({'subnet6': subnets_v6})
+            # Define host reservation for database, that should be assigned first class.
+            srv_control.new_db_backend_reservation(backend, 'duid', '00:03:00:01:f6:f5:f4:f3:f2:04')
+            srv_control.update_db_backend_reservation('dhcp6_subnet_id', 0, backend, 1)
+            srv_control.update_db_backend_reservation('dhcp6_client_classes', 'first', backend, 1)
+            srv_control.upload_db_reservation(backend)
     else:
-        world.dhcp_cfg.update({'subnet6': copy.deepcopy(subnets_v6)})
-        world.dhcp_cfg.update({'reservations': copy.deepcopy(reservations_v6)})
-    world.dhcp_cfg.update({'client-classes': copy.deepcopy(client_classes)})
+        if dhcp_version == 'v4':
+            world.dhcp_cfg.update({'subnet4': subnets_v4})
+            world.dhcp_cfg.update({'reservations': reservations_v4})
+        else:
+            world.dhcp_cfg.update({'subnet6': subnets_v6})
+            world.dhcp_cfg.update({'reservations': reservations_v6})
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -195,13 +203,13 @@ def test_early_hr_lookup_class(backend, dhcp_version):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.host_reservation
-@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('backend', ['memfile', 'MySQL', 'PostgreSQL'])
 def test_early_hr_lookup_drop(backend, dhcp_version):
     """
     Test to check if Kea looks up Global Host Reservations and assigns DROP class.
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.enable_db_backend_reservation(backend)
     # Define subnet.
     subnets_v4 = [
         {
@@ -228,7 +236,8 @@ def test_early_hr_lookup_drop(backend, dhcp_version):
         }
     ]
 
-    # Define host reservation that should be dropped.
+    # Define host reservation for memfile, that should be dropped.
+
     reservations_v4 = [
         {
             'client-classes': ['DROP'],
@@ -246,12 +255,28 @@ def test_early_hr_lookup_drop(backend, dhcp_version):
     world.dhcp_cfg['early-global-reservations-lookup'] = True
 
     # Apply definitions to server configuration.
-    if dhcp_version == 'v4':
-        world.dhcp_cfg.update({'subnet4': copy.deepcopy(subnets_v4)})
-        world.dhcp_cfg.update({'reservations': copy.deepcopy(reservations_v4)})
+    if backend != 'memfile':
+        if dhcp_version == 'v4':
+            world.dhcp_cfg.update({'subnet4': subnets_v4})
+            # Define host reservation for database, that should be dropped.
+            srv_control.new_db_backend_reservation(backend, 'hw-address', 'ff:01:02:03:ff:05')
+            srv_control.update_db_backend_reservation('dhcp4_subnet_id', 0, backend, 1)
+            srv_control.update_db_backend_reservation('dhcp4_client_classes', 'DROP', backend, 1)
+            srv_control.upload_db_reservation(backend)
+        else:
+            world.dhcp_cfg.update({'subnet6': subnets_v6})
+            # Define host reservation for database, that should be dropped.
+            srv_control.new_db_backend_reservation(backend, 'duid', '00:03:00:01:f6:f5:f4:f3:f2:05')
+            srv_control.update_db_backend_reservation('dhcp6_subnet_id', 0, backend, 1)
+            srv_control.update_db_backend_reservation('dhcp6_client_classes', 'DROP', backend, 1)
+            srv_control.upload_db_reservation(backend)
     else:
-        world.dhcp_cfg.update({'subnet6': copy.deepcopy(subnets_v6)})
-        world.dhcp_cfg.update({'reservations': copy.deepcopy(reservations_v6)})
+        if dhcp_version == 'v4':
+            world.dhcp_cfg.update({'subnet4': subnets_v4})
+            world.dhcp_cfg.update({'reservations': reservations_v4})
+        else:
+            world.dhcp_cfg.update({'subnet6': subnets_v6})
+            world.dhcp_cfg.update({'reservations': reservations_v6})
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')

@@ -22,9 +22,9 @@ list_of_all_reservations = []
 
 class MySQLReservation:
     hosts_v6_hex = """
-INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp6_subnet_id,hostname)
+INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp6_subnet_id,hostname,dhcp6_client_classes)
 VALUES (UNHEX(REPLACE(@identifier_value, ':', '')),(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
-@dhcp6_subnet_id,@hostname);
+@dhcp6_subnet_id,@hostname,@dhcp6_client_classes);
 SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
     hosts_v6_flex = hosts_v6_hex
     """
@@ -35,10 +35,10 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
     hosts_v6 = ""
 
     hosts_v4_hex = """
-INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp4_subnet_id,ipv4_address,hostname,dhcp4_next_server,
+INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp4_subnet_id,ipv4_address,hostname,dhcp4_client_classes,dhcp4_next_server,
 dhcp4_server_hostname,dhcp4_boot_file_name)
 VALUES (UNHEX(REPLACE(@identifier_value, ':', '')),(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
-@dhcp4_subnet_id,INET_ATON(@ipv4_address),@hostname,INET_ATON(@next_server),@server_hostname,@boot_file_name);
+@dhcp4_subnet_id,INET_ATON(@ipv4_address),@hostname,@dhcp4_client_classes,INET_ATON(@next_server),@server_hostname,@boot_file_name);
 SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
     hosts_v4_flex = hosts_v4_hex
     """
@@ -58,8 +58,8 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
         self.dhcp4_subnet_id = ""
         self.dhcp6_subnet_id = ""
         self.ipv4_address = "0.0.0.0"
-        self.dhcp4_client_classes = ""
-        self.dhcp6_client_classes = ""
+        self.dhcp4_client_classes = "NULL"
+        self.dhcp6_client_classes = "NULL"
         self.server_hostname = ""
         self.boot_file_name = ""
         self.next_server = "0.0.0.0"

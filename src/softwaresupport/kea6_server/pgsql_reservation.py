@@ -23,8 +23,8 @@ list_of_all_reservations = []
 
 class PSQLReservation:
     hosts_v6_hex = """
-INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp6_subnet_id,hostname)
-VALUES (DECODE(REPLACE(:'identifier_value', ':', ''), 'hex'),(SELECT type FROM host_identifier_type WHERE name=:'identifier_type'),:dhcp6_subnet_id,:'hostname');
+INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp6_subnet_id,hostname,dhcp6_client_classes)
+VALUES (DECODE(REPLACE(:'identifier_value', ':', ''), 'hex'),(SELECT type FROM host_identifier_type WHERE name=:'identifier_type'),:dhcp6_subnet_id,:'hostname',:'dhcp6_client_classes');
 SELECT LASTVAL() INTO lastval;"""
     hosts_v6_flex = hosts_v6_hex
     """
@@ -34,8 +34,8 @@ SELECT LASTVAL() INTO lastval;"""
     hosts_v6 = ""
 
     hosts_v4_hex = """
-INSERT INTO hosts (dhcp_identifier, dhcp_identifier_type, dhcp4_subnet_id, ipv4_address, hostname, dhcp4_next_server, dhcp4_server_hostname, dhcp4_boot_file_name)
-VALUES (DECODE(REPLACE(:'identifier_value', ':', ''), 'hex'),(SELECT type FROM host_identifier_type WHERE name=:'identifier_type'), :dhcp4_subnet_id, (SELECT (:'ipv4_address'::inet - '0.0.0.0'::inet)),:'hostname',(SELECT (:'next_server'::inet - '0.0.0.0'::inet)),:'server_hostname',:'boot_file_name');
+INSERT INTO hosts (dhcp_identifier, dhcp_identifier_type, dhcp4_subnet_id, ipv4_address, hostname, dhcp4_client_classes, dhcp4_next_server, dhcp4_server_hostname, dhcp4_boot_file_name)
+VALUES (DECODE(REPLACE(:'identifier_value', ':', ''), 'hex'),(SELECT type FROM host_identifier_type WHERE name=:'identifier_type'), :dhcp4_subnet_id, (SELECT (:'ipv4_address'::inet - '0.0.0.0'::inet)),:'hostname',:'dhcp4_client_classes',(SELECT (:'next_server'::inet - '0.0.0.0'::inet)),:'server_hostname',:'boot_file_name');
 SELECT LASTVAL() INTO lastval;"""
     hosts_v4_flex = hosts_v4_hex
     """
@@ -53,8 +53,8 @@ SELECT LASTVAL() INTO lastval;"""
         self.dhcp4_subnet_id = ""
         self.dhcp6_subnet_id = ""
         self.ipv4_address = "0.0.0.0"  # this is being set because script fails without that value.
-        self.dhcp4_client_classes = ""
-        self.dhcp6_client_classes = ""
+        self.dhcp4_client_classes = "NULL"
+        self.dhcp6_client_classes = "NULL"
         self.server_hostname = ""
         self.boot_file_name = ""
         self.next_server = "0.0.0.0"  # this is being set because script fails without that value.

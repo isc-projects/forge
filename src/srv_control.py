@@ -326,9 +326,9 @@ def new_db_backend_reservation(db_type, reservation_identifier, reservation_iden
 
 @step(r'Add (\S+) (\S+) to (\S+) reservation record id (\d+).')
 def update_db_backend_reservation(field_name, field_value, db_type, reservation_record_id):
-    if db_type == 'MySQL':
+    if db_type == 'MySQL' or db_type == 'mysql':
         mysql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
-    elif db_type == 'PostgreSQL':
+    elif db_type == 'PostgreSQL' or db_type == 'postgresql':
         pgsql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
