@@ -1366,3 +1366,56 @@ def test_v6_classification_expressions_ifelse():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:a::1')
+
+
+@pytest.mark.v6
+@pytest.mark.classification
+def test_v6_classification_expressions_split():
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
+
+    srv_control.create_new_class('Client_Class_1')
+    srv_control.add_test_to_class(1, 'test', "split(option[39].hex,'.',1) +"
+                                             "split(option[39].hex,'.',8) +"  # outside of range
+                                             "split(option[39].hex,'.',2) +"
+                                             "split(option[39].hex,':',2) +"  # no character to split on
+                                             "split(option[39].hex,'.',3)"
+                                             " == 'testexamplecom'")
+    srv_control.config_client_classification(0, 'Client_Class_1')
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'nottest.dot.null.')
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 13)
+    srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'test.example.com.')
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:a::1')

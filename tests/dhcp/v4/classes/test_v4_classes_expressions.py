@@ -1321,3 +1321,48 @@ def test_v4_classification_expressions_ifelse():
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+
+@pytest.mark.v4
+@pytest.mark.classification
+def test_v4_classification_expressions_split():
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+
+    srv_control.create_new_class('Client_Class_1')
+    srv_control.add_test_to_class(1, 'test', "split(option[12].hex,'.',1) +"
+                                             "split(option[12].hex,'.',8) +"  # outside of range
+                                             "split(option[12].hex,'.',2) +"
+                                             "split(option[12].hex,':',2) +"  # no character to split on
+                                             "split(option[12].hex,'.',3)"
+                                             " == 'testexamplecom'")
+    srv_control.config_client_classification(0, 'Client_Class_1')
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('hostname', 'test.example.com.')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('hostname', 'nottest.dot.null.')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('hostname', 'test.example.com.')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
