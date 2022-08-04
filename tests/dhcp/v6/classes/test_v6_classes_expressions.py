@@ -1371,21 +1371,28 @@ def test_v6_classification_expressions_ifelse():
 @pytest.mark.v6
 @pytest.mark.classification
 def test_v6_classification_expressions_split():
+    """
+    Test 'split' expression by sending FQDN and checking if equals pattern.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
 
     srv_control.create_new_class('Client_Class_1')
-    srv_control.add_test_to_class(1, 'test', "split(option[39].hex,'.',1) +"
-                                             "split(option[39].hex,'.',8) +"  # outside of range
-                                             "split(option[39].hex,'.',2) +"
-                                             "split(option[39].hex,':',2) +"  # no character to split on
-                                             "split(option[39].hex,'.',3)"
+    # Using ASCI number 0x27 as a single quote character.
+    # option[39].text returns: "39(CLIENT_FQDN), flags: (N=0, O=0, S=1), domain-name='test.example.com.' (full)"
+    srv_control.add_test_to_class(1, 'test', "split(split(option[39].text, 0x27,2),'.',1) +"
+                                             "split(split(option[39].text, 0x27,2),'.',8) +"  # outside of range
+                                             "split(split(option[39].text, 0x27,2),'.',2) +"
+                                             "split(split(option[39].text, 0x27,2),':',2) +"  # no character to split on
+                                             "split(split(option[39].text, 0x27,2),'.',3)"
                                              " == 'testexamplecom'")
-    srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files()
 
+    srv_control.config_client_classification(0, 'Client_Class_1')
+
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Sending incorrect FQDN should return and "Server could not select subnet for this client" in Advertise
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'client-id')
@@ -1403,6 +1410,7 @@ def test_v6_classification_expressions_split():
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
 
+    # Sending correct FQDN should return and IP in Advertise
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'client-id')

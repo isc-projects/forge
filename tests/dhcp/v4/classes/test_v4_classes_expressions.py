@@ -1326,6 +1326,10 @@ def test_v4_classification_expressions_ifelse():
 @pytest.mark.v4
 @pytest.mark.classification
 def test_v4_classification_expressions_split():
+    """
+    Test 'split' expression by sending Hostname and checking if equals pattern.
+
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
@@ -1337,10 +1341,11 @@ def test_v4_classification_expressions_split():
                                              "split(option[12].hex,'.',3)"
                                              " == 'testexamplecom'")
     srv_control.config_client_classification(0, 'Client_Class_1')
-    srv_control.build_and_send_config_files()
 
+    srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Sending correct hostname should return and IP in Offer
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_does_include_with_value('hostname', 'test.example.com.')
@@ -1350,6 +1355,7 @@ def test_v4_classification_expressions_split():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
+    # Sending incorrect hostname should be dropped
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_does_include_with_value('hostname', 'nottest.dot.null.')
@@ -1358,6 +1364,7 @@ def test_v4_classification_expressions_split():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
+    # Sending correct hostname should return and IP in Offer
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_does_include_with_value('hostname', 'test.example.com.')
