@@ -53,8 +53,8 @@ SELECT LASTVAL() INTO lastval;"""
         self.dhcp4_subnet_id = ""
         self.dhcp6_subnet_id = ""
         self.ipv4_address = "0.0.0.0"  # this is being set because script fails without that value.
-        self.dhcp4_client_classes = ""
-        self.dhcp6_client_classes = ""
+        self.dhcp4_client_classes = "NULL"
+        self.dhcp6_client_classes = "NULL"
         self.server_hostname = ""
         self.boot_file_name = ""
         self.next_server = "0.0.0.0"  # this is being set because script fails without that value.
