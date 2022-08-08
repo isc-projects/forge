@@ -963,6 +963,8 @@ def add_parameter_to_hook(hook_number_or_name, parameter_name: str, parameter_va
         parameter_value = True
     elif parameter_value in ["False", 'false']:
         parameter_value = False
+    if parameter_value.isdigit():
+        parameter_value = int(parameter_value)
     world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"][parameter_name] = parameter_value
 
 

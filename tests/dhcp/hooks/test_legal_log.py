@@ -8,6 +8,8 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 from src.forge_cfg import world
+from src.softwaresupport.multi_server_functions import fabric_sudo_command
+from datetime import datetime
 
 
 # number of messages that the client will send in each test
@@ -335,6 +337,12 @@ def _send_client_requests_in_rebind_state4(count):
         srv_msg.response_check_include_option(61)
         srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
         srv_msg.response_check_option_content(61, 'value', '00010203040506')
+
+
+def _wait_till_elapsed(start, seconds):
+    print("Waiting for log rotation time to elapse...")
+    while (datetime.now() - start).total_seconds() < seconds:
+        pass
 
 
 @pytest.mark.v6
@@ -1317,3 +1325,70 @@ def test_v4_legal_log_rebind_state_db(backend):
                                         'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
                                         'client-id: 00:01:02:03:04:05:06')
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.legal_logging
+def test_legal_log_rotation(dhcp_version):
+    """
+    Test to check if Kea makes new log file after specific time unit.
+    """
+    misc.test_procedure()
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+
+    misc.test_setup()
+    srv_control.set_time('renew-timer', 100)
+    srv_control.set_time('rebind-timer', 200)
+    srv_control.set_time('valid-lifetime', 600)
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+        srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+
+    srv_control.add_hooks('libdhcp_legal_log.so')
+    srv_control.add_parameter_to_hook(1, 'time-unit', 'second')
+
+    srv_control.add_parameter_to_hook(1, 'count', 10 if dhcp_version == 'v4' else 5)
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+    # log server start time
+    start = datetime.now()
+
+    # Send 3 times 3 requests waiting for log rotation interval
+    if dhcp_version == 'v4':
+        _send_client_requests4(3)
+        _wait_till_elapsed(start, 10)
+        _send_client_requests4(3)
+        _wait_till_elapsed(start, 20)
+        _send_client_requests4(3)
+    else:
+        _send_client_requests(3)
+        _wait_till_elapsed(start, 5)
+        _send_client_requests(3)
+        _wait_till_elapsed(start, 10)
+        _send_client_requests(3)
+
+    # make a list of produced log files
+    log_files = fabric_sudo_command(f"cd {world.f_cfg.data_join('')} ; ls -1 kea-legal*.txt").splitlines()
+
+    # copy log files to forge results folder
+    for name in log_files:
+        srv_msg.copy_remote(world.f_cfg.data_join(name), local_filename=name)
+
+    # Check if there are 3 log files
+    assert len(log_files) == 3
+
+    if dhcp_version == 'v4':
+        log_message = 'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs ' \
+                      'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, ' \
+                      'client-id: 00:01:02:03:04:05:06'
+    else:
+        log_message = 'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs ' \
+                      'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 ' \
+                      'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)'
+    # Check contents of the log files
+    for name in log_files:
+        srv_msg.file_contains_line_n_times(world.f_cfg.data_join(name), 3, log_message)
