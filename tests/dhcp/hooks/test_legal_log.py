@@ -1456,9 +1456,9 @@ def test_legal_log_rotate_actions(dhcp_version):
 
     # Prepare action scripts executed by kea to log rotation filenames
     script_pre = f'#!/bin/bash \n' \
-             f'echo $1 >> {world.f_cfg.data_join("actions_pre.txt")}'
+                 f'echo $1 >> {world.f_cfg.data_join("actions_pre.txt")}'
     script_post = f'#!/bin/bash \n' \
-             f'echo $1 >> {world.f_cfg.data_join("actions_post.txt")}'
+                  f'echo $1 >> {world.f_cfg.data_join("actions_post.txt")}'
 
     # trnsfer scripts to server and make them executable
     fabric_sudo_command(f"echo '{script_pre}' > {world.f_cfg.data_join('script_pre.sh')}")
