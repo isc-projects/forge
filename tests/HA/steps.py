@@ -130,7 +130,7 @@ def increase_mac(mac: str, rand: bool = False):
         if int(mac[i], 16) + a > 255:
             mac[i] = 1
         new_mac += (int(mac[i], 16) + a,)
-    return "%02x:%02x:%02x:%02x:%02x:%02x" % new_mac
+    return ':'.join(f'{i:02x}' for i in new_mac)
 
 
 def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:02:0c:03:0a:00"):
