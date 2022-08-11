@@ -72,7 +72,8 @@ def send_heartbeat(dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_addres
                         dest=dest, exp_failed=exp_failed)
 
 
-def send_command(cmd=None, dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_address, exp_failed=False):
+def send_command(cmd: dict = None, dhcp_version: str = 'v6', exp_result: int = 0,
+                 dest: str =world.f_cfg.mgmt_address, exp_failed=False):
     """
     send command to CA with http
     :param cmd: command, if not set ha-heartbeat will be send
@@ -133,7 +134,9 @@ def increase_mac(mac: str, rand: bool = False):
     return ':'.join(f'{i:02x}' for i in new_mac)
 
 
-def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:02:0c:03:0a:00"):
+def generate_leases(leases_count: int = 1, iaid: int = 1, iapd: int = 1,
+                    dhcp_version: str = 'v6', mac: str = "01:02:0c:03:0a:00",
+                    expected_server_id: str = None):
     """
     Function will perform message exchanges to get specified number of leases,
     will assert if at the end number of leases will be smaller
@@ -142,6 +145,7 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
     :param iapd: how many prefixes we want in single exchange (ignored for v4)
     :param dhcp_version: version of dhcp
     :param mac: mac we will start increase, to get different set of macs increase just first octet
+    :param expected_server_id: server id we expect in the all messages, checked if not None
     :return: list of leases generated
     """
     all_leases = []
@@ -157,7 +161,6 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
             misc.test_procedure()
             srv_msg.client_sets_value('Client', 'DUID', duid)
             srv_msg.client_does_include('Client', 'client-id')
-
             for ia in range(iaid):
                 this_iaid = ia_1 + ia
                 srv_msg.client_sets_value('Client', 'ia_id', this_iaid)
@@ -172,6 +175,8 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
             srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
             srv_msg.response_check_include_option(1)
             srv_msg.response_check_include_option(2)
+            if expected_server_id:
+                srv_msg.response_check_option_content(2, 'duid', expected_server_id)
             if iaid > 0:
                 srv_msg.response_check_include_option(3)
             if iapd > 0:
@@ -198,6 +203,8 @@ def generate_leases(leases_count=1, iaid=1, iapd=1, dhcp_version='v6', mac="01:0
             srv_msg.send_wait_for_message('MUST', 'REPLY')
             srv_msg.response_check_include_option(1)
             srv_msg.response_check_include_option(2)
+            if expected_server_id:
+                srv_msg.response_check_option_content(2, 'duid', expected_server_id)
             if iaid > 0:
                 srv_msg.response_check_include_option(3)
                 # srv_msg.response_check_include_option(4)
