@@ -746,7 +746,8 @@ def _install_kea_native_on_server(args, server_idx):
 
     # prepare pkg source repo url
     repository_url = 'https://packages.aws.isc.org'
-    repo_name = 'kea-%s-%s' % ('2.1', args.system)
+    major_minor= '.'.join(args.version.split('.')[0:2])
+    repo_name = f'kea-{major_minor}-{args.system}'
     repo_url = urljoin(repository_url, 'repository')
     repo_url += '/%s-ci/' % repo_name
 
