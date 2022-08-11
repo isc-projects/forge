@@ -73,7 +73,7 @@ def send_heartbeat(dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_addres
 
 
 def send_command(cmd: dict = None, dhcp_version: str = 'v6', exp_result: int = 0,
-                 dest: str =world.f_cfg.mgmt_address, exp_failed=False):
+                 dest: str = world.f_cfg.mgmt_address, exp_failed: bool = False):
     """
     send command to CA with http
     :param cmd: command, if not set ha-heartbeat will be send
