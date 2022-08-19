@@ -1416,11 +1416,12 @@ def _reload_kea_with_systemctl(destination_address):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
-def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_address):
+def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_address, process=""):
     """
     Start kea with generated config
     :param should_succeed: whether the action is supposed to succeed or fail
     :param destination_address: management address of server
+    :param process: name of the single process we want to start (using -s option of keactrl)
     """
     if destination_address not in world.f_cfg.multiple_tested_servers:
         world.multiple_tested_servers.append(destination_address)
@@ -1431,7 +1432,7 @@ def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_
         if v4_running and world.proto == 'v4' or v6_running and world.proto == 'v6':
             result = _stop_kea_with_keactrl(destination_address)  # TODO: check result
 
-        result = _start_kea_with_keactrl(destination_address)
+        result = _start_kea_with_keactrl(destination_address, specific_process=process)
         _check_kea_process_result(should_succeed, result, 'start')
     else:
         _restart_kea_with_systemctl(destination_address)
@@ -1471,15 +1472,17 @@ def _check_kea_process_result(succeed: bool, result: str, action: str):
             assert False, 'Server operation: ' + action + ' NOT failed!'
 
 
-def _start_kea_with_keactrl(destination_host):
+def _start_kea_with_keactrl(destination_host, specific_process=""):
     # Start kea services and check if they started ok.
     # - nohup to shield kea services from getting SIGHUP from SSH
     # - in a loop check if there is 'server version .* started' expression in the logs;
     #   repeat the loop only for 4 seconds
     # - sync to disk any logs traced by keactrl or kea services
     # - display these logs to screen using cat so forge can catch errors in the logs
+    if specific_process != "":
+        specific_process = f" -s {specific_process} "
     start_cmd = 'nohup ' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl')
-    start_cmd += " start  < /dev/null > /tmp/keactrl.log 2>&1; SECONDS=0; while (( SECONDS < 4 ));"
+    start_cmd += f" start {specific_process}< /dev/null > /tmp/keactrl.log 2>&1; SECONDS=0; while (( SECONDS < 4 ));"
     start_cmd += " do tail %s/var/kea/kea.log 2>/dev/null | grep 'server version .* started' 2>/dev/null;" % world.f_cfg.software_install_path
     start_cmd += " if [ $? -eq 0 ]; then break; fi done;"
     start_cmd += " sync; cat /tmp/keactrl.log"

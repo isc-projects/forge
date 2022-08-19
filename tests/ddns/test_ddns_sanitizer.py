@@ -702,7 +702,6 @@ def test_ddns4_hostname_sanitization_omit_identical_name():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
-    srv_msg.client_save_option_count(1, 'server_id')
     srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.11')
     srv_msg.client_requests_option(1)
@@ -870,7 +869,6 @@ def test_ddns4_fqdn_sanitization_omit_identical_name():
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
-    srv_msg.client_save_option_count(1, 'server_id')
     srv_msg.client_add_saved_option_count(1)
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.11')
     srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'client2.four.example.com.')

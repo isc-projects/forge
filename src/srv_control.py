@@ -624,12 +624,14 @@ def start_srv(name: str, action: str, config_set=None,
     """
     dest = test_define_value(dest)[0]
     check_remote_address(dest)
-    if name not in ["DHCP", "DNS"]:
-        assert False, "I don't think there is support for something else than DNS or DHCP"
+    if name not in ["DHCP", "DNS", "CA"]:
+        assert False, "I don't think there is support for something else than DNS,  DHCP or CA"
     log.info(f'---------------- {name} {action} {dest} ----------------')
     if action == "started":
         if name == "DHCP":
             dhcp.start_srv(should_succeed, destination_address=dest)
+        elif name == "CA":
+            dhcp.start_srv(should_succeed, destination_address=dest, process='ctrl_agent')
         elif name == "DNS":
             if config_set is not None:
                 use_dns_set_number(config_set)

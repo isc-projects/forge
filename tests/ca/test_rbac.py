@@ -597,7 +597,7 @@ def test_rbac_access_by_name_removed_file(make_sure_file_is_correct):
     srv_control.start_srv('DHCP', 'stopped')
 
     # start without dhcp-disable file, agent should log an error and exit
-    srv_control.start_srv('DHCP', 'started', should_succeed=False)
+    srv_control.start_srv('CA', 'started', should_succeed=False)
 
 
 @pytest.mark.v4
@@ -632,7 +632,7 @@ def test_rbac_access_by_name_removed_file_2(make_sure_file_is_correct):
     srv_control.build_and_send_config_files()
 
     # start without dhcp-disable file, agent should log an error and exit
-    srv_control.start_srv('DHCP', 'started', should_succeed=False)
+    srv_control.start_srv('CA', 'started', should_succeed=False)
 
     # now let's add dhcp-disable as our custom command in custom hook, and add 3rd admin based on
     # our new my-custom-hook
