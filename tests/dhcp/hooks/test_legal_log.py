@@ -1350,7 +1350,7 @@ def test_legal_log_rotation(dhcp_version):
     srv_control.add_hooks('libdhcp_legal_log.so')
     # Configure log rotation
     srv_control.add_parameter_to_hook(1, 'time-unit', 'second')
-    srv_control.add_parameter_to_hook(1, 'count', 10 if dhcp_version == 'v4' else 5)
+    srv_control.add_parameter_to_hook(1, 'count', 20 if dhcp_version == 'v4' else 15)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1360,16 +1360,19 @@ def test_legal_log_rotation(dhcp_version):
     # Send 3 times 3 requests waiting for log rotation interval
     if dhcp_version == 'v4':
         _send_client_requests4(3)
-        _wait_till_elapsed(start, 10)
-        _send_client_requests4(3)
         _wait_till_elapsed(start, 20)
+        _send_client_requests4(3)
+        _wait_till_elapsed(start, 40)
         _send_client_requests4(3)
     else:
         _send_client_requests(3)
-        _wait_till_elapsed(start, 5)
+        _wait_till_elapsed(start, 15)
         _send_client_requests(3)
-        _wait_till_elapsed(start, 10)
+        _wait_till_elapsed(start, 30)
         _send_client_requests(3)
+
+    # Wait to be sure that logs are written to file
+    srv_msg.forge_sleep(2, 'seconds')
 
     # make a list of produced log files
     log_files = fabric_sudo_command(f"cd {world.f_cfg.data_join('')} ; ls -1 kea-legal*.txt").splitlines()
@@ -1478,7 +1481,7 @@ def test_legal_log_rotate_actions(dhcp_version):
     srv_control.add_hooks('libdhcp_legal_log.so')
     # Configure log rotation
     srv_control.add_parameter_to_hook(1, 'time-unit', 'second')
-    srv_control.add_parameter_to_hook(1, 'count', 10 if dhcp_version == 'v4' else 5)
+    srv_control.add_parameter_to_hook(1, 'count', 20 if dhcp_version == 'v4' else 15)
 
     # Configure log rotation actions
     srv_control.add_parameter_to_hook(1, 'prerotate', world.f_cfg.data_join('script_pre.sh'))
@@ -1492,17 +1495,19 @@ def test_legal_log_rotate_actions(dhcp_version):
     # Send 3 times 3 requests waiting for log rotation interval
     if dhcp_version == 'v4':
         _send_client_requests4(3)
-        _wait_till_elapsed(start, 10)
-        _send_client_requests4(3)
         _wait_till_elapsed(start, 20)
+        _send_client_requests4(3)
+        _wait_till_elapsed(start, 40)
         _send_client_requests4(3)
     else:
         _send_client_requests(3)
-        _wait_till_elapsed(start, 5)
+        _wait_till_elapsed(start, 15)
         _send_client_requests(3)
-        _wait_till_elapsed(start, 10)
+        _wait_till_elapsed(start, 30)
         _send_client_requests(3)
 
+    # Wait to be sure that logs are written to file
+    srv_msg.forge_sleep(2, 'seconds')
     # make a list of produced log files
     log_files = fabric_sudo_command(f"cd {world.f_cfg.data_join('')} ; ls -1 kea-legal*.txt").splitlines()
 
