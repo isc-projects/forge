@@ -958,6 +958,10 @@ def test(args, params):
 def clean(args):
     vagrant_dir = get_vagrant_dir(args)
 
+    if not os.path.exists(vagrant_dir):
+        log.info(f'No vagrant_dir to clean at {vagrant_dir}.')
+        return
+
     # destroy VMs
     execute('vagrant destroy -f', cwd=vagrant_dir, raise_error=False)
 
@@ -974,7 +978,9 @@ def clean(args):
         if os.path.exists(path):
             os.unlink(path)
             print('Deleted %s.' % path)
-    shutil.rmtree(os.path.join(vagrant_dir, '.vagrant'))
+    dot_vagrant = os.path.join(vagrant_dir, '.vagrant')
+    if os.path.exists(dot_vagrant):
+        shutil.rmtree(dot_vagrant)
 
     # delete bridges
     if args.lxc:
@@ -1076,7 +1082,10 @@ def parse_args():
         "3b) or instead of Kea install ISC-DHCP in one of VMs\n\n"
         "   ./forge install-dhcpd dhcpd-subdir\n\n"
         "4) run indicated tests, parameters are directly passed to pytest\n\n"
-        "   ./forge test -m v4\n"
+        "   ./forge test -m v4\n\n"
+        "Alternatively, after configuring kea-dirs - setup, install Kea, test, "
+        "terminate instances in a single command:\n\n"
+        "   ./forge [--lxc --sid v4 --system fedora-34] run-all kea-subdir -r ap -vv --junitxml kea.xml\n\n"
     ]
     description = "\n".join(description)
     main_parser = argparse.ArgumentParser(description=description,
@@ -1132,6 +1141,17 @@ def parse_args():
     parser = subparsers.add_parser('clean', help="Destroy VMs")
     parser = subparsers.add_parser('box', help="Package LXC box and upload to cloud")
 
+    parser = subparsers.add_parser('run-all',
+                                   help="Wrapper for multiple steps: setup, install Kea, run tests and terminate instances")
+    parser.add_argument('--win-gss-tsig', action='store_true',
+                        help='Enable setup of Windows machine with AD/DNS for testing GSS-TSIG.')
+    parser.add_argument('--version', help='Version of packages.')
+    parser.add_argument('--native', action='store_true', default=False, help='Use native packages for testing')
+    parser.add_argument('--dhcpd', action='store_true', help='Change settings to run tests for isc-dhcp.')
+    parser.add_argument('--id', default=None,
+                        help='Terminate AWS system with id, multiple ids can be passed separated by comma.')
+    parser.add_argument('path', default='', nargs='?', help='Path to the Kea repository.')
+
     args, rest = main_parser.parse_known_args()
     return args, rest, main_parser
 
@@ -1180,6 +1200,21 @@ def main():
         package_box_and_upload(args)
 
     elif args.command == "terminate-instances":
+        _terminate_instances(args)
+
+    elif args.command == 'run-all':
+        # Let the user not have to worry about ccache-dir.
+        # Set it to an arbitrary value if not already set.
+        cfg = _load_config()
+        if 'ccache-dir' not in cfg['Forge']:
+            os.mkdir('/tmp/ccache-dir')
+            cfg.set('Forge', 'ccache-dir', '/tmp/ccache-dir')
+            _save_config(cfg)
+
+        clean(args)
+        setup(args)
+        install_kea(args)
+        test(args, rest)
         _terminate_instances(args)
 
     else:
