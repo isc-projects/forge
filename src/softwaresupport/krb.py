@@ -207,6 +207,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
     if 'win' in domain:
         # on each configured windows system there is keytab generated, e.g command used:
         # PS C:\Users\Administrator> ktpass -out /Users/forge/forge.keytab -mapUser forge +rndPass -mapOp set +DumpSalt -crypto AES256-SHA1 -ptype KRB5_NT_PRINCIPAL -princ DHCP/forge.win2019ad.aws.isc.org@WIN2019AD.AWS.ISC.ORG
+        # PS C:\Users\Administrator> ktpass -out /Users/forge/forge.keytab -mapUser forge +rndPass -mapOp set +DumpSalt -crypto AES256-SHA1 -ptype KRB5_NT_PRINCIPAL -princ DHCP/forge.win2016ad.aws.isc.org@WIN2016AD.AWS.ISC.ORG
         # so we need to download keytabs before test for both 2016 and 2019, if something goes wrong in the future
         # we can add step here to generate this. Due to AWS setup if you are running those tests locally
         # you have to download those yourself because ssh connection will be blocked

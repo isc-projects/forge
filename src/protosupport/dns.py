@@ -78,8 +78,10 @@ def prepare_query(dns_addr=None, dns_port=None):
 
 
 def send_wait_for_query(choose_must, expect_include, iface=None):
-    if iface is None:
+    world.climsg[0].id = random.randint(0, 65535)
+    if isinstance(world.climsg[0], IPv6) and iface is None:
         iface = world.cfg["dns_iface"]
+
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
 
@@ -202,7 +204,6 @@ def build_msg(dns_addr=None, dns_port=None):
         msg = IPv6(dst=dns_addr)
 
     msg /= UDP(sport=dns_port, dport=dns_port)
-    msg.trid = random.randint(0, 255*255*255)
     world.climsg.append(msg/world.dns_query)
 
 

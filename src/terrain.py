@@ -388,6 +388,15 @@ def initialize(scenario):
     world.notSolicit = 0
     world.saved = []
     world.iaid = []
+
+    # dns cleanup
+    world.dns_qd = []
+    world.dns_an = []
+    world.dns_ns = []
+    world.dns_ar = []
+    world.question_record = None
+    world.dns_query = None
+
     if "dhcp_under_test" in world.cfg:
         # IPv6:
         if world.proto == "v6":
