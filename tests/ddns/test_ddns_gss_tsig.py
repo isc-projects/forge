@@ -185,13 +185,14 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
 # Also there is no clean up of DNS records in windows system (each test is using different addresses) but
 # AWS will start new vm each time, so for manual debug keep in mind that DNS records in windows DNS have to be
 # removed manually.
-# Also IFACE value is based on forge + lxc setup on AWS. To run manually on local system it should be set to
-# IFACE = world.cfg["dns_iface"] or the one specific that would face outside network. This value is based on setup
-# details, in future we could detect it automatically but for now I don't see quick, stable and automatic procedure.
+
+# Also IFACE value is based on forge + lxc + windows setup on AWS. For linux system is by default world.cfg["dns_iface"]
+# but inside the test it will be changed for 'eth0'. If you are running gss + windows tests locally, you have to
+# choose interface which is correct to your local setup, eth0 or world.cfg["dns_iface"] may not be correct!
 # TODO detect IFACE value automatically
 
 
-IFACE = 'eth0'
+IFACE = world.cfg["dns_iface"]
 
 
 @pytest.fixture(autouse=True)
@@ -229,6 +230,8 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
     dns_addr = ""
 
     if dns_system == 'windows':
+        global IFACE
+        IFACE = 'eth0'
         my_domain = f"win{my_domain}ad.aws.isc.org"
         dns_addr = world.f_cfg.win_dns_addr_2016
         if "2019" in my_domain:
@@ -429,6 +432,8 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     dns_addr = ""
 
     if dns_system == 'windows':
+        global IFACE
+        IFACE = 'eth0'
         dns_addr = world.f_cfg.win_dns_addr_2019
         if "2016" in my_domain:
             dns_addr = world.f_cfg.win_dns_addr_2016
