@@ -1327,7 +1327,8 @@ def test_v4_legal_log_rebind_state_db(backend):
                                         'client-id: 00:01:02:03:04:05:06')
 
 
-@pytest.mark.v4
+# v4 disabled for time saving:
+# @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.legal_logging
 def test_legal_log_rotation(dhcp_version):
@@ -1397,7 +1398,8 @@ def test_legal_log_rotation(dhcp_version):
         srv_msg.file_contains_line_n_times(world.f_cfg.data_join(name), 3, log_message)
 
 
-@pytest.mark.v4
+# v4 disabled for time saving:
+# @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.legal_logging
 def test_legal_log_basename(dhcp_version):
@@ -1445,7 +1447,8 @@ def test_legal_log_basename(dhcp_version):
     srv_msg.file_contains_line_n_times(world.f_cfg.data_join(f'custom-log.{date}.txt'), 3, log_message)
 
 
-@pytest.mark.v4
+# v4 disabled for time saving:
+# @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.legal_logging
 def test_legal_log_rotate_actions(dhcp_version):
