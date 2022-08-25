@@ -79,7 +79,7 @@ def prepare_query(dns_addr=None, dns_port=None):
 
 def send_wait_for_query(choose_must, expect_include, iface=None):
     world.climsg[0].id = random.randint(0, 65535)
-    if isinstance(world.climsg[0], IPv6) and iface is None:
+    if iface is None:
         iface = world.cfg["dns_iface"]
 
     if world.f_cfg.show_packets_from in ['both', 'client']:

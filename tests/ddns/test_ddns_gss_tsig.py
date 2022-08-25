@@ -36,7 +36,7 @@ def _check_dns_record(fqdn, rdata=None, dns_addr=None):
     srv_msg.client_send_dns_query(dns_addr=dns_addr)
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST')
+    srv_msg.send_wait_for_query('MUST', iface=IFACE)
     if rdata is None:
         srv_msg.dns_option('ANSWER', expect_include=False)
     else:
@@ -185,6 +185,11 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
 # Also there is no clean up of DNS records in windows system (each test is using different addresses) but
 # AWS will start new vm each time, so for manual debug keep in mind that DNS records in windows DNS have to be
 # removed manually.
+# Also IFACE value is based on forge + lxc setup on AWS. To run manually on local system it should be set to
+# IFACE = world.cfg["dns_iface"] or the one specific that would face outside network. This value is based on setup
+# details, in future we could detect it automatically but for now I don't see quick, stable and automatic procedure.
+# TODO detect IFACE value automatically
+IFACE='eth0'
 
 
 @pytest.fixture(autouse=True)

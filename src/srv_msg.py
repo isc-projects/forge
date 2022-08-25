@@ -258,11 +258,11 @@ def client_send_dns_query(dns_addr=None, dns_port=None):
 
 ##checking DNS respond
 @step(r'DNS server (\S+) (NOT )?respond with DNS query.')
-def send_wait_for_query(type, expect_include=True):
+def send_wait_for_query(type, expect_include=True, iface=None):
     """
     This step causes to send message to server and capture respond.
     """
-    dns.send_wait_for_query(type, expect_include)
+    dns.send_wait_for_query(type, expect_include, iface=iface)
 
 
 @step(r'Received DNS query MUST (NOT )?contain (\S+) with value (\S+).')
