@@ -241,6 +241,8 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.kinit(my_domain)
     else:
+        global IFACE
+        IFACE = world.cfg["dns_iface"]
         dns_addr = world.cfg["dns4_addr"]
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.kinit(my_domain)
@@ -441,6 +443,8 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.kinit(my_domain)
     else:
+        global IFACE
+        IFACE = world.cfg["dns_iface"]
         dns_addr = world.cfg["dns4_addr"]
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.kinit(my_domain)
