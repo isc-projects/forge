@@ -24,7 +24,7 @@ def _send_through_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_soc
                                             exp_result=exp_result, exp_failed=exp_failed)
 
 
-def _check_dns_record(fqdn, rdata=None, dns_addr=None):
+def _check_dns_record(fqdn, rdata=None, dns_addr=None, iface=world.cfg["dns_iface"]):
     """
     Check if DNS record have been updated
     :param fqdn: string, include fqdn
@@ -36,7 +36,7 @@ def _check_dns_record(fqdn, rdata=None, dns_addr=None):
     srv_msg.client_send_dns_query(dns_addr=dns_addr)
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_query('MUST', iface=IFACE)
+    srv_msg.send_wait_for_query('MUST', iface=iface)
     if rdata is None:
         srv_msg.dns_option('ANSWER', expect_include=False)
     else:
@@ -186,14 +186,6 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
 # AWS will start new vm each time, so for manual debug keep in mind that DNS records in windows DNS have to be
 # removed manually.
 
-# Also IFACE value is based on forge + lxc + windows setup on AWS. For linux system is by default world.cfg["dns_iface"]
-# but inside the test it will be changed for 'eth0'. If you are running gss + windows tests locally, you have to
-# choose interface which is correct to your local setup, eth0 or world.cfg["dns_iface"] may not be correct!
-# TODO detect IFACE value automatically
-
-
-IFACE = world.cfg["dns_iface"]
-
 
 @pytest.fixture(autouse=True)
 def run_around_each_test(request):
@@ -229,9 +221,14 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
     tkey_lifetime = 60
     dns_addr = ""
 
+    iface = world.cfg["dns_iface"]
     if dns_system == 'windows':
-        global IFACE
-        IFACE = 'eth0'
+        # Also iface value is based on forge + lxc + windows setup on AWS. For linux system is by default
+        # world.cfg["dns_iface"] but inside the test it will be changed for 'eth0'. If you are running gss + windows
+        # tests locally, you have to choose interface which is correct to your local setup, eth0 or
+        # world.cfg["dns_iface"] may not be correct!
+        # TODO detect iface value automatically
+        iface = 'eth0'
         my_domain = f"win{my_domain}ad.aws.isc.org"
         dns_addr = world.f_cfg.win_dns_addr_2016
         if "2019" in my_domain:
@@ -241,8 +238,6 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.kinit(my_domain)
     else:
-        global IFACE
-        IFACE = world.cfg["dns_iface"]
         dns_addr = world.cfg["dns4_addr"]
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.kinit(my_domain)
@@ -284,7 +279,7 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
 
     # srv_msg./wait_for_message_in_log('FQDN: [name1.example.com.]', log_file='kea.log_ddns')
     srv_msg.forge_sleep(1)
-    _check_dns_record(f"name1.{my_domain}.", rdata=addr, dns_addr=dns_addr)
+    _check_dns_record(f"name1.{my_domain}.", rdata=addr, dns_addr=dns_addr, iface=iface)
 
     # expire key
     cmd = dict(command="gss-tsig-key-expire", arguments={"key-name": key_name})
@@ -295,7 +290,7 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
     addr2 = "192.168.50.22" if world.proto == 'v4' else "2001:db8:1::52"
     _get_lease(addr2, f"name2.{my_domain}.", "01:01:01:01:01:22", suffix=my_domain)
     srv_msg.forge_sleep(1)
-    _check_dns_record(f"name2.{my_domain}.", dns_addr=dns_addr)
+    _check_dns_record(f"name2.{my_domain}.", dns_addr=dns_addr, iface=iface)
 
     cmd = dict(command="gss-tsig-rekey", arguments={"server-id": server_id})
     response = _send_through_socket(cmd)
@@ -317,18 +312,18 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
     addr = "192.168.50.23" if world.proto == 'v4' else "2001:db8:1::53"
     _get_lease(addr, f"name3.{my_domain}.", "01:01:01:01:01:33", suffix=my_domain)
     srv_msg.forge_sleep(1)
-    _check_dns_record(f"name3.{my_domain}.", rdata=addr, dns_addr=dns_addr)
-    _check_dns_record(f"name2.{my_domain}.", rdata=addr2, dns_addr=dns_addr)
+    _check_dns_record(f"name3.{my_domain}.", rdata=addr, dns_addr=dns_addr, iface=iface)
+    _check_dns_record(f"name2.{my_domain}.", rdata=addr2, dns_addr=dns_addr, iface=iface)
 
     # release 3rd address should result in removing dns entry
     _release_lease(addr, "01:01:01:01:01:33")
     srv_msg.forge_sleep(2)  # slow down a bit
-    _check_dns_record(f"name3.{my_domain}.", dns_addr=dns_addr)
+    _check_dns_record(f"name3.{my_domain}.", dns_addr=dns_addr, iface=iface)
 
     # second address removed via command
     _delete_lease(extra_param={"ip-address": f"{addr2}", "update-ddns": True}, exp_result=0)
     srv_msg.forge_sleep(2)
-    _check_dns_record(f"name2.{my_domain}.", dns_addr=dns_addr)
+    _check_dns_record(f"name2.{my_domain}.", dns_addr=dns_addr, iface=iface)
 
 
 @pytest.mark.v4
@@ -432,10 +427,9 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     if dns_system == 'windows':
         my_domain = f"win{my_domain}ad.aws.isc.org"
     dns_addr = ""
-
+    iface = world.cfg["dns_iface"]
     if dns_system == 'windows':
-        global IFACE
-        IFACE = 'eth0'
+        iface = 'eth0'
         dns_addr = world.f_cfg.win_dns_addr_2019
         if "2016" in my_domain:
             dns_addr = world.f_cfg.win_dns_addr_2016
@@ -443,8 +437,6 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.kinit(my_domain)
     else:
-        global IFACE
-        IFACE = world.cfg["dns_iface"]
         dns_addr = world.cfg["dns4_addr"]
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.kinit(my_domain)
@@ -514,7 +506,7 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     assert stats_1["gss-tsig-key-created"][0][0] == 1
 
     _get_lease("192.168.50.10", "abc", "01:01:01:01:01:11", suffix=my_domain)
-    _check_dns_record(f"abc.{my_domain}.", rdata="192.168.50.10", dns_addr=dns_addr)
+    _check_dns_record(f"abc.{my_domain}.", rdata="192.168.50.10", dns_addr=dns_addr, iface=iface)
 
     # check stats for single key, we made update for forward and reverse dns for one lease so we expect value 2
     cmd = dict(command="statistic-get", arguments={"name": f"key[{key_name}].update-success"})
@@ -555,7 +547,7 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
 
     # new exchange, we expect that DNS update won't be successful
     _get_lease("192.168.50.11", "abcfqdn", "01:01:01:01:01:22", suffix=my_domain)
-    _check_dns_record(f"abcfqdn.{my_domain}.", dns_addr=dns_addr)
+    _check_dns_record(f"abcfqdn.{my_domain}.", dns_addr=dns_addr, iface=iface)
 
     # check also logs
     srv_msg.log_contains("KEY_LOOKUP_NONE hooks library lookup for a key: found no usable key", log_file="kea.log_ddns")
@@ -601,7 +593,7 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
 
     # and expect to have record
     srv_msg.forge_sleep(2)
-    _check_dns_record(f"abcfqdn.{my_domain}.", rdata="192.168.50.11", dns_addr=dns_addr)
+    _check_dns_record(f"abcfqdn.{my_domain}.", rdata="192.168.50.11", dns_addr=dns_addr, iface=iface)
 
     cmd = dict(command="statistic-get", arguments={"name": f"key[{key_name}].update-success"})
     single_stat = _send_through_socket(cmd)["arguments"]
@@ -676,7 +668,7 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
 
     # now we have 3 keys, let's get new lease
     _get_lease("192.168.50.12", "a", "01:01:01:01:01:33", suffix=my_domain)
-    _check_dns_record(f"a.{my_domain}.", rdata="192.168.50.12", dns_addr=dns_addr)
+    _check_dns_record(f"a.{my_domain}.", rdata="192.168.50.12", dns_addr=dns_addr, iface=iface)
 
     cmd = dict(command="statistic-get", arguments={"name": "update-success"})
     single_stat = _send_through_socket(cmd)["arguments"]
@@ -684,12 +676,12 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
 
     # now let's release
     _release_lease("192.168.50.12", "01:01:01:01:01:33")
-    _check_dns_record(f"a.{my_domain}.", dns_addr=dns_addr)
-    _check_dns_record(f"abcfqdn.{my_domain}.", rdata="192.168.50.11", dns_addr=dns_addr)
+    _check_dns_record(f"a.{my_domain}.", dns_addr=dns_addr, iface=iface)
+    _check_dns_record(f"abcfqdn.{my_domain}.", rdata="192.168.50.11", dns_addr=dns_addr, iface=iface)
 
     # now let's remove first remove, and check if dns is update correctly
     _delete_lease(extra_param={"ip-address": "192.168.50.11", "update-ddns": True}, exp_result=0)
-    _check_dns_record(f"abcfqdn.{my_domain}.", dns_addr=dns_addr)
+    _check_dns_record(f"abcfqdn.{my_domain}.", dns_addr=dns_addr, iface=iface)
 
     # get statistics and compare those with previous set
     cmd = dict(command="statistic-get-all", arguments={})
