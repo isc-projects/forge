@@ -26,6 +26,12 @@ def kill_kea_on_second_system():
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_hot_standby_maintenance(backend):
+    """
+    Check maintenance mode in hot standby setup, start of it, leases sync while in maintenance mode,
+    correctness of going from maintenance mode to partner down and return to normal hot standby setup.
+
+    Tests both scenarios when maintenance-start command is send to primary as well as to standby node.
+    """
     # HA SERVER 1
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -188,7 +194,7 @@ def test_hot_standby_maintenance(backend):
             "Incorrect duid saved in one of the leases list"
 
 
-# will always go to secondary
+# Clients using those dudis will always be dropped by server1 and accepted by server2
 # 00:03:00:01:02:03:0d:04:0b:01
 # 00:03:00:01:05:06:10:07:0e:04
 # 00:03:00:01:09:0a:14:0b:12:08
@@ -198,6 +204,13 @@ def test_hot_standby_maintenance(backend):
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_load_balancing_maintenance(backend):
+    """
+    Check maintenance mode in load balancing setup, start of it, leases sync while in maintenance mode,
+    correctness of going from maintenance mode to partner down and return to normal load balancing setup.
+
+    Tests both scenarios when maintenance-start command is send first to server1 and after returning
+    to load balancing mode than to server2.
+    """
     # HA SERVER 1
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
