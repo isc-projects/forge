@@ -611,14 +611,14 @@ def test_lease_limits_subnet(dhcp_version, backend):
         # IA_PD
         for i in range(2 * to_send + 1, 3 * to_send + 1):  # Try to acquire more IA_PD leases than the limit
             # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
-            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1, ia_na=True)
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}', ia_pd=1)
             # Add 1 to exchanges counter
             exchanges += 1
 
-        for i in range(2 * to_send + 1, 2 * to_send + 1 + int(success_pd/2)):  # Delete all acquired leases to reset limit.
+        for i in range(2 * to_send + 1, 2 * to_send + 1 + success_pd):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease6-get-by-duid", "arguments": {"duid": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}'}}
             response = srv_msg.send_ctrl_cmd(cmd)
-            iaid = response['arguments']['leases'][1]['iaid']
+            iaid = response['arguments']['leases'][0]['iaid']
             cmd = {"command": "lease6-del",
                    "arguments": {"subnet-id": 1,
                                  "identifier": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
@@ -644,7 +644,7 @@ def test_lease_limits_subnet(dhcp_version, backend):
         assert abs(2 * limit - success) <= threshold,\
             f'Difference between responses and limit ({abs(2 * limit - success)}) exceeds threshold ({threshold})'
     else:
-        assert abs(5 * limit - success) <= threshold,\
+        assert abs(4 * limit - success) <= threshold,\
             f'Difference between responses and limit ({abs(4 * limit - success)}) exceeds threshold ({threshold})'
 
 
