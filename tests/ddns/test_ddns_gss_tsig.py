@@ -24,7 +24,7 @@ def _send_through_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_soc
                                             exp_result=exp_result, exp_failed=exp_failed)
 
 
-def _check_dns_record(fqdn, rdata=None, dns_addr=None, iface=world.cfg["dns_iface"]):
+def _check_dns_record(fqdn, rdata=None, dns_addr=None, iface=None):
     """
     Check if DNS record have been updated
     :param fqdn: string, include fqdn
@@ -383,7 +383,8 @@ def test_ddns4_gss_tsig_fallback(fallback):
         assert False, "After 5 seconds we don't have valid key, it might be environment issue, please debug this."
     #
     _get_lease("192.168.50.40", "thiswillbeindns", "01:01:01:01:01:22")
-    _check_dns_record("thiswillbeindns.example.com.", rdata="192.168.50.40", dns_addr=dns_addr)
+    _check_dns_record("thiswillbeindns.example.com.", rdata="192.168.50.40", dns_addr=dns_addr,
+                      iface=world.cfg["dns_iface"])
 
     # let's expire key
     cmd = dict(command="gss-tsig-key-expire", arguments={"key-name": key_name})
@@ -395,7 +396,7 @@ def test_ddns4_gss_tsig_fallback(fallback):
     # we wont. Update will be declined to we are looking for specific logs
     _get_lease("192.168.50.41", "thiswontbeindns", "01:01:01:01:01:11")
     # update will fail no matter of fallback value
-    _check_dns_record("thiswontbeindns.example.com.", dns_addr=dns_addr)
+    _check_dns_record("thiswontbeindns.example.com.", dns_addr=dns_addr, iface=world.cfg["dns_iface"])
     # but logs will differ
     if fallback:
         srv_msg.log_contains("update 'example.com/IN' denied", log_file="/tmp/dns.log")
