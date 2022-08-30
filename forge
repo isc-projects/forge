@@ -405,7 +405,7 @@ def _setup_win_ad_dns(ami, domain):
     ec2 = boto3.resource('ec2', region_name='us-east-1')
     init_script = """
 <powershell>
-shutdown /s /t 28800
+shutdown /s /t 25200
 </powershell>
 <persist>true</persist>
     """
