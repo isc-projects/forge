@@ -495,8 +495,10 @@ def test_v4_hosts_cmds_add_reservation_complex(channel, host_database):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Confirm that not reserved host gets ip from pool
     srv_msg.DORA('192.168.50.50')
 
+    # Add reservation
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
             "reservation": {
@@ -515,7 +517,10 @@ def test_v4_hosts_cmds_add_reservation_complex(channel, host_database):
                     }
                 ],
                 "server-hostname": "hal9000",
-                "subnet-id": 1
+                "subnet-id": 1,
+                "user-context": {
+                    "floor": "1"
+                }
             }
         },
         "command": "reservation-add"
@@ -525,6 +530,20 @@ def test_v4_hosts_cmds_add_reservation_complex(channel, host_database):
         "text": "Host added."
     }
 
+    # Get the reservation and check user-context.
+    response = srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "identifier": "01:0a:0b:0c:0d:0e:0f",
+            "identifier-type": "client-id",
+            "subnet-id": 1
+        },
+        "command": "reservation-get"
+    }, channel=channel)
+    assert response['arguments']['user-context'] == {
+        "floor": "1"
+    }
+
+    # Get lease according to reservation
     misc.test_procedure()
     srv_msg.client_does_include_with_value('client_id', '01:0a:0b:0c:0d:0e:0f')
     srv_msg.client_send_msg('DISCOVER')
@@ -1908,6 +1927,87 @@ def test_v4_hosts_cmds_reservation_get_by_ID(channel):
     }
 
 
+@pytest.mark.v4
+@pytest.mark.host_reservation
+@pytest.mark.hosts_cmds
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v4_hosts_cmds_add_reservation_client_data(channel, host_database):
+    misc.test_setup()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+
+    srv_control.enable_db_backend_reservation(host_database)
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    srv_msg.DORA('192.168.50.50')
+
+    response = srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "boot-file-name": "/dev/null",
+                "client-classes": [
+                    "special_snowflake",
+                    "office"
+                ],
+                "client-id": "01:0a:0b:0c:0d:0e:0f",
+                "ip-address": "192.168.50.205",
+                "next-server": "192.168.50.1",
+                "option-data": [
+                    {
+                        "data": "10.1.1.202,10.1.1.203",
+                        "name": "domain-name-servers"
+                    },
+                    {
+                        "name": "client-data"
+                    }
+                ],
+                "server-hostname": "hal9000",
+                "subnet-id": 1
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
+
+    misc.test_procedure()
+    srv_msg.client_does_include_with_value('client_id', '01:0a:0b:0c:0d:0e:0f')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.205')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.203')
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.202')
+    srv_msg.response_check_content('sname', 'hal9000')
+    srv_msg.response_check_content('file', '/dev/null')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.205')
+    srv_msg.client_does_include_with_value('client_id', '01:0a:0b:0c:0d:0e:0f')
+    srv_msg.client_sets_value('Client', 'chaddr', '01:0a:0b:0c:0d:0e:0f')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.205')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.203')
+    srv_msg.response_check_option_content(6, 'value', '10.1.1.202')
+    srv_msg.response_check_content('sname', 'hal9000')
+    srv_msg.response_check_content('file', '/dev/null')
+
+
 @pytest.mark.v6
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
@@ -2449,7 +2549,10 @@ def test_v6_hosts_cmds_add_reservation_complex(channel, host_database):
                 "prefixes": [
                     "2001:db8:2:abcd::/64"
                 ],
-                "subnet-id": 1
+                "subnet-id": 1,
+                "user-context": {
+                    "floor": "1"
+                }
             }
         },
         "command": "reservation-add"
@@ -2457,6 +2560,19 @@ def test_v6_hosts_cmds_add_reservation_complex(channel, host_database):
     assert response == {
         "result": 0,
         "text": "Host added."
+    }
+
+    # Get the reservation and check user-context.
+    response = srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01",
+            "identifier-type": "duid",
+            "subnet-id": 1
+        },
+        "command": "reservation-get"
+    }, channel=channel)
+    assert response['arguments']['user-context'] == {
+        "floor": "1"
     }
 
     srv_msg.SARR('2001:db8:1:0:cafe::1', delegated_prefix='2001:db8:2:abcd::')
@@ -3786,3 +3902,55 @@ def test_v6_hosts_cmds_reservation_get_by_ID(channel):
         'result': 0,
         'text': '1 IPv6 host(s) found.'
     }
+
+
+@pytest.mark.v6
+@pytest.mark.host_reservation
+@pytest.mark.hosts_cmds
+@pytest.mark.parametrize('channel', ['http', 'socket'])
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
+def test_v6_hosts_cmds_add_reservation_client_data(channel, host_database):
+    misc.test_setup()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+
+    srv_control.enable_db_backend_reservation(host_database)
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    srv_msg.SARR('2001:db8:1::50')
+
+    response = srv_msg.send_ctrl_cmd({
+        "arguments": {
+            "reservation": {
+                "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+                "ip-addresses": [
+                    "2001:db8:1:0:cafe::1"
+                ],
+                "prefixes": [
+                    "2001:db8:2:abcd::/64"
+                ],
+                "subnet-id": 1,
+                "option-data": [
+                    {
+                        "name": "client-data"
+                    },
+                    {
+                        "code": 1,
+                        "data": "010101"
+                    }
+                ]
+            }
+        },
+        "command": "reservation-add"
+    }, channel=channel)
+    assert response == {
+        "result": 0,
+        "text": "Host added."
+    }
+
+    srv_msg.SARR('2001:db8:1:0:cafe::1', delegated_prefix='2001:db8:2:abcd::')
