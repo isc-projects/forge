@@ -9,6 +9,7 @@ from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
 from src.softwaresupport import krb
+from src.softwaresupport.multi_server_functions import start_tcpdump
 
 
 def _send_through_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_socket'), exp_result=0, exp_failed=False):
@@ -229,6 +230,7 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
         # world.cfg["dns_iface"] may not be correct!
         # TODO detect iface value automatically
         iface = 'eth0'
+        start_tcpdump('gss.pcap', iface=iface, port_filter='', auto_start_dns=False)
         my_domain = f"win{my_domain}ad.aws.isc.org"
         dns_addr = world.f_cfg.win_dns_addr_2016
         if "2019" in my_domain:
@@ -431,6 +433,7 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     iface = world.cfg["dns_iface"]
     if dns_system == 'windows':
         iface = 'eth0'
+        start_tcpdump('gss.pcap', iface=iface, port_filter='', auto_start_dns=False)
         dns_addr = world.f_cfg.win_dns_addr_2019
         if "2016" in my_domain:
             dns_addr = world.f_cfg.win_dns_addr_2016

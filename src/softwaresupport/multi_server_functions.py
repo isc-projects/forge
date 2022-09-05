@@ -12,6 +12,7 @@ import os
 import logging
 import tarfile
 import warnings
+import subprocess
 from shutil import copy
 
 from fabric.api import get, settings, put, sudo, run, hide
@@ -202,3 +203,39 @@ def send_content(local_path, remote_path, content, subdir):
     with TemporaryFile(local_path, content):
         fabric_send_file(local_path, remote_path)
         copy_configuration_file(local_path, os.path.join(subdir, local_path))
+
+
+def start_tcpdump(file_name: str = "capture.pcap", iface: str = None, port_filter: str = None,
+                  auto_start_dns: bool = False, destination: str = 'local'):
+    """
+    Start tcpdump process
+    :param file_name: name of a pcap file
+    :param iface: interface on which tcpdump will listen
+    :param port_filter: port filter command
+    :param auto_start_dns: detect if dns traffic is being send on different interface than dhcp, if so start another
+    instance of tcpdump
+    :param destination: local, or an ip address of vm on which tcpdump should be started
+    """
+
+    if iface is None:
+        iface = world.cfg["iface"]
+    if port_filter is None:
+        port_filter = f'port {world.cfg["source_port"]} or port {world.cfg["destination_port"]} or port 53'
+
+    cmd = f"sudo {os.path.join(world.f_cfg.tcpdump_path, 'tcpdump')}"
+    cmd += f' -U -w {os.path.join(world.cfg["test_result_dir"], file_name)} -s 65535 -i {iface} {port_filter}'
+    print(cmd)
+    subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    if world.dns_enable and world.f_cfg.dns_iface != iface and auto_start_dns:
+        # if dns traffic goes through different interface start another tcpdump
+        start_tcpdump(file_name='capture_dns.pcap', iface=world.f_cfg.dns_iface, port_filter='port 53',
+                      auto_start_dns=False)
+
+
+def stop_tcpdump(location='local'):
+    """
+    Kill all instances of tcpdump
+    :param location:
+    """
+    args = ["sudo pkill tcpdump"]
+    subprocess.call(args, shell=True)

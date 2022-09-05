@@ -22,7 +22,7 @@ from scapy.layers.dhcp6 import DUID_LLT
 from . import dependencies
 from .forge_cfg import world
 from .softwaresupport.multi_server_functions import make_tarfile, archive_file_name, \
-    fabric_run_command
+    fabric_run_command, start_tcpdump, stop_tcpdump
 from .softwaresupport import kea
 from . import logging_facility
 from .srv_control import start_srv
@@ -418,20 +418,7 @@ def initialize(scenario):
         os.makedirs(world.cfg["test_result_dir"] + '/dns')
 
     if world.f_cfg.tcpdump:
-        cmd = world.f_cfg.tcpdump_path + 'tcpdump'
-        args = [cmd, "-U", "-w", world.cfg["test_result_dir"] + "/capture.pcap",
-                "-s", str(65535), "-i", world.cfg["iface"]]
-
-        subprocess.Popen(args)
-        # potential problems with two instances of tcpdump running
-        # TODO make sure it works properly!
-        if world.dhcp_enable and world.dns_enable:
-            if world.f_cfg.dns_iface != world.cfg["iface"]:
-                cmd2 = world.f_cfg.tcpdump_path + 'tcpdump'
-                args2 = [cmd2, "-U", "-w", world.cfg["test_result_dir"] + "/capture_dns.pcap",
-                         "-s", str(65535), "-i", world.cfg["dns_iface"]]
-
-                subprocess.Popen(args2)
+        start_tcpdump(auto_start_dns=True)
 
     _clear_remainings()
 
@@ -446,10 +433,7 @@ def cleanup(scenario):
         world.result.append(info)
 
     if world.f_cfg.tcpdump:
-        time.sleep(1)
-        args = ["killall tcpdump"]
-        subprocess.call(args, shell=True)
-        # TODO: log output in debug mode
+        stop_tcpdump()
 
     if not world.f_cfg.no_server_management:
         for remote_server in world.f_cfg.multiple_tested_servers:
