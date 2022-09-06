@@ -22,7 +22,7 @@ from scapy.layers.dhcp6 import DUID_LLT
 from . import dependencies
 from .forge_cfg import world
 from .softwaresupport.multi_server_functions import make_tarfile, archive_file_name, \
-    fabric_run_command, start_tcpdump, stop_tcpdump
+    fabric_run_command, start_tcpdump, stop_tcpdump, download_tcpdump_capture
 from .softwaresupport import kea
 from . import logging_facility
 from .srv_control import start_srv
@@ -419,6 +419,8 @@ def initialize(scenario):
 
     if world.f_cfg.tcpdump:
         start_tcpdump(auto_start_dns=True)
+    if world.f_cfg.tcpdump_on_remote_system:
+        start_tcpdump(location=world.f_cfg.mgmt_address, file_name='remote.pcap')
 
     _clear_remainings()
 
@@ -447,6 +449,11 @@ def cleanup(scenario):
 
                 if world.f_cfg.save_logs:
                     functions.save_logs(destination_address=remote_server)
+
+                if world.f_cfg.tcpdump_on_remote_system:
+                    stop_tcpdump(location=remote_server)
+                    # it's not bullet proof it won't download anything from second HA system
+                    download_tcpdump_capture(location=remote_server, file_name='remote.pcap')
 
 
 #@after.all

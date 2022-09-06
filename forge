@@ -81,6 +81,7 @@ CLNT6_ADDR = "{CLNT6_ADDR}"
 HISTORY = True
 TCPDUMP = True
 TCPDUMP_PATH = ""
+TCPDUMP_ON_REMOTE_SYSTEM = False
 SAVE_CONFIG_FILE = True
 AUTO_ARCHIVE = False
 SLEEP_TIME_1 = 1  # wait after starting remote server

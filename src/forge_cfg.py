@@ -43,6 +43,7 @@ SETTINGS = {
     'SRV_IPV6_ADDR_LINK_LOCAL': 'fe80::a00:27ff:fedf:63bc',
     'HISTORY': True,
     'TCPDUMP': True,
+    'TCPDUMP_ON_REMOTE_SYSTEM': False,
     'TCPDUMP_PATH': '',
     'SAVE_CONFIG_FILE': True,
     'AUTO_ARCHIVE': False,

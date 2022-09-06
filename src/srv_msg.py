@@ -18,6 +18,7 @@ from .protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
 from .forge_cfg import world, step
 from .protosupport import dns, multi_protocol_functions
 from .protosupport.multi_protocol_functions import test_define_value, substitute_vars
+from .softwaresupport.multi_server_functions import start_tcpdump, stop_tcpdump, download_tcpdump_capture
 
 
 class Dispatcher(object):
@@ -799,3 +800,39 @@ def start_fuzzing():
     print(f'Using seed {seed}.')
     random.seed(seed)
     world.coin_toss = random.randint(1, 100) % 2 == 0
+
+
+def enable_tcpdump(file_name: str = "my_capture.pcap", iface: str = None,
+                   port_filter: str = None, location: str = 'local'):
+    """
+    Start tcpdump process, can be enabled on local system or remote, with custom port filtering
+    :param file_name: name of capture file, default is capture.pcap so please don't use it
+    :param iface: network interface on which tcpdump will be enabled
+    :param port_filter: port filter (e.g. 'port 53' or 'port 8080 or port 8000' by default it will filter
+    out everything except dhcp ports and dns
+    :param location: local for system on which forge is running, or ip address of any system that is used during test
+
+    Example how to use entire set of tcpdump commands:
+    srv_msg.enable_tcpdump(file_name='abc.pcap', location=world.f_cfg.mgmt_address, port_filter='port 53')
+    <send traffic>
+    srv_msg.kill_tcpdump(location=world.f_cfg.mgmt_address)
+    srv_msg.download_tcpdump_capture(location=world.f_cfg.mgmt_address, file_name='abc.pcap')
+    """
+    start_tcpdump(file_name=file_name, iface=iface, port_filter=port_filter, location=location)
+
+
+def kill_tcpdump(location: str = 'local'):
+    """
+    Stop tcpdump instances running on system
+    :param location: local for system on which forge is running, or ip address of any system that is used during test
+    """
+    stop_tcpdump(location=location)
+
+
+def get_tcpdump_capture(location, file_name):
+    """
+    Download capture files to tests results
+    :param location: ip address of remote system on which tcpdump was enabled
+    :param file_name: name of capture file
+    """
+    download_tcpdump_capture(location=location, file_name=file_name)
