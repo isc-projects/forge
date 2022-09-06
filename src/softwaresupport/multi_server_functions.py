@@ -212,7 +212,7 @@ def start_tcpdump(file_name: str = "capture.pcap", iface: str = None, port_filte
     :param file_name: name of a pcap file
     :param iface: interface on which tcpdump will listen
     :param port_filter: port filter command
-    :param auto_start_dns: detect if dns traffic is being send on different interface than dhcp, if so start another
+    :param auto_start_dns: detect if dns traffic is being sent on different interface than dhcp, if so start another
     instance of tcpdump
     :param location: local, or an ip address of vm on which tcpdump should be started
     """
@@ -260,7 +260,7 @@ def download_tcpdump_capture(location, file_name):
     """
     If capture on remote server will be generated, forge won't download it by default.
     :param location: ip address of a system from which capture should be downloaded
-    :param file_name: file name that contain network capture
+    :param file_name: file name that contains network capture
     """
     if location == 'local':
         print("Logs from locally running tcpdump are saved in tests results directly")
