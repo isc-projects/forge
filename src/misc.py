@@ -83,3 +83,28 @@ def test_procedure():
             set_world()
         else:
             pass
+
+
+def merge_containers(target, source):
+    """
+    Recursively merges dicts and lists from {source} into {target}.
+    :param target: container being merged into
+    :param source: container being merged
+    """
+    if (isinstance(target, dict)):
+        for k, v in source.items():
+            if (k in target and isinstance(target[k], dict) and isinstance(v, dict)):
+                merge_containers(target[k], v)
+            elif (k in target and isinstance(target[k], list) and isinstance(v, list)):
+                merge_containers(target[k], v)
+            else:
+                target[k] = v
+    elif (isinstance(target, list)):
+        # TODO: The current merging is simple, it just makes sure the element is in the list.
+        # It could be much smarter by recursing inside the list all the way to leaves and merge
+        # those, just as dicts do in the other if-branch. However this requires some form of
+        # identification of list elements. Providing the keys for each list would solve it. Maybe
+        # through the use of paths e.g. pools[pool="192.168.0.1-192.168.0.2"].
+        for i in range(len(source)):
+            if (source[i] not in target):
+                target.append(source[i])
