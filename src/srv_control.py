@@ -11,6 +11,7 @@ import json
 import logging
 import importlib
 
+from . import misc
 from .forge_cfg import world, step
 
 from .softwaresupport.bind9_server import functions as dns
@@ -71,6 +72,45 @@ def config_srv_subnet_with_iface(interface, address, subnet, pool):
     """
     interface, address, subnet, pool = test_define_value(interface, address, subnet, pool)
     dhcp.prepare_cfg_subnet_specific_interface(interface, address, subnet, pool)
+
+
+def merge_in_subnet(selector, modification, config=None):
+    """
+    Merges {modification} into the subnet living under {config} identified by
+    the keys and values from {selector}.
+    :param selector: dictionary used to identify the subnet, all keys and values are checked
+    :param modification: dictionary with the additions or changes to be merged
+    :param config: the config that directly contains "subnet4" or "subnet6"
+    """
+    if config is None:
+        config = world.dhcp_cfg
+    assert(isinstance(selector, dict))
+    assert(isinstance(modification, dict))
+    assert(isinstance(config, dict))
+
+    for subnet in config[f'subnet{world.proto[1]}']:
+        for k, v in selector.items():
+            if k in subnet and subnet[k] == v:
+                misc.merge_containers(subnet, modification)
+
+
+def merge_in_network_subnet(network_selector, subnet_selector, modification):
+    """
+    Merges {modification} into the subnet identified by the keys and values from
+    {subnet_selector} that lives under the shared network identified by the keys
+    and values from {network_selector}.
+    :param network_selector: dictionary used to identify the shared network, all keys and values are checked
+    :param subnet_selector: dictionary used to identify the subnet, all keys and values are checked
+    :param modification: dictionary with the additions or changes to be merged
+    """
+    assert(isinstance(network_selector, dict))
+    assert(isinstance(subnet_selector, dict))
+    assert(isinstance(modification, dict))
+
+    for shared_network in world.dhcp_cfg['shared-networks']:
+        for k, v in network_selector.items():
+            if k in shared_network and shared_network[k] == v:
+                merge_in_subnet(subnet_selector, modification, shared_network)
 
 
 def update_subnet_counter():
