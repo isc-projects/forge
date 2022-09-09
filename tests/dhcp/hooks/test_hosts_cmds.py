@@ -3826,7 +3826,7 @@ def test_v6_hosts_cmds_reservation_get_by_ID(channel):
 @pytest.mark.v6
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
-@pytest.mark.parametrize('channel', ['http', 'socket'])
+@pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
 def test_v6_hosts_cmds_add_reservation_client_data(channel, host_database):
     misc.test_setup()
