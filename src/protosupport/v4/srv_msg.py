@@ -233,10 +233,12 @@ def response_check_content(expect, data_type, expected):
 
     if expect:
         assert outcome, "Invalid {data_type} received {received}" \
-                        " but expected: {expected}".format(**locals())
+                        " but expected: {expected}".format(**locals()) + \
+                        "\nPacket:" + str(world.srvmsg[0].show(dump=True))
     else:
         assert not outcome, "Invalid {data_type} received {received}" \
-                            " that value has been excluded from correct values.".format(**locals())
+                            " that value has been excluded from correct values.".format(**locals()) + \
+                            "\nPacket:" + str(world.srvmsg[0].show(dump=True))
     return received
 
 
@@ -499,9 +501,11 @@ def response_check_include_option(expected, opt_code):
     opt_descr = _get_opt_descr(opt_code)
 
     if expected:
-        assert opt, "Expected option {opt_descr} not present in the message.".format(**locals())
+        assert opt, "Expected option {opt_descr} not present in the message.".format(**locals()) + \
+                    "\nPacket:" + str(world.srvmsg[0].show(dump=True))
     else:
-        assert opt is None, "Expected option {opt_descr} present in the message. But not expected!".format(**locals())
+        assert opt is None, "Expected option {opt_descr} present in the message. But not expected!".format(**locals()) + \
+                            "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
 
 def response_check_option_content(opt_code, expect, data_type, expected):
@@ -529,10 +533,12 @@ def response_check_option_content(opt_code, expect, data_type, expected):
     opt_descr = _get_opt_descr(opt_code)
 
     if expect:
-        assert outcome, "Invalid {opt_descr} option received: {received} but expected {expected}".format(**locals())
+        assert outcome, "Invalid {opt_descr} option received: {received} but expected {expected}".format(**locals()) + \
+                        "\nPacket:" + str(world.srvmsg[0].show(dump=True))
     else:
         assert not outcome, "Invalid {opt_descr} option received: {received}" \
-                            " that value has been excluded from correct values".format(**locals())
+                            " that value has been excluded from correct values".format(**locals()) + \
+                            "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
 
 def get_all_leases(decode_duid=True):

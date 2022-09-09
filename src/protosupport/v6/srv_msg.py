@@ -837,9 +837,11 @@ def response_check_include_option(must_include, opt_code):
     opt_descr = _get_opt_descr(opt_code)
 
     if must_include:
-        assert opt, "Expected option {opt_descr} not present in the message.".format(**locals())
+        assert opt, "Expected option {opt_descr} not present in the message.".format(**locals()) + \
+                    "\nPacket:" + str(world.srvmsg[0].show(dump=True))
     else:
-        assert opt is None, "Unexpected option {opt_descr} found in the message.".format(**locals())
+        assert opt is None, "Unexpected option {opt_descr} found in the message.".format(**locals()) + \
+                            "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
     return opt
 # Returns text representation of the option, interpreted as specified by data_type
