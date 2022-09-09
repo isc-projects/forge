@@ -15,8 +15,8 @@ from .multi_server_functions import fabric_sudo_command, fabric_send_file, Tempo
 AUTHORIZE_CONTENT = ''
 
 
-def add_leading_subnet(subnet: str = '192.168.99.0/24',
-                       pool: str = '192.168.99.0 - 192.168.99.255'):
+def add_leading_subnet(subnet: str = None,
+                       pool: str = None):
     """
     Add to the first position: a subnet or a shared network with a single subnet,
     in both cases with a single pool. The subnet ID is the third octet from the
@@ -24,11 +24,23 @@ def add_leading_subnet(subnet: str = '192.168.99.0/24',
     :param subnet: the subnet value
     :param pool: the pool value
     """
-    # TODO: make it work with v6?
+    # Defaults
+    if subnet is None:
+        if world.proto == 'v4':
+            subnet = '192.168.99.0/24'
+        elif world.proto == 'v6':
+            subnet = '2001:db8:99::/64'
+    if pool is None:
+        if world.proto == 'v4':
+            pool = '192.168.99.0 - 192.168.99.255'
+        elif world.proto == 'v6':
+            pool = '2001:db8:99:: - 2001:db8:99::ffff'
+
     v = world.proto[1]
     if f'subnet{v}' in world.dhcp_cfg:
+        delimiter = '.' if world.proto == 'v4' else ':'
         world.dhcp_cfg[f'subnet{v}'].insert(0, {
-            'id': int(subnet.split('.')[2]),
+            'id': int(subnet.split(delimiter)[2]),
             'interface': world.f_cfg.server_iface,
             'pools': [
                 {
@@ -38,12 +50,13 @@ def add_leading_subnet(subnet: str = '192.168.99.0/24',
             'subnet': subnet
         })
     if 'shared-networks' in world.dhcp_cfg:
+        delimiter = '.' if world.proto == 'v4' else ':'
         world.dhcp_cfg['shared-networks'].insert(0,
             {
                 'name': subnet,
                 f'subnet{v}': [
                     {
-                        'id': int(subnet.split('.')[2]),
+                        'id': int(subnet.split(delimiter)[2]),
                         'interface': world.f_cfg.server_iface,
                         'pools': [
                             {
