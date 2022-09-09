@@ -470,7 +470,7 @@ def test_option(opt_code, received, expected):
         elif isinstance(each, bytes):
             if str(each.decode("utf-8")) == str(expected):
                 return True, each
-    return False, tmp
+    return False, received
 
 
 def _get_opt_descr(opt_code):
