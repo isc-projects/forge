@@ -37,8 +37,14 @@
 
 # SOFTWARE_UNDER_TEST = ('kea4_server', 'bind9_server')
 
-# Parameters specific to DHCPv4 tests
+# ==============================================================================
+# =================================== DHCPv4 ===================================
+
+# The IPv4 address configured on the DUT-facing interface on the server side
 SRV4_ADDR = ''
+
+# The IPv4 address configured on the DUT-facing interface on the second HA node
+SRV4_ADDR_2 = ''
 
 # This specifies relay agent address. Leave this as 0.0.0.0 if you don't want
 # to test relayed traffic.

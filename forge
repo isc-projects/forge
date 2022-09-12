@@ -36,6 +36,7 @@ log = logging.getLogger()
 FORGE_INI = 'forge.ini'
 
 SRV4_ADDR = "192.168.50.252"
+SRV4_ADDR_2 = "192.168.50.253"
 CLNT4_ADDR = "192.168.50.2"
 CLNT4_ADDR_2 = "192.168.51.2"
 SRV_IPV6_ADDR_GLOBAL = "2001:db8:1::1000"

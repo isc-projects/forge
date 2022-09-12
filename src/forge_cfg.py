@@ -28,6 +28,7 @@ SETTINGS = {
     'SOFTWARE_UNDER_TEST': ('kea4_server', 'bind9_server'),
     'SHOW_PACKETS_FROM': 'both',
     'SRV4_ADDR': None,
+    'SRV4_ADDR_2': None,
     'REL4_ADDR': '0.0.0.0',
     'GIADDR4': None,
     'IFACE': None,
