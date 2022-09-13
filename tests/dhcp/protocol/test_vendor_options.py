@@ -798,3 +798,49 @@ def test_v6_options_vendor_multiple():
     srv_msg.response_check_option_content(17, 'sub-option', 38)
 
     references.references_check('RFC3315')
+
+
+@pytest.mark.v4
+@pytest.mark.options
+@pytest.mark.vendor
+def test_v4_option_125_encapsulated():
+    """
+    Test checking for specific bug in Kea #1585.
+    Configuration specifies custom class that return option 43 with encapsulated option 125.
+    """
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+
+    option = [{"name": "cookie", "code": 125, "type": "string", "space": "ABC"}]
+
+    my_class = [{"name": "ABC",
+                 "test": "(option[vendor-class-identifier].text == 'ABC')",
+                 "option-def": [{"name": "vendor-encapsulated-options", "code": 43,
+                                 "type": "empty",
+                                 "encapsulate": "ABC"}],
+                 "option-data": [{"name": "cookie", "space": "ABC", "data": "1ABCDE"},
+                                 {"name": "vendor-encapsulated-options"}]
+                 }]
+
+    world.dhcp_cfg["option-def"] = option
+    world.dhcp_cfg["client-classes"] = my_class
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(43)
+    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:11:22')
+    # Include vendor-class-identifier to trigger class selection
+    srv_msg.client_does_include_with_value('vendor_class_id', 'ABC')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(43)
+    # Check if option 43 contains sub-option 125 with value "1ABCDE"
+    # (HEX(7D) = 125, 06 - length, HEX(314142434445)="1ABCDE")
+    srv_msg.response_check_option_content(43, 'value', 'HEX:7D06314142434445')
