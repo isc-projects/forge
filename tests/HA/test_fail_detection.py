@@ -89,7 +89,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     misc.test_procedure()
 
     # get 5 leases
-    set_of_leases_1 = generate_leases(leases_count=5, iaid=2, iapd=2, dhcp_version=dhcp_version)
+    set_of_leases_1 = generate_leases(leases_count=5, iana=2, iapd=2, dhcp_version=dhcp_version)
     # check if there are indeed saved
     srv_msg.check_leases(set_of_leases_1, backend=backend)
     # check if those were propagated to other system
@@ -106,7 +106,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     # let's wait until secondary system switch status
     wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)
     # check leases in secondary system
-    set_of_leases_2 = generate_leases(leases_count=5, iaid=2, iapd=2, dhcp_version=dhcp_version,
+    set_of_leases_2 = generate_leases(leases_count=5, iana=2, iapd=2, dhcp_version=dhcp_version,
                                       mac="02:02:0c:03:0a:00")
     # start primary
     srv_control.start_srv('DHCP', 'started')
@@ -218,7 +218,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     # let's wait until secondary system switch status
     wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)
     # check leases in secondary system
-    set_of_leases_2 = generate_leases(leases_count=5, iaid=1, iapd=1, dhcp_version=dhcp_version,
+    set_of_leases_2 = generate_leases(leases_count=5, iana=1, iapd=1, dhcp_version=dhcp_version,
                                       mac="02:02:0c:03:0a:00")
     # start primary
     srv_control.start_srv('DHCP', 'started')
@@ -307,7 +307,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
 
     misc.test_procedure()
     # get 10 leases some form server1 and some from server2
-    set_of_leases_1 = generate_leases(leases_count=10, iaid=1, iapd=0, dhcp_version=dhcp_version)
+    set_of_leases_1 = generate_leases(leases_count=10, iana=1, iapd=0, dhcp_version=dhcp_version)
     # check if there are indeed saved
     srv_msg.check_leases(set_of_leases_1, backend=backend)
     # check if those were propagated to other system
@@ -330,7 +330,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     assert "server2" in resp["arguments"]["scopes"]
     assert "server1" in resp["arguments"]["scopes"]
 
-    set_of_leases_2 = generate_leases(leases_count=30, iaid=1, iapd=0, dhcp_version=dhcp_version,
+    set_of_leases_2 = generate_leases(leases_count=30, iana=1, iapd=0, dhcp_version=dhcp_version,
                                       mac="03:02:0c:03:0a:00")
     srv_msg.check_leases(set_of_leases_2, backend=backend)
 
@@ -425,7 +425,7 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
 
     misc.test_procedure()
     # get 10 leases some form server1 and some from server2
-    set_of_leases_1 = generate_leases(leases_count=10, iaid=1, iapd=0, dhcp_version=dhcp_version)
+    set_of_leases_1 = generate_leases(leases_count=10, iana=1, iapd=0, dhcp_version=dhcp_version)
     # check if there are indeed saved
     srv_msg.check_leases(set_of_leases_1, backend=backend)
     # check if those were propagated to other system
@@ -448,7 +448,7 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
     assert "server2" in resp["arguments"]["scopes"]
     assert "server1" in resp["arguments"]["scopes"]
 
-    set_of_leases_2 = generate_leases(leases_count=10, iaid=1, iapd=0, dhcp_version=dhcp_version,
+    set_of_leases_2 = generate_leases(leases_count=10, iana=1, iapd=0, dhcp_version=dhcp_version,
                                       mac="03:02:0c:03:0a:00")
     srv_msg.check_leases(set_of_leases_2, backend=backend, dest=world.f_cfg.mgmt_address_2)
 

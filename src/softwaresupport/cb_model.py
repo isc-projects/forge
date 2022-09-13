@@ -795,14 +795,19 @@ def setup_server_with_radius(destination: str = world.f_cfg.mgmt_address,
         "library": world.f_cfg.hooks_join("libdhcp_radius.so"),
         "parameters": {
             "client-id-printable": True,
+            "reselect-subnet-address": True,
+            "reselect-subnet-pool": True,
             # Configure an access (aka authentication/authorization) server.
             "access": {
                 # This starts the list of access servers
-                "servers": [{
-                    # These are parameters for the first (and only) access server
-                    "name": world.f_cfg.mgmt_address,
-                    "port": 1812,
-                    "secret": "testing123"}],
+                "servers": [
+                    {
+                        # These are parameters for the first (and only) access server
+                        "name": destination,
+                        "port": 1812,
+                        "secret": "testing123"
+                    }
+                ],
                 "attributes": [
                     {
                         "name": "password",
@@ -811,12 +816,14 @@ def setup_server_with_radius(destination: str = world.f_cfg.mgmt_address,
                 ]
             },
             "accounting": {
-                "servers": [{
-                    # These are parameters for the first (and only) access server
-                    "name": world.f_cfg.mgmt_address,
-                    "port": 1813,
-                    "secret": "testing123"
-                }]
+                "servers": [
+                    {
+                        # These are parameters for the first (and only) access server
+                        "name": destination,
+                        "port": 1813,
+                        "secret": "testing123"
+                    }
+                ]
             }
         }
     }]}

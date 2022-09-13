@@ -144,14 +144,14 @@ def increase_mac(mac: str, rand: bool = False):
     return ':'.join(f'{i:02x}' for i in new_mac)
 
 
-def generate_leases(leases_count: int = 1, iaid: int = 1, iapd: int = 1,
+def generate_leases(leases_count: int = 1, iana: int = 1, iapd: int = 1,
                     dhcp_version: str = 'v6', mac: str = "01:02:0c:03:0a:00",
                     expected_server_id: str = None):
     """
     Function will perform message exchanges to get specified number of leases,
     will assert if at the end number of leases will be smaller
     :param leases_count: how many leases we want to generate
-    :param iaid: how many v6 addresses we want in single exchange (ignored for v4)
+    :param iana: how many v6 addresses we want in single exchange (ignored for v4)
     :param iapd: how many prefixes we want in single exchange (ignored for v4)
     :param dhcp_version: version of dhcp
     :param mac: mac we will start increase, to get different set of macs increase just first octet
@@ -171,7 +171,7 @@ def generate_leases(leases_count: int = 1, iaid: int = 1, iapd: int = 1,
             misc.test_procedure()
             srv_msg.client_sets_value('Client', 'DUID', duid)
             srv_msg.client_does_include('Client', 'client-id')
-            for ia in range(iaid):
+            for ia in range(iana):
                 this_iaid = ia_1 + ia
                 srv_msg.client_sets_value('Client', 'ia_id', this_iaid)
                 srv_msg.client_does_include('Client', 'IA-NA')
@@ -187,7 +187,7 @@ def generate_leases(leases_count: int = 1, iaid: int = 1, iapd: int = 1,
             srv_msg.response_check_include_option(2)
             if expected_server_id:
                 srv_msg.response_check_option_content(2, 'duid', expected_server_id)
-            if iaid > 0:
+            if iana > 0:
                 srv_msg.response_check_include_option(3)
             if iapd > 0:
                 srv_msg.response_check_include_option(25)
@@ -197,7 +197,7 @@ def generate_leases(leases_count: int = 1, iaid: int = 1, iapd: int = 1,
             srv_msg.client_does_include('Client', 'client-id')
 
             # this should be copy not generated
-            for ia in range(iaid):
+            for ia in range(iana):
                 srv_msg.client_sets_value('Client', 'ia_id', ia_1 + ia)
                 srv_msg.client_does_include('Client', 'IA-NA')
 
@@ -215,7 +215,7 @@ def generate_leases(leases_count: int = 1, iaid: int = 1, iapd: int = 1,
             srv_msg.response_check_include_option(2)
             if expected_server_id:
                 srv_msg.response_check_option_content(2, 'duid', expected_server_id)
-            if iaid > 0:
+            if iana > 0:
                 srv_msg.response_check_include_option(3)
                 # srv_msg.response_check_include_option(4)
                 # some times load balancing can't assign we cant check it for now
@@ -265,7 +265,7 @@ def generate_leases(leases_count: int = 1, iaid: int = 1, iapd: int = 1,
         # hexadecimal so we can build a chaddr out of it.
         assert 2 * leases_count < 256, 'too many leases: will result in invalid chaddr'
 
-        for _ in range(leases_count + 1, 2 * leases_count):
+        for _ in range(leases_count, 2 * leases_count):
             mac = increase_mac(mac)
             client_id = '11' + mac.replace(':', '')
             srv_msg.BOOTP_REQUEST_and_BOOTP_REPLY(address=None,

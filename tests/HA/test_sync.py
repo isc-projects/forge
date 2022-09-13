@@ -88,7 +88,7 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA(hook_order):
     wait_until_ha_state('hot-standby')
     misc.test_procedure()
 
-    set_of_leases_1 = generate_leases(leases_count=5, iaid=3, iapd=2)
+    set_of_leases_1 = generate_leases(leases_count=5, iana=3, iapd=2)
     srv_msg.check_leases(set_of_leases_1)
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2)
     # srv_msg.forge_sleep(2, 'seconds')
@@ -100,7 +100,7 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA(hook_order):
     srv_control.start_srv('DHCP', 'stopped')
     wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2)
 
-    set_of_leases_2 = generate_leases(leases_count=5, iaid=3, iapd=2, mac="02:02:0c:03:0a:00")
+    set_of_leases_2 = generate_leases(leases_count=5, iana=3, iapd=2, mac="02:02:0c:03:0a:00")
 
     srv_control.start_srv('DHCP', 'started')
     wait_until_ha_state('hot-standby')
@@ -180,7 +180,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
-    set_of_leases_1 = generate_leases(leases_count=50, iaid=1, iapd=1, dhcp_version=dhcp_version)
+    set_of_leases_1 = generate_leases(leases_count=50, iana=1, iapd=1, dhcp_version=dhcp_version)
 
     # turn off server2
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
@@ -234,7 +234,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)
 
     # create leases in HA 2
-    set_of_leases_2 = generate_leases(leases_count=50, iaid=1, iapd=1, dhcp_version=dhcp_version,
+    set_of_leases_2 = generate_leases(leases_count=50, iana=1, iapd=1, dhcp_version=dhcp_version,
                                       mac="02:02:0c:03:0a:00")
 
     # start server1
@@ -298,7 +298,7 @@ def test_HA_passive_backup_sync(dhcp_version, backend, hook_order):
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('passive-backup', dhcp_version=dhcp_version)
-    set_of_leases_1 = generate_leases(leases_count=5, iaid=3, iapd=2, dhcp_version=dhcp_version)
+    set_of_leases_1 = generate_leases(leases_count=5, iana=3, iapd=2, dhcp_version=dhcp_version)
     # we have no confirmation in syncing so just let's wait a bit
     srv_msg.forge_sleep(2, 'seconds')
     # check synced leases
@@ -384,7 +384,7 @@ def test_HA_load_balancing_sync(dhcp_version, backend, hook_order):
 
     misc.test_procedure()
     # get 10 leases
-    set_of_leases_1 = generate_leases(leases_count=10, iaid=1, iapd=0, dhcp_version=dhcp_version)
+    set_of_leases_1 = generate_leases(leases_count=10, iana=1, iapd=0, dhcp_version=dhcp_version)
 
     # check if there are indeed saved
     srv_msg.check_leases(set_of_leases_1, backend=backend)
@@ -461,7 +461,7 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend, hook_o
     misc.test_procedure()
     # get 10 leases some form server1 and some from server2
     l_count = 40
-    set_of_leases_1 = generate_leases(leases_count=l_count, iaid=1, iapd=0, dhcp_version=dhcp_version)
+    set_of_leases_1 = generate_leases(leases_count=l_count, iana=1, iapd=0, dhcp_version=dhcp_version)
     assert l_count == len(set_of_leases_1), "Server didn't give us all leases it had configured"
     srv_msg.check_leases(set_of_leases_1)
 
@@ -549,61 +549,60 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend, hook
     misc.test_procedure()
     # get 10 leases some form server1 and some from server2
     l_count = 40
-    set_of_leases_1 = generate_leases(leases_count=l_count, iaid=1, iapd=0, dhcp_version=dhcp_version)
+    set_of_leases_1 = generate_leases(leases_count=l_count, iana=1, iapd=0, dhcp_version=dhcp_version)
     assert l_count == len(set_of_leases_1), "Server gave us %d leases, we wanted %d" % (len(set_of_leases_1), l_count)
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2)
 
 
-def _add_ha_pools():
+def _add_ha_pools(address_space_size: int):
     """
     Add pools for the usual HA traffic coming from generate_leases().
-    NOTE: Relying on leases being assigned to pools according to the order they
-    are declared in the configuration is discouraged and is considered undefined
-    behavior in Kea. Empirically, the pool order does influence the lease
-    process and we rely on it in this test such that HA traffic gets the traffic
-    from the first pool and the rest is left for RADIUS traffic. So these pools
-    are added to the beginning, starting with 50.11 or 50::11 because lower
-    values are used in RADIUS testing.
+
+    :param address_space_size: the number of addresses to fit in each pool
     """
+
+    # Start with 10 to avoid RADIUS pools which are below 10.
+    last_octet = 10 + address_space_size
+
     v = world.proto[1]
     if world.proto == 'v4':
         if f'subnet{v}' in world.dhcp_cfg:
-            world.dhcp_cfg[f'subnet{v}'][0]['pools'].insert(0, {
-                'pool': '192.168.50.11 - 192.168.50.110'
-            })
+            srv_control.merge_in_subnet(
+                {'subnet': '192.168.50.0/24'},
+                {'pools': [{'pool': f'192.168.50.11 - 192.168.50.{last_octet}'}]})
         elif 'shared-networks' in world.dhcp_cfg:
-            world.dhcp_cfg['shared-networks'][0][f'subnet{v}'][0]['pools'].insert(0, {
-                'pool': '192.168.50.11 - 192.168.50.110'
-            })
+            srv_control.merge_in_network_subnet(
+                {'name': 'net-1'},
+                {'subnet': '192.168.50.0/24'},
+                {'pools': [{'pool': f'192.168.50.11 - 192.168.50.{last_octet}'}]})
     elif world.proto == 'v6':
         if f'subnet{v}' in world.dhcp_cfg:
-            world.dhcp_cfg[f'subnet{v}'][0]['pools'].insert(0, {
-                'pool': '2001:db8:50::11 - 2001:db8:50::110'
-            })
+            srv_control.merge_in_subnet(
+                {'subnet': '2001:db8:50::/64'},
+                {'pools': [{'pool': f'2001:db8:50::11 - 2001:db8:50::{last_octet:02x}'}]})
         elif 'shared-networks' in world.dhcp_cfg:
-            world.dhcp_cfg['shared-networks'][0][f'subnet{v}'][0]['pools'].insert(0, {
-                'pool': '2001:db8:50::11 - 2001:db8:50::110'
-            })
+            srv_control.merge_in_network_subnet(
+                {'name': 'net-1'},
+                {'subnet': '2001:db8:50::/64'},
+                {'pools': [{'pool': f'2001:db8:50::11 - 2001:db8:50::{last_octet:02x}'}]})
 
 
-# Disable until the RADIUS subnet selection is solved. See test_radius_giaddr().
-@pytest.mark.disabled
 @pytest.mark.v4
 @pytest.mark.v4_bootp
 @pytest.mark.v6
 @pytest.mark.ha
 @pytest.mark.radius
-@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('backend', ['memfile'])  # other possible parameters: 'mysql', 'postgresql'
 @pytest.mark.parametrize('ha_mode', ['hot-standby', 'load-balancing', 'passive-backup'])
-@pytest.mark.parametrize('hook_order', ['alphabetical', 'reverse'])
-@pytest.mark.parametrize('config_type', ['network', 'multiple-subnets'])
-@pytest.mark.parametrize('has_reservation', ['client-has-reservation-in-radius', 'client-has-no-reservation-in-radius'])
+@pytest.mark.parametrize('hook_order', ['alphabetical'])  # other possible parameters: 'reverse'
+@pytest.mark.parametrize('config_type', ['multiple-subnets'])  # other possible parameters: 'network'
+@pytest.mark.parametrize('radius_reservation_in_pool', ['radius-reservaton-in-pool'])  # other possible parameters: 'radius-reservaton-outside-pool'
 def test_HA_and_RADIUS(dhcp_version: str,
                        backend: str,
                        ha_mode: str,
                        hook_order: str,
                        config_type: str,
-                       has_reservation: str):
+                       radius_reservation_in_pool: str):
     """
     Check that HA and RADIUS can work together.
 
@@ -615,25 +614,14 @@ def test_HA_and_RADIUS(dhcp_version: str,
         set of two hook libraries after problems were found in one case where HA
         and leasequery were loaded in a certain order.
     :param config_type: different configurations used in testing
-    :param has_reservation: whether the first client coming in with a request has its lease or pool reserved in RADIUS
+    :param radius_reservation_in_pool: whether there is an existing pool in Kea that contains the
+                                       lease reserved by RADIUS for the first client in this test
     """
 
     # Constants
     leases_count = 50
     starting_mac = '01:02:0c:03:0a:00'
     starting_mac_2 = '02:02:0c:03:0a:00'
-
-    # Start with 10 to avoid RADIUS pools which are below 10.
-    radius.add_usual_reservations()
-    last_octet = 10
-    for mac in [starting_mac, starting_mac_2]:
-        for _ in range(leases_count):
-            last_octet = last_octet + 1
-            mac = increase_mac(mac)
-            radius.add_reservation(mac, [
-                'Framed-IP-Address = "192.168.50.{last_octet}"',
-                'Framed-IPv6-Address = "2001:db8:50::{last_octet}"',
-            ])
 
     # ---- HA server1 ----
     misc.test_setup()
@@ -642,6 +630,17 @@ def test_HA_and_RADIUS(dhcp_version: str,
     srv_control.clear_some_data('all')
 
     # Setup the RADIUS server.
+    # Start with 10 to avoid RADIUS pools which are below 10.
+    radius.add_usual_reservations()
+    last_octet = 10
+    for mac in [starting_mac, starting_mac_2]:
+        for _ in range(leases_count):
+            last_octet = last_octet + 1
+            mac = increase_mac(mac)
+            radius.add_reservation(mac, [
+                f'Framed-IP-Address = "192.168.50.{last_octet}"',
+                f'Framed-IPv6-Address = "2001:db8:50::{last_octet:02x}"',
+            ])
     radius.init_and_start_radius()
 
     # Configure RADIUS in Kea. Server also starts here which is an
@@ -678,7 +677,8 @@ def test_HA_and_RADIUS(dhcp_version: str,
     radius.add_leading_subnet()
 
     # Add pools for the usual HA traffic coming from generate_leases().
-    _add_ha_pools()
+    # Two times the lease count - one for each starting MAC
+    _add_ha_pools(2 * leases_count)
 
     # Start Kea.
     srv_control.build_and_send_config_files()
@@ -691,22 +691,26 @@ def test_HA_and_RADIUS(dhcp_version: str,
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
     # Setup the RADIUS server.
+    # Start with 10 to avoid RADIUS pools which are below 10.
+    radius.add_usual_reservations()
+    last_octet = 10
+    for mac in [starting_mac, starting_mac_2]:
+        for _ in range(leases_count):
+            last_octet = last_octet + 1
+            mac = increase_mac(mac)
+            radius.add_reservation(mac, [
+                f'Framed-IP-Address = "192.168.50.{last_octet}"',
+                f'Framed-IPv6-Address = "2001:db8:50::{last_octet:02x}"',
+            ])
     radius.init_and_start_radius(destination=world.f_cfg.mgmt_address_2)
-
-    # Get the server2-specific variables again.
-    configs = radius.configurations(interface=world.f_cfg.server2_iface)
 
     # Configure RADIUS in Kea. Server also starts here which is an
     # unfortunate side effect, but we'll restart after finishing
     # configuration below.
+    configs = radius.configurations(interface=world.f_cfg.server2_iface)
     setup_server_with_radius(destination=world.f_cfg.mgmt_address_2,
                              interface=world.f_cfg.server2_iface,
                              **configs[config_type])
-
-    # radius.setup_server_with_radius() was used for server2 to generate a
-    # configuration that is identical to server1's config, but the one thing we
-    # don't necessarily need in server2 is RADIUS functionality.
-    srv_control.delete_hooks(['libdhcp_radius.so'])
 
     # Configure the backend.
     srv_control.define_temporary_lease_db_backend(backend)
@@ -737,7 +741,8 @@ def test_HA_and_RADIUS(dhcp_version: str,
     radius.add_leading_subnet()
 
     # Add pools for the usual HA traffic coming from generate_leases().
-    _add_ha_pools()
+    # Two times the lease count - one for each starting MAC
+    _add_ha_pools(2 * leases_count)
 
     # Start Kea.
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
@@ -756,8 +761,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
 
     # Exchange some messages and make sure leases are given.
     set_of_leases = generate_leases(dhcp_version=dhcp_version,
-                                    iaid=1,
-                                    iapd=1,
+                                    iapd=0,
                                     leases_count=leases_count,
                                     mac=starting_mac)
 
@@ -788,8 +792,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
 
     # Exchange some more messages and make sure leases are given.
     set_of_leases_2 = generate_leases(dhcp_version=dhcp_version,
-                                      iaid=1,
-                                      iapd=1,
+                                      iapd=0,
                                       leases_count=leases_count,
                                       mac=starting_mac_2)
 
@@ -803,7 +806,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
 
     # Exchange some messages and make sure leases are given with clients that
     # are configured in RADIUS.
-    radius_leases = radius.send_and_receive(config_type, has_reservation)
+    radius_leases = radius.send_and_receive(config_type, radius_reservation_in_pool, ha_mode)
 
     # Check that both servers have all the leases in the backends.
     for leases in [set_of_leases, set_of_leases_2, radius_leases]:

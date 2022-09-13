@@ -32,6 +32,7 @@ log = logging.getLogger('forge')
 # DHCPv4 option codes indexed by name
 OPTIONS = {
     "subnet-mask": 1,
+    'server-id': 54,
 }
 
 

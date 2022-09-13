@@ -24,11 +24,11 @@ from src.softwaresupport import radius
 @pytest.mark.radius
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('config_type', ['subnet', 'network', 'multiple-subnets'])
-@pytest.mark.parametrize('has_reservation', ['client-has-reservation-in-radius', 'client-has-no-reservation-in-radius'])
+@pytest.mark.parametrize('radius_reservation_in_pool', ['radius-reservaton-in-pool', 'radius-reservaton-outside-pool'])
 def test_radius(dhcp_version: str,
                 backend: str,
                 config_type: str,
-                has_reservation: str):
+                radius_reservation_in_pool: str):
     """
     Check RADIUS functionality on various Kea configurations.
     See radius.send_and_receive() for explanations on what the parametrizations mean.
@@ -36,7 +36,8 @@ def test_radius(dhcp_version: str,
     :param dhcp_version: the DHCP version being tested
     :param backend: the lease database backend type
     :param config_type: different configurations used in testing
-    :param has_reservation: whether the first client coming in with a request has its lease or pool reserved in RADIUS
+    :param radius_reservation_in_pool: whether there is an existing pool in Kea that contains the
+                                       lease reserved by RADIUS for the first client in this test
     """
 
     misc.test_setup()
@@ -55,7 +56,7 @@ def test_radius(dhcp_version: str,
     srv_control.start_srv('DHCP', 'started')
 
     # Check the leases.
-    leases = radius.send_and_receive(config_type, has_reservation)
+    leases = radius.send_and_receive(config_type, radius_reservation_in_pool)
 
     # Check that leases are in the backend.
     srv_msg.check_leases(leases, backend=backend)

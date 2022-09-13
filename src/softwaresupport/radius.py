@@ -269,7 +269,10 @@ def configurations(interface: str = world.f_cfg.server_iface):
     return configs
 
 
-def get_address(mac: str, giaddr: str = None, expected_lease: str = None):
+def get_address(mac: str,
+                giaddr: str = None,
+                expected_lease: str = None,
+                server_id: str = world.f_cfg.srv4_addr):
     """
     Make a full exchange, check that the expected lease is received and,
     finally, return the received leases.
@@ -285,7 +288,8 @@ def get_address(mac: str, giaddr: str = None, expected_lease: str = None):
         address = get_address4(chaddr=mac,
                                client_id=client_id,
                                giaddr=giaddr,
-                               exp_yiaddr=expected_lease)
+                               exp_yiaddr=expected_lease,
+                               server_id=server_id)
         return {
             'address': address,
             'client_id': client_id,
@@ -315,7 +319,9 @@ def init_and_start_radius(destination: str = world.f_cfg.mgmt_address):
     AUTHORIZE_CONTENT = ''
 
 
-def send_and_receive(config_type: str, has_reservation: str):
+def send_and_receive(config_type: str,
+                     radius_reservation_in_pool: str,
+                     ha_mode: str = None):
     """
     Exchange messages and check that the proper leases were returned according
     to Kea's configuration.
@@ -324,15 +330,20 @@ def send_and_receive(config_type: str, has_reservation: str):
         * 'subnet': a classified pool with a single address configured inside a traditional subnet
         * 'network': a classified pool with a single address configured inside a shared network
         * 'multiple-subnets': multiple classified pools in multiple subnets inside a shared network
-    :param has_reservation: whether the first client coming in with a request has its lease or pool reserved in RADIUS
-        * 'client-has-reservation-in-radius': yes
-        * 'client-has-no-reservation-in-radius': no
+    :param radius_reservation_in_pool: whether there is an existing pool in Kea that contains the
+                                       lease reserved by RADIUS for the first client in this test
+        * 'radius-reservaton-in-pool': yes
+        * 'radius-reservaton-outside-pool': no
+    :param ha_mode: HA mode, not strictly-related to RADIUS. Default is None meaning no HA
+        * 'hot-standby'
+        * 'load-balancing'
+        * 'passive-backup'
     :return list of dictionaries of leases containing address, client_id, mac
     """
 
     leases = []
 
-    if has_reservation == 'client-has-reservation-in-radius':
+    if radius_reservation_in_pool == 'radius-reservaton-in-pool':
         # Get a lease that is explicitly configured in RADIUS as
         # Framed-IP-Address that is part of a configured pool in Kea.
         leases.append(get_address(mac='08:00:27:b0:c5:10',
@@ -348,7 +359,7 @@ def send_and_receive(config_type: str, has_reservation: str):
             # so that the rest of the test is the same.
             pass
 
-    elif has_reservation == 'client-has-no-reservation-in-radius':
+    elif radius_reservation_in_pool == 'radius-reservaton-outside-pool':
         # Get a lease that is explicitly configured in RADIUS as
         # Framed-IP-Address that is outside of any configured pool in Kea.
         leases.append(get_address(mac='08:00:27:b0:c1:42',
@@ -366,17 +377,12 @@ def send_and_receive(config_type: str, has_reservation: str):
         silver_ips = {'192.168.50.6' if world.proto == 'v4' else '2001:db8:50::6',
                       '192.168.60.6' if world.proto == 'v4' else '2001:db8:60::6'}
 
-        # Get the lease that is configured explicitly in RADIUS with
-        # Framed-IP-Address.
-        leases.append(get_address(mac='08:00:27:b0:c1:42',
-                                  expected_lease='192.168.52.52' if world.proto == 'v4' else '2001:db8:52::52'))
-
         # ---- Take all addresses from gold pools. ----
         # Skip 192.168.50.5 / 2001:db8:50::5 because it was leased previously.
 
         # Lease the second and last gold address.
         lease = get_address(mac='08:00:27:b0:c5:02')
-        assert lease['address'] in gold_ips
+        assert lease['address'] in gold_ips, lease['address'] + ' not in ' + str(gold_ips)
         gold_ips.remove(lease['address'])
         leases.append(lease)
 
@@ -385,14 +391,17 @@ def send_and_receive(config_type: str, has_reservation: str):
 
         # ---- Take all addresses from silver pools. ----
         # Lease the first silver address.
-        lease = get_address(mac='08:00:27:b0:c6:01')
-        assert lease['address'] in silver_ips
+        if ha_mode is not None and ha_mode == 'load-balancing':
+            lease = get_address(mac='08:00:27:b0:c6:01', server_id=world.f_cfg.srv4_addr_2)
+        else:
+            lease = get_address(mac='08:00:27:b0:c6:01')
+        assert lease['address'] in silver_ips, lease['address'] + ' not in ' + str(silver_ips)
         silver_ips.remove(lease['address'])
         leases.append(lease)
 
         # Lease the second and last silver address.
         lease = get_address(mac='08:00:27:b0:c6:02')
-        assert lease['address'] in silver_ips
+        assert lease['address'] in silver_ips, lease['address'] + ' not in ' + str(silver_ips)
         silver_ips.remove(lease['address'])
         leases.append(lease)
 
@@ -401,8 +410,13 @@ def send_and_receive(config_type: str, has_reservation: str):
 
         # ---- Take all addresses from bronze pools. ----
         # Lease the first and only bronze address.
-        leases.append(get_address(mac='08:00:27:b0:c7:01',
-                                  expected_lease='192.168.50.7' if world.proto == 'v4' else '2001:db8:50::7'))
+        expected_lease='192.168.50.7' if world.proto == 'v4' else '2001:db8:50::7'
+        if ha_mode is not None and ha_mode == 'load-balancing':
+            lease = get_address(mac='08:00:27:b0:c7:01', expected_lease=expected_lease,
+                                server_id=world.f_cfg.srv4_addr_2)
+        else:
+            lease = get_address(mac='08:00:27:b0:c7:01', expected_lease=expected_lease)
+        leases.append(lease)
 
         # No more leases.
         send_message_and_expect_no_more_leases(mac='08:00:27:b0:c7:02')

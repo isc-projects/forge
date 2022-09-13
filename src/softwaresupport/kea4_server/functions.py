@@ -12,7 +12,7 @@ from src.softwaresupport.kea import build_config_files, build_and_send_config_fi
 from src.softwaresupport.kea import clear_all, clear_logs, clear_leases
 from src.softwaresupport.kea import start_srv, stop_srv, restart_srv, reconfigure_srv
 from src.softwaresupport.kea import agent_control_channel, save_logs, save_leases
-from src.softwaresupport.kea import ha_add_parameter_to_hook, add_hooks, add_parameter_to_hook, add_logger
+from src.softwaresupport.kea import ha_add_parameter_to_hook, add_hooks, delete_hooks, add_parameter_to_hook, add_logger
 from src.softwaresupport.kea import open_control_channel_socket, create_new_class, add_test_to_class
 from src.softwaresupport.kea import set_time, add_line_in_global, config_srv_another_subnet
 from src.softwaresupport.kea import prepare_cfg_add_custom_option, add_interface, add_pool_to_subnet

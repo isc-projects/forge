@@ -84,7 +84,7 @@ def send_discover_and_check_offer(
         chaddr=None, client_id=None, giaddr=None, req_opts=None,
         exp_yiaddr=None, exp_client_id=None,
         exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None, exp_option=None, no_exp_option=None,
-        no_exp_boot_file_name=None):
+        no_exp_boot_file_name=None, server_id=world.f_cfg.srv4_addr):
     # send DISCOVER
     misc.test_procedure()
     _send_discover(chaddr=chaddr, client_id=client_id, giaddr=giaddr, req_opts=req_opts)
@@ -95,9 +95,9 @@ def send_discover_and_check_offer(
     if exp_yiaddr is not None:
         assert rcvd_yiaddr == exp_yiaddr
     srv_msg.response_check_include_option(1)
-    srv_msg.response_check_include_option(54)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+    srv_msg.response_check_include_option('server-id')
+    srv_msg.response_check_option_content('server-id', 'value', server_id)
 
     if exp_option:
         for opt in exp_option:
@@ -125,7 +125,8 @@ def send_discover_and_check_offer(
 
 
 def send_request_and_check_ack(
-        chaddr=None, client_id=None, requested_addr=None, ciaddr=None, server_id=None, req_opts=None,
+        chaddr=None, client_id=None, requested_addr=None, ciaddr=None,
+        server_id=world.f_cfg.srv4_addr, req_opts=None,
         exp_lease_time=None, exp_renew_timer=None, exp_rebind_timer=None,
         exp_yiaddr=None, exp_client_id=None,
         exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None,
@@ -161,8 +162,8 @@ def send_request_and_check_ack(
         srv_msg.response_check_content('yiaddr', exp_addr)
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-    srv_msg.response_check_include_option(54)
-    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+    srv_msg.response_check_include_option('server-id')
+    srv_msg.response_check_option_content('server-id', 'value', server_id)
     srv_msg.response_check_include_option(51)
     if exp_lease_time is not None:
         srv_msg.response_check_option_content(51, 'value', exp_lease_time)
@@ -205,21 +206,24 @@ def get_address4(chaddr=None, client_id=None, giaddr=None, req_opts=None,
                  exp_yiaddr=None, exp_lease_time=None, exp_renew_timer=None, exp_rebind_timer=None,
                  exp_client_id=None,
                  exp_next_server=None, exp_server_hostname=None, exp_boot_file_name=None, exp_option=None,
-                 no_exp_option=None, no_exp_boot_file_name=None):
+                 no_exp_option=None, no_exp_boot_file_name=None, server_id=world.f_cfg.srv4_addr):
     # send DISCOVER and check OFFER
     rcvd_yiaddr = send_discover_and_check_offer(
         chaddr=chaddr, client_id=client_id, giaddr=giaddr, req_opts=_to_list(req_opts),
         exp_yiaddr=exp_yiaddr, exp_client_id=exp_client_id,
-        exp_next_server=exp_next_server, exp_server_hostname=exp_server_hostname, exp_boot_file_name=exp_boot_file_name,
+        exp_next_server=exp_next_server, exp_server_hostname=exp_server_hostname,
+        exp_boot_file_name=exp_boot_file_name,
         exp_option=_to_list(exp_option), no_exp_option=_to_list(no_exp_option),
-        no_exp_boot_file_name=no_exp_boot_file_name)
+        no_exp_boot_file_name=no_exp_boot_file_name, server_id=server_id)
 
     # send REQUEST and check ACK
     return send_request_and_check_ack(
-        chaddr=chaddr, client_id=client_id, requested_addr=rcvd_yiaddr, server_id=True, req_opts=_to_list(req_opts),
-        exp_lease_time=exp_lease_time, exp_renew_timer=exp_renew_timer, exp_rebind_timer=exp_rebind_timer,
-        exp_client_id=exp_client_id,
-        exp_next_server=exp_next_server, exp_server_hostname=exp_server_hostname, exp_boot_file_name=exp_boot_file_name,
+        chaddr=chaddr, client_id=client_id, requested_addr=rcvd_yiaddr,
+        server_id=server_id, req_opts=_to_list(req_opts),
+        exp_lease_time=exp_lease_time, exp_renew_timer=exp_renew_timer,
+        exp_rebind_timer=exp_rebind_timer, exp_client_id=exp_client_id,
+        exp_next_server=exp_next_server, exp_server_hostname=exp_server_hostname,
+        exp_boot_file_name=exp_boot_file_name,
         exp_option=_to_list(exp_option), no_exp_option=_to_list(no_exp_option),
         no_exp_boot_file_name=no_exp_boot_file_name)
 
