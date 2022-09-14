@@ -67,13 +67,15 @@ PASSIVE_BACKUP = {
 }
 
 
-def send_heartbeat(dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_address, exp_failed=False):
+def send_heartbeat(dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_address, exp_failed=False,
+                   channel='http', verify=None, cert=None):
     return send_command(cmd={"command": "ha-heartbeat"}, dhcp_version=dhcp_version, exp_result=exp_result,
-                        dest=dest, exp_failed=exp_failed)
+                        dest=dest, exp_failed=exp_failed, channel=channel, verify=verify, cert=cert)
 
 
 def send_command(cmd: dict = None, dhcp_version: str = 'v6', exp_result: int = 0,
-                 dest: str = world.f_cfg.mgmt_address, exp_failed: bool = False):
+                 dest: str = world.f_cfg.mgmt_address, exp_failed: bool = False,
+                 channel: str = 'http', verify: bool = None, cert: tuple = None):
     """
     send command to CA with http
     :param cmd: command, if not set ha-heartbeat will be send
@@ -81,19 +83,21 @@ def send_command(cmd: dict = None, dhcp_version: str = 'v6', exp_result: int = 0
     :param exp_result: expected result
     :param dest: address of remote server
     :param exp_failed: do we expect command to fail
+    :param channel: definition which communication channel should be used
+    :param verify: boolean, verification of certificate
+    :param cert: tuple, contain client cert and key
     :return: json response
     """
     service = 'dhcp6' if dhcp_version == 'v6' else 'dhcp4'
     assert cmd is not None, "We can't send empty command"
     if "service" not in cmd:
         cmd.update({"service": [service]})
-    result = srv_msg.send_ctrl_cmd_via_http(command=cmd, address=dest, exp_result=exp_result, exp_failed=exp_failed)
-    if result is None:
-        return None
-    return result[0]
+    return srv_msg.send_ctrl_cmd(cmd, address=dest, exp_result=exp_result, exp_failed=exp_failed,
+                                 channel=channel, verify=verify, cert=cert)
 
 
-def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1, dhcp_version='v6'):
+def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1, dhcp_version='v6',
+                        channel='http', verify=None, cert=None):
     """
     Send ha-heartbeat messages to server as long as we get expected state, HA tend to be slow so it's
     way of active sleep
@@ -102,12 +106,18 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1,
     :param retry: number of retries before we declare defeat
     :param sleep: sleep between retries
     :param dhcp_version: version of dhcp
+    :param channel: definition which communication channel should be used
+    :param verify: boolean, verification of certificate
+    :param cert: tuple, contain client cert and key
+
     :return: last response
     """
     for _ in range(retry):
         srv_msg.forge_sleep(sleep, 'seconds')
-        resp = send_heartbeat(dest=dest, dhcp_version=dhcp_version)
-        if resp["arguments"]["state"] == state:
+        resp = send_heartbeat(dest=dest, dhcp_version=dhcp_version, channel=channel, verify=verify, cert=cert)
+        if resp["arguments"]["state"] == "terminated":
+            assert False, "State reached terminated! Tests will fail"
+        elif resp["arguments"]["state"] == state:
             return resp
     assert False, "After %d retries HA did NOT reach '%s' state" % (retry, state)
     return {}  # let's keep pylint error quiet

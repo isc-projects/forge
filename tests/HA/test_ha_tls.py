@@ -16,7 +16,7 @@ from src import srv_msg
 
 from src.forge_cfg import world
 from src.softwaresupport.multi_server_functions import fabric_send_file
-from .steps import get_status_HA
+from .steps import get_status_HA, wait_until_ha_state
 
 HA_CONFIG = {
     "mode": "hot-standby",
@@ -154,7 +154,9 @@ def test_ha_tls_with_ca(dhcp_version, backend):
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     # Wait for HA pair to communicate
-    srv_msg.forge_sleep(3, 'seconds')
+    wait_until_ha_state('hot-standby', dhcp_version=dhcp_version, channel='https', verify=ca_cert)
+    wait_until_ha_state('hot-standby', dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2, channel='https',
+                        verify=ca_cert)
 
     # Check if desired status is met.
     get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
@@ -280,7 +282,9 @@ def test_ha_tls(dhcp_version, backend):
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     # Wait for HA pair to communicate
-    srv_msg.forge_sleep(3, 'seconds')
+    wait_until_ha_state('hot-standby', dhcp_version=dhcp_version, channel='https', verify=ca_cert)
+    wait_until_ha_state('hot-standby', dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2, channel='https',
+                        verify=ca_cert)
 
     # Check if desired status is met.
     get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',

@@ -674,7 +674,8 @@ def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=Fa
         else:
             response = response[0] if response else response
     elif channel == 'https':
-        response = send_ctrl_cmd_via_http(cmd, address, 8000, exp_result=exp_result, exp_failed=exp_failed, https=True, verify=verify, cert=cert, headers=headers)
+        response = send_ctrl_cmd_via_http(cmd, address, 8000, exp_result=exp_result, exp_failed=exp_failed, https=True,
+                                          verify=verify, cert=cert, headers=headers)
         # in https connection to control agent results is returned via dict not list as everywhere else,
         # so there is small trick for temp testing
         if isinstance(response, dict):
