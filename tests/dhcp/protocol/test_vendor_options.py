@@ -844,3 +844,25 @@ def test_v4_option_125_encapsulated():
     # Check if option 43 contains sub-option 125 with value "1ABCDE"
     # (HEX(7D) = 125, 06 - length, HEX(314142434445)="1ABCDE")
     srv_msg.response_check_option_content(43, 'value', 'HEX:7D06314142434445')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.50')
+    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:11:22')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(43)
+    # Include vendor-class-identifier to trigger class selection
+    srv_msg.client_does_include_with_value('vendor_class_id', 'ABC')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(43)
+    # Check if option 43 contains sub-option 125 with value "1ABCDE"
+    # (HEX(7D) = 125, 06 - length, HEX(314142434445)="1ABCDE")
+    srv_msg.response_check_option_content(43, 'value', 'HEX:7D06314142434445')
+
+    srv_msg.check_leases({'address': '192.168.50.50'})
