@@ -6,6 +6,7 @@
 
 # pylint: disable=invalid-name,line-too-long
 
+import datetime
 import re
 import os
 import glob
@@ -1430,7 +1431,7 @@ def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_
         v4_running, v6_running = _check_kea_status(destination_address)
 
         if v4_running and world.proto == 'v4' or v6_running and world.proto == 'v6':
-            result = _stop_kea_with_keactrl(destination_address)  # TODO: check result
+            _stop_kea_with_keactrl(destination_address)
 
         result = _start_kea_with_keactrl(destination_address, specific_process=process)
         _check_kea_process_result(should_succeed, result, 'start')
@@ -1491,7 +1492,23 @@ def _start_kea_with_keactrl(destination_host, specific_process=""):
 
 def _stop_kea_with_keactrl(destination_host):
     stop_cmd = os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' stop'
-    return fabric_sudo_command(stop_cmd, destination_host=destination_host)
+    started_at = datetime.datetime.now()
+    should_finish_by = started_at + datetime.timedelta(seconds=2)
+    fabric_sudo_command(stop_cmd, destination_host=destination_host)
+
+    while True:
+        kea_dhcp4, kea_dhcp6 = _check_kea_status()
+        if not kea_dhcp4 and not kea_dhcp6:
+            break
+
+        # Assert that the timeout hasn't passed yet.
+        assert datetime.datetime.now() < should_finish_by, \
+            'Timeout 2s exceeded while waiting for Kea to stop after "keactrl stop".\n' \
+            'kea-dhcp4: ' + ('active' if kea_dhcp4 else 'inactive') + '\n' \
+            'kea-dhcp6: ' + ('active' if kea_dhcp6 else 'inactive')
+
+        # Sleep a bit to avoid busy waiting.
+        srv_msg.forge_sleep(100, 'milliseconds')
 
 
 def _reload_kea_with_keactrl(destination_host):
@@ -1516,7 +1533,7 @@ def reconfigure_srv(should_succeed: bool = True,
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method == 'make':
-        result = _stop_kea_with_keactrl(destination_address)  # TODO: check result
+        _stop_kea_with_keactrl(destination_address)
 
         # save log (if required) and then remove it so start can work correctly
         # (start checks in the log if there is expected pattern)
