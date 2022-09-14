@@ -212,9 +212,9 @@ def test_ha_tls(dhcp_version, backend):
 
     # Configure HA hook to use TLS.
     srv_control.update_ha_hook_parameter(HA_CONFIG)
-    srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 500,
-                                          "max-response-delay": 2000,
+    srv_control.update_ha_hook_parameter({"heartbeat-delay": 2000,
+                                          "max-ack-delay": 1000,
+                                          "max-response-delay": 4000,
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server1",
                                           "trust-anchor": certificate.ca_cert,
@@ -252,9 +252,9 @@ def test_ha_tls(dhcp_version, backend):
 
     # Configure HA hook to use TLS.
     srv_control.update_ha_hook_parameter(HA_CONFIG)
-    srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 500,
-                                          "max-response-delay": 2000,
+    srv_control.update_ha_hook_parameter({"heartbeat-delay": 2000,
+                                          "max-ack-delay": 1000,
+                                          "max-response-delay": 4000,
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server2",
                                           "trust-anchor": certificate.ca_cert,
@@ -285,6 +285,9 @@ def test_ha_tls(dhcp_version, backend):
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version, channel='https', verify=ca_cert)
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2, channel='https',
                         verify=ca_cert)
+
+    # let's allow to one more exchange between servers
+    srv_msg.forge_sleep(3)
 
     # Check if desired status is met.
     get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
