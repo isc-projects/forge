@@ -969,6 +969,34 @@ def add_parameter_to_hook(hook_number_or_name, parameter_name: str, parameter_va
     world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"][parameter_name] = parameter_value
 
 
+def delete_parameter_from_hook(hook_number_or_name, parameter_name: str):
+    """
+    Determine the hook library with number {hook_number_or_name} if it's an int,
+    or that contains pattern {hook_number_or_name} if it's a str.
+    Remove {parameter_name} from the hook library's parameters.
+
+    :param hook_number_or_name: hook index starting with 1 or pattern contained in the library name
+    :param parameter_name: the parameter's JSON key
+    """
+
+    # Get the hook number.
+    hook_no = None
+    if isinstance(hook_number_or_name, int):
+        hook_no = hook_number_or_name - 1
+    if isinstance(hook_number_or_name, str):
+        for i, hook_library in enumerate(world.dhcp_cfg['hooks-libraries']):
+            if re.search(hook_number_or_name, hook_library['library']):
+                hook_no = i
+    if hook_no is None:
+        return
+
+    if 'parameters' not in world.dhcp_cfg['hooks-libraries'][hook_no].keys():
+        return
+
+    if parameter_name in world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"]:
+        del(world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"][parameter_name])
+
+
 def ha_add_parameter_to_hook(parameter_name, parameter_value):
     # First let's find HA hook in the list:
     # btw.. I wonder why "high-availability" is list of dictionaries not dictionary
