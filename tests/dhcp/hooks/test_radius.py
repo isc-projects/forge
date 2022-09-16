@@ -52,6 +52,14 @@ def test_radius(dhcp_version: str,
     srv_control.define_temporary_lease_db_backend(backend)
     if dhcp_version == 'v4_bootp':
         srv_control.add_hooks('libdhcp_bootp.so')
+    if radius_reservation_in_pool == 'radius-reservaton-in-pool':
+        # We can afford the more complex case of subnet reselection if the reservation is in pool.
+        srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-address', True)
+        srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-pool', True)
+    else:
+        # The only way a test case can pass if the reservation is out of pool is with reselect.
+        srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-address', False)
+        srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-pool', False)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -206,6 +214,10 @@ def test_radius_giaddr(dhcp_version: str,
                         del k['client-class']
     if reselect == 'reselect':
         srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-address', True)
+        srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-pool', True)
+    else:
+        srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-address', False)
+        srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-pool', False)
 
     if dhcp_version == 'v4_bootp':
         srv_control.add_hooks('libdhcp_bootp.so')
