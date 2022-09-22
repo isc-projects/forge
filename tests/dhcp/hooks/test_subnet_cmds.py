@@ -612,6 +612,167 @@ def test_hook_v4_subnet_grow_cb_command(channel):
     srv_msg.DORA('192.168.50.2', chaddr='ff:01:02:03:ff:11')
 
 
+@pytest.mark.v4
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.subnet_cmds
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_hook_v4_subnet_delta_add(backend):
+    """
+    Test subnet4-delta-add command by adding a subnet and then modifying and adding options.
+    Forge makes DORA exchanges to verify returned parameters.
+    """
+    misc.test_setup()
+    if backend != 'memfile':
+        setup_server_for_config_backend_cmds(backend_type=backend)
+    srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
+    srv_control.agent_control_channel()
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_subnet_cmds.so')
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    cmd = {
+        "arguments":
+            {"subnet4": [
+                {"subnet": "192.168.50.0/24",
+                 "interface": "$(SERVER_IFACE)",
+                 "id": 234,
+                 "max-valid-lifetime": 4000,
+                 "min-valid-lifetime": 1000,
+                 "pools": [
+                     {
+                         "pool": "192.168.50.1-192.168.50.10"
+                     }
+                 ],
+                 "option-data": [
+                     {
+                         "csv-format": True,
+                         "code": 6,
+                         "data": "19.19.19.1,10.10.10.1",
+                         "name": "domain-name-servers",
+                         "space": "dhcp4"}
+                 ]
+                 }
+            ]
+            },
+        "command": "subnet4-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    assert response == {
+        "arguments": {
+            "subnets": [
+                {
+                    "id": 234,
+                    "subnet": "192.168.50.0/24"
+                }
+            ]
+        },
+        "result": 0,
+        "text": "IPv4 subnet added"
+    }
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '19.19.19.1')
+    srv_msg.response_check_option_content(6, 'value', '10.10.10.1')
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '4000')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(6)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '19.19.19.1')
+    srv_msg.response_check_option_content(6, 'value', '10.10.10.1')
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '4000')
+
+    cmd = {
+        "arguments":
+            {"subnet4": [
+                {"subnet": "192.168.50.0/24",
+                 "id": 234,
+                 "valid-lifetime": 2000,
+                 "option-data": [
+                     {
+                         "csv-format": True,
+                         "code": 6,
+                         "data": "21.21.21.1,20.20.20.1",
+                         "name": "domain-name-servers",
+                         "space": "dhcp4"}
+                 ]
+                 }
+            ]
+            },
+        "command": "subnet4-delta-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    assert response == {
+        "arguments": {
+            "subnets": [
+                {
+                    "id": 234,
+                    "subnet": "192.168.50.0/24"
+                }
+            ]
+        },
+        "result": 0,
+        "text": "IPv4 subnet updated"
+    }
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:05')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '21.21.21.1')
+    srv_msg.response_check_option_content(6, 'value', '20.20.20.1')
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '2000')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:05')
+    srv_msg.client_requests_option(6)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '21.21.21.1')
+    srv_msg.response_check_option_content(6, 'value', '20.20.20.1')
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '2000')
+
+
 @pytest.mark.v6
 @pytest.mark.controlchannel
 @pytest.mark.hook
