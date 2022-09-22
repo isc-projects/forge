@@ -1593,3 +1593,325 @@ def test_hook_v6_subnet_grow_cb_command(channel):
     srv_msg.SARR('2001:db8:1::1', exchange='renew-only')
 
     srv_msg.SARR('2001:db8:1::2', duid='00:03:00:01:f6:f5:f4:f3:f2:11')
+
+
+@pytest.mark.v6
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.subnet_cmds
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_hook_v6_subnet_delta_add(backend):
+    """
+    Test subnet6-delta-add command by adding a subnet and then modifying and adding options.
+    Forge makes SARR exchanges to verify returned parameters.
+    """
+    misc.test_setup()
+    srv_control.agent_control_channel()
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_subnet_cmds.so')
+
+    if backend == 'memfile':
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
+    else:
+        setup_server_for_config_backend_cmds(backend_type=backend, **world.dhcp_cfg)
+
+    # Add Subnet
+    cmd = {
+        "arguments":
+            {"subnet6": [
+                {"subnet": "2001:db8:1::/64",
+                 "interface": "$(SERVER_IFACE)",
+                 "id": 234,
+                 "valid-lifetime": 4000,
+                 "max-valid-lifetime": 4000,
+                 "min-valid-lifetime": 1000,
+                 "pools": [
+                     {
+                         "pool": "2001:db8:1::1-2001:db8:1::10"
+                     }
+                 ]
+                 }
+            ]
+            },
+        "command": "subnet6-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    assert response == {
+        "arguments": {
+            "subnets": [
+                {
+                    "id": 234,
+                    "subnet": "2001:db8:1::/64"
+                }
+            ]
+        },
+        "result": 0,
+        "text": "IPv6 subnet added"
+    }
+
+    # Verify that subnet is added correctly
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 4000)
+    srv_msg.response_check_include_option(23, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(23, expect_include=False)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 4000)
+
+    # Add DNS address and modify valid lifetime
+    cmd = {
+        "arguments":
+            {"subnet6": [
+                {"subnet": "2001:db8:1::/64",
+                 "id": 234,
+                 "valid-lifetime": 2000,
+                 "option-data": [
+                     {
+                         "csv-format": True,
+                         "code": 23,
+                         "data": "2001:4860::1,2001:4860::2",
+                         "name": "dns-servers",
+                         "space": "dhcp6"}
+                 ]
+                 }
+            ]
+            },
+        "command": "subnet6-delta-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    assert response == {
+        "arguments": {
+            "subnets": [
+                {
+                    "id": 234,
+                    "subnet": "2001:db8:1::/64"
+                }
+            ]
+        },
+        "result": 0,
+        "text": "IPv6 subnet updated"
+    }
+
+    # Verify subnet was modified correctly
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:05')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 2000)
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:4860::1,2001:4860::2')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:05')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 2000)
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:4860::1,2001:4860::2')
+
+
+@pytest.mark.v6
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.subnet_cmds
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_hook_v6_subnet_delta_del(backend):
+    """
+    Test subnet6-delta-del command by adding a subnet and then modifying and deleting options.
+    Forge makes SARR exchanges to verify returned parameters.
+    """
+    misc.test_setup()
+    srv_control.agent_control_channel()
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_subnet_cmds.so')
+
+    if backend == 'memfile':
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
+    else:
+        world.dhcp_cfg["valid-lifetime"] = 4000
+        setup_server_for_config_backend_cmds(backend_type=backend, **world.dhcp_cfg)
+
+    # Add Subnet
+    cmd = {
+        "arguments":
+            {"subnet6": [
+                {"subnet": "2001:db8:1::/64",
+                 "interface": "$(SERVER_IFACE)",
+                 "id": 234,
+                 "valid-lifetime": 2000,
+                 "max-valid-lifetime": 4000,
+                 "min-valid-lifetime": 1000,
+                 "pools": [
+                     {
+                         "pool": "2001:db8:1::1-2001:db8:1::10"
+                     }
+                 ],
+                 "option-data": [
+                     {
+                         "csv-format": True,
+                         "code": 23,
+                         "data": "2001:4860::1,2001:4860::2",
+                         "name": "dns-servers",
+                         "space": "dhcp6"}
+                 ]
+                 }
+            ]
+            },
+        "command": "subnet6-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    assert response == {
+        "arguments": {
+            "subnets": [
+                {
+                    "id": 234,
+                    "subnet": "2001:db8:1::/64"
+                }
+            ]
+        },
+        "result": 0,
+        "text": "IPv6 subnet added"
+    }
+
+    # Verify that subnet is added correctly
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 2000)
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:4860::1,2001:4860::2')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 2000)
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:4860::1,2001:4860::2')
+
+    # Add DNS address and modify valid lifetime
+    cmd = {
+        "arguments":
+            {"subnet6": [
+                {"subnet": "2001:db8:1::/64",
+                 "id": 234,
+                 "valid-lifetime": 2000,
+                 "option-data": [
+                     {
+                         "code": 23
+                     }
+                 ]
+                 }
+            ]
+            },
+        "command": "subnet6-delta-del"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    assert response == {
+        "arguments": {
+            "subnets": [
+                {
+                    "id": 234,
+                    "subnet": "2001:db8:1::/64"
+                }
+            ]
+        },
+        "result": 0,
+        "text": "IPv6 subnet updated"
+    }
+
+    # Verify subnet was modified correctly
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:05')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 4000)
+    srv_msg.response_check_include_option(23, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:05')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 4000)
+    srv_msg.response_check_include_option(23, expect_include=False)
