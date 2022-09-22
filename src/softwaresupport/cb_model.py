@@ -757,6 +757,10 @@ def setup_server_for_config_backend_cmds(**kwargs):
         db["config-control"]["config-databases"][0]["type"] = "mysql"
         default_cfg["hooks-libraries"].append({"library": world.f_cfg.hooks_join("libdhcp_mysql_cb.so")})
 
+    if "hooks-libraries" in kwargs:
+        default_cfg["hooks-libraries"] += kwargs["hooks-libraries"]
+        del kwargs["hooks-libraries"]
+
     default_cfg.update(db)
     init_cfg = _merge_configs(default_cfg, kwargs)
     result = setup_server(**init_cfg)

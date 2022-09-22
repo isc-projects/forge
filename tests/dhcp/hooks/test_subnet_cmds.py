@@ -7,6 +7,7 @@ import pytest
 from src import srv_control
 from src import srv_msg
 from src import misc
+from src.forge_cfg import world
 
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
@@ -623,15 +624,15 @@ def test_hook_v4_subnet_delta_add(backend):
     Forge makes DORA exchanges to verify returned parameters.
     """
     misc.test_setup()
-    if backend != 'memfile':
-        setup_server_for_config_backend_cmds(backend_type=backend)
-    srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.agent_control_channel()
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.build_and_send_config_files()
 
-    srv_control.start_srv('DHCP', 'started')
+    if backend == 'memfile':
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
+    else:
+        setup_server_for_config_backend_cmds(backend_type=backend, **world.dhcp_cfg)
 
     cmd = {
         "arguments":
@@ -639,6 +640,7 @@ def test_hook_v4_subnet_delta_add(backend):
                 {"subnet": "192.168.50.0/24",
                  "interface": "$(SERVER_IFACE)",
                  "id": 234,
+                 "valid-lifetime": 4000,
                  "max-valid-lifetime": 4000,
                  "min-valid-lifetime": 1000,
                  "pools": [
