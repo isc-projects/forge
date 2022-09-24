@@ -865,7 +865,7 @@ def test_hook_v4_subnet_delta_del(backend):
     srv_msg.response_check_include_option(51)
     srv_msg.response_check_option_content(51, 'value', '3000')
 
-    # Add DNS address and modify valid lifetime
+    # Remove DNS option and valid-lifetime
     cmd = {
         "arguments":
             {"subnet4": [
