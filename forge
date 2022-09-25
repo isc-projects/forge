@@ -774,7 +774,8 @@ def _install_kea_native_on_server(args, server_idx):
 
         # prepare packages list with versions
         # rather than remember to add new pkg to the list here, just install all
-        pkgs = f"isc-kea-*={args.version} python3-isc-kea-connector={args.version}"
+        pkgs = f"isc-kea={args.version} isc-kea-hooks={args.version} " \
+               f"isc-kea-premium-*={args.version} python3-isc-kea-connector={args.version}"
 
         # install packages
         cmd = cmd_tpl % 'sudo apt install -y -o Dpkg::Options::="--force-confnew" %s' % pkgs
