@@ -17,7 +17,7 @@ from src import srv_control
 from src.forge_cfg import world
 
 
-def _get_address_v4_fqdn(address, chaddr, fqdn, expected_fqdn=None):
+def _get_address_v4_fqdn(address, chaddr, fqdn, expected_fqdn=None, flag='S'):
     expected_fqdn = fqdn if expected_fqdn is None else expected_fqdn
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', chaddr)
@@ -33,7 +33,7 @@ def _get_address_v4_fqdn(address, chaddr, fqdn, expected_fqdn=None):
     srv_msg.client_does_include_with_value('requested_addr', address)
     if fqdn is not None:
         srv_msg.client_sets_value('Client', 'FQDN_domain_name', fqdn)
-        srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+        srv_msg.client_sets_value('Client', 'FQDN_flags', flag)
         srv_msg.client_does_include('Client', 'fqdn')
     srv_msg.client_send_msg('REQUEST')
 
@@ -117,6 +117,22 @@ def _check_fqdn_record(fqdn, address='', expect='notempty'):
         srv_msg.dns_option('ANSWER')
         srv_msg.dns_option_content('ANSWER', 'rdata', address)
         srv_msg.dns_option_content('ANSWER', 'rrname', fqdn)
+
+
+def _check_reverse_record(reverse='', fqdn='aa.four.example.com.', expect_dns_record=True):
+    misc.test_procedure()
+    srv_msg.dns_question_record(reverse, 'PTR', 'IN')
+    srv_msg.client_send_dns_query()
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_query('MUST')
+    if expect_dns_record:
+        srv_msg.dns_option('ANSWER')
+        if fqdn != 'empty':
+            srv_msg.dns_option_content('ANSWER', 'rdata', fqdn)
+        srv_msg.dns_option_content('ANSWER', 'rrname', reverse)
+    else:
+        srv_msg.dns_option('ANSWER', expect_include=False)
 
 
 def _check_fqdn_record_v6(fqdn, address='', expect='notempty'):
@@ -548,3 +564,50 @@ def test_v6_ddns_tuning_skip(backend):
     # Check if lease has proper fqdn/hostname in backend
     srv_msg.check_leases({'hostname': fqdn1, 'address': '2001:db8:1::1'}, backend)
     srv_msg.check_leases({'hostname': fqdn2, 'address': '2001:db8:1::2'}, backend)
+
+
+@pytest.mark.v4
+@pytest.mark.ddns
+def test_ddns_tuning_based_on_fqdn():
+    # Scenario is that there are two types of clients:
+    #   one is sending just hostname (option code 12) which should be used for dns update
+    #   second type is misbehaving microsoft client, which sends both option 12 and
+    #   option 81, but without dot at the end of fqdn, kea treat this as partial fqdn adds
+    #   suffix and made an update. But those clients in reality are sending full domain name
+    #   and adding suffix is not behaviour we want here. Kea actually is checking if suffix is added
+    #   into hostname/fqdn already, but we want any suffix to be accepted, Kea should 100% trust the client.
+
+    # Kea should use option 12 if option 81 is not send, and should treat option 81 as full domain name
+    # if it's included.
+
+    misc.test_setup()
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_options('qualifying-suffix', 'four.example.com')
+    srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
+    srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
+    srv_control.use_dns_set_number(20)
+    srv_control.start_srv('DNS', 'started')
+
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
+    srv_control.add_hooks('libdhcp_ddns_tuning.so')
+    h_param = {"hostname-expr": "ifelse(option[81].exists,substring(option[81].hex,3, 100)+'.',option[12].hex)"}
+    world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    _get_address_v4_fqdn('192.168.50.1', chaddr='ff:01:02:03:ff:05', fqdn='something.test.com',
+                         expected_fqdn='something.test.com.', flag='')
+
+    # forward should be empty!
+    _check_fqdn_record("something.test.com", expect='empty')
+    # reverse should be updated, with fqdn send by client - without changes!
+    _check_reverse_record(reverse='1.50.168.192.in-addr.arpa.', fqdn="something.test.com.")
+
+    _get_address_v4_hostname('192.168.50.2', chaddr='ff:01:02:03:ff:04', hostname='myuniquehostname',
+                             expected_hostname="myuniquehostname.four.example.com")
+
+    # both forward and reverse should be updated with hostsname sent by client + configured suffix
+    _check_fqdn_record("myuniquehostname.four.example.com.", address="192.168.50.2")
+    _check_reverse_record(reverse='2.50.168.192.in-addr.arpa.', fqdn="myuniquehostname.four.example.com.")
