@@ -17,8 +17,9 @@ from src import srv_control
 from src.forge_cfg import world
 
 
-def _get_address_v4_fqdn(address, chaddr, fqdn, expected_fqdn=None, flag='S'):
-    expected_fqdn = fqdn if expected_fqdn is None else expected_fqdn
+def _get_address_v4(address, chaddr, hostname=None, expected_hostname=None,
+                    fqdn=None, expected_fqdn=None, flag='S'):
+    # expected_hostname = hostname if expected_hostname is None else expected_hostname
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', chaddr)
     srv_msg.client_send_msg('DISCOVER')
@@ -31,6 +32,10 @@ def _get_address_v4_fqdn(address, chaddr, fqdn, expected_fqdn=None, flag='S'):
     srv_msg.client_sets_value('Client', 'chaddr', chaddr)
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', address)
+
+    if hostname is not None:
+        srv_msg.client_does_include_with_value('hostname', hostname)
+
     if fqdn is not None:
         srv_msg.client_sets_value('Client', 'FQDN_domain_name', fqdn)
         srv_msg.client_sets_value('Client', 'FQDN_flags', flag)
@@ -40,35 +45,16 @@ def _get_address_v4_fqdn(address, chaddr, fqdn, expected_fqdn=None, flag='S'):
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', address)
+
+    if expected_hostname not in [None, 'not_included']:
+        srv_msg.response_check_include_option(12)
+        srv_msg.response_check_option_content(12, 'hostname', expected_hostname)
+    elif expected_hostname == 'not_included':
+        srv_msg.response_check_include_option(12, expect_include=False)
+
     if fqdn is not None:
         srv_msg.response_check_include_option(81)
         srv_msg.response_check_option_content(81, 'fqdn', expected_fqdn)
-
-
-def _get_address_v4_hostname(address, chaddr, hostname, expected_hostname=None):
-    expected_hostname = hostname if expected_hostname is None else expected_hostname
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', chaddr)
-    srv_msg.client_send_msg('DISCOVER')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.response_check_content('yiaddr', address)
-
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', chaddr)
-    srv_msg.client_copy_option('server_id')
-    srv_msg.client_does_include_with_value('requested_addr', address)
-    if hostname is not None:
-        srv_msg.client_does_include_with_value('hostname', hostname)
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ACK')
-    srv_msg.response_check_content('yiaddr', address)
-    if hostname is not None:
-        srv_msg.response_check_include_option(12)
-        srv_msg.response_check_option_content(12, 'hostname', expected_hostname)
 
 
 def _get_address_v6(duid, fqdn, expected_fqdn=None):
@@ -194,12 +180,10 @@ def test_v4_ddns_tuning_basic(backend, hostname_type, option):
         fqdn = 'test.com.'
     # Acquire lease
     if option == 'fqdn':
-        _get_address_v4_fqdn('192.168.50.1', chaddr='ff:01:02:03:ff:04', fqdn='test.com',
-                             expected_fqdn=fqdn)
+        _get_address_v4('192.168.50.1', chaddr='ff:01:02:03:ff:04', fqdn='test.com', expected_fqdn=fqdn)
     elif option == 'hostname':
         # remove trailing dot from fqdn for hostname
-        _get_address_v4_hostname('192.168.50.1', chaddr='ff:01:02:03:ff:04', hostname='test.com',
-                                 expected_hostname=fqdn[:-1])
+        _get_address_v4('192.168.50.1', chaddr='ff:01:02:03:ff:04', hostname='test.com', expected_hostname=fqdn[:-1])
     # get lease details from Kea using Control Agent
     cmd = {"command": "lease4-get-all"}
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
@@ -325,12 +309,11 @@ def test_v4_ddns_tuning_subnets(backend, hostname_type, option):
             fqdn = f'test{i}.com.'
         # Acquire lease
         if option == 'fqdn':
-            _get_address_v4_fqdn(f'192.168.5{i}.10', chaddr=f'ff:01:02:03:ff:0{i}', fqdn=f'test{i}.com',
-                                 expected_fqdn=fqdn)
+            _get_address_v4(f'192.168.5{i}.10', chaddr=f'ff:01:02:03:ff:0{i}', fqdn=f'test{i}.com', expected_fqdn=fqdn)
         elif option == 'hostname':
             # remove trailing dot from fqdn for hostname
-            _get_address_v4_hostname(f'192.168.5{i}.10', chaddr=f'ff:01:02:03:ff:0{i}', hostname=f'test{i}.com',
-                                     expected_hostname=fqdn[:-1])
+            _get_address_v4(f'192.168.5{i}.10', chaddr=f'ff:01:02:03:ff:0{i}', hostname=f'test{i}.com',
+                            expected_hostname=fqdn[:-1])
         cmd = {"command": "lease4-get",
                "arguments": {"ip-address": f'192.168.5{i}.10'}}
         # get lease details from Kea using Control Agent
@@ -463,15 +446,11 @@ def test_v4_ddns_tuning_skip(backend, option):
 
     # Acquire leases
     if option == 'fqdn':
-        _get_address_v4_fqdn('192.168.50.1', chaddr='ff:01:02:03:ff:04', fqdn='test.com',
-                             expected_fqdn=fqdn1)
-        _get_address_v4_fqdn('192.168.50.2', chaddr='ff:01:02:03:ff:05', fqdn='test.com',
-                             expected_fqdn=fqdn2)
+        _get_address_v4('192.168.50.1', chaddr='ff:01:02:03:ff:04', fqdn='test.com', expected_fqdn=fqdn1)
+        _get_address_v4('192.168.50.2', chaddr='ff:01:02:03:ff:05', fqdn='test.com', expected_fqdn=fqdn2)
     elif option == 'hostname':
-        _get_address_v4_hostname('192.168.50.1', chaddr='ff:01:02:03:ff:04', hostname='test.com',
-                                 expected_hostname=fqdn1)
-        _get_address_v4_hostname('192.168.50.2', chaddr='ff:01:02:03:ff:05', hostname='test.com',
-                                 expected_hostname=fqdn2)
+        _get_address_v4('192.168.50.1', chaddr='ff:01:02:03:ff:04', hostname='test.com', expected_hostname=fqdn1)
+        _get_address_v4('192.168.50.2', chaddr='ff:01:02:03:ff:05', hostname='test.com', expected_hostname=fqdn2)
 
     # Check for dns records in ddns server
     _check_fqdn_record("host-ff-01-02-03-ff-04.four.example.com.", address="192.168.50.1")
@@ -580,6 +559,8 @@ def test_ddns_tuning_based_on_fqdn():
     # Kea should use option 12 if option 81 is not send, and should treat option 81 as full domain name
     # if it's included.
 
+    # 3rd step added - is to use client that sends both hostname and fqdn, to make sure hostname is ignored
+
     misc.test_setup()
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
@@ -589,7 +570,7 @@ def test_ddns_tuning_based_on_fqdn():
     srv_control.use_dns_set_number(20)
     srv_control.start_srv('DNS', 'started')
 
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.3')
     srv_control.add_hooks('libdhcp_ddns_tuning.so')
     h_param = {"hostname-expr": "ifelse(option[81].exists,substring(option[81].hex,3, 100)+'.',option[12].hex)"}
     world.dhcp_cfg["hooks-libraries"][0]["parameters"] = h_param
@@ -597,17 +578,26 @@ def test_ddns_tuning_based_on_fqdn():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _get_address_v4_fqdn('192.168.50.1', chaddr='ff:01:02:03:ff:05', fqdn='something.test.com',
-                         expected_fqdn='something.test.com.', flag='')
+    _get_address_v4('192.168.50.1', chaddr='ff:01:02:03:ff:05', fqdn='something.test.com',
+                    expected_fqdn='something.test.com.', flag='')
 
     # forward should be empty!
     _check_fqdn_record("something.test.com", expect='empty')
     # reverse should be updated, with fqdn send by client - without changes!
     _check_reverse_record(reverse='1.50.168.192.in-addr.arpa.', fqdn="something.test.com.")
 
-    _get_address_v4_hostname('192.168.50.2', chaddr='ff:01:02:03:ff:04', hostname='myuniquehostname',
-                             expected_hostname="myuniquehostname.four.example.com")
+    _get_address_v4('192.168.50.2', chaddr='ff:01:02:03:ff:04', hostname='myuniquehostname',
+                    expected_hostname="myuniquehostname.four.example.com")
 
     # both forward and reverse should be updated with hostsname sent by client + configured suffix
     _check_fqdn_record("myuniquehostname.four.example.com.", address="192.168.50.2")
     _check_reverse_record(reverse='2.50.168.192.in-addr.arpa.', fqdn="myuniquehostname.four.example.com.")
+
+    # client will send both option 12 and 81, 81 will be edited, 12 discarded
+    # and again only reverse update done
+    _get_address_v4('192.168.50.3', chaddr='ff:01:02:03:ff:06',
+                    hostname="somethingabc", expected_hostname='not_included',
+                    fqdn='something2.test.com', flag='', expected_fqdn='something2.test.com.')
+
+    _check_fqdn_record("something2.test.com", expect='empty')
+    _check_reverse_record(reverse='3.50.168.192.in-addr.arpa.', fqdn="something2.test.com.")
