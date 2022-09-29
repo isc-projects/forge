@@ -1521,7 +1521,7 @@ def _start_kea_with_keactrl(destination_host, specific_process=""):
 def _stop_kea_with_keactrl(destination_host):
     stop_cmd = os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' stop'
     started_at = datetime.datetime.now()
-    should_finish_by = started_at + datetime.timedelta(seconds=2)
+    should_finish_by = started_at + datetime.timedelta(seconds=8)
     fabric_sudo_command(stop_cmd, destination_host=destination_host)
 
     while True:
@@ -1531,7 +1531,7 @@ def _stop_kea_with_keactrl(destination_host):
 
         # Assert that the timeout hasn't passed yet.
         assert datetime.datetime.now() < should_finish_by, \
-            'Timeout 2s exceeded while waiting for Kea to stop after "keactrl stop".\n' \
+            'Timeout 8s exceeded while waiting for Kea to stop after "keactrl stop".\n' \
             'kea-dhcp4: ' + ('active' if kea_dhcp4 else 'inactive') + '\n' \
             'kea-dhcp6: ' + ('active' if kea_dhcp6 else 'inactive')
 
