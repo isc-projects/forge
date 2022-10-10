@@ -778,8 +778,7 @@ def _install_kea_native_on_server(args, server_idx):
         # rather than remember to add new pkg to the list here, just install all
         pkgs = f"isc-kea-dhcp4={args.version} isc-kea-dhcp6={args.version} isc-kea-dhcp-ddns={args.version} " \
                f"isc-kea-hooks={args.version} isc-kea-admin={args.version} isc-kea-ctrl-agent={args.version} " \
-               f"isc-kea-premium-*={args.version} isc-kea-common={args.version} " \
-               f"python3-isc-kea-connector={args.version}"
+               f"isc-kea-premium-*={args.version} isc-kea-common={args.version}"
 
         # install packages
         cmd = cmd_tpl % 'sudo apt install -y -o Dpkg::Options::="--force-confnew" %s' % pkgs
