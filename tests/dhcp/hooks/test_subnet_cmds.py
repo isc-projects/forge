@@ -772,6 +772,191 @@ def test_hook_v4_subnet_delta_add(backend):
 @pytest.mark.hook
 @pytest.mark.subnet_cmds
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_hook_v4_subnet_delta_add_negative(backend):
+    """
+    Test subnet4-delta-add command by adding a subnet and then using incorrect arguments.
+    Forge makes DORA exchanges to verify returned parameters.
+    """
+    misc.test_setup()
+    srv_control.agent_control_channel()
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_subnet_cmds.so')
+
+    if backend == 'memfile':
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
+    else:
+        setup_server_for_config_backend_cmds(backend_type=backend, **world.dhcp_cfg)
+
+    # Add Subnet
+    cmd = {
+        "arguments":
+            {"subnet4": [
+                {"subnet": "192.168.50.0/24",
+                 "interface": "$(SERVER_IFACE)",
+                 "id": 234,
+                 "valid-lifetime": 4000,
+                 "max-valid-lifetime": 4000,
+                 "min-valid-lifetime": 1000,
+                 "pools": [
+                     {
+                         "pool": "192.168.50.1-192.168.50.10"
+                     }
+                 ]
+                 }
+            ]
+            },
+        "command": "subnet4-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    assert response == {
+        "arguments": {
+            "subnets": [
+                {
+                    "id": 234,
+                    "subnet": "192.168.50.0/24"
+                }
+            ]
+        },
+        "result": 0,
+        "text": "IPv4 subnet added"
+    }
+
+    # Verify that subnet is added correctly
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6, expect_include=False)
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '4000')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(6)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6, expect_include=False)
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '4000')
+
+    # Check invalid command arguments.
+    cmd = {
+        "arguments":
+            {
+            },
+        "command": "subnet4-delta-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "invalid number of arguments 0 for the 'subnet4-delta-add' command. Expecting 'subnet4' list"
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet4": [
+            ]
+            },
+        "command": "subnet4-delta-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "invalid number of subnets specified for the 'subnet4-delta-add' command. Expected one subnet"
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet4": [
+                {"subnet": "192.168.50.0/24"
+                 }
+            ]
+            },
+        "command": "subnet4-delta-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "must specify subnet id with 'subnet4-delta-add' command."
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet4": [
+                {"id": 234
+                 }
+            ]
+            },
+        "command": "subnet4-delta-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured (<wire>:0:31)"
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet4": [
+                {"subnet": "192.168.50.0/24",
+                 "id": 234,
+                 "valid-lifetime": True,
+                 }
+            ]
+            },
+        "command": "subnet4-delta-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "'valid-lifetime' parameter is not an integer"
+    }
+
+    # Verify that subnet is not changed by incorrect commands
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6, expect_include=False)
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '4000')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(6)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6, expect_include=False)
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '4000')
+
+
+@pytest.mark.v4
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.subnet_cmds
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_hook_v4_subnet_delta_del(backend):
     """
     Test subnet4-delta-del command by adding a subnet and then modifying and deleting options.
@@ -926,6 +1111,230 @@ def test_hook_v4_subnet_delta_del(backend):
     srv_msg.response_check_include_option(6, expect_include=False)
     srv_msg.response_check_include_option(51)
     srv_msg.response_check_option_content(51, 'value', '4000')
+
+
+@pytest.mark.v4
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.subnet_cmds
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_hook_v4_subnet_delta_del_negative(backend):
+    """
+    Test subnet4-delta-del command by adding a subnet and then using incorrect arguments.
+    Forge makes DORA exchanges to verify returned parameters.
+    """
+    misc.test_setup()
+    srv_control.agent_control_channel()
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_subnet_cmds.so')
+
+    if backend == 'memfile':
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
+    else:
+        world.dhcp_cfg["valid-lifetime"] = 4000
+        setup_server_for_config_backend_cmds(backend_type=backend, **world.dhcp_cfg)
+
+    # Add Subnet
+    cmd = {
+        "arguments":
+            {"subnet4": [
+                {"subnet": "192.168.50.0/24",
+                 "interface": "$(SERVER_IFACE)",
+                 "id": 234,
+                 "valid-lifetime": 3000,
+                 "max-valid-lifetime": 4000,
+                 "min-valid-lifetime": 1000,
+                 "pools": [
+                     {
+                         "pool": "192.168.50.1-192.168.50.10"
+                     }
+                 ],
+                 "option-data": [
+                     {
+                         "csv-format": True,
+                         "code": 6,
+                         "data": "21.21.21.1,20.20.20.1",
+                         "name": "domain-name-servers",
+                         "space": "dhcp4"}
+                 ]
+                 }
+            ]
+            },
+        "command": "subnet4-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    assert response == {
+        "arguments": {
+            "subnets": [
+                {
+                    "id": 234,
+                    "subnet": "192.168.50.0/24"
+                }
+            ]
+        },
+        "result": 0,
+        "text": "IPv4 subnet added"
+    }
+
+    # Verify that subnet is added correctly
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '21.21.21.1')
+    srv_msg.response_check_option_content(6, 'value', '20.20.20.1')
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '3000')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(6)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '21.21.21.1')
+    srv_msg.response_check_option_content(6, 'value', '20.20.20.1')
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '3000')
+
+    # Check invalid command arguments.
+    cmd = {
+        "arguments":
+            {},
+        "command": "subnet4-delta-del"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "invalid number of arguments 0 for the 'subnet4-delta-del' command. Expecting 'subnet4' list"
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet4": []},
+        "command": "subnet4-delta-del"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "invalid number of subnets specified for the 'subnet4-delta-del' command. Expected one subnet"
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet4": [
+                {"subnet": "192.168.50.0/24"}
+            ]},
+        "command": "subnet4-delta-del"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "must specify subnet id with 'subnet4-delta-del' command."
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet4": [
+                {"id": 234}
+            ]},
+        "command": "subnet4-delta-del"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured (<wire>:0:31)"
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet4": [
+                {"subnet": "192.168.50.0/24",
+                 "id": 234,
+                 "valid-lifetime": True}
+            ]},
+        "command": "subnet4-delta-del"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "'valid-lifetime' parameter is not an integer"
+    }
+
+    # # Remove DNS option and valid-lifetime
+    # cmd = {
+    #     "arguments":
+    #         {"subnet4": [
+    #             {"subnet": "192.168.50.0/24",
+    #              "id": 234,
+    #              "valid-lifetime": 2000,
+    #              "option-data": [
+    #                  {
+    #                      "code": 6
+    #                  }
+    #              ]
+    #              }
+    #         ]
+    #         },
+    #     "command": "subnet4-delta-del"}
+    #
+    # response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    # assert response == {
+    #     "arguments": {
+    #         "subnets": [
+    #             {
+    #                 "id": 234,
+    #                 "subnet": "192.168.50.0/24"
+    #             }
+    #         ]
+    #     },
+    #     "result": 0,
+    #     "text": "IPv4 subnet updated"
+    # }
+
+    # Verify that subnet is not changed by incorrect commands
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(6)
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '21.21.21.1')
+    srv_msg.response_check_option_content(6, 'value', '20.20.20.1')
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '3000')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(6)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '21.21.21.1')
+    srv_msg.response_check_option_content(6, 'value', '20.20.20.1')
+    srv_msg.response_check_include_option(51)
+    srv_msg.response_check_option_content(51, 'value', '3000')
 
 
 @pytest.mark.v6
@@ -1760,7 +2169,7 @@ def test_hook_v6_subnet_delta_add(backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_hook_v6_subnet_delta_add_negative(backend):
     """
-    Test subnet6-delta-add command by adding a subnet and then using incorrect arguments..
+    Test subnet6-delta-add command by adding a subnet and then using incorrect arguments.
     Forge makes SARR exchanges to verify returned parameters.
     """
     misc.test_setup()
@@ -2103,3 +2512,198 @@ def test_hook_v6_subnet_delta_del(backend):
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
     srv_msg.response_check_suboption_content(5, 3, 'validlft', 4000)
     srv_msg.response_check_include_option(23, expect_include=False)
+
+
+@pytest.mark.v6
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.subnet_cmds
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_hook_v6_subnet_delta_del_negative(backend):
+    """
+    Test subnet6-delta-del command by adding a subnet and then using incorrect arguments.
+    Forge makes SARR exchanges to verify returned parameters.
+    """
+    misc.test_setup()
+    srv_control.agent_control_channel()
+    srv_control.open_control_channel()
+    srv_control.add_hooks('libdhcp_subnet_cmds.so')
+
+    if backend == 'memfile':
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
+    else:
+        world.dhcp_cfg["valid-lifetime"] = 4000
+        setup_server_for_config_backend_cmds(backend_type=backend, **world.dhcp_cfg)
+
+    # Add Subnet
+    cmd = {
+        "arguments":
+            {"subnet6": [
+                {"subnet": "2001:db8:1::/64",
+                 "interface": "$(SERVER_IFACE)",
+                 "id": 234,
+                 "valid-lifetime": 2000,
+                 "max-valid-lifetime": 4000,
+                 "min-valid-lifetime": 1000,
+                 "pools": [
+                     {
+                         "pool": "2001:db8:1::1-2001:db8:1::10"
+                     }
+                 ],
+                 "option-data": [
+                     {
+                         "csv-format": True,
+                         "code": 23,
+                         "data": "2001:4860::1,2001:4860::2",
+                         "name": "dns-servers",
+                         "space": "dhcp6"}
+                 ]
+                 }
+            ]
+            },
+        "command": "subnet6-add"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    assert response == {
+        "arguments": {
+            "subnets": [
+                {
+                    "id": 234,
+                    "subnet": "2001:db8:1::/64"
+                }
+            ]
+        },
+        "result": 0,
+        "text": "IPv6 subnet added"
+    }
+
+    # Verify that subnet is added correctly
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 2000)
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:4860::1,2001:4860::2')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 2000)
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:4860::1,2001:4860::2')
+
+    # Check invalid command arguments.
+    cmd = {
+        "arguments":
+            {},
+        "command": "subnet6-delta-del"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "invalid number of arguments 0 for the 'subnet6-delta-del' command. Expecting 'subnet6' list"
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet6": []},
+        "command": "subnet6-delta-del"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "invalid number of subnets specified for the 'subnet6-delta-del' command. Expected one subnet"
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet6": [
+                {"subnet": "2001:db8:1::/64"}
+            ]},
+        "command": "subnet6-delta-del"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "must specify subnet id with 'subnet6-delta-del' command."
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet6": [
+                {"id": 234}
+            ]},
+        "command": "subnet6-delta-del"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured (<wire>:0:31)"
+    }
+
+    cmd = {
+        "arguments":
+            {"subnet6": [
+                {"subnet": "2001:db8:1::/64",
+                 "id": 234,
+                 "valid-lifetime": True}
+            ]},
+        "command": "subnet6-delta-del"}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
+    assert response == {
+        "result": 1,
+        "text": "'valid-lifetime' parameter is not an integer"
+    }
+
+    # Verify that subnet is not changed by incorrect commands
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 2000)
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:4860::1,2001:4860::2')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(23)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
+    srv_msg.response_check_suboption_content(5, 3, 'validlft', 2000)
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:4860::1,2001:4860::2')
