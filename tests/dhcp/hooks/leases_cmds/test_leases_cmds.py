@@ -268,7 +268,7 @@ def test_v4_lease_cmds_add(backend):
     assert resp["text"] == "Lease for address 192.168.50.5, subnet-id 1 added."
 
     # check if we can add it again
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=4)
     assert resp["text"] == "IPv4 lease already exists."
 
     # re-check with command
@@ -597,14 +597,14 @@ def test_v4_lease_cmds_lease_add_negative():
            "arguments": {"subnet-id": 44,
                          "ip-address": "192.168.50.5",
                          "hw-address": "1a:1b:1c:1d:1e:1f"}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=4)
     assert resp["text"] == "Invalid subnet-id: No IPv4 subnet with subnet-id=44 currently configured."
 
     cmd = {"command": "lease4-add",
            "arguments": {"subnet-id": 1,
                          "ip-address": "192.0.0.5",
                          "hw-address": "1a:1b:1c:1d:1e:1f"}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=4)
     assert resp["text"] == "The address 192.0.0.5 does not belong to subnet 192.168.50.0/24, subnet-id=1"
 
     cmd = {"command": "lease4-add",
@@ -906,7 +906,7 @@ def test_v6_lease_cmds_add_notvalid():
                          "ip-address": "2001:db8:1::1",
                          "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                          "iaid": 1234}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=4)
     assert resp["text"] == "Invalid subnet-id: No IPv6 subnet with " \
                            "subnet-id=11 currently configured."
 
@@ -916,7 +916,7 @@ def test_v6_lease_cmds_add_notvalid():
                          "ip-address": "2001:db8:2::1",
                          "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                          "iaid": 1234}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=4)
     assert resp["text"] == "The address 2001:db8:2::1 does not belong " \
                            "to subnet 2001:db8:1::/64, subnet-id=1"
 
@@ -928,7 +928,7 @@ def test_v6_lease_cmds_add_notvalid():
                          "iaid": 1234}}
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=4)
     assert resp["text"] == "IPv6 lease already exists."
 
 
@@ -1443,7 +1443,7 @@ def test_v6_lease_cmds_add_negative():
     # sending ip out of subnet to lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:2::1",
                                                   "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24"}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=4)
     assert resp["text"] == "subnet-id not specified and failed to find a subnet for " \
                            "address 2001:db8:2::1"
 
@@ -1486,7 +1486,7 @@ def test_v6_lease_cmds_add_negative():
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
                                                   "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                   "subnet-id": 2}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=4)
     assert resp["text"] == "Invalid subnet-id: No IPv6 subnet with " \
                            "subnet-id=2 currently configured."
 
@@ -2119,7 +2119,7 @@ def test_v6_lease_cmds_update_negative():
     # sending ip out of subnet to lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:2::1",
                                                      "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24"}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=4)
     assert resp["text"] == "subnet-id not specified and failed to find a subnet for " \
                            "address 2001:db8:2::1"
 
@@ -2162,7 +2162,7 @@ def test_v6_lease_cmds_update_negative():
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
                                                      "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                      "subnet-id": 2}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=4)
     assert resp["text"] == "Invalid subnet-id: No IPv6 subnet with " \
                            "subnet-id=2 currently configured."
 
