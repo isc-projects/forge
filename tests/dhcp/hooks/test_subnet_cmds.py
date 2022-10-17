@@ -1270,37 +1270,6 @@ def test_hook_v4_subnet_delta_del_negative(backend):
         "text": "'valid-lifetime' parameter is not an integer"
     }
 
-    # # Remove DNS option and valid-lifetime
-    # cmd = {
-    #     "arguments":
-    #         {"subnet4": [
-    #             {"subnet": "192.168.50.0/24",
-    #              "id": 234,
-    #              "valid-lifetime": 2000,
-    #              "option-data": [
-    #                  {
-    #                      "code": 6
-    #                  }
-    #              ]
-    #              }
-    #         ]
-    #         },
-    #     "command": "subnet4-delta-del"}
-    #
-    # response = srv_msg.send_ctrl_cmd(cmd, 'http')
-    # assert response == {
-    #     "arguments": {
-    #         "subnets": [
-    #             {
-    #                 "id": 234,
-    #                 "subnet": "192.168.50.0/24"
-    #             }
-    #         ]
-    #     },
-    #     "result": 0,
-    #     "text": "IPv4 subnet updated"
-    # }
-
     # Verify that subnet is not changed by incorrect commands
     misc.test_procedure()
     srv_msg.client_requests_option(1)
