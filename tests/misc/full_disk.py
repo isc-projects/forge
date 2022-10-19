@@ -1,3 +1,9 @@
+# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 """Testing how kea behaves when available disk space run out
    THIS IS NOT DESIGNED FOR AUTOMATED TESTING! Only manual!
    Tests are explained in test code
