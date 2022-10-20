@@ -140,8 +140,9 @@ def use_config_set(number, override_dns=None):
         send_content('rev3.db', os.path.join(namedb_dir, 'rev3.db'),
                      config_file_set[number][7], 'dns')
 
-    send_content('managed-keys.bind', os.path.join(world.f_cfg.dns_data_path, 'managed-keys.bind'),
-                 keys, 'dns')
+    # needed for dns sec validation
+    # send_content('managed-keys.bind', os.path.join(world.f_cfg.dns_data_path, 'managed-keys.bind'),
+    #              keys, 'dns')
 
 
 def upload_dns_keytab(dns_keytab):

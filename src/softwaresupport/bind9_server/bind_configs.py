@@ -18,6 +18,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
@@ -109,6 +110,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
@@ -199,6 +201,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
@@ -294,6 +297,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
@@ -389,6 +393,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
@@ -484,6 +489,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
@@ -579,6 +585,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
@@ -674,6 +681,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
@@ -769,6 +777,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
@@ -860,20 +869,9 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 0      PTR  nanny6.six.exmaple.com.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 """],
 
-    10: ["", "", "", ""],
-
-    11: ["", "", "", ""],
-
-    12: ["", "", "", ""],
-
-    13: ["", "", "", ""],
-
-    14: ["", "", "", ""],
-
-    15: ["", "", "", ""],
-
-    # v4 configs!
+    ## v4 configs!
     20: ["""
+>>>>>>> e0267734 (disable dns sec validation in bind9)
 options {
     directory "${data_path}";  // Working directory
     listen-on port ${dns_port} { ${dns_addr}; };
@@ -881,6 +879,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "50.168.192.in-addr.arpa." {
@@ -972,6 +971,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "50.168.192.in-addr.arpa." {
@@ -1070,6 +1070,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "50.168.192.in-addr.arpa." {
@@ -1168,6 +1169,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "50.168.192.in-addr.arpa." {
@@ -1266,6 +1268,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "50.168.192.in-addr.arpa." {
@@ -1364,6 +1367,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "50.168.192.in-addr.arpa." {
@@ -1462,6 +1466,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "50.168.192.in-addr.arpa." {
@@ -1560,6 +1565,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "50.168.192.in-addr.arpa." {
@@ -1661,6 +1667,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
@@ -1841,6 +1848,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
 };
 
 zone "50.168.192.in-addr.arpa." {
@@ -2020,6 +2028,7 @@ options {
     allow-update { any; };              // This is the default
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
+    dnssec-validation no;
     tkey-gssapi-keytab "/tmp/dns.keytab"; // DNS principal keytab
     # tkey-gssapi-keytab "${data_path}/dns.keytab"; // DNS principal keytab
 };
