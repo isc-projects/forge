@@ -482,7 +482,7 @@ def test_v6_lease_dump(backend):
                                  "type": "IA_NA",
                                  "user-context": {
                                      "ISC": {
-                                         "relays": [
+                                         "relay-info": [
                                              {
                                                  "hop": 0,
                                                  "link": "2001:db8:2::1000",
@@ -515,7 +515,7 @@ def test_v6_lease_dump(backend):
     # Check CSV file for subnet 2 acquired lease
     line = f'2001:db8:2::1,00:03:00:01:f6:f5:f4:f3:f2:01,4000,{cltt2+4000}' \
            f',2,3000,0,5678,128,0,0,,f6:f5:f4:f3:f2:01,0,{{ "ISC": ' \
-           f'{{ "relays": \\[ {{ "hop": 0&#x2c "link": "2001:db8:2::1000"&#x2c "options": ' \
+           f'{{ "relay-info": \\[ {{ "hop": 0&#x2c "link": "2001:db8:2::1000"&#x2c "options": ' \
            f'"0x00120008706F727431323334"&#x2c "peer": "fe80::1" }} \\] }} }},1,2'
     srv_msg.file_contains_line(dump_file_path, None, line, singlequotes=True)
 
@@ -605,7 +605,7 @@ def test_v6_lease_dump(backend):
                                  "type": "IA_NA",
                                  "user-context": {
                                      "ISC": {
-                                         "relays": [
+                                         "relay-info": [
                                              {
                                                  "hop": 0,
                                                  "link": "2001:db8:2::1000",
@@ -779,7 +779,7 @@ def test_v6_lease_upload(backend):
                                  "type": "IA_NA",
                                  "user-context": {
                                      "ISC": {
-                                         "relays": [
+                                         "relay-info": [
                                              {
                                                  "hop": 0,
                                                  "link": "2001:db8:2::1000",

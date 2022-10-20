@@ -21,7 +21,8 @@ from src.forge_cfg import world
 @pytest.mark.v4
 @pytest.mark.hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_v4_leasequery_ip(backend):
+@pytest.mark.parametrize('rai_version', ['old-RAI', 'new-RAI'])
+def test_v4_leasequery_ip(backend, rai_version):
     """
     Test of v4 lease query messages asking for ip address.
     Test sends queries to trigger "leaseunknown", "leaseunassigned", and "leaseactive" responses.
@@ -76,13 +77,21 @@ def test_v4_leasequery_ip(backend):
     srv_msg.response_check_include_option(53)
     srv_msg.response_check_option_content(53, 'value', 11)
 
+    if rai_version == 'old-RAI':
+        rai = "0x0106060106020603"
+    else:
+        rai = {"sub-options": "0x0106060106020603"}
+
     # add a lease
     cmd = {"command": "lease4-add",
            "arguments": {"ip-address": "192.168.50.1",
                          "hw-address": "1a:1b:1c:1d:1e:1f",
                          "client-id": '0x00010203040506',
-                         "user-context": {"ISC": {"relay-agent-info": "0x0106060106020603"}}
-                         }}
+                         "user-context": {
+                           "ISC": {
+                             "relay-agent-info": rai
+                           }
+                         }}}
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     # Building lease query message to ask by ip-address about taken lease
@@ -113,7 +122,8 @@ def test_v4_leasequery_ip(backend):
 @pytest.mark.v4
 @pytest.mark.hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_v4_leasequery_mac(backend):
+@pytest.mark.parametrize('rai_version', ['old-RAI', 'new-RAI'])
+def test_v4_leasequery_mac(backend, rai_version):
     """
     Test of v4 lease query messages asking for mac address.
     Test sends queries to trigger "leaseunknown" and "leaseactive" responses.
@@ -152,22 +162,38 @@ def test_v4_leasequery_mac(backend):
     srv_msg.response_check_include_option(53)
     srv_msg.response_check_option_content(53, 'value', 12)
 
+    if rai_version == 'old-RAI':
+        rai = "0x0106060106020603"
+    else:
+        rai = {"sub-options": "0x0106060106020603"}
+
     # add a lease
     cmd = {"command": "lease4-add",
            "arguments": {"ip-address": "192.168.50.1",
                          "hw-address": "1a:1b:1c:1d:1e:1f",
                          "client-id": '0x00010203040506',
-                         "user-context": {"ISC": {"relay-agent-info": "0x0106060106020603"}}
-                         }}
+                         "user-context": {
+                           "ISC": {
+                             "relay-agent-info": rai
+                           }
+                         }}}
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    if rai_version == 'old-RAI':
+        rai = "0x0106060106020603"
+    else:
+        rai = {"sub-options": "0x0106060106020603"}
 
     # add second lease for same client
     cmd = {"command": "lease4-add",
            "arguments": {"ip-address": "192.168.60.1",
                          "hw-address": "1a:1b:1c:1d:1e:1f",
                          "client-id": '0x00010203040506',
-                         "user-context": {"ISC": {"relay-agent-info": "0x0106060106020603"}}
-                         }}
+                         "user-context": {
+                           "ISC": {
+                             "relay-agent-info": rai
+                           }
+                         }}}
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     # Building lease query message to ask for added lease
@@ -199,7 +225,8 @@ def test_v4_leasequery_mac(backend):
 @pytest.mark.v4
 @pytest.mark.hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_v4_leasequery_client(backend):
+@pytest.mark.parametrize('rai_version', ['old-RAI', 'new-RAI'])
+def test_v4_leasequery_client(backend, rai_version):
     """
     Test of v4 lease query messages asking for client id
     Test sends queries to trigger "leaseunknown" and "leaseactive" responses.
@@ -241,22 +268,38 @@ def test_v4_leasequery_client(backend):
     srv_msg.response_check_include_option(53)
     srv_msg.response_check_option_content(53, 'value', 12)
 
+    if rai_version == 'old-RAI':
+        rai = "0x0106060106020603"
+    else:
+        rai = {"sub-options": "0x0106060106020603"}
+
     # add a lease
     cmd = {"command": "lease4-add",
            "arguments": {"ip-address": "192.168.50.1",
                          "hw-address": "1a:1b:1c:1d:1e:1f",
                          "client-id": '0x00010203040506',
-                         "user-context": {"ISC": {"relay-agent-info": "0x0106060106020603"}}
-                         }}
+                         "user-context": {
+                           "ISC": {
+                             "relay-agent-info": rai
+                           }
+                         }}}
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    if rai_version == 'old-RAI':
+        rai = "0x0106060106020603"
+    else:
+        rai = {"sub-options": "0x0106060106020603"}
 
     # add second lease for same client
     cmd = {"command": "lease4-add",
            "arguments": {"ip-address": "192.168.60.1",
                          "hw-address": "1a:1b:1c:1d:1e:1f",
                          "client-id": '0x00010203040506',
-                         "user-context": {"ISC": {"relay-agent-info": "0x0106060106020603"}}
-                         }}
+                         "user-context": {
+                           "ISC": {
+                             "relay-agent-info": rai
+                           }
+                         }}}
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     # Building lease query message to ask for added client-id

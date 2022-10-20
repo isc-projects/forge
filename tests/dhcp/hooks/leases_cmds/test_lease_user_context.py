@@ -179,8 +179,13 @@ def test_v4_lease_extended_info(backend):
                                  "ip-address": "192.168.50.1",
                                  "state": 0,
                                  "subnet-id": 1,
-                                 "user-context":
-                                     {"ISC": {"relay-agent-info": "0x0106060106020603"}},
+                                 "user-context": {
+                                   "ISC": {
+                                     "relay-agent-info": {
+                                       "sub-options": "0x0106060106020603"
+                                     }
+                                   }
+                                 },
                                  "valid-lft": 4000}
 
 
@@ -392,7 +397,7 @@ def test_v6_lease_extended_info(backend):
                                  "type": "IA_NA",
                                  "user-context": {
                                     "ISC": {
-                                            "relays": [
+                                        "relay-info": [
                                                         {
                                                          "hop": 0,
                                                          "link": "2001:db8:1::1000",
