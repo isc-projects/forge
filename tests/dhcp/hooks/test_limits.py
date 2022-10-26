@@ -376,6 +376,108 @@ def test_rate_limits_class(dhcp_version, backend, unit):
                                               f' exceeds threshold ({threshold})'
 
 
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.hook
+@pytest.mark.parametrize('unit', ['second', 'minute'])
+@pytest.mark.parametrize('backend', ['memfile'])
+def test_rate_limits_builtin_class(dhcp_version, backend, unit):
+    """
+    Test of class limit of Rate Limiting Hook.
+    The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
+    and counts how many packets were sent, and how many packets were received from Kea.
+    If the received packets is the same as limit, the test passes. Some error in number of packets is accounted for.
+    :param unit:  Defines testing of limit per second or minute
+    """
+    misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
+        srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_limits.so')
+    srv_control.add_hooks('libdhcp_class_cmds.so')
+
+    # define test duration in seconds
+    duration = 1 if unit == 'second' else 60
+
+    # hook configuration in user context for classes with limit
+    limit = 3 if unit == 'second' else 200
+    if dhcp_version == 'v4':
+        # define limit for hook and test
+        classes = [
+            {
+                "name": "ALL",
+                "user-context": {
+                    "limits": {
+                        "rate-limit": f"{limit} packets per {unit}"
+                    }
+                }
+            }
+        ]
+    else:
+        # define limit for hook and test
+        classes = [
+            {
+                "name": "ALL",
+                "user-context": {
+                    "limits": {
+                        "rate-limit": f"{limit} packets per {unit}"
+                    }
+                }
+            }
+        ]
+    world.dhcp_cfg["client-classes"] = classes
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    success = 0
+    packets = 0
+
+    # Wait time for response for v4 and v6
+    world.cfg['wait_interval'] = 0.1
+    if dhcp_version == 'v6':
+        world.cfg['wait_interval'] = 0.1
+
+    start = time.time()
+    elapsed = 0
+    if dhcp_version == 'v4':
+        while elapsed < duration:  # Send packets for the duration of the test, and count them.
+            # Send Discover and add 1 to success counter if Forge got Offer.
+            success += _get_address_v4(chaddr='ff:01:02:03:04:05')
+            # Add 1 to send packets counter
+            packets += 1
+            # set timer to actual duration of test.
+            elapsed = time.time() - start
+    else:
+        while elapsed < duration:  # Send packets for the duration of the test, and count them.
+            # Send Solicit and add 1 to success counter if Forge got Advertise.
+            success += _get_address_v6(duid='00:03:00:01:ff:ff:ff:ff:ff:ff')
+            # Add 1 to send packets counter
+            packets += 1
+            # set timer to actual duration of test.
+            elapsed = time.time() - start
+
+    print(f"Runtime of the program is {elapsed} seconds")
+    print(f"Packets received {success} from {packets} sent")
+    if unit == 'second':
+        print(f"Average Packets per second {success / elapsed}")
+    else:
+        print(f"Average Packets per minute {success / elapsed * 60}")
+
+    # Set threshold to account for small errors in receiving packets.
+    threshold = 1 if unit == 'second' else 5
+
+    # Check if difference between limit and received packets is within threshold.
+    assert abs(limit - success) <= threshold, f'Difference between responses and limit ({abs(limit - success)})' \
+                                              f' exceeds threshold ({threshold})'
+
+
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
@@ -821,6 +923,149 @@ def test_lease_limits_class(dhcp_version, backend):
     else:
         assert abs(6 * limit - success) <= threshold,\
             f'Difference between responses and limit ({abs(6 * limit - success)}) exceeds threshold ({threshold})'
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.hook
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_lease_limits_builtin_class(dhcp_version, backend):
+    """
+    Test of class lease limit of Lease Limiting Hook.
+    The test makes DORA or SARR exchange to acquire leases and counts if dropped or returned
+    "no leases available".
+    Test removes leases and tries again to check if the limit is restored.
+    If the received leases is the same as limit, the test passes.
+    Some error in number of packets is accounted for.
+    """
+    misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
+    # define limit for hook and test
+    limit = 5
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
+        srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
+        srv_control.config_srv_prefix('2002:db8:1::', 0, 90, 96)
+
+    srv_control.add_hooks('libdhcp_class_cmds.so')
+
+    # hook configuration in user context for classes with limit
+    if dhcp_version == 'v4':
+        classes = [
+            {
+                "name": "ALL",
+                "user-context": {
+                    "limits": {
+                        "address-limit": limit
+                    }
+                }
+            }
+        ]
+    else:
+        classes = [
+            {
+                "name": "ALL",
+                "user-context": {
+                    "limits": {
+                        "address-limit": limit,
+                        "prefix-limit": limit
+                    }
+                }
+            }
+        ]
+    world.dhcp_cfg["client-classes"] = classes
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_limits.so')
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    success = 0
+    if dhcp_version == 'v6':
+        success_na = 0
+        success_pd = 0
+    exchanges = 0
+    to_send = 9
+
+    if dhcp_version == 'v4':
+        for i in range(1, to_send + 1):  # Try to acquire more leases than the limit.
+            # Try exchanging DORA and add 1 to success counter if Forge got ACK.
+            success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}')
+            # Add 1 to exchanges counter
+            exchanges += 1
+
+        for i in range(1, success + 1):  # Delete all acquired leases to reset limit.
+            cmd = {"command": "lease4-del", "arguments": {"ip-address": f'192.168.1.{i}'}}
+            srv_msg.send_ctrl_cmd(cmd)
+
+        for i in range(to_send + 1, 2 * to_send + 1):  # Try to acquire more leases than the limit.
+            success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}')
+            exchanges += 1
+
+
+    else:
+        # IA_NA
+        for i in range(1, to_send + 1):  # Try to acquire more IA_NA leases than the limit.
+            # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        ia_na=True)
+            # Add 1 to exchanges counter
+            exchanges += 1
+
+        for i in range(1, success_na + 1):  # Delete all acquired leases to reset limit.
+            cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:1::{hex(i)[2:]}'}}
+            srv_msg.send_ctrl_cmd(cmd)
+
+        for i in range(to_send + 1, 2 * to_send + 1):  # Try to acquire more IA_NA leases than the limit.
+            success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        ia_na=True)
+            exchanges += 1
+
+
+        # IA_PD
+        for i in range(3 * to_send + 1, 4 * to_send + 1):  # Try to acquire more IA_PD leases than the limit
+            # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        ia_pd=1)
+            exchanges += 1
+
+        for i in range(3 * to_send + 1, 3 * to_send + 1 + success_pd):  # Delete all acquired leases to reset limit.
+            cmd = {"command": "lease6-get-by-duid", "arguments": {"duid": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}'}}
+            response = srv_msg.send_ctrl_cmd(cmd)
+            iaid = response['arguments']['leases'][0]['iaid']
+
+            cmd = {"command": "lease6-del",
+                   "arguments": {"subnet-id": 1,
+                                 "identifier": f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                 "identifier-type": "duid",
+                                 "iaid": iaid,
+                                 "type": "IA_PD"}}
+            srv_msg.send_ctrl_cmd(cmd)
+
+        for i in range(4 * to_send + 1, 5 * to_send + 1):
+            success_pd += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
+                                        ia_pd=1)
+            exchanges += 1
+
+        success = success_na + success_pd
+
+    # Set threshold to account for small errors in receiving packets.
+    threshold = 1
+
+    print(f"exchanges made: {exchanges}")
+    print(f"successes made: {success}")
+
+    # Check if difference between limit and received packets is within threshold.
+    if dhcp_version == 'v4':
+        assert abs(2 * limit - success) <= threshold,\
+            f'Difference between responses and limit ({abs(2 * limit - success)}) exceeds threshold ({threshold})'
+    else:
+        assert abs(4 * limit - success) <= threshold,\
+            f'Difference between responses and limit ({abs(4 * limit - success)}) exceeds threshold ({threshold})'
 
 
 @pytest.mark.v4
