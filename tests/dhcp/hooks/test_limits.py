@@ -376,7 +376,6 @@ def test_rate_limits_class(dhcp_version, backend, unit):
                                               f' exceeds threshold ({threshold})'
 
 
-
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
@@ -1006,7 +1005,6 @@ def test_lease_limits_builtin_class(dhcp_version, backend):
             success += _get_lease_v4(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}')
             exchanges += 1
 
-
     else:
         # IA_NA
         for i in range(1, to_send + 1):  # Try to acquire more IA_NA leases than the limit.
@@ -1024,7 +1022,6 @@ def test_lease_limits_builtin_class(dhcp_version, backend):
             success_na += _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:ff:ff:ff:ff:ff:{i:02}',
                                         ia_na=True)
             exchanges += 1
-
 
         # IA_PD
         for i in range(3 * to_send + 1, 4 * to_send + 1):  # Try to acquire more IA_PD leases than the limit
