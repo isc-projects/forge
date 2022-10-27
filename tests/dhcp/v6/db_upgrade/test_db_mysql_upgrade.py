@@ -173,13 +173,13 @@ def test_v6_upgrade_mysql_db():
     srv_msg.send_file_to_server(glob.glob("**/my_db_v6.sql", recursive=True)[0], '/tmp/my_db_v6.sql')
     # switch interface and username to the one setup is using
     srv_msg.execute_shell_cmd("sed -i 's/!serverinterface!/$(SERVER_IFACE)/g' /tmp/my_db_v6.sql")
-    srv_msg.execute_shell_cmd("sed -i 's/!db_user!/%s/g' /tmp/my_db_v6.sql" % tmp_user_name)
+    srv_msg.execute_shell_cmd(f"sed -i 's/!db_user!/{tmp_user_name}/g' /tmp/my_db_v6.sql")
     if world.server_system == 'redhat':
         srv_msg.execute_shell_cmd("sed -i 's/CHARSET=utf8mb4/CHARSET=latin1/g' /tmp/my_db_v6.sql")
     # this solves the problem: "Variable 'sql_mode' can't be set to the value of 'NO_AUTO_CREATE_USER'"
     srv_msg.execute_shell_cmd("sed -i 's/NO_AUTO_CREATE_USER,//g' /tmp/my_db_v6.sql")
     # recreate db content in new db
-    srv_msg.execute_shell_cmd("mysql -u%s -p$(DB_PASSWD) %s < /tmp/my_db_v6.sql" % (tmp_user_name, tmp_db_name))
+    srv_msg.execute_shell_cmd(f'mysql -u {tmp_user_name} -p$(DB_PASSWD) {tmp_db_name} < /tmp/my_db_v6.sql')
     # start kea, which should fail due to mismatch in db version
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -210,7 +210,7 @@ def test_v6_upgrade_mysql_db():
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
     # upgrade with kea admin
     kea_admin = world.f_cfg.sbin_join('kea-admin')
-    srv_msg.execute_shell_cmd("sudo %s db-upgrade mysql -u %s -p $(DB_PASSWD) -n %s" % (kea_admin, tmp_user_name, tmp_db_name))
+    srv_msg.execute_shell_cmd(f'sudo {kea_admin} db-upgrade mysql -u {tmp_user_name} -p $(DB_PASSWD) -n {tmp_db_name}')
 
     # start kea
     srv_control.start_srv('DHCP', 'started')

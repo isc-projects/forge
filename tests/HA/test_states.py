@@ -6,7 +6,7 @@
 
 """Kea HA states"""
 
-# pylint: disable=invalid-name,line-too-long,too-many-arguments
+# pylint: disable=invalid-name,line-too-long
 
 import pytest
 

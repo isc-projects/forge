@@ -6,8 +6,6 @@
 
 """DHCPv4 address decline process"""
 
-# pylint: disable=invalid-name,line-too-long
-
 import pytest
 
 from src import srv_msg

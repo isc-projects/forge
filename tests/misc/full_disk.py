@@ -9,8 +9,6 @@
    Tests are explained in test code
 """
 
-# pylint: disable=invalid-name,line-too-long
-
 import os
 import pytest
 
@@ -33,8 +31,7 @@ def _create_ramdisk(location='/tmp/kea_ram_disk', size='10M', dest=world.f_cfg.m
     :param dest: IP address of a system on which we want to allocate disk space
     :return result of executed command
     """
-    cmd = "sudo mkdir -p %s && sudo mount -t tmpfs -o size=%s tmpfs %s && chmod 777 %s" % (location, size,
-                                                                                           location, location)
+    cmd = f'sudo mkdir -p {location} && sudo mount -t tmpfs -o size={size} tmpfs {location} && chmod 777 {location}'
     return srv_msg.execute_shell_cmd(cmd, dest=dest)
 
 
@@ -45,7 +42,7 @@ def _destroy_ramdisk(location='/tmp/kea_ram_disk', dest=world.f_cfg.mgmt_address
     :param dest: IP address of a system on which we want to allocate disk space
     :return result of executed command
     """
-    cmd = "sudo rm -rf %s/* && sudo umount -f %s" % (location, location)
+    cmd = f'sudo rm -rf {location}/* && sudo umount -f {location}'
     return srv_msg.execute_shell_cmd(cmd, dest=dest)
 
 
@@ -70,7 +67,7 @@ def _allocate_disk_space(size="full",
         # Filesystem      Size  Used Avail Use% Mounted on
         # tmpfs              10240        0     10240   0% /tmp/kea_ram_disk
 
-    cmd = "fallocate -l %s %s" % (size, location)
+    cmd = f'fallocate -l {size} {location}'
     return srv_msg.execute_shell_cmd(cmd, dest=dest)
 
 
@@ -108,21 +105,21 @@ def _move_pgsql_to_ram_disk(location='/tmp/kea_ram_disk_pgsql', dest=world.f_cfg
 
     # create ramdisk and copy data
     _create_ramdisk(location=location, size='300M')
-    cmd = 'sudo rsync -av %s %s' % (current_location, location)
+    cmd = f'sudo rsync -av {current_location} {location}'
     srv_msg.execute_shell_cmd(cmd, dest=dest, save_results=False)
 
     # move content to different location
-    cmd = 'sudo mv %s %s.back' % (full_current_location, full_current_location)
+    cmd = f'sudo mv {full_current_location} {full_current_location}.back'
     srv_msg.execute_shell_cmd(cmd, dest=dest, save_results=False)
 
     # backup config
-    pgsql_conf = '/etc/postgresql/%s/main/postgresql.conf' % pgsql_version
-    cmd = 'sudo cp %s %s_backup' % (pgsql_conf, pgsql_conf)
+    pgsql_conf = f'/etc/postgresql/{pgsql_version}/main/postgresql.conf'
+    cmd = f'sudo cp {pgsql_conf} {pgsql_conf}_backup'
     srv_msg.execute_shell_cmd(cmd, dest=dest, save_results=False)
 
     # change config, it have to point to new location
     new_location = os.path.join(location, 'postgresql', pgsql_version, "main")
-    print("new loc: %s" % new_location)
+    print(f'new location: {new_location}')
     cmd = "sudo sed -i 's/%s/%s/g' %s" % (full_current_location.replace("/", "\\/"),
                                           new_location.replace("/", "\\/"), pgsql_conf)
     srv_msg.execute_shell_cmd(cmd, dest=dest, save_results=False)
@@ -136,8 +133,8 @@ def _move_pgsql_to_ram_disk(location='/tmp/kea_ram_disk_pgsql', dest=world.f_cfg
     # all data from ramdisk will be dumped, so we need just copy backup files
     print("\n\n---IMPORTANT DATA FOR MANUAL RECOVERY----")
     print("STOP PGSQL:     sudo systemctl stop postgresql")
-    print("RESTORE DATA:   sudo mv %s.back %s" % (full_current_location, full_current_location))
-    print("RESTORE CONFIG: sudo cp %s_backup %s" % (pgsql_conf, pgsql_conf))
+    print(f"RESTORE DATA:   sudo mv {full_current_location}.back {full_current_location}")
+    print(f"RESTORE CONFIG: sudo cp {pgsql_conf}_backup {pgsql_conf}")
     print("RESTART PGSQL:  sudo systemctl start postgresql")
     print("-----------------------------------------\n\n")
     return full_current_location, pgsql_conf
@@ -156,11 +153,11 @@ def _move_pgsql_back_to_default(previous_location, pgsql_cfg,
     srv_msg.execute_shell_cmd(cmd, dest=dest, save_results=False)
 
     # restore data from backup
-    cmd = 'sudo mv %s.back %s' % (previous_location, previous_location)
+    cmd = f'sudo mv {previous_location}.back {previous_location}'
     srv_msg.execute_shell_cmd(cmd, dest=dest, save_results=False)
 
     # restore config
-    cmd = 'sudo cp %s_backup %s' % (pgsql_cfg, pgsql_cfg)
+    cmd = f'sudo cp {pgsql_cfg}_backup {pgsql_cfg}'
     srv_msg.execute_shell_cmd(cmd, dest=dest, save_results=False)
 
     cmd = 'sudo systemctl start postgresql'

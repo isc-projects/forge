@@ -6,7 +6,7 @@
 
 """CVE-2015-8373"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name
 
 import pytest
 

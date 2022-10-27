@@ -4,8 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=invalid-name,line-too-long
-
 import datetime
 import re
 import os
@@ -524,12 +522,12 @@ def add_option_to_defined_class(class_no, option_name, option_value):
 
 
 def config_client_classification(subnet, option_value):
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     world.dhcp_cfg[sub][int(subnet)]["client-class"] = option_value
 
 
 def config_require_client_classification(subnet, option_value):
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     subnet = int(subnet)
     if "require-client-classes" not in world.dhcp_cfg[sub][subnet]:
         world.dhcp_cfg[sub][subnet]["require-client-classes"] = []
@@ -544,7 +542,7 @@ def set_time(which_time, value, subnet=None):
         world.dhcp_cfg[which_time] = value
     else:
         subnet = int(subnet)
-        sub = "subnet%s" % world.proto[1]
+        sub = f'subnet{world.proto[1]}'
         world.dhcp_cfg[sub][subnet][which_time] = value
 
 
@@ -557,7 +555,7 @@ def add_line_to_shared_subnet(subnet_id, additional_line):
 
 
 def add_line_in_subnet(subnet_id, additional_line):
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     world.dhcp_cfg[sub][subnet_id].update(additional_line)
 
 
@@ -583,7 +581,7 @@ def prepare_cfg_subnet(subnet, pool, iface=world.f_cfg.server_iface):
         if pool == "default":
             pool = "2001:db8:1::1 - 2001:db8:1::ffff"
 
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     if sub not in world.dhcp_cfg.keys() and subnet:
         world.dhcp_cfg[sub] = [{}]
     elif sub in world.dhcp_cfg.keys() and subnet:
@@ -621,7 +619,7 @@ def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
 
     # This is weird, it's not used in any test looks like we have some errors because it was used
     # TODO write missing tests using specific interface!
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     if sub not in world.dhcp_cfg.keys():
         world.dhcp_cfg[sub] = [{}]
 
@@ -665,7 +663,7 @@ def add_interface(iface, add_to_existing=True):
 
 
 def add_pool_to_subnet(pool, subnet):
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     world.dhcp_cfg[sub][subnet]["pools"].append({"pool": pool})
 
 
@@ -674,14 +672,14 @@ def set_conf_parameter_global(parameter_name, value):
 
 
 def set_conf_parameter_subnet(parameter_name, value, subnet_id):
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     world.dhcp_cfg[sub][subnet_id][parameter_name] = _check_value(value)
     if parameter_name in ["interface-id", "relay"]:
         world.dhcp_cfg[sub][subnet_id].pop("interface", None)
 
 
 def add_to_shared_subnet(subnet_def, shared_network_id):
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     if len(world.dhcp_cfg["shared-networks"]) <= shared_network_id:
         world.dhcp_cfg["shared-networks"].append({})
     if sub not in world.dhcp_cfg["shared-networks"][shared_network_id]:
@@ -710,7 +708,7 @@ def set_conf_parameter_shared_subnet(parameter_name, value, network_id):
 
     if parameter_name in ["interface-id", "relay"]:
         world.dhcp_cfg["shared-networks"][network_id].pop("interface", None)
-        for subnet in world.dhcp_cfg["shared-networks"][network_id]["subnet%s" % world.proto[1]]:
+        for subnet in world.dhcp_cfg["shared-networks"][network_id][f"subnet{world.proto[1]}"]:
             subnet.pop("interface", None)
 
 
@@ -777,7 +775,7 @@ def prepare_cfg_add_option_subnet(option_name: str, subnet: int, option_value: s
     if always_send:
         my_opt.update({"always-send": True})
 
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     if "option-data" not in world.dhcp_cfg[sub][subnet]:
         world.dhcp_cfg[sub][subnet]["option-data"] = []
     world.dhcp_cfg[sub][subnet]["option-data"].append(my_opt)
@@ -812,7 +810,7 @@ def prepare_cfg_add_option_pool(option_name: str, option_value: str, subnet: int
     if always_send:
         my_opt.update({"always-send": True})
 
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     if "option-data" not in world.dhcp_cfg[sub][subnet]["pools"][pool]:
         world.dhcp_cfg[sub][subnet]["pools"][pool]["option-data"] = []
     world.dhcp_cfg[sub][subnet]["pools"][pool]["option-data"].append(my_opt)
@@ -860,7 +858,7 @@ def host_reservation(reservation_type, reserved_value, unique_host_value_type, u
     subnet -- the ordinal number of the subnet under which the reservation will
         be made. Careful, this is not the subnet ID.
     """
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     if "reservations" not in world.dhcp_cfg[sub][subnet]:
         world.dhcp_cfg[sub][subnet]["reservations"] = []
 
@@ -882,7 +880,7 @@ def host_reservation(reservation_type, reserved_value, unique_host_value_type, u
 
 
 def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     if world.proto[1] == '6':
         if reservation_type in ["ip-address", "prefix", "prefixes"]:
             # Make sure it ends in "es".
@@ -1037,7 +1035,7 @@ def agent_control_channel(host_address, host_port, socket_name='control_socket')
         logging_file_path = 'stdout'
 
     world.ctrl_enable = True
-    server_socket_type = "dhcp%s" % world.proto[1]
+    server_socket_type = f'dhcp{world.proto[1]}'
     world.ca_cfg["Control-agent"] = {'http-host': host_address,
                                      'http-port':  int(host_port),
                                      'control-sockets': {server_socket_type: {"socket-type": "unix",
@@ -1072,7 +1070,7 @@ def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
     if world.proto == 'v4':
         assert False, "Not available for DHCPv4"
 
-    sub = "subnet%s" % world.proto[1]
+    sub = f'subnet{world.proto[1]}'
     world.dhcp_cfg[sub][int(subnet)].update({"pd-pools": [{"delegated-len": int(delegated_length),
                                                            "prefix": prefix,
                                                            "prefix-len": int(length)}]})
@@ -1139,16 +1137,16 @@ def add_mt_if_we_can(cfg):
 
     # all configured hooks
     list_of_used_hooks = []
-    for hooks in cfg["Dhcp%s" % world.proto[1]]["hooks-libraries"]:
+    for hooks in cfg[f'Dhcp{world.proto[1]}']["hooks-libraries"]:
         list_of_used_hooks.append(hooks["library"].split("/")[-1])
 
     # if any of configured hooks is not working with multi-threading then do NOT enable multi-threading in kea config
     if len(set(list_of_used_hooks).intersection(list_of_non_mt_hooks)) == 0 and world.f_cfg.multi_threading_enabled:
-        if "multi-threading" not in cfg["Dhcp%s" % world.proto[1]]:
+        if 'multi-threading' not in cfg[f'Dhcp{world.proto[1]}']:
             log.debug("Adding MT configuration.")
-            cfg["Dhcp%s" % world.proto[1]].update({"multi-threading": {"enable-multi-threading": True,
-                                                                       "thread-pool-size": 2,
-                                                                       "packet-queue-size": 16}})
+            cfg[f"Dhcp{world.proto[1]}"].update({"multi-threading": {"enable-multi-threading": True,
+                                                                     "thread-pool-size": 2,
+                                                                     "packet-queue-size": 16}})
 
         if "libdhcp_ha.so" in list_of_used_hooks:
             ha_mt = {"multi-threading": {"enable-multi-threading": True,
@@ -1157,7 +1155,7 @@ def add_mt_if_we_can(cfg):
                                          "http-client-threads": 2}}
 
             # HA needs to enable it's own MT connectivity
-            for hook in cfg["Dhcp%s" % world.proto[1]]["hooks-libraries"]:
+            for hook in cfg[f"Dhcp{world.proto[1]}"]["hooks-libraries"]:
                 if "libdhcp_ha.so" in hook["library"]:
                     # change port number to not go through CA, CA will be run in the test for all other commands
                     for peer in hook["parameters"]["high-availability"][0]["peers"]:
@@ -1178,11 +1176,11 @@ def _cfg_write():
     else:
         logging_file = 'stdout'
 
-    add_logger('kea-dhcp%s' % world.proto[1], "DEBUG", 99, logging_file)
+    add_logger(f'kea-dhcp{world.proto[1]}', "DEBUG", 99, logging_file)
 
     _config_db_backend()
 
-    dhcp = "Dhcp%s" % world.proto[1]
+    dhcp = f'Dhcp{world.proto[1]}'
 
     world.dhcp_cfg = {dhcp: world.dhcp_cfg}
 
@@ -1200,7 +1198,7 @@ def _cfg_write():
             conf_file.write(json.dumps(world.ca_cfg, indent=4, sort_keys=False))
 
     add_variable("DHCP_CONFIG", json.dumps(world.dhcp_cfg), False)
-    with open("kea-dhcp%s.conf" % world.proto[1], 'w') as conf_file:
+    with open(f'kea-dhcp{world.proto[1]}.conf', 'w') as conf_file:
         conf_file.write(json.dumps(world.dhcp_cfg, indent=4, sort_keys=False))
 
 
@@ -1210,10 +1208,10 @@ def _write_cfg2(cfg):
             json.dump({"Control-agent": cfg["Control-agent"]}, cfg_file, sort_keys=False,
                       indent=4, separators=(',', ': '))
 
-    if "Dhcp%s" % world.proto[1] in cfg:
+    if f'Dhcp{world.proto[1]}' in cfg:
         cfg = add_mt_if_we_can(cfg)
-        with open("kea-dhcp%s.conf" % world.proto[1], 'w') as cfg_file:
-            json.dump({"Dhcp%s" % world.proto[1]: cfg["Dhcp%s" % world.proto[1]]},
+        with open(f'kea-dhcp{world.proto[1]}.conf', 'w') as cfg_file:
+            json.dump({f'Dhcp{world.proto[1]}': cfg[f'Dhcp{world.proto[1]}']},
                       cfg_file, sort_keys=False, indent=4, separators=(',', ': '))
 
     if "DhcpDdns" in cfg:
@@ -1261,8 +1259,8 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
                          world.f_cfg.etc_join("keactrl.conf"),
                          destination_host=destination_address)
 
-    fabric_send_file("kea-dhcp%s.conf" % world.proto[1],
-                     world.f_cfg.etc_join("kea-dhcp%s.conf" % world.proto[1]),
+    fabric_send_file(f'kea-dhcp{world.proto[1]}.conf',
+                     world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf'),
                      destination_host=destination_address,
                      mode="0o666")
 
@@ -1283,9 +1281,9 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
         copy_configuration_file(world.cfg["cfg_file_2"], "kea_ctrl_config", destination_host=destination_address)
         remove_local_file(world.cfg["cfg_file_2"])
 
-    copy_configuration_file("kea-dhcp%s.conf" % world.proto[1],
-                            "kea-dhcp%s.conf" % world.proto[1], destination_host=destination_address)
-    remove_local_file("kea-dhcp%s.conf" % world.proto[1])
+    copy_configuration_file(f'kea-dhcp{world.proto[1]}.conf',
+                            f'kea-dhcp{world.proto[1]}.conf', destination_host=destination_address)
+    remove_local_file(f'kea-dhcp{world.proto[1]}.conf')
 
     if world.ctrl_enable:
         copy_configuration_file("kea-ctrl-agent.conf", "kea-ctrl-agent.conf", destination_host=destination_address)
@@ -1404,9 +1402,9 @@ def _restart_kea_with_systemctl(destination_address):
     cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
 
     if world.server_system == 'redhat':
-        service_name = 'kea-dhcp%s' % world.proto[1]
+        service_name = f'kea-dhcp{world.proto[1]}'
     else:
-        service_name = 'isc-kea-dhcp%s-server' % world.proto[1]
+        service_name = f'isc-kea-dhcp{world.proto[1]}-server'
 
     cmd = cmd_tpl.format(service=service_name)
     fabric_sudo_command(cmd, destination_host=destination_address)
@@ -1438,9 +1436,9 @@ def _reload_kea_with_systemctl(destination_address):
     cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
 
     if world.server_system == 'redhat':
-        service_name = 'kea-dhcp%s' % world.proto[1]
+        service_name = f'kea-dhcp{world.proto[1]}'
     else:
-        service_name = 'isc-kea-dhcp%s-server' % world.proto[1]
+        service_name = f'isc-kea-dhcp{world.proto[1]}-server'
 
     cmd = cmd_tpl.format(service=service_name, sentence='initiate server reconfiguration')
     fabric_sudo_command(cmd, destination_host=destination_address)
@@ -1610,9 +1608,9 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
         log_path = world.f_cfg.log_join('kea.log*')
     else:
         if world.server_system == 'redhat':
-            service_name = 'kea-dhcp%s' % world.proto[1]
+            service_name = f'kea-dhcp{world.proto[1]}'
         else:
-            service_name = 'isc-kea-dhcp%s-server' % world.proto[1]
+            service_name = f'isc-kea-dhcp{world.proto[1]}-server'
         cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
         cmd += ' /tmp/kea.log'
         result = fabric_sudo_command(cmd,

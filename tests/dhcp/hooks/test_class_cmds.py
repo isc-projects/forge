@@ -235,7 +235,7 @@ def test_negative_missing_class_data_1(class_cmd, dhcp_version):  # pylint: disa
     # bug: #254, FIXED
     cmd = dict(command=class_cmd, arguments={"client-classes": []})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = "invalid number of classes specified for the '%s' command. Expected one class" % class_cmd
+    expected = f"invalid number of classes specified for the '{class_cmd}' command. Expected one class"
     assert response['text'] == expected
 
 
@@ -259,42 +259,42 @@ def test_negative_wrong_args_1(class_cmd, dhcp_version):  # pylint: disable=unus
 def test_negative_wrong_args_2a(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments={"client-classes-wrong": [{"name": "ipxe"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert response['text'] == "missing 'client-classes' argument for the '%s' command" % class_cmd
+    assert response['text'] == f"missing 'client-classes' argument for the '{class_cmd}' command"
 
 
 @pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
 def test_negative_wrong_args_2b(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments={"name-wrong": "ipxe"})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert response['text'] == "missing 'name' argument for the '%s' command" % class_cmd
+    assert response['text'] == f"missing 'name' argument for the '{class_cmd}' command"
 
 
 @pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
 def test_negative_wrong_args_3a(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments={"client-classes": {"name": "ipxe"}})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert response['text'] == "'client-classes' argument specified for the '%s' command is not a list" % class_cmd
+    assert response['text'] == f"'client-classes' argument specified for the '{class_cmd}' command is not a list"
 
 
 @pytest.mark.parametrize("class_cmd", ['class-get', 'class-del'])
 def test_negative_wrong_args_3b(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments={"name": ["voip", "ipxe"]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert response['text'] == "'name' argument specified for the '%s' command is not a string" % class_cmd
+    assert response['text'] == f"'name' argument specified for the '{class_cmd}' command is not a string"
 
 
 @pytest.mark.parametrize("class_cmd", ['class-add', 'class-update', 'class-del', 'class-get'])
 def test_negative_wrong_args_4(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments=["client-classes"])
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert response['text'] == "arguments specified for the '%s' command are not a map" % class_cmd
+    assert response['text'] == f"arguments specified for the '{class_cmd}' command are not a map"
 
 
 @pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
 def test_negative_wrong_args_5(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments={"client-classes": [{"name": "ipxe-1"}, {"name": "ipxe-2"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = "invalid number of classes specified for the '%s' command. Expected one class" % class_cmd
+    expected = f"invalid number of classes specified for the '{class_cmd}' command. Expected one class"
     assert response['text'] == expected
 
 
@@ -302,7 +302,7 @@ def test_negative_wrong_args_5(class_cmd, dhcp_version):  # pylint: disable=unus
 def test_negative_wrong_args_6a(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments={"client-classes": [{"name": "ipxe-1"}], "extra-wrong": 1})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = "invalid number of arguments 2 for the '%s' command. Expecting 'client-classes' list" % class_cmd
+    expected = f"invalid number of arguments 2 for the '{class_cmd}' command. Expecting 'client-classes' list"
     assert response['text'] == expected
 
 
@@ -310,7 +310,7 @@ def test_negative_wrong_args_6a(class_cmd, dhcp_version):  # pylint: disable=unu
 def test_negative_wrong_args_6b(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments={"name": "ipxe-1", "extra-wrong": 1})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = "invalid number of arguments 2 for the '%s' command. Expecting 'name' string" % class_cmd
+    expected = f"invalid number of arguments 2 for the '{class_cmd}' command. Expecting 'name' string"
     assert response['text'] == expected
 
 
@@ -318,7 +318,7 @@ def test_negative_wrong_args_6b(class_cmd, dhcp_version):  # pylint: disable=unu
 def test_negative_wrong_args_6c(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert response['text'] == "arguments must not be empty for the '%s' command" % class_cmd
+    assert response['text'] == f"arguments must not be empty for the '{class_cmd}' command"
 
 
 def test_negative_redundant_args_in_list(dhcp_version):  # pylint: disable=unused-argument
@@ -377,7 +377,7 @@ def test_negative_wrong_command_2(dhcp_version):  # pylint: disable=unused-argum
 def test_negative_wrong_args_7(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments={"client-classes": ["wrong-arg"]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = "invalid class definition specified for the '%s' command. Expected a map" % class_cmd
+    expected = f"invalid class definition specified for the '{class_cmd}' command. Expected a map"
     assert response['text'] == expected
 
 
@@ -397,7 +397,7 @@ def test_negative_update_wrong_args(dhcp_version):  # pylint: disable=unused-arg
 def test_stress_1(iters_factor, dhcp_version):
     iterations = 1 * iters_factor
     for idx in range(iterations):
-        name = 'ipxe-%d' % idx
+        name = f'ipxe-{idx}'
         if dhcp_version == 'v4':
             cmd = dict(command='class-add', arguments={"client-classes": [{"name": name,
                                                                            "test": "option[93].hex == 0x0009",
@@ -409,21 +409,21 @@ def test_stress_1(iters_factor, dhcp_version):
                                                                            "test": "option[93].hex == 0x0009"}]})
 
         response = srv_msg.send_ctrl_cmd(cmd)
-        assert response == {'result': 0, 'text': "Class '%s' added" % name}
+        assert response == {'result': 0, 'text': f"Class '{name}' added"}
 
         cmd = dict(command='class-update', arguments={"client-classes": [{"name": name}]})
         response = srv_msg.send_ctrl_cmd(cmd)
-        assert response == {'result': 0, 'text': "Class '%s' updated" % name}
+        assert response == {'result': 0, 'text': f"Class '{name}' updated"}
 
         cmd = dict(command='class-list')
         response = srv_msg.send_ctrl_cmd(cmd)
         assert len(response['arguments']['client-classes']) == idx + 1
 
     for idx in range(iterations):
-        name = 'ipxe-%d' % idx
+        name = f'ipxe-{idx}'
         cmd = dict(command='class-del', arguments=dict(name=name))
         response = srv_msg.send_ctrl_cmd(cmd)
-        assert response == {'result': 0, 'text': "Class '%s' deleted" % name}
+        assert response == {'result': 0, 'text': f"Class '{name}' deleted"}
 
         cmd = dict(command='class-list')
         response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
@@ -433,7 +433,7 @@ def test_stress_1(iters_factor, dhcp_version):
 def test_stress_2(iters_factor, dhcp_version):
     iterations = 1 * iters_factor
     for idx in range(iterations):
-        name = 'ipxe-%d' % idx
+        name = f'ipxe-{idx}'
         if dhcp_version == 'v4':
             cmd = dict(command='class-add', arguments={"client-classes": [{"name": name,
                                                                            "test": "option[93].hex == 0x0009",
@@ -444,11 +444,11 @@ def test_stress_2(iters_factor, dhcp_version):
             cmd = dict(command='class-add', arguments={"client-classes": [{"name": name,
                                                                            "test": "option[93].hex == 0x0009"}]})
         response = srv_msg.send_ctrl_cmd(cmd)
-        assert response == {'result': 0, 'text': "Class '%s' added" % name}
+        assert response == {'result': 0, 'text': f"Class '{name}' added"}
 
         cmd = dict(command='class-update', arguments={"client-classes": [{"name": name}]})
         response = srv_msg.send_ctrl_cmd(cmd)
-        assert response == {'result': 0, 'text': "Class '%s' updated" % name}
+        assert response == {'result': 0, 'text': f"Class '{name}' updated"}
 
         cmd = dict(command='class-list')
         response = srv_msg.send_ctrl_cmd(cmd)
@@ -456,7 +456,7 @@ def test_stress_2(iters_factor, dhcp_version):
 
         cmd = dict(command='class-del', arguments=dict(name=name))
         response = srv_msg.send_ctrl_cmd(cmd)
-        assert response == {'result': 0, 'text': "Class '%s' deleted" % name}
+        assert response == {'result': 0, 'text': f"Class '{name}' deleted"}
 
         cmd = dict(command='class-list')
         response = srv_msg.send_ctrl_cmd(cmd, exp_result=3)

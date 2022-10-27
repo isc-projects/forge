@@ -9,6 +9,7 @@
 import time
 import pytest
 
+from src.forge_cfg import world
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds, get_config
 from src.protosupport.dhcp4_scen import get_address, get_rejected
 
@@ -25,8 +26,8 @@ def test_auto_reload_1second(dhcp_version, backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend, config_control={"config-fetch-wait-time": 1},
                                                force_reload=False)
 
-    dhcp_key = 'Dhcp%s' % dhcp_version[1]
-    subnet_key = 'subnet%s' % dhcp_version[1]
+    dhcp_key = f'Dhcp{world.proto[1]}'
+    subnet_key = f'subnet{world.proto[1]}'
 
     # check config that there is no subnets and fetch time is 1
     new_cfg = get_config()
@@ -52,8 +53,8 @@ def test_auto_reload_100seconds(dhcp_version, backend):
     cfg = setup_server_for_config_backend_cmds(backend_type=backend, config_control={"config-fetch-wait-time": 100},
                                                force_reload=False)
 
-    dhcp_key = 'Dhcp%s' % dhcp_version[1]
-    subnet_key = 'subnet%s' % dhcp_version[1]
+    dhcp_key = f'Dhcp{world.proto[1]}'
+    subnet_key = f'subnet{world.proto[1]}'
 
     # check config that there is no subnets and fetch time is 100
     new_cfg = get_config()

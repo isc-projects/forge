@@ -5,7 +5,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """ testing lease caching for all backends """
-# pylint: disable=invalid-name,line-too-long
+
+# pylint: disable=unused-argument
 
 import pytest
 
@@ -103,7 +104,7 @@ def _rebind_address(duid, address, fqdn=None):
 @pytest.mark.parametrize("value", ["abc", True])
 def test_lease_cache_incorrect_values(dhcp_version, parameter, value):
     # both for v4 and v6, we don't need to repeat this tests in v4 set
-    ver = int(dhcp_version[-1])
+    ver = int(world.proto[1])
     misc.test_setup()
     srv_control.open_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -112,7 +113,7 @@ def test_lease_cache_incorrect_values(dhcp_version, parameter, value):
     else:
         srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     cache = {parameter: value}
-    world.dhcp_cfg["subnet%d" % ver][0].update(cache)
+    world.dhcp_cfg[f'subnet{ver}'][0].update(cache)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
@@ -195,7 +196,8 @@ def test_lease_cache_enabled(backend, parameter):
     srv_msg.forge_sleep(2, "seconds")
     _rebind_address("00:03:00:01:01:02:03:04:05:06", address)
     rebind_time = _get_cltt_from_lease(address)
-    assert rebind_time == renew_time > assign_time, "Received CLTT should be equal to value got on renew but higher than on assign"
+    assert rebind_time == renew_time > assign_time, \
+        "Received CLTT should be equal to value got on renew but higher than on assign"
 
     # let's timeout threshold and rebind address
     srv_msg.forge_sleep(5, "seconds")

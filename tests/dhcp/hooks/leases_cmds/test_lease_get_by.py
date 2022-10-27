@@ -6,8 +6,6 @@
 
 """Kea lease get by client-id/hostname/hw-address"""
 
-# pylint: disable=invalid-name,line-too-long,unused-argument
-
 import pytest
 
 from src import misc
@@ -66,6 +64,7 @@ def test_control_channel_lease4_get_by_positive(backend):
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.6')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.10-192.168.51.11')
+    srv_control.define_temporary_lease_db_backend(backend)
 
     world.dhcp_cfg.update({"ddns-send-updates": False})
     world.dhcp_cfg["subnet4"][1].update({"ddns-send-updates": False})

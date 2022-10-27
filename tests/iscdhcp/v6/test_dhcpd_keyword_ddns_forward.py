@@ -6,8 +6,6 @@
 
 """ISC_DHCP DHCPv6 Keywords"""
 
-# pylint: disable=invalid-name,line-too-long
-
 import pytest
 from src import misc
 from src import srv_control

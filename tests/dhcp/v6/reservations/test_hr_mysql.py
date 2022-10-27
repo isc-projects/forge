@@ -6,8 +6,6 @@
 
 """Host Reservation DHCPv6 stored in MySQL database."""
 
-# pylint: disable=invalid-name,line-too-long
-
 import pytest
 
 from src import srv_control

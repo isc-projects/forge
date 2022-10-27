@@ -4,8 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=invalid-name,line-too-long
-
 # Author: Wlodzimierz Wencel
 
 import os
@@ -357,7 +355,7 @@ def initialize(scenario):
     # now we use world.cfg["dhcp_under_test"] and world.cfg["dns_under_test"] (in function _define_software)
     # it is being filled with values in srv_control
     world.cfg["wait_interval"] = world.f_cfg.packet_wait_interval
-    world.cfg["cfg_file"] = ["kea-dhcp%s.conf" % world.proto[1],
+    world.cfg['cfg_file'] = [f'kea-dhcp{world.proto[1]}.conf',
                              "kea-ddns.conf",
                              "kea-ctrl-agent.conf",
                              "kea-netconf.conf"]

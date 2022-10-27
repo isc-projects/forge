@@ -10,6 +10,7 @@ import time
 
 import pytest
 
+from src.forge_cfg import world
 from src.protosupport.dhcp4_scen import get_address, get_rejected
 from src.protosupport.dhcp4_scen import get_address4, get_address6
 from src.protosupport.dhcp4_scen import send_decline4, send_decline6
@@ -258,7 +259,7 @@ def test_dhcp4o6_port(initial_dhcp4o6_port, dhcp_version, backend):  # pylint: d
     cfg, config = setup_server_for_config_backend_cmds(backend_type=backend, dhcp4o6_port=initial_dhcp4o6_port,
                                                        check_config=True)
 
-    dhcp_key = 'Dhcp%s' % dhcp_version[1]
+    dhcp_key = f'Dhcp{world.proto[1]}'
 
     if initial_dhcp4o6_port is None:
         assert config[dhcp_key]['dhcp4o6-port'] == 0

@@ -6,7 +6,7 @@
 
 """Kea6 Legal logging hook"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=line-too-long
 
 from datetime import datetime
 import pytest

@@ -4,11 +4,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# pylint: disable=invalid-name,line-too-long,too-many-branches
+
 # Author: Marcin Godzina
 
 """Kea Limits Hook tests"""
-
-# pylint: disable=invalid-name,line-too-long,unused-argument,too-many-branches
 import time
 import random
 import pytest

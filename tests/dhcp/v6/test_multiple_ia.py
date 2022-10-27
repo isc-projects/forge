@@ -6,7 +6,7 @@
 
 """Multiple Identity Association Option in single DHCPv6 message"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name
 
 import pytest
 

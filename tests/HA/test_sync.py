@@ -6,7 +6,7 @@
 
 """Kea HA syncing"""
 
-# pylint: disable=invalid-name,line-too-long,too-many-branches
+# pylint: disable=invalid-name,line-too-long
 
 import pytest
 
@@ -550,7 +550,7 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend, hook
     # get 10 leases some form server1 and some from server2
     l_count = 40
     set_of_leases_1 = generate_leases(leases_count=l_count, iana=1, iapd=0, dhcp_version=dhcp_version)
-    assert l_count == len(set_of_leases_1), "Server gave us %d leases, we wanted %d" % (len(set_of_leases_1), l_count)
+    assert l_count == len(set_of_leases_1), f'Server gave us {len(set_of_leases_1)} leases, we wanted {l_count}'
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2)
 
 

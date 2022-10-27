@@ -6,7 +6,7 @@
 
 """ testing flex option hook"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=line-too-long
 
 import pytest
 

@@ -6,7 +6,7 @@
 
 """DHCPv6 Client Classification request process"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=line-too-long
 
 import pytest
 

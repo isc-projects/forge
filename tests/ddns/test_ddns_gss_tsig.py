@@ -6,7 +6,7 @@
 
 """DDNS with GSS-TSIG"""
 
-# pylint: disable=invalid-name,line-too-long,too-many-branches
+# pylint: disable=line-too-long,too-many-branches
 
 import pytest
 

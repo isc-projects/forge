@@ -6,8 +6,6 @@
 
 """DHCPv4 options requested via DHCP_INFORM message part1"""
 
-# pylint: disable=invalid-name,line-too-long
-
 import pytest
 
 from src import srv_msg

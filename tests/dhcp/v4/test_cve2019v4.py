@@ -6,7 +6,7 @@
 
 """CVE-2019-6472 and -6473"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=line-too-long
 
 import pytest
 

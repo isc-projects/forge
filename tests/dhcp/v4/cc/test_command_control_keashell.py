@@ -6,7 +6,7 @@
 
 """Kea Control Channel Script"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=consider-using-f-string,line-too-long
 
 import json
 import pytest
@@ -273,7 +273,7 @@ def test_control_channel_keashell_test_config():
     world.dhcp_cfg['bad-key'] = 'value'
     dhcp_cfg = json.dumps(world.dhcp_cfg)
     dhcp_cfg = dhcp_cfg[1:-1]  # strip outer curly brackets {} from config json content
-    result = srv_msg.execute_kea_shell("--host 127.0.0.1 --port 8000 --service dhcp4 config-test <<<'%s'" % dhcp_cfg,
+    result = srv_msg.execute_kea_shell(f"--host 127.0.0.1 --port 8000 --service dhcp4 config-test <<<'{dhcp_cfg}'",
                                        exp_result=1)
     assert result[0]['text'] == "Unsupported 'bad-key' parameter."
 
@@ -305,7 +305,7 @@ def test_control_channel_keashell_test_config():
     world.dhcp_cfg['bad-key'] = 'value'
     dhcp_cfg = json.dumps(world.dhcp_cfg)
     dhcp_cfg = dhcp_cfg[1:-1]  # strip outer curly brackets {} from config json content
-    result = srv_msg.execute_kea_shell("--host 127.0.0.1 --port 8000 --service dhcp4 config-test <<<'%s'" % dhcp_cfg,
+    result = srv_msg.execute_kea_shell(f"--host 127.0.0.1 --port 8000 --service dhcp4 config-test <<<'{dhcp_cfg}'",
                                        exp_result=1)
     assert result[0]['text'] == "Unsupported 'bad-key' parameter."
 

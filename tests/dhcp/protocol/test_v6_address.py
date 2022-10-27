@@ -6,8 +6,6 @@
 
 """Standard DHCPv6 address validation"""
 
-# pylint: disable=invalid-name,line-too-long
-
 import pytest
 
 from src import references

@@ -6,8 +6,6 @@
 
 """Standard DHCPv6 message types"""
 
-# pylint: disable=invalid-name,line-too-long
-
 import pytest
 
 from src import srv_msg

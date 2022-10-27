@@ -7,8 +7,6 @@
 # Author: Marcin Godzina
 
 """Kea backend migration tests"""
-
-# pylint: disable=invalid-name,line-too-long,unused-argument
 import time
 import pytest
 

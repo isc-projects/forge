@@ -6,11 +6,13 @@
 
 """Kea Control channel TLS connection tests"""
 
-# pylint: disable=invalid-name,line-too-long,unused-argument
+# pylint: disable=redefined-outer-name,unused-argument
 
-import pytest
-import os
 from base64 import b64encode
+
+import os
+import pytest
+
 from src import misc
 from src import srv_msg
 from src import srv_control
@@ -263,11 +265,11 @@ def test_rbac_remote_address(tls):
     cmds = ["list-commands", "status-get"]
     service = [None, 'agent']
 
-    for i, x in tuple(zip(cmds, service)):
+    for i, serv in tuple(zip(cmds, service)):
         cmd = {"command": i, "arguments": {}}
         resp = srv_msg.send_ctrl_cmd(cmd,
                                      'https' if tls else 'http',
-                                     service=x,
+                                     service=serv,
                                      verify=ca_cert if tls else None,
                                      cert=(client_cert, client_key) if tls else None,
                                      exp_result=403)
@@ -287,11 +289,11 @@ def test_rbac_remote_address(tls):
 
     cmds = ["list-commands", "status-get", "config-get", "config-set"]
     service = [None, 'agent']
-    for i, x in tuple(zip(cmds, service)):
+    for i, serv in tuple(zip(cmds, service)):
         cmd = {"command": i, "arguments": {}}
         resp = srv_msg.send_ctrl_cmd(cmd,
                                      'https' if tls else 'http',
-                                     service=x,
+                                     service=serv,
                                      verify=ca_cert if tls else None,
                                      cert=(client_cert, client_key) if tls else None,
                                      exp_result=403)
@@ -377,13 +379,13 @@ def test_rbac_basic_authentication(tls):
     service = [None, 'agent']
 
     # first admin, check commands that should be accepted
-    for i, x in tuple(zip(cmds, service)):
+    for i, serv in tuple(zip(cmds, service)):
         cmd = {"command": i, "arguments": {}}
         headers = {'Authorization': f'Basic {b64encode(b"admin:1234").decode("ascii")}'}
         # send different command if there is tls enabled or not
         resp = srv_msg.send_ctrl_cmd(cmd,  # command
                                      'https' if tls else 'http',   # depends on tls parameter
-                                     service=x, headers=headers,
+                                     service=serv, headers=headers,
                                      verify=ca_cert if tls else None,   # depends on tls parameter
                                      cert=(client_cert, client_key) if tls else None)    # depends on tls parameter
 
@@ -392,11 +394,11 @@ def test_rbac_basic_authentication(tls):
     service = [None, 'agent']
 
     # first admin, check commands that should be accepted
-    for i, x in tuple(zip(cmds, service)):
+    for i, serv in tuple(zip(cmds, service)):
         cmd = {"command": i, "arguments": {}}
         headers = {'Authorization': f'Basic {b64encode(b"admin:1234").decode("ascii")}'}
         resp = srv_msg.send_ctrl_cmd(cmd, 'https' if tls else 'http',
-                                     service=x, headers=headers, exp_result=403,
+                                     service=serv, headers=headers, exp_result=403,
                                      verify=ca_cert if tls else None,
                                      cert=(client_cert, client_key) if tls else None)
         assert resp['text'] == 'Forbidden', f"text message from response should be 'Forbidden' it is {resp} instead."
@@ -423,11 +425,11 @@ def test_rbac_basic_authentication(tls):
     cmds = ["config-get", "list-commands"]
     service = [None, 'agent']
 
-    for i, x in tuple(zip(cmds, service)):
+    for i, serv in tuple(zip(cmds, service)):
         cmd = {"command": i, "arguments": {}}
         headers = {'Authorization': f'Basic {b64encode(b"admin2:1234").decode("ascii")}'}
         resp = srv_msg.send_ctrl_cmd(cmd, 'https' if tls else 'http',
-                                     service=x, headers=headers,
+                                     service=serv, headers=headers,
                                      verify=ca_cert if tls else None,
                                      cert=(client_cert, client_key) if tls else None)
 
@@ -503,7 +505,7 @@ def test_rbac_access_by_read_write(make_sure_file_is_correct):
     """
     Check ACLs based on READ and WRITE key words, also check how changing command definition files
     in share/api will reflect on Control Agent work
-    :param make_sure_file_is_correct:  fixture that will backup and restore dhcp-disable.json file
+    :param make_sure_file_is_correct: fixture that will backup and restore dhcp-disable.json file
     """
     roles = [
         {

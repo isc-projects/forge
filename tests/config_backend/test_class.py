@@ -11,8 +11,6 @@ import pytest
 from src.protosupport.dhcp4_scen import get_address, get_rejected
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
-# pylint: disable=invalid-name,line-too-long
-
 pytestmark = [pytest.mark.v4,
               pytest.mark.v6,
               pytest.mark.controlchannel,

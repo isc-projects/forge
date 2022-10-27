@@ -22,8 +22,9 @@ pytestmark = [pytest.mark.v4,
 
 
 def _set_server_tag(backend, tag):
-    cmd = dict(command="remote-server%s-set" % world.proto[-1], arguments={"remote": {"type": backend},
-                                                                           "servers": [{"server-tag": tag}]})
+    cmd = dict(command=f"remote-server{world.proto[1]}-set",
+               arguments={"remote": {"type": backend},
+                          "servers": [{"server-tag": tag}]})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
 
@@ -2297,10 +2298,10 @@ def _set_class(backend, args=None, res=0, resp_text=None, tag='abc'):
         args = {"client-classes": [{"name": "foo",
                                     "test": "member('KNOWN')"}]}
     if resp_text is None:
-        resp_text = "DHCP%s client class successfully set." % world.proto
+        resp_text = f"DHCP{world.proto} client class successfully set."
     resp_text = resp_text.replace("vX", world.proto)
 
-    cmd = dict(command="remote-class%s-set" % world.proto[-1], arguments=args)
+    cmd = dict(command=f'remote-class{world.proto[1]}-set', arguments=args)
     response = _send_cmd(cmd, backend=backend, tag=tag, exp_result=res)
 
     if res == 1:
@@ -2314,10 +2315,10 @@ def _del_class(backend, args=None, res=0, resp_text=None, tag=None, count=1):
     if args is None:
         args = {"client-classes": [{"name": "foo"}]}
     if resp_text is None:
-        resp_text = "1 DHCP%s client class(es) deleted." % world.proto
+        resp_text = f'1 DHCP{world.proto} client class(es) deleted.'
     resp_text = resp_text.replace("vX", world.proto)
 
-    cmd = dict(command="remote-class%s-del" % world.proto[-1], arguments=args)
+    cmd = dict(command=f'remote-class{world.proto[1]}-del', arguments=args)
     response = _send_cmd(cmd, backend=backend, tag=tag, exp_result=res)
     if res == 1:
         assert response == {"result": res, "text": resp_text}
@@ -2329,7 +2330,7 @@ def _get_class(backend, args=None, args_rec=None, res=0, resp_text=None, tag=Non
     if args is None:
         args = {"client-classes": [{"name": "foo"}]}
     if resp_text is None:
-        resp_text = "DHCP%s client class 'foo' found." % world.proto
+        resp_text = f"DHCP{world.proto} client class 'foo' found."
     resp_text = resp_text.replace("vX", world.proto)
     if args_rec is None:
         args_rec = {
@@ -2349,7 +2350,7 @@ def _get_class(backend, args=None, args_rec=None, res=0, resp_text=None, tag=Non
             del args_rec["client-classes"][0]["server-hostname"]
             del args_rec["client-classes"][0]["option-def"]
 
-    cmd = dict(command="remote-class%s-get" % world.proto[-1], arguments=args)
+    cmd = dict(command=f'remote-class{world.proto[1]}-get', arguments=args)
     response = _send_cmd(cmd, backend=backend, tag=tag, exp_result=res)
     if res == 1:
         assert response == {"result": res, "text": resp_text}
@@ -2361,7 +2362,7 @@ def _get_class(backend, args=None, args_rec=None, res=0, resp_text=None, tag=Non
 
 def _get_all_class(backend, args=None, args_rec=None, res=0, resp_text=None, tag=None):
     resp_text = resp_text.replace("vX", world.proto)
-    cmd = dict(command="remote-class%s-get-all" % world.proto[-1], arguments=args)
+    cmd = dict(command=f"remote-class{world.proto[1]}-get-all", arguments=args)
     response = _send_cmd(cmd, backend=backend, tag=tag, exp_result=res)
     if res == 1:
         assert response == {"result": res, "text": resp_text}
@@ -2405,15 +2406,15 @@ def test_remote_class_set(dhcp_version, backend):  # pylint: disable=unused-argu
     arg = {"client-classes": [{"name": "my_weird_name",
                                "test": "member('KNOWN')",
                                "option-data": [{"name": "configfile123", "data": "1APC"}]}]}
-    _set_class(backend, arg, res=1, resp_text="definition for the option 'dhcp%s.configfile123'"
-                                              " does not exist (<wire>:0:107)" % world.proto[-1])
+    _set_class(backend, arg, res=1, resp_text=f"definition for the option 'dhcp{world.proto[1]}.configfile123'"
+                                              " does not exist (<wire>:0:107)")
     # set class with custom option with name that is not defined, but it will be accepted as hex
     arg = {"client-classes": [{"name": "my_weird_name",
                                "test": "member('KNOWN')",
                                "option-data": [{"code": 222, "data": "123"}]}]}
     _set_class(backend, arg)
     # set class with custom option that is already defined in the database
-    cmd = dict(command="remote-option-def%s-set" % world.proto[-1],
+    cmd = dict(command=f'remote-option-def{world.proto[1]}-set',
                arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "option-defs": [{"name": "foo", "code": 222, "type": "uint32"}]})

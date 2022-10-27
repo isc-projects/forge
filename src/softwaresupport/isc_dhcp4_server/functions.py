@@ -4,9 +4,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=invalid-name,line-too-long,unused-import,unused-argument
-
 # Author: Wlodzimierz Wencel
+
 from src.softwaresupport.multi_server_functions import fabric_send_file, remove_local_file
 from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command, fabric_download_file
 

@@ -6,7 +6,7 @@
 
 """Host Reservation DHCPv6"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name
 
 import pytest
 

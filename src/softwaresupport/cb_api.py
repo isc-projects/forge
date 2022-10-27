@@ -4,8 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=invalid-name,line-too-long
-
 from src import srv_msg
 from src.forge_cfg import world
 
@@ -23,7 +21,7 @@ def send_cmd(cmd, db_type='', server_tags=None, **kwargs):
 
 
 def global_option_set(options, db_type='', server_tags=None):
-    cmd = 'remote-option%s-global-set' % world.proto[1]
+    cmd = f'remote-option{world.proto[1]}-global-set'
     response = send_cmd(cmd, db_type, server_tags, options=options)
     return response
 
@@ -32,7 +30,7 @@ def client_class_set(classes, db_type='', server_tags=None):
     if not isinstance(classes, list):
         classes = [classes]
     kwargs = {"client-classes": classes}
-    cmd = 'remote-class%s-set' % world.proto[1]
+    cmd = f'remote-class{world.proto[1]}-set'
     response = send_cmd(cmd, db_type, server_tags, **kwargs)
     return response
 
@@ -40,19 +38,19 @@ def client_class_set(classes, db_type='', server_tags=None):
 def client_class_del(class_name, db_type=''):
     server_tags = "forbidden"
     kwargs = {"client-classes": [{"name": class_name}]}
-    cmd = 'remote-class%s-del' % world.proto[1]
+    cmd = f'remote-class{world.proto[1]}-del'
     response = send_cmd(cmd, db_type, server_tags, **kwargs)
     return response
 
 
 def global_option_del(options, db_type='', server_tags=None):
-    cmd = 'remote-option%s-global-del' % world.proto[1]
+    cmd = f'remote-option{world.proto[1]}-global-del'
     response = send_cmd(cmd, db_type, server_tags, options=options)
     return response
 
 
 def global_parameter_set(parameters, db_type='', server_tags=None):
-    cmd = 'remote-global-parameter%s-set' % world.proto[1]
+    cmd = f'remote-global-parameter{world.proto[1]}-set'
     response = send_cmd(cmd, db_type, server_tags, parameters=parameters)
     return response
 
@@ -60,7 +58,7 @@ def global_parameter_set(parameters, db_type='', server_tags=None):
 def subnet_set(subnets, db_type='', server_tags=None):
     if not isinstance(subnets, list):
         subnets = [subnets]
-    cmd = 'remote-subnet%s-set' % world.proto[1]
+    cmd = f'remote-subnet{world.proto[1]}-set'
     response = send_cmd(cmd, db_type, server_tags, subnets=subnets)
     return response
 
@@ -69,7 +67,7 @@ def network_set(networks, db_type='', server_tags=None):
     if not isinstance(networks, list):
         networks = [networks]
     kwargs = {"shared-networks": networks}
-    cmd = 'remote-network%s-set' % world.proto[1]
+    cmd = f'remote-network{world.proto[1]}-set'
     response = send_cmd(cmd, db_type, server_tags, **kwargs)
     return response
 
@@ -77,7 +75,7 @@ def network_set(networks, db_type='', server_tags=None):
 def subnet_del_by_id(subnet_id, db_type='', server_tags=None):
     server_tags = "forbidden"
     kwargs = {"subnets": [{"id": subnet_id}]}
-    cmd = 'remote-subnet%s-del-by-id' % world.proto[1]
+    cmd = f'remote-subnet{world.proto[1]}-del-by-id'
     response = send_cmd(cmd, db_type, server_tags, **kwargs)
     return response
 
@@ -85,6 +83,6 @@ def subnet_del_by_id(subnet_id, db_type='', server_tags=None):
 def subnet_del_by_prefix(subnet_prefix, db_type='', server_tags=None):
     server_tags = "forbidden"
     kwargs = {"subnets": [{"subnet": subnet_prefix}]}
-    cmd = 'remote-subnet%s-del-by-prefix' % world.proto[1]
+    cmd = f'remote-subnet{world.proto[1]}-del-by-prefix'
     response = send_cmd(cmd, db_type, server_tags, **kwargs)
     return response

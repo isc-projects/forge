@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=import-outside-toplevel,unused-argument
 
 import pytest
 from src.forge_cfg import world
@@ -53,7 +53,9 @@ def pytest_runtest_logfinish(nodeid, location):
 
 def pytest_runtest_logreport(report):
     if report.when == 'call':
-        banner = '\n************ RESULT %s   %s ' % (report.outcome.upper(), report.nodeid)
+        outcome = report.outcome.upper()
+        node_id = report.nodeid
+        banner = f'\n************ RESULT {outcome}   {node_id} '
         banner += '*' * (140 - len(banner))
         if report.outcome == 'passed':
             banner = '\u001b[32;1m' + banner + '\u001b[0m'
@@ -80,15 +82,15 @@ def pytest_generate_tests(metafunc):
         dhcp_versions = []
 
         # For all versions attributed to the function...
-        explicit_dhcp_version=False
+        explicit_dhcp_version = False
         for v in list_of_attributed_versions:
             # If conflicting expressions were provided...
             if v in mark_expression and f'not {v}' in mark_expression:
                 # Then complain to the user.
-                raise Error(f'conflicting markers: "{v}" and "not {v}')
+                raise Exception(f'conflicting markers: "{v}" and "not {v}')
             # If this version was provided...
             if v in mark_expression:
-                explicit_dhcp_version=True
+                explicit_dhcp_version = True
                 # And if "not version" was omitted...
                 if 'not {v}' not in mark_expression:
                     # Then add it to the list of parametrized versions.
@@ -120,7 +122,7 @@ def pytest_unconfigure(config):
 
 def pytest_addoption(parser):
     parser.addoption("--iters-factor", action="store", default=1,
-        help="iterations factor, initial iterations in tests are multiplied by this value, default 1")
+                     help="iterations factor, initial iterations in tests are multiplied by this value, default 1")
 
 
 @pytest.fixture

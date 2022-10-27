@@ -6,8 +6,6 @@
 
 """DHCPv4 options part1"""
 
-# pylint: disable=invalid-name,line-too-long
-
 import pytest
 
 from src import misc

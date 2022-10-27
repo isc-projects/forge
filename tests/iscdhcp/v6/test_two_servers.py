@@ -17,8 +17,6 @@
 # list all created systems: vagrant global-status
 # vagrant ssh <system-id> -c "bash"
 
-# pylint: disable=invalid-name,line-too-long
-
 import pytest
 from src import misc
 from src import srv_control

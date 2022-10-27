@@ -4,8 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=invalid-name,line-too-long
-
 # Author: Wlodzimierz Wencel
 
 import datetime
@@ -213,9 +211,9 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
                     service_name = 'isc-kea-dhcp-ddns-server'
             else:
                 if world.server_system == 'redhat':
-                    service_name = 'kea-dhcp%s' % world.proto[1]
+                    service_name = f'kea-dhcp{world.proto[1]}'
                 else:
-                    service_name = 'isc-kea-dhcp%s-server' % world.proto[1]
+                    service_name = f'isc-kea-dhcp{world.proto[1]}-server'
             cmd = 'ts=`systemctl show -p ActiveEnterTimestamp %s | awk \'{{print $2 $3}}\'`;' % service_name  # get time of log beginning
             cmd += ' ts=${ts:-$(date +"%Y-%m-%d%H:%M:%S")};'  # if started for the first time then ts is empty so set to current date
             cmd += ' journalctl -u %s --since $ts |' % service_name  # get logs since last start of kea service

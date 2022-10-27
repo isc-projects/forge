@@ -6,8 +6,6 @@
 
 """DDNS control channel basic commands"""
 
-# pylint: disable=invalid-name,line-too-long
-
 import os
 import json
 import pytest

@@ -4,8 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=invalid-name,line-too-long
-
 # Author: Wlodzimierz Wencel
 
 config_file_set = {
@@ -2151,7 +2149,7 @@ logging{
 # 	algorithm hmac-md5;
 # 	secret "+kOEcvxPTCPxzGqB5n5FeA==";
 # };
-# 
+#
 # options {
 # 	default-key "rndc-key";
 # 	default-server 127.0.0.1;
@@ -2256,7 +2254,7 @@ logging{
 # 	algorithm hmac-md5;
 # 	secret "+kOEcvxPTCPxzGqB5n5FeA==";
 # };
-# 
+#
 # options {
 # 	default-key "rndc-key";
 # 	default-server 127.0.0.1;

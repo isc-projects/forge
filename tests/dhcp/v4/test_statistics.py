@@ -62,21 +62,21 @@ class StatsState4:
         for key, _ in self.s.items():
             if key not in statistics_from_kea:
                 statistics_not_found.append(key)
-        assert len(statistics_not_found) == 0, 'The following statistics were expected, but not received: %s' % statistics_not_found
+        assert len(statistics_not_found) == 0, f'The following statistics were expected, but not received: {statistics_not_found}'
 
         statistics_not_found = []
         for key in statistics_from_kea:
             if key not in self.s:
                 statistics_not_found.append(key)
-        assert len(statistics_not_found) == 0, 'The following statistics were received, but not expected: %s' % statistics_not_found
+        assert len(statistics_not_found) == 0, f'The following statistics were received, but not expected: {statistics_not_found}'
 
         for key, expected in self.s.items():
             received = statistics_from_kea[key][0][0]
-            assert expected == received, 'stat %s: expected %s, received %s' % (key, expected, received)
+            assert expected == received, f'stat {key}: expected {expected}, received {received}'
 
 
 def get_stat(name):
-    cmd = '{"command": "statistic-get","arguments": {"name": "%s"}}' % name
+    cmd = {"command": "statistic-get", "arguments": {"name": name}}
     result = srv_msg.send_ctrl_cmd_via_socket(cmd)
     result = [r[0] for r in result['arguments'][name]]
     return result

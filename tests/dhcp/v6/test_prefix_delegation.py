@@ -6,7 +6,7 @@
 
 """DHCPv6 Prefix Delegation"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name
 
 import pytest
 

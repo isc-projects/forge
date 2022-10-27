@@ -6,7 +6,8 @@
 
 """Kea leases manipulation commands"""
 
-# pylint: disable=invalid-name,line-too-long,unused-argument
+# pylint: disable=line-too-long
+
 import time
 import pytest
 

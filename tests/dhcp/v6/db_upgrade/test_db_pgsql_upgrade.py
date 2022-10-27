@@ -6,7 +6,7 @@
 
 """Test pgsql db upgrade"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name
 
 import glob
 import pytest
@@ -81,9 +81,9 @@ def _create_pgsql_dump():
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::10')
 
     # wanted to do this with fabric_sudo_command(cmd, sudo_user='postgres' but it failed
-    cmd = "sudo -S -u postgres pg_dump %s >%s/pg_db_v6.sql" % (world.f_cfg.db_name, world.f_cfg.software_install_path)
+    cmd = f'sudo -S -u postgres pg_dump {world.f_cfg.db_name} > {world.f_cfg.software_install_path}/pg_db_v6.sql'
     fabric_run_command(cmd, ignore_errors=False, destination_host=world.f_cfg.mgmt_address)
-    srv_msg.execute_shell_cmd("sed -i 's/$(DB_USER)/!db_user!/g' %s/pg_db_v6.sql" % world.f_cfg.software_install_path)
+    srv_msg.execute_shell_cmd(f"sed -i 's/$(DB_USER)/!db_user!/g' {world.f_cfg.software_install_path}/pg_db_v6.sql")
 
 
 # @pytest.mark.v6
@@ -103,10 +103,10 @@ def test_v6_upgrade_pgsql_db():
     srv_msg.remove_file_from_server('/tmp/pg_db_v6.sql')
     srv_msg.send_file_to_server(glob.glob("**/pg_db_v6.sql", recursive=True)[0], '/tmp/pg_db_v6.sql')
     # switch username to the one setup is using
-    srv_msg.execute_shell_cmd("sed -i 's/!db_user!/%s/g' /tmp/pg_db_v6.sql" % tmp_user_name)
+    srv_msg.execute_shell_cmd(f"sed -i 's/!db_user!/{tmp_user_name}/g' /tmp/pg_db_v6.sql")
     # recreate db content in new db
 
-    cmd = "sudo -S -u postgres psql -d %s -f/tmp/pg_db_v6.sql" % tmp_db_name
+    cmd = f"sudo -S -u postgres psql -d {tmp_db_name} -f/tmp/pg_db_v6.sql"
     fabric_run_command(cmd, ignore_errors=False, destination_host=world.f_cfg.mgmt_address)
 
     # start kea, which should fail due to mismatch in db version
@@ -132,7 +132,7 @@ def test_v6_upgrade_pgsql_db():
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
     kea_admin = world.f_cfg.sbin_join('kea-admin')
-    srv_msg.execute_shell_cmd("sudo %s db-upgrade pgsql -u %s -p $(DB_PASSWD) -n %s" % (kea_admin, tmp_user_name, tmp_db_name))
+    srv_msg.execute_shell_cmd(f'sudo {kea_admin} db-upgrade pgsql -u {tmp_user_name} -p $(DB_PASSWD) -n {tmp_db_name}')
 
     # start kea
     srv_control.start_srv('DHCP', 'started')

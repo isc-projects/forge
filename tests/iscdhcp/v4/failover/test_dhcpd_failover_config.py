@@ -6,8 +6,6 @@
 
 """ISC_DHCP DHCPv4 Failover Configuration"""
 
-# pylint: disable=invalid-name,line-too-long
-
 import pytest
 
 from src import misc

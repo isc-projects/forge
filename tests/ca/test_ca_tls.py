@@ -8,7 +8,7 @@
 
 """Kea Control channel TLS connection tests"""
 
-# pylint: disable=invalid-name,line-too-long,unused-argument
+# pylint: disable=unused-argument
 
 import pytest
 from src import misc

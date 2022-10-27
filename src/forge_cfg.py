@@ -5,8 +5,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-# pylint: disable=invalid-name,line-too-long
 # author: Wlodzimierz Wencel
 
 import os
@@ -208,9 +206,9 @@ class ForgeConfiguration:
 
     def get_dhcp_conf_path(self):
         if self.install_method == 'make':
-            return os.path.join(self.software_install_path, 'etc/kea/kea-dhcp%s.conf' % world.proto[1])
+            return os.path.join(self.software_install_path, f'etc/kea/kea-dhcp{world.proto[1]}.conf')
         else:
-            return '/etc/kea/kea-dhcp%s.conf' % world.proto[1]
+            return f'/etc/kea/kea-dhcp{world.proto[1]}.conf'
 
     def sbin_join(self, sub_path):
         if self.install_method == 'make':

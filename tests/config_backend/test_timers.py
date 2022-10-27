@@ -6,12 +6,15 @@
 
 """Kea config backend testing timers in global params, subnets and shared networks."""
 
+# pylint: disable=unused-argument
+
 import time
 import logging
 
 import pytest
 
 from src import srv_msg
+from src.forge_cfg import world
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds, get_cfg_default
 from src.protosupport.dhcp4_scen import get_address, get_rejected
 
@@ -33,8 +36,8 @@ def test_subnet_and_renew_timer(dhcp_version, backend):
 
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
-    dhcp_key = 'Dhcp%s' % dhcp_version[1]
-    subnet_key = 'subnet%s' % dhcp_version[1]
+    dhcp_key = f'Dhcp{world.proto[1]}'
+    subnet_key = f'subnet{world.proto[1]}'
 
     # define one, default subnet
     _, config = cfg.add_subnet(backend=backend)

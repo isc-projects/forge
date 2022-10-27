@@ -200,12 +200,12 @@ def test_hot_standby_maintenance(backend):
             "Incorrect duid saved in one of the leases list"
 
 
-
 # Clients using those DUIDs will always be dropped by server1 and accepted by server2
 # 00:03:00:01:02:03:0d:04:0b:01
 # 00:03:00:01:05:06:10:07:0e:04
 # 00:03:00:01:09:0a:14:0b:12:08
 # 00:03:00:01:0a:0b:15:0c:13:09
+
 
 @pytest.mark.v6
 @pytest.mark.ha

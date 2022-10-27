@@ -121,7 +121,7 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1,
             assert False, "State reached terminated! Tests will fail"
         elif resp["arguments"]["state"] == state:
             return resp
-    assert False, "After %d retries HA did NOT reach '%s' state" % (retry, state)
+    assert False, f"After {retry} retries HA did NOT reach '{state}' state"
     return {}  # let's keep pylint error quiet
 
 

@@ -6,8 +6,6 @@
 
 """DHCPv4 message fields"""
 
-# pylint: disable=invalid-name,line-too-long
-
 import pytest
 
 from src import srv_control

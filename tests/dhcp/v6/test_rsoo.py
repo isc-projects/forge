@@ -6,8 +6,6 @@
 
 """Relay-Supplied Options"""
 
-# pylint: disable=invalid-name,line-too-long
-
 import pytest
 
 from src import misc

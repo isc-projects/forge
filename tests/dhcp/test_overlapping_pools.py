@@ -22,7 +22,7 @@ def _bump_subnets(shared_networks: bool = False):
     that they don't come in conflict with other subnets/pools.
     :param shared_networks: whether to act on shared networks; if not action is taken on usual subnets
     """
-    subnetx = f'subnet{world.proto[-1]}'
+    subnetx = f'subnet{world.proto[1]}'
     subnet_list = world.dhcp_cfg['shared-networks'][0][subnetx] if shared_networks else world.dhcp_cfg[subnetx]
     for i, _ in enumerate(world.dhcp_cfg[subnetx]):
         subnet_list[i]['id'] += 1000

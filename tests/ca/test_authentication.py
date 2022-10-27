@@ -6,11 +6,10 @@
 
 """Kea Control channel TLS connection tests"""
 
-# pylint: disable=invalid-name,line-too-long,unused-argument
+from base64 import b64encode
 
 import pytest
-import os
-from base64 import b64encode
+
 from src import misc
 from src import srv_msg
 from src import srv_control

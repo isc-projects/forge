@@ -6,7 +6,7 @@
 
 """ISC_DHCP DHCPv6 Tickets Prefix Length Pool Mismatch"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name
 
 import pytest
 from src import misc
