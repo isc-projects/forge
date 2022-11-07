@@ -16,7 +16,6 @@ import pytest
 from src import misc
 from src import srv_control
 from src import srv_msg
-
 from src.forge_cfg import world
 
 
