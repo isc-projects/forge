@@ -197,7 +197,7 @@ def _get_lease_v6(address, duid, vendor=None, ia_na=None, ia_pd=None):
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_rate_limits_subnet(dhcp_version, backend, unit):
     """
-    Test of subnets limit of Rate Limiting Hook.
+    Test of subnets limit of rate limiting in Limits Hook.
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
     and counts how many packets were sent, and how many packets were received from Kea.
     If the received packets is the same as limit, the test passes. Some error in number of packets is accounted for.
@@ -281,7 +281,7 @@ def test_rate_limits_subnet(dhcp_version, backend, unit):
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_rate_limits_class(dhcp_version, backend, unit):
     """
-    Test of class limit of Rate Limiting Hook.
+    Test of class limit of rate limiting in Limits Hook..
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
     and counts how many packets were sent, and how many packets were received from Kea.
     If the received packets is the same as limit, the test passes. Some error in number of packets is accounted for.
@@ -297,7 +297,6 @@ def test_rate_limits_class(dhcp_version, backend, unit):
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
-    srv_control.add_hooks('libdhcp_class_cmds.so')
 
     # define test duration in seconds
     duration = 1 if unit == 'second' else 60
@@ -383,7 +382,7 @@ def test_rate_limits_class(dhcp_version, backend, unit):
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_rate_limits_builtin_class(dhcp_version, backend, unit):
     """
-    Test of class limit of Rate Limiting Hook.
+    Test of rate limits for built-in classes in Limits Hook.
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
     and counts how many packets were sent, and how many packets were received from Kea.
     If the received packets is the same as limit, the test passes. Some error in number of packets is accounted for.
@@ -399,7 +398,6 @@ def test_rate_limits_builtin_class(dhcp_version, backend, unit):
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
-    srv_control.add_hooks('libdhcp_class_cmds.so')
 
     # define test duration in seconds
     duration = 1 if unit == 'second' else 60
@@ -483,7 +481,7 @@ def test_rate_limits_builtin_class(dhcp_version, backend, unit):
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_rate_limits_mix(dhcp_version, backend):
     """
-    Test of subnet and class mixed limit of Rate Limiting Hook.
+    Test of subnet and class mixed limit of rate limiting in Limits Hook.
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
     and counts how many packets were sent, and how many packets were received from Kea in different classes.
     If the received packets is the same as limit, the test passes. Some error in number of packets is accounted for.
@@ -505,7 +503,6 @@ def test_rate_limits_mix(dhcp_version, backend):
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
-    srv_control.add_hooks('libdhcp_class_cmds.so')
 
     # hook configuration in user context for classes with limit
     gold = 3
@@ -633,7 +630,7 @@ def test_rate_limits_mix(dhcp_version, backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_subnet(dhcp_version, backend):
     """
-    Test of subnets lease limit of Lease Limiting Hook.
+    Test of subnets lease limit in Limits Hook.
     The test makes DORA or SARR exchange to acquire leases and counts if dropped or returned
     "no leases available".
     Test removes leases and tries again to check if the limit is restored.
@@ -755,7 +752,7 @@ def test_lease_limits_subnet(dhcp_version, backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_class(dhcp_version, backend):
     """
-    Test of class lease limit of Lease Limiting Hook.
+    Test of class lease limit in Limits Hook.
     The test makes DORA or SARR exchange to acquire leases and counts if dropped or returned
     "no leases available".
     Test removes leases and tries again to check if the limit is restored.
@@ -772,8 +769,6 @@ def test_lease_limits_class(dhcp_version, backend):
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
         srv_control.config_srv_prefix('2002:db8:1::', 0, 90, 96)
-
-    srv_control.add_hooks('libdhcp_class_cmds.so')
 
     # hook configuration in user context for classes with limit
     if dhcp_version == 'v4':
@@ -930,7 +925,7 @@ def test_lease_limits_class(dhcp_version, backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_builtin_class(dhcp_version, backend):
     """
-    Test of class lease limit of Lease Limiting Hook.
+    Test of class limit for built-in classes in Limits Hook.
     The test makes DORA or SARR exchange to acquire leases and counts if dropped or returned
     "no leases available".
     Test removes leases and tries again to check if the limit is restored.
@@ -947,8 +942,6 @@ def test_lease_limits_builtin_class(dhcp_version, backend):
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
         srv_control.config_srv_prefix('2002:db8:1::', 0, 90, 96)
-
-    srv_control.add_hooks('libdhcp_class_cmds.so')
 
     # hook configuration in user context for classes with limit
     if dhcp_version == 'v4':
@@ -1071,7 +1064,7 @@ def test_lease_limits_builtin_class(dhcp_version, backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_mix(dhcp_version, backend):
     """
-    Test of subnet and class lease limit of Lease Limiting Hook.
+    Test of subnet and class lease limit in Limits Hook.
     The test makes DORA or SARR exchange to acquire leases and counts if dropped or returned
     "no leases available".
     Test removes leases and tries again to check if the limit is restored.
@@ -1089,8 +1082,6 @@ def test_lease_limits_mix(dhcp_version, backend):
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
         srv_control.config_srv_prefix('2002:db8:1::', 0, 90, 96)
-
-    srv_control.add_hooks('libdhcp_class_cmds.so')
 
     # hook configuration in user context for subnet with limit defined above
     srv_control.add_line_to_subnet(0, {"user-context": {
