@@ -1,19 +1,20 @@
   Working example
  -----------------
 We present you step-by-step instructions to set up example testing environment and run some Forge tests on Kea server.
-In this example we will use Ubuntu server 21.10 installed from ISO on two Virtual Machines.
+In this example we will use Ubuntu server 22.04.1 installed from ISO on two Virtual Machines.
 
-We used this image: https://releases.ubuntu.com/21.10/ubuntu-21.10-live-server-amd64.iso
+We used this image: https://releases.ubuntu.com/22.04.1/ubuntu-22.04.1-live-server-amd64.iso
 
 Other software used:
 * Virtual Box installed on HOST machine
 
-This guide was last tested on 8th December 2021.
+This guide was last tested on 10th November 2022.
 
   Setting up DUT (Device Under Test)
  ------------------------------------
 ### 1. Make VM for Kea Server
 Kea will need at least 20 GB of disk space for build process.
+(We recommend 80 GB to account for rebuilding without cleanup.)
 We make new VM with network settings as follows:
 * Adapter 1: NAT
 * Adapter 2: Host-Only Adapter _(in our case it automatically made vboxnet0)_
@@ -21,7 +22,7 @@ We make new VM with network settings as follows:
 
 **(following instructions are meant to be executed on VM you choose to be Device Under Test)**
 
-### 2. Install Ubuntu Server 21.10
+### 2. Install Ubuntu Server 22.04.1
 Install Ubuntu from ISO using default settings and not installing additional services other than OpenSSH.
 
 After installation check IP address acquired on Adapter 2 _(in our case interface: enp0s8 ip: 192.168.58.6)._
@@ -33,7 +34,7 @@ You can use this ip to connect by SSH from HOST machine for easier management.
 ### 3. Setup network interface for testing
 Adapter 1 and 2 should get addresses from Virtual Box._(our machine got 10.0.2.15 for NAT and 192.168.58.6 for Host-Only)_
 
-We use netplan on Ubuntu 21.10 to set static ip for Adapter 3.
+We use netplan on Ubuntu 22.04.1 to set static ip for Adapter 3.
 
 Enter netplan directory and list files.
 ```shell
@@ -48,7 +49,7 @@ Edit this file.
 sudo nano your_filename.yaml
 ```
 
-Change last interface options to static ip 192.168.20.1 _(we just choose this ip at random but not conflicting with other networks)_
+Change last interface options to static ip 192.168.50.252
 
 Our file looks like this after modification.
 ```
@@ -61,7 +62,7 @@ network:
     enp0s9:
       dhcp4: no
       addresses:
-        - 192.168.20.1/24
+        - 192.168.50.252/24
   version: 2
 ```
 
@@ -99,10 +100,10 @@ cd kea
 ```
 
 run hammer.py script which will prepare all requirements for build process.
-We use some predefined settings for basic server. hammer.py has config for ubuntu 21.04, but it works on 21.10.
+We use some predefined settings for basic server.
 
 ```shell
-./hammer.py prepare-system -p local -s ubuntu -r 21.04 -w mysql pgsql radius gssapi netconf shell ccache
+./hammer.py prepare-system -p local -s ubuntu -r 22.04 -w mysql pgsql radius gssapi netconf shell ccache
 ```
 
 We need to make autoreconf of source.
@@ -150,10 +151,10 @@ sudo apt install socat
 We make new VM with network settings as follows:
 * Adapter 1: NAT
 * Adapter 2: Host-Only Adapter, choose the same as in DUT
-+* Adapter 3: Internal Network, write **exactly the same** name as in DUT
+* Adapter 3: Internal Network, write **exactly the same** name as in DUT
 
 **(following instructions are meant to be executed on VM you choose to be Forge Machine)**
-### 2. Install Ubuntu Server 21.10
+### 2. Install Ubuntu Server 22.04.1
 Install Ubuntu from ISO on VM using default settings and not installing additional services other than OpenSSH.
 
 After installation check IP address acquired on Adapter 2 _(in our case interface: enp0s8 ip: 192.168.58.5)._
@@ -165,7 +166,7 @@ You can use this ip to connect by SSH from HOST machine for easier management.
 ### 3. Setup network interface for testing
 Adapter 1 and 2 should get addresses from Virtual Box. _(our machine got 10.0.2.15 for NAT and 192.168.58.5 for Host-Only)_
 
-We use netplan on Ubuntu 21.10 to set static ip for Adapter 3.
+We use netplan on Ubuntu 22.04.01 to set static ip for Adapter 3.
 
 Enter netplan directory and list files.
 ```shell
@@ -180,7 +181,7 @@ Edit this file.
 sudo nano your_filename.yaml
 ```
 
-Change last interface options to static ip 192.168.20.10 _(we just choose this ip at random, but kept the same subnet as Adapter 3 on DUT)_
+Change last interface options to static ip 192.168.50.3 and 2001:db9:1::2000
 
 Our file looks like this after modification.
 ```
@@ -193,7 +194,8 @@ network:
     enp0s9:
       dhcp4: no
       addresses:
-        - 192.168.20.10/24
+        - 192.168.50.3/24
+        - 2001:db9:1::2000/64
   version: 2
 ```
 
@@ -210,12 +212,12 @@ You can use git clone to download Forge from repository.
 git clone https://gitlab.isc.org/isc-projects/forge.git
 ```
 
-### 5. Install Python virtual environment module
+### 5. Install Python virtual environment module (it should install also python pip)
 ```shell
-sudo apt install python3.9-venv
+sudo apt install python3.10-venv
 ```
 
-### 6. pcapy package needs to have **build-essential** installed on Ubuntu 21.10
+### 6. pcapy package needs to have **build-essential** installed on Ubuntu 22.04.1
 ```shell
 sudo apt install build-essential
 ```
@@ -226,6 +228,15 @@ We need to enter directory with cloned forge, make new virtual environment, acti
 cd forge
 python3 -m venv venv
 source ./venv/bin/activate
+```
+
+Python 3.10 does not support `pcapy` package, so we need to use `pycap` instead by changing it in requirements file:
+```shell
+sed -i 's/pcapy/pycap/g' requirements.txt
+```
+
+Install requirements:
+```shell
 ./venv/bin/pip install -r requirements.txt
 ```
 
@@ -233,7 +244,7 @@ source ./venv/bin/activate
 You need to copy default config file as a working one:
 
 ```shell
-+cp ./init_all.py_default ./init_all.py
+cp ./init_all.py_default ./init_all.py
 ```
 
 And now edit this file:
@@ -245,11 +256,11 @@ Parameters that need to be set or uncommented, some of them will be empty:
 
 `SOFTWARE_UNDER_TEST = ('kea6_server'),` (note the comma on the end)
 
-`SRV4_ADDR = '192.168.20.1'` - this is the IP we set at Server
+`SRV4_ADDR = '192.168.50.252'` - this is the IP we set at Server
 
-`CIADDR = '192.168.20.10'` - this is the IP we set at Forge Machine
+`CIADDR = '192.168.50.3'` - this is the IP we set at Forge Machine
 
-`GIADDR4 = '0.0.0.0'`
+`GIADDR4 = '192.168.50.3'` - this is the IP we set at Forge Machine
 
 `IFACE = 'enp0s9'` - name of interface on Forge Machine which is connected to DUT for testing
 
