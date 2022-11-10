@@ -1,8 +1,5 @@
 scapy
 
-# required by scapy
-pcapy
-
 # required by forge
 fabric3
 netifaces
