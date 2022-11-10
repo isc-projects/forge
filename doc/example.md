@@ -217,7 +217,7 @@ git clone https://gitlab.isc.org/isc-projects/forge.git
 sudo apt install python3.10-venv
 ```
 
-### 6. pcapy package needs to have **build-essential** installed on Ubuntu 22.04.1
+### 6. Some packages need to have **build-essential** installed on Ubuntu 22.04.1
 ```shell
 sudo apt install build-essential
 ```
@@ -228,15 +228,6 @@ We need to enter directory with cloned forge, make new virtual environment, acti
 cd forge
 python3 -m venv venv
 source ./venv/bin/activate
-```
-
-Python 3.10 does not support `pcapy` package, so we need to use `pycap` instead by changing it in requirements file:
-```shell
-sed -i 's/pcapy/pycap/g' requirements.txt
-```
-
-Install requirements:
-```shell
 ./venv/bin/pip install -r requirements.txt
 ```
 
