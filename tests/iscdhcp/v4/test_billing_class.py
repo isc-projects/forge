@@ -3,10 +3,12 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
+
 from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_line_in_global
 
 
@@ -75,5 +77,5 @@ def test_v4_dhcpd_billing_class_limit():
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
-    srv_msg.wait_for_message_in_log('no available billing: lease limit reached in all matching classes (last: \'vnd1001\')',
-                                    count=1, log_file=build_log_path())
+    wait_for_message_in_log('no available billing: lease limit reached in all matching classes (last: \'vnd1001\')',
+                            count=1, log_file=build_log_path())

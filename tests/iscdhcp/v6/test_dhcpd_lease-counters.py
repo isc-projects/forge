@@ -3,10 +3,12 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
+
 from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.isc_dhcp6_server.functions import build_log_path
 
 
@@ -109,10 +111,10 @@ def test_v6_dhcpd_lease_counters():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
-    srv_msg.wait_for_message_in_log('shared network 2001:db8:1::/64: 2 total, 1 active,  1 abandoned',
-                                    count=1, log_file=build_log_path())
-    srv_msg.wait_for_message_in_log('Best match for DUID 00:03:00:01:ff:ff:ff:ff:ff:01 is an abandoned address',
-                                    count=1, log_file=build_log_path())
+    wait_for_message_in_log('shared network 2001:db8:1::/64: 2 total, 1 active,  1 abandoned',
+                            count=1, log_file=build_log_path())
+    wait_for_message_in_log('Best match for DUID 00:03:00:01:ff:ff:ff:ff:ff:01 is an abandoned address',
+                            count=1, log_file=build_log_path())
 
     # ###################################################
     # Step 4: Client 1 reclaims denied address
@@ -143,7 +145,7 @@ def test_v6_dhcpd_lease_counters():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
-    srv_msg.wait_for_message_in_log('shared network 2001:db8:1::/64: 2 total, 2 active,  0 abandoned',
-                                    count=1, log_file=build_log_path())
-    srv_msg.wait_for_message_in_log('Best match for DUID 00:03:00:01:ff:ff:ff:ff:ff:03 is an abandoned address',
-                                    count=0, log_file=build_log_path())
+    wait_for_message_in_log('shared network 2001:db8:1::/64: 2 total, 2 active,  0 abandoned',
+                            count=1, log_file=build_log_path())
+    wait_for_message_in_log('Best match for DUID 00:03:00:01:ff:ff:ff:ff:ff:03 is an abandoned address',
+                            count=0, log_file=build_log_path())

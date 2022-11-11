@@ -3,13 +3,15 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
+
 from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import log_doesnt_contain
 # importing directly from server definitions is not usual way we do, but I don't want to change kea related code
 from src.softwaresupport.isc_dhcp6_server.functions_ddns import add_forward_ddns, add_reverse_ddns
-from src.forge_cfg import world
 
 
 @pytest.mark.v6
@@ -1110,8 +1112,7 @@ def test_ddns6_notsig_rev_success_withoutflag():
     # Response option 39 MUST contain flags 0. #later make it 's' 'n' and 'o'
     # Response option 39 MUST contain fqdn sth6.six.example.com.
     # Optional DNS tests
-    # srv_msg.dns_log_contains(None,
-    #                          'adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.')
+    # log_contains('adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.', world.cfg["dns_log_file"])
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
@@ -1192,8 +1193,8 @@ def test_ddns6_notsig_rev_withoutflag_notenabled():
     # Response MUST include option 39.
     # Response option 39 MUST contain flags 4. #later make it 's' 'n' and 'o' 4 -N
     # Response option 39 MUST contain fqdn sth6.six.example.com.
-    srv_msg.log_doesnt_contain('adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.',
-                               world.cfg["dns_log_file"])
+    log_doesnt_contain('adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.',
+                       world.cfg["dns_log_file"])
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')

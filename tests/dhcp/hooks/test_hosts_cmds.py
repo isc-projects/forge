@@ -10,6 +10,7 @@ from src import srv_msg
 
 from src.forge_cfg import world
 from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
+from src.protosupport.multi_protocol_functions import log_contains
 
 
 @pytest.mark.v4
@@ -55,8 +56,8 @@ def test_v4_hosts_cmds_libreload(channel, host_database):
         "text": "Hooks libraries successfully reloaded."
     }
 
-    srv_msg.log_contains('HOST_CMDS_DEINIT_OK unloading Host Commands hooks library successful')
-    srv_msg.log_contains('HOST_CMDS_INIT_OK loading Host Commands hooks library successful')
+    log_contains('HOST_CMDS_DEINIT_OK unloading Host Commands hooks library successful')
+    log_contains('HOST_CMDS_INIT_OK loading Host Commands hooks library successful')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {
@@ -1972,8 +1973,8 @@ def test_v6_hosts_cmds_libreload(channel, host_database):
         "text": "Hooks libraries successfully reloaded."
     }
 
-    srv_msg.log_contains('HOST_CMDS_DEINIT_OK unloading Host Commands hooks library successful')
-    srv_msg.log_contains('HOST_CMDS_INIT_OK loading Host Commands hooks library successful')
+    log_contains('HOST_CMDS_DEINIT_OK unloading Host Commands hooks library successful')
+    log_contains('HOST_CMDS_INIT_OK loading Host Commands hooks library successful')
 
     response = srv_msg.send_ctrl_cmd({
         "arguments": {

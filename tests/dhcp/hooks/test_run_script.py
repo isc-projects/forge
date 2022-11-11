@@ -17,6 +17,7 @@ from src import srv_control
 from src import srv_msg
 
 from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import file_contains_line
 from src.softwaresupport.multi_server_functions import fabric_sudo_command
 
 
@@ -213,12 +214,12 @@ def test_run_script_leases4_committed():
     _send_client_request4()
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter leases4_committed')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter leases4_committed')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -324,12 +325,12 @@ def test_run_script_lease4_renew():
     _send_client_renew4()
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter lease4_renew')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter lease4_renew')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -408,12 +409,12 @@ def test_run_script_lease4_expire():
     assert resp["text"] == "Reclamation of expired leases is complete."
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter lease4_expire')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter lease4_expire')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -517,12 +518,12 @@ def test_run_script_lease4_release():
     srv_msg.send_dont_wait_for_message()
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter lease4_release')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter lease4_release')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -627,12 +628,12 @@ def test_run_script_lease4_decline():
     srv_msg.send_dont_wait_for_message()
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter lease4_decline')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter lease4_decline')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -722,12 +723,12 @@ def test_run_script_lease4_recover():
     assert resp["text"] == "Reclamation of expired leases is complete."
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter lease4_recover')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter lease4_recover')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -817,12 +818,12 @@ def test_run_script_leases6_committed():
     _send_client_request6()
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter leases6_committed')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter leases6_committed')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -905,12 +906,12 @@ def test_run_script_lease6_renew():
     _send_client_renew6()
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter lease6_renew')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter lease6_renew')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -995,12 +996,12 @@ def test_run_script_lease6_expire():
     assert resp["text"] == "Reclamation of expired leases is complete."
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter lease6_expire')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter lease6_expire')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -1089,12 +1090,12 @@ def test_run_script_lease6_release():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter lease6_release')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter lease6_release')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -1183,12 +1184,12 @@ def test_run_script_lease6_decline():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter lease6_decline')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter lease6_decline')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -1275,12 +1276,12 @@ def test_run_script_lease6_recover():
     assert resp["text"] == "Reclamation of expired leases is complete."
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter lease6_recover')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter lease6_recover')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
@@ -1372,12 +1373,12 @@ def test_run_script_lease6_rebind():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
 
     # Check contents of the output file ignoring values set as "".
-    srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                               'parameter lease6_rebind')
+    file_contains_line(world.f_cfg.data_join('output.txt'),
+                       'parameter lease6_rebind')
     for name, value in parameters.items():
         if value != "":
-            srv_msg.file_contains_line(world.f_cfg.data_join('output.txt'), None,
-                                       f'{name} {value}')
+            file_contains_line(world.f_cfg.data_join('output.txt'),
+                               f'{name} {value}')
 
     # Copy output files to forge results folder
     srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")

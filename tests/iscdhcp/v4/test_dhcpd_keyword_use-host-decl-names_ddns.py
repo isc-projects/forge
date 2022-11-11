@@ -7,6 +7,7 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
 from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_line_in_global
 
 
@@ -110,8 +111,8 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', '192.168.50.201')
-    srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 192.168.50.201 for one.four.example.com',
-                         log_file=build_log_path())
+    log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 192.168.50.201 for one.four.example.com',
+                 log_file=build_log_path())
 
     # #######################################################################
     # Case 2:
@@ -138,8 +139,8 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', '192.168.50.202')
-    srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 192.168.50.202 for two_opt.four.example.com',
-                         log_file=build_log_path())
+    log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 192.168.50.202 for two_opt.four.example.com',
+                 log_file=build_log_path())
 
     # #######################################################################
     # Case 3:
@@ -169,8 +170,8 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', '192.168.50.203')
-    srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 192.168.50.203 for clnt_host.four.example.com',
-                         log_file=build_log_path())
+    log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 192.168.50.203 for clnt_host.four.example.com',
+                 log_file=build_log_path())
 
     # #######################################################################
     # Case 4:
@@ -196,7 +197,7 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', '192.168.50.100')
-    srv_msg.log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 192.168.50.100', log_file=build_log_path())
+    log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 192.168.50.100', log_file=build_log_path())
 
     # #######################################################################
     # Case 5:
@@ -225,5 +226,5 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on_ddns():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', '192.168.50.100')
-    srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 192.168.50.100 for clnt_host.four.example.com',
-                         log_file=build_log_path())
+    log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 192.168.50.100 for clnt_host.four.example.com',
+                 log_file=build_log_path())

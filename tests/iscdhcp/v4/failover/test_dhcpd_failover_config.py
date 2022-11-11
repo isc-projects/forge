@@ -3,10 +3,12 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
+
 from src import misc
 from src import srv_control
-from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import log_contains
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_line_in_global
 
 
@@ -15,11 +17,11 @@ from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_l
 @pytest.mark.disabled
 def test_v4_dhcpd_failover_sanity_check_good_config():
     """new-v4.dhcpd.failover.sanity_check.good_config"""
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=1, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=1, log_file=build_log_path())
     # Verifies that failover config for two peers passes
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=1, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=1, log_file=build_log_path())
     # sanity checking
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=1, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=1, log_file=build_log_path())
     # #
     misc.test_setup()
     add_line_in_global(' failover peer "fonet" {')
@@ -59,7 +61,7 @@ def test_v4_dhcpd_failover_sanity_check_good_config():
     misc.test_procedure()
 
     misc.pass_criteria()
-    srv_msg.log_contains('failover peer fonet: I move from recover to startup',
-                         log_file=build_log_path())
-    srv_msg.log_contains('failover peer beebonet: I move from recover to startup',
-                         log_file=build_log_path())
+    log_contains('failover peer fonet: I move from recover to startup',
+                 log_file=build_log_path())
+    log_contains('failover peer beebonet: I move from recover to startup',
+                 log_file=build_log_path())

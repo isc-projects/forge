@@ -8,6 +8,8 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
+
 
 @pytest.mark.v6
 @pytest.mark.host_reservation
@@ -28,8 +30,8 @@ def test_v6_host_reservation_conflicts_duplicate_duid_reservations():
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
     # expected error logs
-    srv_msg.log_contains(r'ERROR \[kea-dhcp6.dhcp6')
-    srv_msg.log_contains(r'failed to add new host using the DUID')
+    log_contains(r'ERROR \[kea-dhcp6.dhcp6')
+    log_contains(r'failed to add new host using the DUID')
 
 
 @pytest.mark.v6
@@ -51,9 +53,9 @@ def test_v6_host_reservation_conflicts_duplicate_ip_reservations():
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
     # expected error logs
-    srv_msg.log_contains(r'ERROR \[kea-dhcp6.dhcp6')
-    srv_msg.log_contains(r'failed to add address reservation for host using the HW address')
-    srv_msg.log_contains(r"There's already reservation for this address/prefix")
+    log_contains(r'ERROR \[kea-dhcp6.dhcp6')
+    log_contains(r'failed to add address reservation for host using the HW address')
+    log_contains(r"There's already reservation for this address/prefix")
 
 
 @pytest.mark.v6
@@ -78,8 +80,8 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed():
     srv_control.start_srv('DHCP', 'started')
 
     # these error logs should not appear
-    srv_msg.log_doesnt_contain(r'ERROR \[kea-dhcp6.dhcp6')
-    srv_msg.log_doesnt_contain(r"There's already reservation for this address/prefix")
+    log_doesnt_contain(r'ERROR \[kea-dhcp6.dhcp6')
+    log_doesnt_contain(r"There's already reservation for this address/prefix")
 
     # first request address by 00:03:00:01:f6:f5:f4:f3:f2:01
     misc.test_procedure()

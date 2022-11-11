@@ -10,7 +10,9 @@ import pytest
 from src import misc
 from src import srv_control
 from src import srv_msg
+
 from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
+from src.protosupport.multi_protocol_functions import log_contains
 from src.forge_cfg import world
 
 
@@ -87,7 +89,7 @@ def test_overlapping_pools(subnet_scope: str):
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
-    srv_msg.log_contains(
+    log_contains(
         'DHCP4_PARSER_FAIL failed to create or run parser for configuration element '
         + ('shared-networks' if 'shared-network' == subnet_scope else 'subnet4') + ': '
         'subnet configuration failed: a pool of type V4, with the following address range: '
@@ -135,7 +137,7 @@ def test_overlapping_ia_na_pools(subnet_scope: str):
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
-    srv_msg.log_contains(
+    log_contains(
         'DHCP6_PARSER_FAIL failed to create or run parser for configuration element '
         + ('shared-networks' if 'shared-network' == subnet_scope else 'subnet6') + ': '
         'subnet configuration failed: a pool of type IA_NA, with the following address range: '
@@ -187,7 +189,7 @@ def test_overlapping_ia_pd_pools(subnet_scope: str):
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
-    srv_msg.log_contains(
+    log_contains(
         'DHCP6_PARSER_FAIL failed to create or run parser for configuration element '
         + ('shared-networks' if 'shared-network' == subnet_scope else 'subnet6') + ': '
         'subnet configuration failed: a pool of type IA_PD, with the following address range: '
@@ -607,7 +609,7 @@ def test_overlapping_pools_outside_subnets(subnet_scope):
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
-    srv_msg.log_contains(
+    log_contains(
         'DHCP4_PARSER_FAIL failed to create or run parser for configuration element '
         + ('shared-networks' if 'shared-network' in subnet_scope else 'subnet4') + ': '
         'subnet configuration failed: a pool of type V4, with the following address range: '
@@ -696,7 +698,7 @@ def test_overlapping_ia_na_pools_outside_subnets(subnet_scope):
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
-    srv_msg.log_contains(
+    log_contains(
         'DHCP6_PARSER_FAIL failed to create or run parser for configuration element '
         + ('shared-networks' if 'shared-network' in subnet_scope else 'subnet6') + ': '
         'subnet configuration failed: a pool of type IA_NA, with the following address range: '

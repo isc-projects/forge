@@ -8,6 +8,9 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import lease_file_contains, lease_file_doesnt_contain
+from src.protosupport.multi_protocol_functions import log_contains
+
 
 @pytest.mark.v6
 @pytest.mark.subnet_id_sanity_check
@@ -52,8 +55,8 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
     srv_control.clear_some_data('logs')
@@ -67,7 +70,7 @@ def test_v6_sanity_check_subnet_id_fix_able():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
+    log_contains('DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
@@ -156,8 +159,8 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
     srv_control.clear_some_data('logs')
@@ -171,7 +174,7 @@ def test_v6_sanity_check_subnet_id_fix_able_double_restart():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
+    log_contains('DHCPSRV_LEASE_SANITY_FIXED The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks, but was corrected to subnet-id 999.')
 
     srv_msg.forge_sleep(13, 'seconds')
 
@@ -273,8 +276,8 @@ def test_v6_sanity_check_subnet_id_fix_unable():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
 
@@ -362,8 +365,8 @@ def test_v6_sanity_check_subnet_id_fix_del_unable():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
 
@@ -422,8 +425,8 @@ def test_v6_sanity_check_subnet_id_fix_del_able():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -478,8 +481,8 @@ def test_v6_sanity_check_subnet_id_warn():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -493,7 +496,7 @@ def test_v6_sanity_check_subnet_id_warn():
 
     srv_msg.forge_sleep(2, 'seconds')
 
-    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks')
+    log_contains('DHCPSRV_LEASE_SANITY_FAIL The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:33')
@@ -553,8 +556,8 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
 
@@ -571,7 +574,7 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep(2, 'seconds')
 
-    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks (the lease should have subnet-id 999) and was dropped.')
+    log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks (the lease should have subnet-id 999) and was dropped.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -603,14 +606,14 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
 
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
-    srv_msg.lease_file_doesnt_contain('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22')
-    srv_msg.lease_file_doesnt_contain('999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:22')
+    lease_file_doesnt_contain('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22')
+    lease_file_doesnt_contain('999,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:22')
 
 
 @pytest.mark.v6
@@ -661,8 +664,8 @@ def test_v6_sanity_check_subnet_id_del():
     assert resp['arguments']['subnet-id'] == 666
 
     # it should be in lease file as well
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
 
@@ -679,7 +682,7 @@ def test_v6_sanity_check_subnet_id_del():
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep(2, 'seconds')
 
-    srv_msg.log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks (the lease should have subnet-id 999) and was dropped.')
+    log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks (the lease should have subnet-id 999) and was dropped.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
@@ -720,11 +723,11 @@ def test_v6_sanity_check_subnet_id_del():
 
     # old lease should not be present in the lease file
     # bug: #1618, closed as designed
-    srv_msg.lease_file_doesnt_contain('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_doesnt_contain('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_doesnt_contain('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_doesnt_contain('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
     # new one should be in the lease file
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22')
-    srv_msg.lease_file_contains('999,3000,0,7654321,128,0,0,,f6:f5:f4:f3:f2:22,0')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:22')
+    lease_file_contains('999,3000,0,7654321,128,0,0,,f6:f5:f4:f3:f2:22,0')
 
 
 @pytest.mark.v6
@@ -769,8 +772,8 @@ def test_v6_sanity_check_subnet_id_none():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::1-2001:db8::1')
@@ -782,8 +785,8 @@ def test_v6_sanity_check_subnet_id_none():
 
     srv_control.start_srv('DHCP', 'reconfigured')
     srv_msg.forge_sleep(2, 'seconds')
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
 
 @pytest.mark.v6
@@ -832,8 +835,8 @@ def test_v6_sanity_check_subnet_id():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8::1')
 
-    srv_msg.lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
 
     srv_control.start_srv('DHCP', 'stopped')
 
@@ -991,10 +994,10 @@ def test_v6_sanity_check_shared_subnet_id():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
-    srv_msg.lease_file_contains('777,3000,0,7654321,128,0,0,,f6:f5:f4:f3:f2:02')
+    lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('666,3000,0,1234567,128,0,0,,f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    lease_file_contains('777,3000,0,7654321,128,0,0,,f6:f5:f4:f3:f2:02')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')

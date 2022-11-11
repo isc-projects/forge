@@ -9,6 +9,8 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import log_contains
+
 
 @pytest.mark.v4
 @pytest.mark.user_check
@@ -87,8 +89,8 @@ def test_user_check_hook_with_registry_unknown_user_logging():
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file(glob.glob("**/v4_outcome_1.txt", recursive=True)[0],)
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.hooks')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.callouts')
+    log_contains(r'INFO  \[kea-dhcp4.hooks')
+    log_contains(r'DEBUG \[kea-dhcp4.callouts')
 
 
 @pytest.mark.v4

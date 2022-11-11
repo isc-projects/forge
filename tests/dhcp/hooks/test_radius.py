@@ -14,6 +14,7 @@ from src import srv_control
 from src import srv_msg
 
 from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.cb_model import setup_server_with_radius
 from src.softwaresupport import radius
 
@@ -242,7 +243,7 @@ def test_radius_giaddr(dhcp_version: str,
         # sent, and there is no chance of the client getting the address reserved in RADIUS.
         radius.send_message_and_expect_no_more_leases(mac='08:00:27:b0:aa:aa',
                                                       giaddr=giaddr_value)
-        srv_msg.wait_for_message_in_log('DHCP4_SUBNET_SELECTION_FAILED.*failed to select subnet for the client')
+        wait_for_message_in_log('DHCP4_SUBNET_SELECTION_FAILED.*failed to select subnet for the client')
     else:
         # The client should get the lease configured in RADIUS.
         lease = radius.get_address(mac='08:00:27:b0:aa:aa',

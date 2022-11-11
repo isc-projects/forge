@@ -8,6 +8,9 @@ from src import srv_control
 from src import srv_msg
 from src import misc
 
+from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import lease_file_contains, log_contains
+
 
 @pytest.mark.v6
 @pytest.mark.MACinDHCP6
@@ -36,8 +39,8 @@ def test_v6_mac_in_dhcp6_duid_type3():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.lease_file_contains(',f6:f5:f4:f3:f2:01,0')
-    srv_msg.log_contains('Hardware addr: f6:f5:f4:f3:f2:01')
+    lease_file_contains(',f6:f5:f4:f3:f2:01,0')
+    log_contains('Hardware addr: f6:f5:f4:f3:f2:01')
 
 
 @pytest.mark.v6
@@ -68,8 +71,8 @@ def test_v6_mac_in_dhcp6_duid_type1():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.lease_file_contains(',08:00:27:58:f1:e8')
-    srv_msg.log_contains('Hardware addr: 08:00:27:58:f1:e8')
+    lease_file_contains(',08:00:27:58:f1:e8')
+    log_contains('Hardware addr: 08:00:27:58:f1:e8')
 
 
 @pytest.mark.v6
@@ -99,8 +102,8 @@ def test_v6_mac_in_dhcp6_any():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.lease_file_contains(',f6:f5:f4:f3:f2:01')
-    srv_msg.log_contains('Hardware addr: f6:f5:f4:f3:f2:01')
+    lease_file_contains(',f6:f5:f4:f3:f2:01')
+    log_contains('Hardware addr: f6:f5:f4:f3:f2:01')
 
 
 @pytest.mark.v6
@@ -130,8 +133,8 @@ def test_v6_mac_in_dhcp6_ipv6_link_local():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.lease_file_contains(',$(CLI_MAC)')
-    srv_msg.log_contains('Hardware addr: $(CLI_MAC)')
+    lease_file_contains(f',{world.f_cfg.cli_mac}')
+    log_contains(f'Hardware addr: {world.f_cfg.cli_mac}')
 
 
 @pytest.mark.v6
@@ -168,8 +171,8 @@ def test_v6_mac_in_dhcp6_client_link_addr_1():
     srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
-    srv_msg.lease_file_contains(',$(CLI_MAC)')
-    srv_msg.log_contains('Hardware addr: $(CLI_MAC)')
+    lease_file_contains(f',{world.f_cfg.cli_mac}')
+    log_contains(f'Hardware addr: {world.f_cfg.cli_mac}')
 
 
 @pytest.mark.v6
@@ -205,8 +208,8 @@ def test_v6_mac_in_dhcp6_client_link_addr_2():
     srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
-    srv_msg.lease_file_contains(',$(CLI_MAC)')
-    srv_msg.log_contains('Hardware addr: $(CLI_MAC)')
+    lease_file_contains(f',{world.f_cfg.cli_mac}')
+    log_contains(f'Hardware addr: {world.f_cfg.cli_mac}')
 
 
 @pytest.mark.v6
@@ -243,8 +246,8 @@ def test_v6_mac_in_dhcp6_remote_id_1():
     srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
-    srv_msg.lease_file_contains(',0a:00:27:00:00:01')
-    srv_msg.log_contains('Hardware addr: 0a:00:27:00:00:01')
+    lease_file_contains(',0a:00:27:00:00:01')
+    log_contains('Hardware addr: 0a:00:27:00:00:01')
 
 
 @pytest.mark.v6
@@ -281,8 +284,8 @@ def test_v6_mac_in_dhcp6_remote_id_2():
     srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
-    srv_msg.lease_file_contains(',0a:00:27:00:00:01')
-    srv_msg.log_contains('Hardware addr: 0a:00:27:00:00:01')
+    lease_file_contains(',0a:00:27:00:00:01')
+    log_contains('Hardware addr: 0a:00:27:00:00:01')
 
 
 @pytest.mark.v6
@@ -320,8 +323,8 @@ def test_v6_mac_in_dhcp6_subscriber_id_1():
     srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
-    srv_msg.lease_file_contains(',0a:00:27:00:00:02')
-    srv_msg.log_contains('Hardware addr: 0a:00:27:00:00:02')
+    lease_file_contains(',0a:00:27:00:00:02')
+    log_contains('Hardware addr: 0a:00:27:00:00:02')
 
 
 @pytest.mark.v6
@@ -359,8 +362,8 @@ def test_v6_mac_in_dhcp6_subscriber_id_2():
     srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
-    srv_msg.lease_file_contains(',0a:00:27:00:00:02')
-    srv_msg.log_contains('Hardware addr: 0a:00:27:00:00:02')
+    lease_file_contains(',0a:00:27:00:00:02')
+    log_contains('Hardware addr: 0a:00:27:00:00:02')
 
 
 @pytest.mark.v6
@@ -393,8 +396,8 @@ def test_v6_mac_in_dhcp6_docsis_modem():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.lease_file_contains(',f6:f5:f4:f3:f2:01')
-    srv_msg.log_contains('Hardware addr: f6:f5:f4:f3:f2:01')
+    lease_file_contains(',f6:f5:f4:f3:f2:01')
+    log_contains('Hardware addr: f6:f5:f4:f3:f2:01')
 
 
 @pytest.mark.v6
@@ -432,5 +435,5 @@ def test_v6_mac_in_dhcp6_docsic_cmts():
     srv_msg.send_wait_for_message('MUST', 'RELAYREPLY')
     srv_msg.response_check_include_option(18)
     srv_msg.response_check_include_option(9)
-    srv_msg.lease_file_contains(',00:f5:f4:00:f2:01')
-    srv_msg.log_contains('Hardware addr: 00:f5:f4:00:f2:01')
+    lease_file_contains(',00:f5:f4:00:f2:01')
+    log_contains('Hardware addr: 00:f5:f4:00:f2:01')

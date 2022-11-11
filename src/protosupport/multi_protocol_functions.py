@@ -7,6 +7,8 @@
 # pylint: disable=invalid-name,line-too-long
 
 # Author: Wlodzimierz Wencel
+
+import datetime
 import sys
 import os
 import re
@@ -55,6 +57,9 @@ def test_pause():
     getch()
 
 
+################################ FILE TRANSFER #################################
+
+
 def copy_file_from_server(remote_path, local_filename='downloaded_file'):
     """
     Copy file from remote server via ssh. Address/login/password from init_all.py
@@ -80,64 +85,7 @@ def remove_file_from_server(remote_path):
     fabric_remove_file_command(remote_path)
 
 
-def strip_file(file_path):
-    tmp_list = []
-    tmp = open(file_path, 'r')
-    for line in tmp:
-        line = line.strip()
-        if len(line) < 1:
-            continue
-        elif line[0] == '#':
-            continue
-        else:
-            tmp_list.append(line.strip())
-    tmp.close()
-    return tmp_list
-
-
-def compare_file(local_path):
-    """
-    Compare two files, downloaded and local
-    """
-    if not os.path.exists(local_path):
-        assert False, 'No local file %s' % local_path
-
-    outcome = open(world.cfg["test_result_dir"] + '/file_compare', 'w')
-
-    # first remove all commented and blank lines of both files
-    downloaded_stripped = strip_file(world.cfg["test_result_dir"] + '/downloaded_file')
-    local_stripped = strip_file(local_path)
-
-    line_number = 1
-    error_flag = True
-    for i, j in zip(downloaded_stripped, local_stripped):
-        if i != j:
-            outcome.write('Line number: ' + locale.str(line_number) + ' \n\tDownloaded file line: "' +
-                          i.rstrip('\n') + '" and local file line: "' + j.rstrip('\n') + '"\n')
-            error_flag = False
-        line_number += 1
-    if error_flag:
-        remove_local_file(world.cfg["test_result_dir"] + '/file_compare')
-
-    assert error_flag, 'Downloaded file is NOT the same as local. Check %s/file_compare for details'\
-                       % world.cfg["test_result_dir"]
-
-    if len(downloaded_stripped) != len(local_stripped):
-        assert len(downloaded_stripped) > len(local_stripped), 'Downloaded file is part of a local file.'
-        assert len(downloaded_stripped) < len(local_stripped), 'Local file is a part of a downlaoded life.'
-
-
-def file_includes_line(condition, line):
-    """
-    Check if downloaded file contain line.
-    """
-    downloaded_stripped = strip_file(world.cfg["test_result_dir"] + '/downloaded_file')
-    if condition is not None:
-        if line in downloaded_stripped:
-            assert False, 'Downloaded file does contain line: "%s" But it should NOT.' % line
-    else:
-        if line not in downloaded_stripped:
-            assert False, 'Downloaded file does NOT contain line: "%s"' % line
+################################################################################
 
 
 def sort_container(obj):
@@ -186,13 +134,76 @@ def user_victory():
     shutil.copy('../doc/.victory.jpg', world.cfg["test_result_dir"] + '/celebrate_success.jpg')
 
 
-def get_line_count_in_log(line, log_file=None):
+############################### FILE INSPECTION ################################
+
+
+def compare_file(local_path):
+    """
+    Compare two files, downloaded and local
+    """
+    if not os.path.exists(local_path):
+        assert False, 'No local file %s' % local_path
+
+    outcome = open(world.cfg["test_result_dir"] + '/file_compare', 'w')
+
+    # first remove all commented and blank lines of both files
+    downloaded_stripped = strip_file(world.cfg["test_result_dir"] + '/downloaded_file')
+    local_stripped = strip_file(local_path)
+
+    line_number = 1
+    error_flag = True
+    for i, j in zip(downloaded_stripped, local_stripped):
+        if i != j:
+            outcome.write('Line number: ' + locale.str(line_number) + ' \n\tDownloaded file line: "' +
+                          i.rstrip('\n') + '" and local file line: "' + j.rstrip('\n') + '"\n')
+            error_flag = False
+        line_number += 1
+    if error_flag:
+        remove_local_file(world.cfg["test_result_dir"] + '/file_compare')
+
+    assert error_flag, 'Downloaded file is NOT the same as local. Check %s/file_compare for details'\
+                       % world.cfg["test_result_dir"]
+
+    if len(downloaded_stripped) != len(local_stripped):
+        assert len(downloaded_stripped) > len(local_stripped), 'Downloaded file is part of a local file.'
+        assert len(downloaded_stripped) < len(local_stripped), 'Local file is part of a downloaded life.'
+
+
+def get_line_count_in_file(line, file, destination=world.f_cfg.mgmt_address, singlequotes=False):
+    """
+    Retrieves the number of lines contained in a file.
+
+    :param line: line (or part of file or glob pattern) being checked
+    :param file: name of file being checked
+    :param destination: address of server hosting the file
+    :param singlequotes: encloses grep text in singlequotes(') instead of
+                         doublequotes(") for proper escaping of doublequotes(")
+    """
+    if singlequotes:
+        result = fabric_sudo_command(f"grep '{line}' {file} | wc -l",
+                                     destination_host=destination, ignore_errors=True)
+    else:
+        result = fabric_sudo_command(f'grep "{line}" {file} | wc -l',
+                                     destination_host=destination, ignore_errors=True)
+    return int(result)
+
+
+def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_address, singlequotes=False):
+    """
+    Retrieves the number of lines contained in a log file.
+
+    :param line: line (or part of file or glob pattern) being checked
+    :param log_file: name of the log file being checked. If None, default values
+                     representing Kea logs are used.
+    :param destination: address of server hosting the file
+    :param singlequotes: encloses grep text in singlequotes(') instead of
+                         doublequotes(") for proper escaping of doublequotes(")
+    """
     if world.f_cfg.install_method == 'make':
         if log_file is None:
             log_file = 'kea.log'
         log_file = world.f_cfg.log_join(log_file)
-        # ignore errors because we analise those errors later
-        result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True)
+        result = get_line_count_in_file(line, log_file, destination, singlequotes)
     else:
         if log_file is None or log_file == 'kea.log_ddns':
             if log_file == 'kea.log_ddns':
@@ -208,75 +219,86 @@ def get_line_count_in_log(line, log_file=None):
             cmd = 'ts=`systemctl show -p ActiveEnterTimestamp %s | awk \'{{print $2 $3}}\'`;' % service_name  # get time of log beginning
             cmd += ' ts=${ts:-$(date +"%Y-%m-%d%H:%M:%S")};'  # if started for the first time then ts is empty so set to current date
             cmd += ' journalctl -u %s --since $ts |' % service_name  # get logs since last start of kea service
-            cmd += 'grep -c "%s"' % line
-            result = fabric_sudo_command(cmd, ignore_errors=True)
+            if singlequotes:
+                cmd += f"grep '{line}' | wc -l"
+            else:
+                cmd += f'grep "{line}" | wc -l'
+            result = fabric_sudo_command(cmd, destination=destination, ignore_errors=True)
         else:
             log_file = world.f_cfg.log_join(log_file)
-            result = fabric_sudo_command('grep -c "%s" %s' % (line, log_file), ignore_errors=True)
-    return result
+            result = get_line_count_in_file(line, log_file, destination, singlequotes)
+    return int(result)
 
 
-def log_contains(line, expected=True, log_file=None):
-    result = get_line_count_in_log(line, log_file)
-
-    if expected:
-        assert result.succeeded, f'Log file {log_file} does NOT contain line: "{line}" But it should.'
-    else:
-        assert not result.succeeded, f'Log file {log_file} contains line: "{line}" But it should NOT.'
+def file_contains_line(file, line, destination=world.f_cfg.mgmt_address, singlequotes=False):
+    result = get_line_count_in_file(line, file, destination=destination, singlequotes=singlequotes)
+    assert result > 0, f'Expected file "{file}" to contain line "{line}", but it does not.'
 
 
-def regular_file_contain(file_name, condition, line, destination=None, singlequotes=False):
+def file_contains_line_n_times(file, n, line, destination=world.f_cfg.mgmt_address, singlequotes=False):
+    result = get_line_count_in_file(line, file, destination=destination, singlequotes=singlequotes)
+    assert result == n, f'Expected file to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
+                        f'Found {result} time{"" if result == 1 else "s"}.'
+
+
+def file_doesnt_contain_line(file, line, destination=world.f_cfg.mgmt_address, singlequotes=False):
+    result = get_line_count_in_file(line, file, destination=destination, singlequotes=singlequotes)
+    assert result == 0, f'Expected file "{file}" to not contain line "{line}".' \
+                        f'Found {result} time{"" if result == 1 else "s"}.'
+
+
+def lease_file_contains(line, destination=world.f_cfg.mgmt_address, singlequotes=False):
+    file_contains_line(world.f_cfg.get_leases_path(), line, destination=destination, singlequotes=singlequotes)
+
+
+def lease_file_doesnt_contain(line, destination=world.f_cfg.mgmt_address, singlequotes=False):
+    file_doesnt_contain_line(world.f_cfg.get_leases_path(), line, destination=destination, singlequotes=singlequotes)
+
+
+def log_contains(line, log_file=None, destination=world.f_cfg.mgmt_address, singlequotes=False):
+    result = get_line_count_in_log(line, log_file, destination=destination, singlequotes=singlequotes)
+    assert result > 0, f'Expected log file {log_file} to contain line "{line}", but it does not.'
+
+
+def log_doesnt_contain(line, log_file=None, destination=world.f_cfg.mgmt_address, singlequotes=False):
+    result = get_line_count_in_log(line, log_file, destination=destination, singlequotes=singlequotes)
+    assert result == 0, f'Expected log file {log_file} to not contain line "{line}".' \
+                        f'Found {result} time{"" if result == 1 else "s"}.'
+
+
+def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination=world.f_cfg.mgmt_address, singlequotes=False):
     """
-    :param singlequotes: encloses grep text in ' instead of " for proper escaping of ""
-                         Use single quotes when passing 'line' parameter.
+    Wait until a line appears a certain number of times in a file.
+
+    :param line: line (or part of file or glob pattern) being checked
+    :param count: number of matching lines to wait for
+    :param timeout: time to wait for in seconds
+    :param file: name of file being checked. Default: None aka default log file
+    :param destination: address of server hosting the file
+    :param singlequotes: encloses grep text in singlequotes(') instead of
+                         doublequotes(") for proper escaping of doublequotes(")
     """
-    if destination is None:
-        if singlequotes:
-            result = fabric_sudo_command('grep -c \'%s\' %s' % (line, file_name),
-                                         ignore_errors=True)
-        else:
-            result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name),
-                                         ignore_errors=True)
-    else:
-        if singlequotes:
-            result = fabric_sudo_command('grep -c \'%s\' %s' % (line, file_name),
-                                         destination_host=destination, ignore_errors=True)
-        else:
-            result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name),
-                                         destination_host=destination, ignore_errors=True)
+    started_at = datetime.datetime.now()
+    count = int(count)
+    should_finish_by = started_at + datetime.timedelta(seconds=timeout)
+    while True:
+        # Get the number of line occurrences in the log.
+        result = get_line_count_in_log(line, log_file, destination=destination, singlequotes=singlequotes)
 
-    if condition is not None:
-        if result.succeeded:
-            assert False, 'File {0} contains line/phrase: {1} But it should NOT.'\
-                .format(file_name, line)
-    else:
-        if result.failed:
-            assert False, 'File {0} does NOT contain line/phrase: {1} .'.format(file_name, line)
+        # If enough lines have been logged, we are done waiting.
+        if count <= result:
+            break
+
+        # Assert that the timeout hasn't passed yet.
+        assert datetime.datetime.now() < should_finish_by, \
+            f'Timeout {timeout}s exceeded while waiting for {count} ' \
+            f'line{"" if count == 1 else "s"} of "{line}" in log file {log_file}.'
+
+        # Sleep a bit to avoid busy waiting.
+        forge_sleep(100, 'milliseconds')
 
 
-def regular_file_contains_n_lines(file_name, n, line, destination=None, singlequotes=False):
-    """
-    :param singlequotes: encloses grep text in ' instead of " for proper escaping of
-    """
-    if destination is None:
-        if singlequotes:
-            result = fabric_sudo_command('grep -c \'%s\' %s' % (line, file_name),
-                                         ignore_errors=True)
-        else:
-            result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name),
-                                         ignore_errors=True)
-    else:
-        if singlequotes:
-            result = fabric_sudo_command('grep -c \'%s\' %s' % (line, file_name),
-                                         destination_host=destination, ignore_errors=True)
-        else:
-            result = fabric_sudo_command('grep -c "%s" %s' % (line, file_name),
-                                         destination_host=destination, ignore_errors=True)
-
-    if int(result) != n:
-        assert False, 'Expected file {} to contain line/phrase "{}" a number of {} times. ' \
-                      'Found {} time{}.'.format(file_name, line, n,
-                                                result, '' if result == 1 else 's')
+################################################################################
 
 
 def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
@@ -372,10 +394,8 @@ def db_table_contains_line_n_times(table_name, db_type, n, line="", grep_cmd=Non
     result = db_table_record_count(table_name, db_type, line,
                                    grep_cmd, db_name, db_user, db_passwd,
                                    destination)
-
-    if result != n:
-        assert False, 'Expected {} database table "{}" to contain line/phrase "{}" a number of {} times. Found {} time{}.' \
-            .format(db_type, table_name, line, n, result, '' if result == 1 else 's')
+    assert result == n, f'Expected {db_type} database table {table_name} to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
+                        f'Found {result} time{"" if result == 1 else "s"}.'
 
 
 def lease_dump(backend, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
@@ -421,22 +441,6 @@ def lease_upload(backend, leases_file, db_name=world.f_cfg.db_name, db_user=worl
                                f"-n {db_name} -{world.f_cfg.proto[1]} -i {leases_file}",
                                dest=destination_address)
     return result
-
-
-def log_contains_count(server_type, count, line):
-    if server_type == "DHCP":
-        log_file = world.cfg["dhcp_log_file"]
-    elif server_type == "DNS":
-        log_file = world.cfg["dns_log_file"]
-    elif server_type == "DDNS":
-        log_file = world.cfg["dns_log_file"]
-    else:
-        assert False, "No such name as: {server_type}".format(**locals())
-
-    result = get_line_count_in_log(line, log_file)
-
-    if int(count) != int(result):
-        assert False, 'Log has {0} of expected {1} of line: "{2}".'.format(result, count, line)
 
 
 def change_network_variables(value_name, value):
@@ -700,6 +704,9 @@ def assert_result(condition, result, value):
         pass
 
 
+############################## FILE MANIPULATION ###############################
+
+
 def parse_json_file(condition, parameter_name, parameter_value):
     world.control_channel_parsed = [None, None, None]
     save_local_file(json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2,
@@ -743,8 +750,22 @@ def parse_json_file(condition, parameter_name, parameter_value):
         pass
 
 
-def parse_socket_received_data():
-    pass
+def strip_file(file_path):
+    tmp_list = []
+    tmp = open(file_path, 'r')
+    for line in tmp:
+        line = line.strip()
+        if len(line) < 1:
+            continue
+        elif line[0] == '#':
+            continue
+        else:
+            tmp_list.append(line.strip())
+    tmp.close()
+    return tmp_list
+
+
+################################################################################
 
 
 def set_value(env_name, env_value):

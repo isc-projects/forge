@@ -8,7 +8,6 @@
 
 # Author: Wlodzimierz Wencel
 
-import datetime
 import random
 import json
 import importlib
@@ -367,71 +366,6 @@ def network_variable(value_name, value):
     multi_protocol_functions.change_network_variables(value_name, value)
 
 
-@step(r'File stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
-def file_contains_line(file_path, condition, line, singlequotes=False):
-    """
-    Check if Log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    :param singlequotes: encloses grep text in ' instead of " for proper escaping of ""
-                         Use single quotes when passing 'line' parameter.
-    """
-    file_path, line = test_define_value(file_path, line)
-    multi_protocol_functions.regular_file_contain(file_path, condition,
-                                                  line, singlequotes=singlequotes)
-
-
-def file_contains_line_n_times(file_path, n, line, singlequotes=False):
-    """
-    Check if Log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    :param singlequotes: encloses grep text in ' instead of " for proper escaping of ""
-                         Use single quotes when passing 'line' parameter.
-    """
-    file_path, line = test_define_value(file_path, line)
-    multi_protocol_functions.regular_file_contains_n_lines(file_path, n,
-                                                           line, singlequotes=singlequotes)
-
-
-@step(r'DNS log MUST (NOT )?contain line: (.+)')
-def dns_log_contains(condition, line):
-    """
-    Check if DNS log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
-    line = test_define_value(line)[0]
-    multi_protocol_functions.regular_file_contain(world.cfg["dns_log_file"], condition, line)
-
-
-def log_contains(line, log_file=None):
-    line = test_define_value(line)[0]
-    multi_protocol_functions.log_contains(line, True, log_file)
-
-
-def log_doesnt_contain(line, log_file=None):
-    line = test_define_value(line)[0]
-    multi_protocol_functions.log_contains(line, False, log_file)
-
-
-def lease_file_contains(line):
-    line = test_define_value(line)[0]
-    multi_protocol_functions.regular_file_contain(world.f_cfg.get_leases_path(), None, line)
-
-
-def lease_file_doesnt_contain(line):
-    line = test_define_value(line)[0]
-    multi_protocol_functions.regular_file_contain(world.f_cfg.get_leases_path(), True, line)
-
-
-@step(r'Remote (\S+) file stored in (\S+) MUST (NOT )?contain line or phrase: (.+)')
-def remote_log_includes_line(destination, file_path, condition, line):
-    """
-    Check if Log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
-    destination, file_path, line = test_define_value(destination, file_path, line)
-    multi_protocol_functions.regular_file_contain(file_path, condition, line, destination=destination)
-
-
 @step(r'Table (\S+) in (\S+) database MUST (NOT )?contain line or phrase: (.+)')
 def table_contains_line(table_name, db_type, line, expect=True):
     """
@@ -455,41 +389,6 @@ def table_contains_line_n_times(table_name, db_type, n, line):
 def remove_from_db_table(table_name, db_type):
     table_name, db_type = test_define_value(table_name, db_type)
     multi_protocol_functions.remove_from_db_table(table_name, db_type)
-
-
-@step(r'(\S+) log contains (\d+) of line: (.+)')
-def log_includes_count(server_type, count, line):
-    """
-    Check if Log includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
-    count, line = test_define_value(count, line)
-    multi_protocol_functions.log_contains_count(server_type, count, line)
-
-
-@step(r'(\S+) log contains (\d+) of line: (.+)')
-def wait_for_message_in_log(line, count=1, timeout=4, log_file=None):
-    """
-    Wait until a line appears a certain number of times in a log.
-    """
-    started_at = datetime.datetime.now()
-    log_file, count, line = test_define_value(log_file, count, line)
-    should_finish_by = started_at + datetime.timedelta(seconds=timeout)
-    while True:
-        # Get the number of line occurrences in the log.
-        result = multi_protocol_functions.get_line_count_in_log(line, log_file)
-
-        # If enough lines have been logged, we are done waiting.
-        if count <= result:
-            break
-
-        # Assert that the timeout hasn't passed yet.
-        assert datetime.datetime.now() < should_finish_by, \
-            'Timeout {}s exceeded while waiting for {} line{} of "{}" in log file {}' \
-            .format(timeout, count, '' if count == 1 else 's', line, log_file)
-
-        # Sleep a bit to avoid busy waiting.
-        forge_sleep(100, 'milliseconds')
 
 
 @step(r'Sleep for (\S+) (seconds|second|milliseconds|millisecond).')
@@ -539,16 +438,6 @@ def compare_file(remote_path):
     """
     remote_path = test_define_value(remote_path)[0]
     multi_protocol_functions.compare_file(remote_path)
-
-
-@step(r'Downloaded file MUST (NOT )?contain line: (.+)')
-def file_includes_line(condition, line):
-    """
-    Check if downloaded file includes line.
-    Be aware that tested line is every thing after "line: " until end of the line.
-    """
-    line = test_define_value(line)[0]
-    multi_protocol_functions.file_includes_line(condition, line)
 
 
 @step(r'Client sends local file stored in: (\S+) to server, to location: (\S+).')

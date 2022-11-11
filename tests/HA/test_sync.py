@@ -193,7 +193,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
 
     # misc.pass_criteria()
     # if dhcp_version == 'v6':
-    #     srv_msg.log_contains('DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 15 IPv6 leases starting')
+    #     log_contains('DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 15 IPv6 leases starting')
     #     srv_msg.remote_log_includes_line(world.f_cfg.mgmt_address_2,
     #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
     #                                      None,
@@ -202,13 +202,13 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
     #                                      'NOT ',
     #                                      'DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 10 IPv6 leases starting from address 2001:')
-    #     srv_msg.log_doesnt_contain('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from')
+    #     log_doesnt_contain('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from')
     #     srv_msg.remote_log_includes_line(world.f_cfg.mgmt_address_2,
     #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
     #                                      None,
     #                                      'HA_SYNC_SUCCESSFUL lease database synchronization with server1 completed successfully')
     # else:
-    #     srv_msg.log_contains('DHCPSRV_MEMFILE_GET_PAGE4 obtaining at most 15 IPv4 leases starting')
+    #     log_contains('DHCPSRV_MEMFILE_GET_PAGE4 obtaining at most 15 IPv4 leases starting')
     #     srv_msg.remote_log_includes_line(world.f_cfg.mgmt_address_2,
     #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
     #                                      None,
@@ -217,7 +217,7 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
     #                                      'NOT ',
     #                                      'DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 10 IPv4 leases starting from address =')
-    #     srv_msg.log_doesnt_contain('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from')
+    #     log_doesnt_contain('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from')
     #     srv_msg.remote_log_includes_line(world.f_cfg.mgmt_address_2,
     #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
     #                                      None,

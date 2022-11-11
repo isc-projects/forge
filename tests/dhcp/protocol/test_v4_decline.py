@@ -8,6 +8,8 @@ from src import misc
 from src import srv_msg
 from src import srv_control
 
+from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
+
 
 @pytest.mark.v4
 @pytest.mark.decline
@@ -166,7 +168,7 @@ def test_v4_decline_fail_without_serverid():
 
     # if it is dropped by the server then this log should not appear
     # bug: #1615, closed as designed
-    srv_msg.log_doesnt_contain(r'The lease will be unavailable for')
+    log_doesnt_contain(r'The lease will be unavailable for')
 
 
 @pytest.mark.v4
@@ -211,9 +213,9 @@ def test_v4_decline_fail_without_requested_ip_address():
     srv_msg.send_dont_wait_for_message()
 
     # if it is dropped by the server then this log should not appear
-    srv_msg.log_doesnt_contain(r'The lease will be unavailable for')
+    log_doesnt_contain(r'The lease will be unavailable for')
     # and this one should appear
-    srv_msg.log_contains(r"failed to process packet: Mandatory 'Requested IP address' option missing in DHCPDECLINE")
+    log_contains(r"failed to process packet: Mandatory 'Requested IP address' option missing in DHCPDECLINE")
 
 
 @pytest.mark.v4
@@ -259,7 +261,7 @@ def test_v4_decline_fail_different_client_id():
     srv_msg.send_dont_wait_for_message()
 
     # the server should say that client IDs do not match
-    srv_msg.log_contains(r"Received DHCPDECLINE for addr 192.168.50.1.*but the data doesn't match:")
+    log_contains(r"Received DHCPDECLINE for addr 192.168.50.1.*but the data doesn't match:")
 
 
 @pytest.mark.v4
@@ -302,4 +304,4 @@ def test_v4_decline_fail_different_chaddr():
     srv_msg.send_dont_wait_for_message()
 
     # the server should say that client IDs do not match
-    srv_msg.log_contains(r"Received DHCPDECLINE for addr 192.168.50.1.*but the data doesn't match: received hwaddr: 00:00:00:00:00:22, lease hwaddr: 00:00:00:00:00:11")
+    log_contains(r"Received DHCPDECLINE for addr 192.168.50.1.*but the data doesn't match: received hwaddr: 00:00:00:00:00:22, lease hwaddr: 00:00:00:00:00:11")

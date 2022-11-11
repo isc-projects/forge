@@ -7,6 +7,7 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
 from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_line_in_global
 
 
@@ -58,8 +59,8 @@ def test_v6_dhcpd_keyword_ddns_forward_add():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
-    srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2 for myhost.six.example.com',
-                         log_file=build_log_path())
+    log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2 for myhost.six.example.com',
+                 log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -109,7 +110,7 @@ def test_v6_dhcpd_keyword_ddns_forward_do_forward_updates_false():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
-    srv_msg.log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2', log_file=build_log_path())
+    log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2', log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -156,7 +157,7 @@ def test_v6_dhcpd_keyword_ddns_forward_no_client_fqdn():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
-    srv_msg.log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2', log_file=build_log_path())
+    log_doesnt_contain('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2', log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -206,8 +207,8 @@ def test_v6_dhcpd_keyword_ddns_forward_ddns_hostname():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
-    srv_msg.log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2 for cfg_host.six.example.com',
-                         log_file=build_log_path())
+    log_contains('DDNS_STATE_ADD_FW_NXDOMAIN 2001:db8:1::2 for cfg_host.six.example.com',
+                 log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -257,5 +258,4 @@ def test_v6_dhcpd_keyword_ddns_forward_ddns_ttl():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
-    srv_msg.log_contains('ttl: 7701',
-                         log_file=build_log_path())
+    log_contains('ttl: 7701', log_file=build_log_path())

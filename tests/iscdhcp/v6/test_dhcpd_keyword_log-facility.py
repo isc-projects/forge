@@ -3,9 +3,11 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
+
 from src import misc
 from src import srv_control
-from src import srv_msg
+
+from src.protosupport.multi_protocol_functions import log_contains
 from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_line_in_global
 
 
@@ -27,8 +29,8 @@ def test_v6_dhcpd_keyword_log_facility_success():
     misc.test_procedure()
 
     misc.pass_criteria()
-    srv_msg.log_contains('dhcpd: Server starting service.',
-                         log_file=build_log_path())
+    log_contains('dhcpd: Server starting service.',
+                 log_file=build_log_path())
 
 
 @pytest.mark.v6

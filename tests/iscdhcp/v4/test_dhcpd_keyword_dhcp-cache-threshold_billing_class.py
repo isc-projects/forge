@@ -3,10 +3,12 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
+
 from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_line_in_global
 
 
@@ -85,7 +87,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     srv_msg.response_check_content('yiaddr', '192.168.50.100')
     srv_msg.response_check_include_option(51)
     srv_msg.response_check_option_content(51, 'value', 50)
-    srv_msg.wait_for_message_in_log('under 20% threshold', count=0, log_file=build_log_path())
+    wait_for_message_in_log('under 20% threshold', count=0, log_file=build_log_path())
 
     # ##################################################################
     # Case 1:
@@ -114,7 +116,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     srv_msg.response_check_content('yiaddr', '192.168.50.100')
     srv_msg.response_check_include_option(51)
     srv_msg.response_check_option_content(51, 'value', 50)
-    srv_msg.wait_for_message_in_log('under 20% threshold', count=0, log_file=build_log_path())
+    wait_for_message_in_log('under 20% threshold', count=0, log_file=build_log_path())
 
     # ##################################################################
     # Case 2:
@@ -142,7 +144,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     srv_msg.response_check_content('yiaddr', '192.168.50.100')
     srv_msg.response_check_include_option(51)
     srv_msg.response_check_option_content(51, 'value', 50, expect_include=False)
-    srv_msg.wait_for_message_in_log('under 20% threshold', count=2, log_file=build_log_path())
+    wait_for_message_in_log('under 20% threshold', count=2, log_file=build_log_path())
 
     # ##################################################################
     # Case 3:
@@ -163,7 +165,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     srv_msg.response_check_include_option(51)
     # When forge supports comparison change this to less than 50
     srv_msg.response_check_option_content(51, 'value', 50, expect_include=False)
-    srv_msg.wait_for_message_in_log('under 20% threshold', count=3, log_file=build_log_path())
+    wait_for_message_in_log('under 20% threshold', count=3, log_file=build_log_path())
 
     # ##################################################################
     # Case 4:
@@ -192,7 +194,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     srv_msg.response_check_content('yiaddr', '192.168.50.100')
     srv_msg.response_check_include_option(51)
     srv_msg.response_check_option_content(51, 'value', 50)
-    srv_msg.wait_for_message_in_log('under 20% threshold', count=3, log_file=build_log_path())
+    wait_for_message_in_log('under 20% threshold', count=3, log_file=build_log_path())
 
     # ##################################################################
     # Case 5:
@@ -213,7 +215,7 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     srv_msg.response_check_include_option(51)
     # When forge supports comparison change this to less than 50
     srv_msg.response_check_option_content(51, 'value', 50, expect_include=False)
-    srv_msg.wait_for_message_in_log('under 20% threshold', count=4, log_file=build_log_path())
+    wait_for_message_in_log('under 20% threshold', count=4, log_file=build_log_path())
 
     # ##################################################################
     # Case 6:
@@ -239,4 +241,4 @@ def test_v4_dhcpd_keyword_dhcp_cache_threshold_billing_class():
     srv_msg.response_check_content('yiaddr', '192.168.50.100')
     srv_msg.response_check_include_option(51)
     srv_msg.response_check_option_content(51, 'value', 50)
-    srv_msg.wait_for_message_in_log('under 20% threshold', count=4, log_file=build_log_path())
+    wait_for_message_in_log('under 20% threshold', count=4, log_file=build_log_path())

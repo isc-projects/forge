@@ -3,10 +3,12 @@
 # pylint: disable=invalid-name,line-too-long
 
 import pytest
+
 from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import log_doesnt_contain, wait_for_message_in_log
 from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_line_in_global
 
 
@@ -62,7 +64,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'client-id')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.log_doesnt_contain('Pool threshold', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold', log_file=build_log_path())
 
     # Grab second lease. Expect no threshold logs.
     misc.test_procedure()
@@ -90,7 +92,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_msg.client_save_option_count(2, 'IA_NA')
     srv_msg.client_save_option_count(2, 'client-id')
     srv_msg.client_save_option_count(2, 'server-id')
-    srv_msg.log_doesnt_contain('Pool threshold', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold', log_file=build_log_path())
 
     # Grab third lease. Expect no threshold logs.
     misc.test_procedure()
@@ -118,7 +120,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_msg.client_save_option_count(3, 'IA_NA')
     srv_msg.client_save_option_count(3, 'client-id')
     srv_msg.client_save_option_count(3, 'server-id')
-    srv_msg.log_doesnt_contain('Pool threshold', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold', log_file=build_log_path())
 
     # Grab fourth lease. Expect no threshold logs.
     misc.test_procedure()
@@ -146,7 +148,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_msg.client_save_option_count(4, 'IA_NA')
     srv_msg.client_save_option_count(4, 'client-id')
     srv_msg.client_save_option_count(4, 'server-id')
-    srv_msg.log_doesnt_contain('Pool threshold', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold', log_file=build_log_path())
 
     # #
     # Stage 2: Release leases until we cross low threshold.
@@ -161,7 +163,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # Release the second lease, should not see low threshold log.
     misc.test_procedure()
@@ -172,7 +174,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # Release third lease, should not see low threshold log.
     misc.test_procedure()
@@ -183,7 +185,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # Release fourth lease, should not see low threshold log.
     misc.test_procedure()
@@ -194,7 +196,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # #
     # Stage 3: Grab a lease, should not see threshold reset log.
@@ -221,7 +223,7 @@ def test_v6_dhcpd_keyword_log_threshold_none():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -280,7 +282,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'client-id')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.log_doesnt_contain('Pool threshold', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold', log_file=build_log_path())
 
     # Grab second lease. Expect threshold high log.
     misc.test_procedure()
@@ -308,7 +310,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     srv_msg.client_save_option_count(2, 'IA_NA')
     srv_msg.client_save_option_count(2, 'client-id')
     srv_msg.client_save_option_count(2, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
 
     # Grab third lease. Expect only 1 threshold high log.
     misc.test_procedure()
@@ -336,7 +338,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     srv_msg.client_save_option_count(3, 'IA_NA')
     srv_msg.client_save_option_count(3, 'client-id')
     srv_msg.client_save_option_count(3, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
 
     # #
     # Stage 2: Release leases until we cross low threshold.
@@ -351,7 +353,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # Release the second lease, should not see low threshold log.
     misc.test_procedure()
@@ -362,7 +364,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # Release third lease, should not see low threshold log.
     misc.test_procedure()
@@ -373,7 +375,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # #
     # Stage 3: Grab a lease, should see threshold reset log.
@@ -400,7 +402,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_gt_low():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=1, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=1, log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -458,7 +460,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'client-id')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
 
     # Grab second lease. Expect threshold high log.
     misc.test_procedure()
@@ -486,7 +488,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     srv_msg.client_save_option_count(2, 'IA_NA')
     srv_msg.client_save_option_count(2, 'client-id')
     srv_msg.client_save_option_count(2, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
 
     # Grab third lease. Expect another threshold high log.
     misc.test_procedure()
@@ -514,7 +516,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     srv_msg.client_save_option_count(3, 'IA_NA')
     srv_msg.client_save_option_count(3, 'client-id')
     srv_msg.client_save_option_count(3, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=2, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=2, log_file=build_log_path())
 
     # #
     # Stage 2: Release leases until we cross low threshold.
@@ -529,7 +531,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # Release the second lease, should not see low threshold log.
     misc.test_procedure()
@@ -540,7 +542,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # Release third lease, should not see low threshold log.
     misc.test_procedure()
@@ -551,7 +553,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
+    log_doesnt_contain('Pool threshold reset', log_file=build_log_path())
 
     # #
     # Stage 3: Grab a lease, should not see threshold reset log.
@@ -579,8 +581,8 @@ def test_v6_dhcpd_keyword_log_threshold_low_gt_high():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     # make sure we added no new threshold logs
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=2, log_file=build_log_path())
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=2, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -640,7 +642,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'client-id')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
 
     # Grab second lease. Expect threshold high log.
     misc.test_procedure()
@@ -668,7 +670,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
     srv_msg.client_save_option_count(2, 'IA_NA')
     srv_msg.client_save_option_count(2, 'client-id')
     srv_msg.client_save_option_count(2, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
 
     # Grab third lease. Expect only 1 threshold high log.
     misc.test_procedure()
@@ -696,7 +698,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
     srv_msg.client_save_option_count(3, 'IA_NA')
     srv_msg.client_save_option_count(3, 'client-id')
     srv_msg.client_save_option_count(3, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
 
     # #
     # Stage 2: Release leases until we cross low threshold.
@@ -711,7 +713,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
     # Release the second lease, should not see low threshold log.
     misc.test_procedure()
@@ -722,7 +724,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
     # Release third lease, should not see low threshold log.
     misc.test_procedure()
@@ -733,7 +735,7 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
     # #
     # Stage 3: Grab a lease, should see threshold reset log.
@@ -760,8 +762,8 @@ def test_v6_dhcpd_keyword_log_threshold_high_only():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=1, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -817,7 +819,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_msg.client_save_option_count(1, 'IA_NA')
     srv_msg.client_save_option_count(1, 'client-id')
     srv_msg.client_save_option_count(1, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
 
     # Grab second lease. Expect no threshold log.
     misc.test_procedure()
@@ -845,7 +847,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_msg.client_save_option_count(2, 'IA_NA')
     srv_msg.client_save_option_count(2, 'client-id')
     srv_msg.client_save_option_count(2, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
 
     # Grab third lease. Expect no threshold high log.
     misc.test_procedure()
@@ -873,7 +875,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_msg.client_save_option_count(3, 'IA_NA')
     srv_msg.client_save_option_count(3, 'client-id')
     srv_msg.client_save_option_count(3, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
 
     # Grab fourth lease. Expect no threshold logs.
     misc.test_procedure()
@@ -901,7 +903,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_msg.client_save_option_count(4, 'IA_NA')
     srv_msg.client_save_option_count(4, 'client-id')
     srv_msg.client_save_option_count(4, 'server-id')
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
 
     # #
     # Stage 2: Release leases until we cross low threshold.
@@ -916,7 +918,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
     # Release the second lease, should not see low threshold log.
     misc.test_procedure()
@@ -927,7 +929,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
     # Release third lease, should not see low threshold log.
     misc.test_procedure()
@@ -938,7 +940,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
     # Release fourth lease, should not see low threshold log.
     misc.test_procedure()
@@ -949,7 +951,7 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(13)
     srv_msg.response_check_option_content(13, 'status-code', 0)
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
     # #
     # Stage 3: Grab a lease, should not see threshold reset log.
@@ -976,8 +978,8 @@ def test_v6_dhcpd_keyword_log_threshold_low_only():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
-    srv_msg.wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold exceeded', count=0, log_file=build_log_path())
+    wait_for_message_in_log('Pool threshold reset', count=0, log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -1000,5 +1002,5 @@ def test_v6_dhcpd_keyword_log_threshold_too_large():
     srv_control.start_srv('DHCP', 'started')
 
     misc.pass_criteria()
-    srv_msg.wait_for_message_in_log('Threshold logging disabled for shared subnet of ranges: 2001:db8:1::0/66, 2001:db8:2::0/66',
-                                    count=1, log_file=build_log_path())
+    wait_for_message_in_log('Threshold logging disabled for shared subnet of ranges: 2001:db8:1::0/66, 2001:db8:2::0/66',
+                            count=1, log_file=build_log_path())

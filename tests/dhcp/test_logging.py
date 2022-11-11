@@ -9,6 +9,7 @@ from src import srv_msg
 from src import misc
 
 from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
 
 
 @pytest.mark.v4
@@ -61,7 +62,7 @@ def test_v4_loggers_options_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.options')
+    log_contains(r'DEBUG \[kea-dhcp4.options')
 
 
 @pytest.mark.v4
@@ -114,7 +115,7 @@ def test_v4_loggers_options_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.options')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.options')
 
 
 @pytest.mark.v4
@@ -155,7 +156,7 @@ def test_v4_loggers_bad_packets_debug():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'NAK')
 
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.bad-packets')
+    log_contains(r'DEBUG \[kea-dhcp4.bad-packets')
 
 
 @pytest.mark.v4
@@ -196,7 +197,7 @@ def test_v4_loggers_bad_packets_info():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'NAK')
 
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.bad-packets')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.bad-packets')
 
 
 @pytest.mark.v4
@@ -247,8 +248,8 @@ def test_v4_loggers_dhcp4():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.dhcp4')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcp4')
+    log_contains(r'DEBUG \[kea-dhcp4.dhcp4')
+    log_contains(r'INFO  \[kea-dhcp4.dhcp4')
 
 
 @pytest.mark.v4
@@ -299,8 +300,8 @@ def test_v4_loggers_dhcp4_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcp4')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcp4')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcp4')
+    log_contains(r'INFO  \[kea-dhcp4.dhcp4')
 
 
 @pytest.mark.v4
@@ -351,7 +352,7 @@ def test_v4_loggers_alloc_engine():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.alloc-engine')
+    log_contains(r'DEBUG \[kea-dhcp4.alloc-engine')
 
 
 @pytest.mark.v4
@@ -403,8 +404,8 @@ def test_v4_loggers_dhcpsrv_debug():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
 
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.dhcpsrv')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv')
+    log_contains(r'DEBUG \[kea-dhcp4.dhcpsrv')
+    log_contains(r'INFO  \[kea-dhcp4.dhcpsrv')
 
 
 @pytest.mark.v4
@@ -456,8 +457,8 @@ def test_v4_loggers_dhcpsrv_info():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
 
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv')
+    log_contains(r'INFO  \[kea-dhcp4.dhcpsrv')
 
 
 @pytest.mark.v4
@@ -503,8 +504,8 @@ def test_v4_loggers_leases_debug():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.leases')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.leases')
+    log_contains(r'INFO  \[kea-dhcp4.leases')
+    log_contains(r'DEBUG \[kea-dhcp4.leases')
 
 
 @pytest.mark.v4
@@ -555,7 +556,7 @@ def test_v4_loggers_leases_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.leases')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.leases')
 
 
 @pytest.mark.v4
@@ -606,7 +607,7 @@ def test_v4_loggers_packets_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.packets')
+    log_contains(r'DEBUG \[kea-dhcp4.packets')
 
 
 @pytest.mark.v4
@@ -657,7 +658,7 @@ def test_v4_loggers_packets_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.packets')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.packets')
 
 
 @pytest.mark.v4
@@ -708,7 +709,7 @@ def test_v4_loggers_hosts_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.hosts')
+    log_contains(r'DEBUG \[kea-dhcp4.hosts')
 
 
 @pytest.mark.v4
@@ -759,7 +760,7 @@ def test_v4_loggers_hosts_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.hosts')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.hosts')
 
 
 @pytest.mark.v4
@@ -855,13 +856,13 @@ def test_v4_loggers_all():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
 
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.packets')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.dhcpsrv')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.alloc-engine')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.dhcp4')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.options')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.leases')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.leases')
+    log_contains(r'DEBUG \[kea-dhcp4.packets')
+    log_contains(r'DEBUG \[kea-dhcp4.dhcpsrv')
+    log_contains(r'DEBUG \[kea-dhcp4.alloc-engine')
+    log_contains(r'DEBUG \[kea-dhcp4.dhcp4')
+    log_contains(r'DEBUG \[kea-dhcp4.options')
+    log_contains(r'DEBUG \[kea-dhcp4.leases')
+    log_contains(r'INFO  \[kea-dhcp4.leases')
 
 
 @pytest.mark.v4
@@ -949,14 +950,14 @@ def test_v4_loggers_all_different_levels_same_file():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'NAK')
 
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.packets')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.leases')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.alloc-engine')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcp4')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcp4')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.options')
+    log_contains(r'DEBUG \[kea-dhcp4.packets')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.leases')
+    log_contains(r'DEBUG \[kea-dhcp4.alloc-engine')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcp4')
+    log_contains(r'INFO  \[kea-dhcp4.dhcp4')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv')
+    log_contains(r'INFO  \[kea-dhcp4.dhcpsrv')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.options')
 
 
 @pytest.mark.v4
@@ -1047,18 +1048,18 @@ def test_v4_loggers_all_different_levels_different_file():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'NAK')
 
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.packets', 'kea.log4')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.leases', 'kea.log5')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.alloc-engine', 'kea.log6')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcp4', 'kea.log1')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcp4', 'kea.log1')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv', 'kea.log2')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv', 'kea.log8')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp4.options', 'kea.log3')
+    log_contains(r'DEBUG \[kea-dhcp4.packets', 'kea.log4')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.leases', 'kea.log5')
+    log_contains(r'DEBUG \[kea-dhcp4.alloc-engine', 'kea.log6')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcp4', 'kea.log1')
+    log_contains(r'INFO  \[kea-dhcp4.dhcp4', 'kea.log1')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv', 'kea.log2')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4.dhcpsrv', 'kea.log8')
+    log_contains(r'DEBUG \[kea-dhcp4.options', 'kea.log3')
 
     # bug: #592
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv', 'kea.log8')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp4.dhcpsrv', 'kea.log2')
+    log_contains(r'INFO  \[kea-dhcp4.dhcpsrv', 'kea.log8')
+    log_contains(r'INFO  \[kea-dhcp4.dhcpsrv', 'kea.log2')
 
 
 @pytest.mark.v4
@@ -1113,12 +1114,12 @@ def test_ddns4_logging_all_types_debug():
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
-    srv_msg.log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', 'kea.log_ddns')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', 'kea.log_ddns')
-    # srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', 'kea.log_ddns')  # TODO: it is not present in the log
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', 'kea.log_ddns')
-    srv_msg.log_contains(r'ERROR \[kea-dhcp-ddns.d2-to-dns', 'kea.log_ddns')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', 'kea.log_ddns')
+    log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', 'kea.log_ddns')
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', 'kea.log_ddns')
+    # log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', 'kea.log_ddns')  # TODO: it is not present in the log
+    log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', 'kea.log_ddns')
+    log_contains(r'ERROR \[kea-dhcp-ddns.d2-to-dns', 'kea.log_ddns')
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', 'kea.log_ddns')
 
 
 @pytest.mark.v6
@@ -1159,7 +1160,7 @@ def test_v6_loggers_options_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.options')
+    log_contains(r'DEBUG \[kea-dhcp6.options')
 
 
 @pytest.mark.v6
@@ -1201,7 +1202,7 @@ def test_v6_loggers_options_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.options')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.options')
 
 
 @pytest.mark.v6
@@ -1219,7 +1220,7 @@ def test_v6_loggers_bad_packets_debug():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.send_dont_wait_for_message()
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.bad-packets')
+    log_contains(r'DEBUG \[kea-dhcp6.bad-packets')
 
 
 @pytest.mark.v6
@@ -1237,7 +1238,7 @@ def test_v6_loggers_bad_packets_info():
     srv_msg.client_send_msg('SOLICIT')
 
     srv_msg.send_dont_wait_for_message()
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.bad-packets')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.bad-packets')
 
 
 @pytest.mark.v6
@@ -1280,7 +1281,7 @@ def test_v6_loggers_dhcp6():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.dhcp6')
+    log_contains(r'DEBUG \[kea-dhcp6.dhcp6')
 
 
 @pytest.mark.v6
@@ -1324,8 +1325,8 @@ def test_v6_loggers_dhcp6_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcp6')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp6.dhcp6')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcp6')
+    log_contains(r'INFO  \[kea-dhcp6.dhcp6')
 
 
 @pytest.mark.v6
@@ -1366,7 +1367,7 @@ def test_v6_loggers_alloc_engine():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.alloc-engine')
+    log_contains(r'DEBUG \[kea-dhcp6.alloc-engine')
 
 
 @pytest.mark.v6
@@ -1407,7 +1408,7 @@ def test_v6_loggers_dhcpsrv_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.dhcpsrv')
+    log_contains(r'DEBUG \[kea-dhcp6.dhcpsrv')
 
 
 @pytest.mark.v6
@@ -1448,8 +1449,8 @@ def test_v6_loggers_dhcpsrv_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcpsrv')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp6.dhcpsrv')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcpsrv')
+    log_contains(r'INFO  \[kea-dhcp6.dhcpsrv')
 
 
 @pytest.mark.v6
@@ -1490,7 +1491,7 @@ def test_v6_loggers_leases_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.leases')
+    log_contains(r'DEBUG \[kea-dhcp6.leases')
 
 
 @pytest.mark.v6
@@ -1531,7 +1532,7 @@ def test_v6_loggers_leases_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.leases')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.leases')
 
 
 @pytest.mark.v6
@@ -1572,7 +1573,7 @@ def test_v6_loggers_packets_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.packets')
+    log_contains(r'DEBUG \[kea-dhcp6.packets')
 
 
 @pytest.mark.v6
@@ -1613,7 +1614,7 @@ def test_v6_loggers_packets_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.packets')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.packets')
 
 
 @pytest.mark.v6
@@ -1654,7 +1655,7 @@ def test_v6_loggers_hosts_debug():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.hosts')
+    log_contains(r'DEBUG \[kea-dhcp6.hosts')
 
 
 @pytest.mark.v6
@@ -1695,7 +1696,7 @@ def test_v6_loggers_hosts_info():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.hosts')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.hosts')
 
 
 @pytest.mark.v6
@@ -1736,12 +1737,12 @@ def test_v6_loggers_all():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.packets')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.leases')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.dhcpsrv')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.alloc-engine')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.dhcp6')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.options')
+    log_contains(r'DEBUG \[kea-dhcp6.packets')
+    log_contains(r'DEBUG \[kea-dhcp6.leases')
+    log_contains(r'DEBUG \[kea-dhcp6.dhcpsrv')
+    log_contains(r'DEBUG \[kea-dhcp6.alloc-engine')
+    log_contains(r'DEBUG \[kea-dhcp6.dhcp6')
+    log_contains(r'DEBUG \[kea-dhcp6.options')
 
 
 @pytest.mark.v6
@@ -1798,14 +1799,14 @@ def test_v6_loggers_all_different_levels_same_file():
 
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.packets')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.leases')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.alloc-engine')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcp6')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp6.dhcp6')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcpsrv')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp6.dhcpsrv')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.options')
+    log_contains(r'DEBUG \[kea-dhcp6.packets')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.leases')
+    log_contains(r'DEBUG \[kea-dhcp6.alloc-engine')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcp6')
+    log_contains(r'INFO  \[kea-dhcp6.dhcp6')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcpsrv')
+    log_contains(r'INFO  \[kea-dhcp6.dhcpsrv')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.options')
 
 
 @pytest.mark.v6
@@ -1861,14 +1862,14 @@ def test_v6_loggers_all_different_levels_different_file():
 
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.packets', 'kea.log4')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.leases', 'kea.log5')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp6.alloc-engine', 'kea.log6')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcp6', 'kea.log1')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp6.dhcp6', 'kea.log1')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcpsrv', 'kea.log2')
-    srv_msg.log_contains(r'INFO  \[kea-dhcp6.dhcpsrv', 'kea.log2')
-    srv_msg.log_doesnt_contain(r'DEBUG \[kea-dhcp6.options', 'kea.log3')
+    log_contains(r'DEBUG \[kea-dhcp6.packets', 'kea.log4')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.leases', 'kea.log5')
+    log_contains(r'DEBUG \[kea-dhcp6.alloc-engine', 'kea.log6')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcp6', 'kea.log1')
+    log_contains(r'INFO  \[kea-dhcp6.dhcp6', 'kea.log1')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcpsrv', 'kea.log2')
+    log_contains(r'INFO  \[kea-dhcp6.dhcpsrv', 'kea.log2')
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.options', 'kea.log3')
 
 
 @pytest.mark.v6
@@ -1927,8 +1928,8 @@ def test_ddns6_logging_all_types_debug():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_include_option(2)
 
-    srv_msg.log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', log_file='kea.log_ddns')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', log_file='kea.log_ddns')
-    # srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', log_file='kea.log_ddns')  # TODO: it is not present in the log
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', log_file='kea.log_ddns')
-    srv_msg.log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', log_file='kea.log_ddns')
+    log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', log_file='kea.log_ddns')
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', log_file='kea.log_ddns')
+    # log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', log_file='kea.log_ddns')  # TODO: it is not present in the log
+    log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', log_file='kea.log_ddns')
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', log_file='kea.log_ddns')

@@ -7,6 +7,7 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.forge_cfg import world
 from src.softwaresupport.isc_dhcp6_server.functions import add_line_in_global
 
 
@@ -34,7 +35,7 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on():
     add_line_in_global('group {')
     add_line_in_global('    use-host-decl-names on;')
     add_line_in_global('    host cartmen {')
-    add_line_in_global('        hardware ethernet $(CLI_MAC);')
+    add_line_in_global(f'        hardware ethernet {world.f_cfg.cli_mac};')
     add_line_in_global('        fixed-address 192.168.50.10;')
     add_line_in_global('    }')
     add_line_in_global('}')
@@ -43,7 +44,7 @@ def test_v4_dhcpd_keyword_use_host_decl_names_on():
 
     # Do BOOTP_REQUEST, BOOTP_REPLY should have host-name = cartmen
     # misc.test_procedure()
-    # srv_msg.client_sets_value('Client', 'chaddr', '$(CLI_MAC)')
+    # srv_msg.client_sets_value('Client', 'chaddr', f'{world.f_cfg.cli_mac}')
     # srv_msg.client_send_msg('BOOTP_REQUEST')
     #
     # misc.pass_criteria()
@@ -87,7 +88,7 @@ def test_v4_dhcpd_keyword_use_host_decl_names_off():
     add_line_in_global('group {')
     add_line_in_global('    use-host-decl-names off;')
     add_line_in_global('    host cartmen {')
-    add_line_in_global('        hardware ethernet $(CLI_MAC);')
+    add_line_in_global(f'        hardware ethernet {world.f_cfg.cli_mac};')
     add_line_in_global('        fixed-address 192.168.50.10;')
     add_line_in_global('    }')
     add_line_in_global('}')
@@ -96,7 +97,7 @@ def test_v4_dhcpd_keyword_use_host_decl_names_off():
 
     # Do BOOTP_REQUEST, BOOTP_REPLY should not contain host-name.
     misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', '$(CLI_MAC)')
+    srv_msg.client_sets_value('Client', 'chaddr', f'{world.f_cfg.cli_mac}')
     srv_msg.client_send_msg('BOOTP_REQUEST')
 
     misc.pass_criteria()
@@ -140,7 +141,7 @@ def test_v4_dhcpd_keyword_use_host_decl_names_override():
     add_line_in_global('group {')
     add_line_in_global('    use-host-decl-names on;')
     add_line_in_global('    host cartmen {')
-    add_line_in_global('        hardware ethernet $(CLI_MAC);')
+    add_line_in_global(f'        hardware ethernet {world.f_cfg.cli_mac};')
     add_line_in_global('        fixed-address 192.168.50.10;')
     add_line_in_global('        option host-name "notcartmen";')
     add_line_in_global('    }')
@@ -150,7 +151,7 @@ def test_v4_dhcpd_keyword_use_host_decl_names_override():
 
     # Do BOOTP_REQUEST, BOOTP_REPLY should have host-name = notcartmen
     misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', '$(CLI_MAC)')
+    srv_msg.client_sets_value('Client', 'chaddr', f'{world.f_cfg.cli_mac}')
     srv_msg.client_send_msg('BOOTP_REQUEST')
 
     misc.pass_criteria()

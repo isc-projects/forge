@@ -1277,8 +1277,7 @@ def test_ddns6_notsig_rev_success_withoutflag():
     srv_msg.response_check_option_content(39, 'flags', 'O', expect_include=False)
     srv_msg.response_check_option_content(39, 'fqdn', 'sth6.six.example.com.')
     # Optional DNS tests
-    # srv_msg.dns_log_contains(None,
-    #                          'adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.')
+    # log_contains('adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.', world.cfg["dns_log_file"]))
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
@@ -1358,8 +1357,7 @@ def test_ddns6_notsig_rev_withoutflag_notenabled():
     srv_msg.response_check_option_content(39, 'flags', 'N')
     srv_msg.response_check_option_content(39, 'fqdn', 'sth6.six.example.com.')
     # Optional DNS tests
-    # srv_msg.dns_log_contains('NOT ',
-    #                          'adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.')
+    # log_doesnt_contain('adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.', world.cfg["dns_log_file"])
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')
@@ -1438,8 +1436,7 @@ def test_ddns6_notsig_rev_Nflag_override_no_update():
     srv_msg.response_check_option_content(39, 'flags', 'SO')
     srv_msg.response_check_option_content(39, 'fqdn', 'sth6.six.example.com.')
     # Optional DNS tests
-    # srv_msg.dns_log_contains(None,
-    #                          'adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.')
+    # log_contains('adding an RR at \'0.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa\' PTR sth6.six.example.com.', world.cfg["dns_log_file"])
 
     misc.test_procedure()
     srv_msg.dns_question_record('sth6.six.example.com', 'AAAA', 'IN')

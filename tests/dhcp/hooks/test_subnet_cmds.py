@@ -7,8 +7,9 @@ import pytest
 from src import srv_control
 from src import srv_msg
 from src import misc
-from src.forge_cfg import world
 
+from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
 
@@ -506,8 +507,8 @@ def test_hook_v4_subnet_grow_cb_command(channel):
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.',
-                                    count=2, timeout=7)
+    wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.',
+                            count=2, timeout=7)
 
     response = srv_msg.send_ctrl_cmd({
         'arguments': {
@@ -544,7 +545,7 @@ def test_hook_v4_subnet_grow_cb_command(channel):
         'text': 'IPv4 subnet successfully set.'
     }
 
-    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.', 3)
+    wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.', 3)
 
     srv_msg.DORA('192.168.50.1')
 
@@ -569,7 +570,7 @@ def test_hook_v4_subnet_grow_cb_command(channel):
         'text': '1 IPv4 subnet(s) deleted.'
     }
 
-    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.', 4)
+    wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.', 4)
 
     response = srv_msg.send_ctrl_cmd({
         'arguments': {
@@ -606,7 +607,7 @@ def test_hook_v4_subnet_grow_cb_command(channel):
         'text': 'IPv4 subnet successfully set.'
     }
 
-    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.', 5)
+    wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG4_MERGED Configuration backend data has been merged.', 5)
 
     srv_msg.DORA('192.168.50.1', exchange='renew-only')
 
@@ -1867,7 +1868,7 @@ def test_hook_v6_subnet_grow_cb_command(channel):
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 2)
+    wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 2)
 
     response = srv_msg.send_ctrl_cmd({
         'arguments': {
@@ -1904,7 +1905,7 @@ def test_hook_v6_subnet_grow_cb_command(channel):
         'text': 'IPv6 subnet successfully set.'
     }
 
-    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 3)
+    wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 3)
 
     srv_msg.SARR('2001:db8:1::1')
 
@@ -1929,7 +1930,7 @@ def test_hook_v6_subnet_grow_cb_command(channel):
         'text': '1 IPv6 subnet(s) deleted.'
     }
 
-    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 4)
+    wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 4)
 
     response = srv_msg.send_ctrl_cmd({
         'arguments': {
@@ -1966,7 +1967,7 @@ def test_hook_v6_subnet_grow_cb_command(channel):
         'text': 'IPv6 subnet successfully set.'
     }
 
-    srv_msg.wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 5)
+    wait_for_message_in_log('DHCPSRV_CFGMGR_CONFIG6_MERGED Configuration backend data has been merged.', 5)
 
     srv_msg.SARR('2001:db8:1::1', exchange='renew-only')
 

@@ -7,6 +7,7 @@ import pytest
 from src import srv_msg
 from src import srv_control
 from src import misc
+from src.protosupport.multi_protocol_functions import lease_file_contains
 
 
 @pytest.mark.v4
@@ -234,8 +235,8 @@ def test_v4_sharednetworks_single_shared_subnet_with_two_subnets_based_on_iface(
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    srv_msg.lease_file_contains('192.168.50.1,00:00:00:00:00:22')
-    srv_msg.lease_file_contains('192.168.51.1,00:00:00:00:00:33')
+    lease_file_contains('192.168.50.1,00:00:00:00:00:22')
+    lease_file_contains('192.168.51.1,00:00:00:00:00:33')
 
 
 @pytest.mark.v4
@@ -299,7 +300,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_tree_subnets_based_on_iface
     srv_msg.response_check_option_content(4, 'value', '199.199.199.200', expect_include=False)
     srv_msg.response_check_option_content(4, 'value', '199.199.199.1', expect_include=False)
 
-    srv_msg.lease_file_contains('192.168.50.1,00:00:00:00:00:22')
+    lease_file_contains('192.168.50.1,00:00:00:00:00:22')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
@@ -337,7 +338,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_tree_subnets_based_on_iface
     srv_msg.response_check_option_content(4, 'value', '199.199.199.200', expect_include=False)
     srv_msg.response_check_option_content(4, 'value', '199.199.199.1', expect_include=False)
 
-    srv_msg.lease_file_contains('192.168.51.1,00:00:00:00:00:33')
+    lease_file_contains('192.168.51.1,00:00:00:00:00:33')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:44')
@@ -375,7 +376,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_tree_subnets_based_on_iface
     srv_msg.response_check_option_content(4, 'value', '199.199.199.100', expect_include=False)
     srv_msg.response_check_option_content(4, 'value', '199.199.199.1', expect_include=False)
 
-    srv_msg.lease_file_contains('192.168.52.1,00:00:00:00:00:44')
+    lease_file_contains('192.168.52.1,00:00:00:00:00:44')
 
 
 @pytest.mark.v4
@@ -448,7 +449,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_msg.response_check_option_content(4, 'value', '199.199.199.200', expect_include=False)
     srv_msg.response_check_option_content(4, 'value', '199.199.199.1', expect_include=False)
 
-    srv_msg.lease_file_contains('192.168.50.1,00:00:00:00:00:11')
+    lease_file_contains('192.168.50.1,00:00:00:00:00:11')
 
     # 2
     misc.test_procedure()
@@ -494,7 +495,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_msg.response_check_option_content(4, 'value', '199.199.199.200', expect_include=False)
     srv_msg.response_check_option_content(4, 'value', '199.199.199.1', expect_include=False)
 
-    srv_msg.lease_file_contains('192.168.51.1,00:00:00:00:00:22')
+    lease_file_contains('192.168.51.1,00:00:00:00:00:22')
 
     # 3
     misc.test_procedure()
@@ -540,7 +541,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_msg.response_check_option_content(4, 'value', '199.199.199.100', expect_include=False)
     srv_msg.response_check_option_content(4, 'value', '199.199.199.1', expect_include=False)
 
-    srv_msg.lease_file_contains('192.168.52.1,00:00:00:00:00:33')
+    lease_file_contains('192.168.52.1,00:00:00:00:00:33')
 
     # 4
     misc.test_procedure()
@@ -636,8 +637,8 @@ def test_v4_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    srv_msg.lease_file_contains('192.168.50.1,00:00:00:00:00:aa')
-    srv_msg.lease_file_contains('192.168.51.1,00:00:00:00:00:bb')
+    lease_file_contains('192.168.50.1,00:00:00:00:00:aa')
+    lease_file_contains('192.168.51.1,00:00:00:00:00:bb')
 
     misc.test_procedure()
     srv_msg.network_variable('source_port', 67)
@@ -682,7 +683,7 @@ def test_v4_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.response_check_option_content(4, 'value', '199.199.199.200', expect_include=False)
     srv_msg.response_check_option_content(4, 'value', '199.199.199.1', expect_include=False)
 
-    srv_msg.lease_file_contains('192.168.52.1,00:00:00:00:00:22')
+    lease_file_contains('192.168.52.1,00:00:00:00:00:22')
 
     # 3
     misc.test_procedure()
@@ -728,7 +729,7 @@ def test_v4_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.response_check_option_content(4, 'value', '199.199.199.100', expect_include=False)
     srv_msg.response_check_option_content(4, 'value', '199.199.199.1', expect_include=False)
 
-    srv_msg.lease_file_contains('192.168.53.1,00:00:00:00:00:33')
+    lease_file_contains('192.168.53.1,00:00:00:00:00:33')
 
 
 @pytest.mark.v4
@@ -1305,7 +1306,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_relay_a
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 13)
 
-    srv_msg.lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
 
 
 @pytest.mark.v6
@@ -1398,7 +1399,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_id():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 13)
 
-    srv_msg.lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
 
 
 @pytest.mark.v6
@@ -1472,8 +1473,8 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_iface(
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
 
 @pytest.mark.v6
@@ -1827,8 +1828,8 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_id():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
 
 @pytest.mark.v6
@@ -2094,8 +2095,8 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_relay_
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
 
 @pytest.mark.v6
@@ -2232,8 +2233,8 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.lease_file_contains('2001:db8:e::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('2001:db8:f::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    lease_file_contains('2001:db8:e::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:f::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -2317,8 +2318,8 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -2375,8 +2376,8 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
 
 @pytest.mark.v6
@@ -2868,8 +2869,8 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -2957,8 +2958,8 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:03')
@@ -3131,8 +3132,8 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    lease_file_contains('2001:db8:a::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -3216,8 +3217,8 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_id():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-    srv_msg.lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.lease_file_contains('2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02')
+    lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:01')
+    lease_file_contains('2001:db8:d::1,00:03:00:01:f6:f5:f4:f3:f2:02')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:03')
@@ -3379,8 +3380,8 @@ def test_v6_sharednetworks_classification_with_defined_option():
     srv_msg.response_check_include_option(23)
     srv_msg.response_check_option_content(23, 'addresses', '2001:db8::1')
 
-    srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:f1')
-    srv_msg.lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:f2')
+    lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:f1')
+    lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:f2')
 
 
 @pytest.mark.v6
@@ -3487,8 +3488,8 @@ def test_v6_sharednetworks_classification_without_defined_option():
 
     srv_msg.response_check_include_option(23, expect_include=False)
 
-    srv_msg.lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:f1')
-    srv_msg.lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:f2')
+    lease_file_contains('2001:db8:b::1,00:03:00:01:f6:f5:f4:f3:f2:f1')
+    lease_file_contains('2001:db8:c::1,00:03:00:01:f6:f5:f4:f3:f2:f2')
 
 
 @pytest.mark.v6

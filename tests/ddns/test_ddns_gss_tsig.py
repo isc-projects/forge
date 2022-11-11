@@ -7,7 +7,9 @@ import pytest
 from src import misc
 from src import srv_msg
 from src import srv_control
+
 from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
 from src.softwaresupport import krb
 from src.softwaresupport.multi_server_functions import start_tcpdump
 
@@ -279,7 +281,7 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
     addr = "192.168.50.21" if world.proto == 'v4' else "2001:db8:1::51"
     _get_lease(addr, f"name1.{my_domain}.", "01:01:01:01:01:11", suffix=my_domain)
 
-    # srv_msg./wait_for_message_in_log('FQDN: [name1.example.com.]', log_file='kea.log_ddns')
+    # wait_for_message_in_log('FQDN: [name1.example.com.]', log_file='kea.log_ddns')
     srv_msg.forge_sleep(1)
     _check_dns_record(f"name1.{my_domain}.", rdata=addr, dns_addr=dns_addr, iface=iface)
 
@@ -401,9 +403,9 @@ def test_ddns4_gss_tsig_fallback(fallback):
     _check_dns_record("thiswontbeindns.example.com.", dns_addr=dns_addr, iface=world.cfg["dns_iface"])
     # but logs will differ
     if fallback:
-        srv_msg.log_contains("update 'example.com/IN' denied", log_file="/tmp/dns.log")
+        log_contains("update 'example.com/IN' denied", log_file="/tmp/dns.log")
     else:
-        srv_msg.log_doesnt_contain("update 'example.com/IN' denied", log_file="/tmp/dns.log")
+        log_doesnt_contain("update 'example.com/IN' denied", log_file="/tmp/dns.log")
 
 
 @pytest.mark.v4
@@ -554,7 +556,7 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     _check_dns_record(f"abcfqdn.{my_domain}.", dns_addr=dns_addr, iface=iface)
 
     # check also logs
-    srv_msg.log_contains("KEY_LOOKUP_NONE hooks library lookup for a key: found no usable key", log_file="kea.log_ddns")
+    log_contains("KEY_LOOKUP_NONE hooks library lookup for a key: found no usable key", log_file="kea.log_ddns")
 
     # get list of all keys, check if we got back one key with correct name
     cmd = dict(command="gss-tsig-list", arguments={})

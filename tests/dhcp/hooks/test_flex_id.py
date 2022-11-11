@@ -7,6 +7,8 @@ import pytest
 from src import misc
 from src import srv_msg
 from src import srv_control
+from src.protosupport.multi_protocol_functions import lease_file_contains, lease_file_doesnt_contain
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 
 
 @pytest.mark.v4
@@ -90,8 +92,8 @@ def test_v4_flexid_reconfigure():
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
-    srv_msg.wait_for_message_in_log('DHCP4_DYNAMIC_RECONFIGURATION', 1)
-    srv_msg.wait_for_message_in_log('DHCP4_CONFIG_COMPLETE', 2)
+    wait_for_message_in_log('DHCP4_DYNAMIC_RECONFIGURATION', 1)
+    wait_for_message_in_log('DHCP4_CONFIG_COMPLETE', 2)
 
     misc.test_procedure()
     srv_msg.client_does_include_with_value('vendor_class_id', 'docsis3.0')
@@ -273,8 +275,8 @@ def test_v4_flexid_replace_mac_addr_inside_pool():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,,4000')
-    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,,0')
+    lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,,4000')
+    lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,,0')
 
 
 @pytest.mark.v4
@@ -385,9 +387,9 @@ def test_v4_flexid_replace_client_id_release_1():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.10')
 
-    srv_msg.lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
-    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
-    srv_msg.lease_file_doesnt_contain('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
+    lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
+    lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
+    lease_file_doesnt_contain('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
 
 
 @pytest.mark.v4
@@ -455,9 +457,9 @@ def test_v4_flexid_replace_client_id_release_2():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.10')
 
-    srv_msg.lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
-    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
-    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
+    lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
+    lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
+    lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,0')
 
 
 @pytest.mark.v4
@@ -516,8 +518,8 @@ def test_v4_flexid_replace_client_id_renew_1():
     srv_msg.response_check_include_option(61)
     srv_msg.response_check_include_option(54)
 
-    srv_msg.lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
-    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
+    lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
+    lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
 
 
 @pytest.mark.v4
@@ -576,8 +578,8 @@ def test_v4_flexid_replace_client_id_renew_2():
     srv_msg.response_check_include_option(61)
     srv_msg.response_check_include_option(54)
 
-    srv_msg.lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
-    srv_msg.lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
+    lease_file_doesnt_contain('ff:01:02:03:ff:04:11:22:33')
+    lease_file_contains('192.168.50.10,ff:01:02:03:ff:04,00:64:6f:63:73:69:73:33:2e:30,4000')
 
 
 @pytest.mark.v4

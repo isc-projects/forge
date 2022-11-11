@@ -7,6 +7,7 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
 from src.softwaresupport.isc_dhcp6_server.functions import build_log_path, add_line_in_global
 
 
@@ -56,8 +57,8 @@ def test_v6_dhcpd_keyword_ddns_reverse_add():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
-    srv_msg.log_contains('DDNS_STATE_ADD_PTR myhost.bubba.com for 2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.ip6.arpa.',
-                         log_file=build_log_path())
+    log_contains('DDNS_STATE_ADD_PTR myhost.bubba.com for 2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.ip6.arpa.',
+                 log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -106,8 +107,8 @@ def test_v6_dhcpd_keyword_ddns_reverse_do_reverse_updates_false():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
-    srv_msg.log_doesnt_contain('DDNS_STATE_ADD_PTR reverse myhost.bubba.com for 2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.ip6.arpa.',
-                               log_file=build_log_path())
+    log_doesnt_contain('DDNS_STATE_ADD_PTR reverse myhost.bubba.com for 2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.ip6.arpa.',
+                       log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -153,7 +154,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_no_client_fqdn():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
-    srv_msg.log_doesnt_contain('DDNS_STATE_ADD_PTR reverse.', log_file=build_log_path())
+    log_doesnt_contain('DDNS_STATE_ADD_PTR reverse.', log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -203,7 +204,7 @@ def test_v6_dhcpd_keyword_ddns_reverse_ddns_ttl():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
-    srv_msg.log_contains('ttl: 7701', log_file=build_log_path())
+    log_contains('ttl: 7701', log_file=build_log_path())
 
 
 @pytest.mark.v6
@@ -258,5 +259,5 @@ def test_v6_dhcpd_keyword_ddns_reverse_ddns_hostname():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::2')
-    srv_msg.log_contains('DDNS_STATE_ADD_PTR reverse cfg_host.bubba.com for 2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.ip6.arpa.',
-                         log_file=build_log_path())
+    log_contains('DDNS_STATE_ADD_PTR reverse cfg_host.bubba.com for 2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.ip6.arpa.',
+                 log_file=build_log_path())

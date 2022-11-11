@@ -9,6 +9,7 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import file_contains_line_n_times
 from src.softwaresupport.multi_server_functions import fabric_sudo_command
 
 
@@ -365,10 +366,10 @@ def test_v6_legal_log_address_assigned_duid():
     _send_client_requests(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
-                                       'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
+                               'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
 @pytest.mark.v6
@@ -422,10 +423,10 @@ def test_v6_legal_log_address_renewed_duid():
     _send_client_renews(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
-                                       'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
-                                       'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
+                               'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
+                               'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
 @pytest.mark.v6
@@ -482,10 +483,10 @@ def test_v6_legal_log_address_rebind_duid():
     _send_client_rebinds(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
-                                       'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
-                                       'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
+                               'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
+                               'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
 @pytest.mark.v6
@@ -541,10 +542,10 @@ def test_v6_legal_log_address_assigned_docsis_modem():
     _send_client_requests_with_docsis(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
-                                       'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
+                               'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)')
 
 
 @pytest.mark.v6
@@ -600,10 +601,10 @@ def test_v6_legal_log_address_assigned_docsis_cmts():
     _send_relayed_client_requests_with_docsis(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 '
-                                       'and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 '
+                               'and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)')
 
 
 @pytest.mark.v6
@@ -659,13 +660,13 @@ def test_v6_legal_log_address_assigned_relay():
     _send_relayed_client_requests(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 '
-                                       'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) '
-                                       'connected via relay at address:')
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'for client on link address: 2001:db8:1::1005, hop count: 4')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 '
+                               'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) '
+                               'connected via relay at address:')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'for client on link address: 2001:db8:1::1005, hop count: 4')
 
 
 @pytest.mark.v6
@@ -733,10 +734,10 @@ def test_v6_legal_log_with_flex_id_address_assigned():
     _send_client_requests_for_flex_id(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 2001:db8:1::f has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
-                                       'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'Address: 2001:db8:1::f has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
+                               'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
 @pytest.mark.v6
@@ -837,8 +838,8 @@ def test_v6_legal_log_parser_format():
                     f'{world.cfg["values"]["tr_id"]}' \
                     f''
 
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)
 
 
 @pytest.mark.v6
@@ -903,8 +904,8 @@ def test_v6_legal_log_parser_format_via_relay():
                     f'2001:db8:1::1005' \
                     f'{world.f_cfg.cli_link_local}'
 
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)
 
 
 @pytest.mark.v6
@@ -973,8 +974,8 @@ def test_v6_legal_log_parser_format_dual_ip():
                        f'{world.cfg["values"]["tr_id"]}' \
                        f''
 
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_na)
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_na)
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_na)
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_na)
 
     request_line_pd = f'{world.f_cfg.server_iface}' \
                       f'none' \
@@ -997,8 +998,8 @@ def test_v6_legal_log_parser_format_dual_ip():
                        f'{world.cfg["values"]["tr_id"]}' \
                        f''
 
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_pd)
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_pd)
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_pd)
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_pd)
 
 
 @pytest.mark.v6
@@ -1026,14 +1027,14 @@ def test_v6_legal_log_dual_ip():
     _send_client_requests(MESSAGE_COUNT, ia_pd=True)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
-                                       'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Prefix: 2001:db8:2::4:0:0/94 has been assigned for 0 hrs 10 mins 0 '
-                                       'secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and '
-                                       'hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
+                               'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'Prefix: 2001:db8:2::4:0:0/94 has been assigned for 0 hrs 10 mins 0 '
+                               'secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and '
+                               'hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
 
 @pytest.mark.v4
@@ -1054,10 +1055,10 @@ def test_v4_legal_log_assigned_address():
     _send_client_requests4(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
-                                       'client-id: 00:01:02:03:04:05:06')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
+                               'client-id: 00:01:02:03:04:05:06')
 
 
 @pytest.mark.v4
@@ -1106,11 +1107,11 @@ def test_v4_legal_log_assigned_address_without_client_id():
     _send_client_requests4(MESSAGE_COUNT, client_id=False)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04')
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 0,
-                                       'client-id:')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 0,
+                               'client-id:')
 
 
 @pytest.mark.v4
@@ -1160,11 +1161,11 @@ def test_v4_legal_log_assigned_address_via_relay():
     _send_client_requests_via_relay4(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05, '
-                                       'client-id: 00:01:02:03:04:05:77 '
-                                       'connected via relay at address: $(GIADDR4)')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05, '
+                               'client-id: 00:01:02:03:04:05:77 '
+                               f'connected via relay at address: {world.f_cfg.giaddr4}')
 
 
 @pytest.mark.v4
@@ -1186,11 +1187,11 @@ def test_v4_legal_log_assigned_address_via_relay_one_address():
     _send_client_requests_via_relay4(MESSAGE_COUNT, '192.168.50.2')
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
-                                       'Address: 192.168.50.2 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05, '
-                                       'client-id: 00:01:02:03:04:05:77 '
-                                       'connected via relay at address: $(GIADDR4)')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+                               'Address: 192.168.50.2 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05, '
+                               'client-id: 00:01:02:03:04:05:77 '
+                               f'connected via relay at address: {world.f_cfg.giaddr4}')
 
 
 @pytest.mark.v4
@@ -1220,7 +1221,7 @@ def test_v4_legal_log_assigned_address_via_relay_db(backend):
                                         'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05, '
                                         'client-id: 00:01:02:03:04:05:77 '
-                                        'connected via relay at address: $(GIADDR4)')
+                                        f'connected via relay at address: {world.f_cfg.giaddr4}')
 
 
 @pytest.mark.v4
@@ -1241,10 +1242,10 @@ def test_v4_legal_log_renew_state():
     _send_client_requests_in_renew_state4(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
-                                       'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
-                                       'client-id: 00:01:02:03:04:05:06')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
+                               'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
+                               'client-id: 00:01:02:03:04:05:06')
 
 
 @pytest.mark.v4
@@ -1293,10 +1294,10 @@ def test_v4_legal_log_rebind_state():
     _send_client_requests_in_rebind_state4(MESSAGE_COUNT)
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
-                                       'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
-                                       'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
-                                       'client-id: 00:01:02:03:04:05:06')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
+                               'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
+                               'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
+                               'client-id: 00:01:02:03:04:05:06')
 
 
 @pytest.mark.v4
@@ -1395,7 +1396,7 @@ def test_legal_log_rotation(dhcp_version):
                       'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)'
     # Check contents of the log files
     for name in log_files:
-        srv_msg.file_contains_line_n_times(world.f_cfg.data_join(name), 3, log_message)
+        file_contains_line_n_times(world.f_cfg.data_join(name), 3, log_message)
 
 
 # v4 disabled for time saving:
@@ -1444,7 +1445,7 @@ def test_legal_log_basename(dhcp_version):
     # acquire date from server
     date = fabric_sudo_command('date +"%Y%m%d"')
     # Check contents of the log files
-    srv_msg.file_contains_line_n_times(world.f_cfg.data_join(f'custom-log.{date}.txt'), 3, log_message)
+    file_contains_line_n_times(world.f_cfg.data_join(f'custom-log.{date}.txt'), 3, log_message)
 
 
 # v4 disabled for time saving:
@@ -1524,10 +1525,10 @@ def test_legal_log_rotate_actions(dhcp_version):
     assert len(log_files) == 3
 
     # Check contents of prerotate actions file. It should contain first and second log file name (third was not closed)
-    srv_msg.file_contains_line(world.f_cfg.data_join('actions_pre.txt'), None, world.f_cfg.data_join(log_files[0]))
-    srv_msg.file_contains_line(world.f_cfg.data_join('actions_pre.txt'), None, world.f_cfg.data_join(log_files[1]))
+    file_contains_line_n_times(world.f_cfg.data_join('actions_pre.txt'), 1, world.f_cfg.data_join(log_files[0]))
+    file_contains_line_n_times(world.f_cfg.data_join('actions_pre.txt'), 1, world.f_cfg.data_join(log_files[1]))
 
     # Check contents of postrotate actions file. It should contain second and third log file name
     # (first was open on server start, and not on rotation)
-    srv_msg.file_contains_line(world.f_cfg.data_join('actions_post.txt'), None, world.f_cfg.data_join(log_files[1]))
-    srv_msg.file_contains_line(world.f_cfg.data_join('actions_post.txt'), None, world.f_cfg.data_join(log_files[2]))
+    file_contains_line_n_times(world.f_cfg.data_join('actions_post.txt'), 1, world.f_cfg.data_join(log_files[1]))
+    file_contains_line_n_times(world.f_cfg.data_join('actions_post.txt'), 1, world.f_cfg.data_join(log_files[2]))

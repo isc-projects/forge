@@ -18,6 +18,7 @@ from src import srv_msg
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import add_variable, substitute_vars
 from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
 from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command
 from src.softwaresupport.multi_server_functions import fabric_remove_file_command, fabric_download_file
@@ -1556,7 +1557,7 @@ def reconfigure_srv(should_succeed: bool = True,
         _check_kea_process_result(should_succeed, result, 'reconfigure')
     else:
         _reload_kea_with_systemctl(destination_address)
-    srv_msg.wait_for_message_in_log('dynamic server reconfiguration succeeded with file')
+    wait_for_message_in_log('dynamic server reconfiguration succeeded with file')
 
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address):
