@@ -1149,6 +1149,22 @@ def add_mt_if_we_can(cfg):
             cfg["Dhcp%s" % world.proto[1]].update({"multi-threading": {"enable-multi-threading": True,
                                                                        "thread-pool-size": 2,
                                                                        "packet-queue-size": 16}})
+
+        if "libdhcp_ha.so" in list_of_used_hooks:
+            ha_mt = {"multi-threading": {"enable-multi-threading": True,
+                                         "http-dedicated-listener": True,
+                                         "http-listener-threads": 2,
+                                         "http-client-threads": 2}}
+
+            # HA needs to enable it's own MT connectivity
+            for hook in cfg["Dhcp%s" % world.proto[1]]["hooks-libraries"]:
+                if "libdhcp_ha.so" in hook["library"]:
+                    # change port number to not go through CA, CA will be run in the test for all other commands
+                    for peer in hook["parameters"]["high-availability"][0]["peers"]:
+                        # let's replace any port number with new
+                        peer["url"] = ":".join(peer["url"].split(":")[:2])+":8003/"
+                    # and add mt settings
+                    hook["parameters"]["high-availability"][0].update(ha_mt)
     return cfg
 
 

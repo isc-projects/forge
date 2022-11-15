@@ -12,6 +12,8 @@ from src import srv_msg
 from src.forge_cfg import world
 
 
+# port 8000 is by default the one which is used, but if forge detects
+# that test can be run in multi threading mode, 8000 will be replaced with 8003
 HOT_STANDBY = {
     "mode": "hot-standby",
     "peers": [{
