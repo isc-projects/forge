@@ -596,7 +596,7 @@ def _add_ha_pools(address_space_size: int):
 @pytest.mark.parametrize('ha_mode', ['hot-standby', 'load-balancing', 'passive-backup'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # other possible parameters: 'reverse'
 @pytest.mark.parametrize('config_type', ['multiple-subnets'])  # other possible parameters: 'network'
-@pytest.mark.parametrize('radius_reservation_in_pool', ['radius-reservaton-in-pool'])  # other possible parameters: 'radius-reservaton-outside-pool'
+@pytest.mark.parametrize('radius_reservation_in_pool', ['radius-reservation-in-pool'])  # other possible parameters: 'radius-reservation-outside-pool'
 def test_HA_and_RADIUS(dhcp_version: str,
                        backend: str,
                        ha_mode: str,

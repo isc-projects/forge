@@ -589,7 +589,7 @@ def test_ddns_tuning_based_on_fqdn():
     _get_address_v4('192.168.50.2', chaddr='ff:01:02:03:ff:04', hostname='myuniquehostname',
                     expected_hostname="myuniquehostname.four.example.com")
 
-    # both forward and reverse should be updated with hostsname sent by client + configured suffix
+    # both forward and reverse should be updated with hostname sent by client + configured suffix
     _check_fqdn_record("myuniquehostname.four.example.com.", address="192.168.50.2")
     _check_reverse_record(reverse='2.50.168.192.in-addr.arpa.', fqdn="myuniquehostname.four.example.com.")
 

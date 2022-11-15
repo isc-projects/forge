@@ -25,7 +25,7 @@ from src.softwaresupport import radius
 @pytest.mark.radius
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('config_type', ['subnet', 'network', 'multiple-subnets'])
-@pytest.mark.parametrize('radius_reservation_in_pool', ['radius-reservaton-in-pool', 'radius-reservaton-outside-pool'])
+@pytest.mark.parametrize('radius_reservation_in_pool', ['radius-reservation-in-pool', 'radius-reservation-outside-pool'])
 def test_radius(dhcp_version: str,
                 backend: str,
                 config_type: str,
@@ -53,7 +53,7 @@ def test_radius(dhcp_version: str,
     srv_control.define_temporary_lease_db_backend(backend)
     if dhcp_version == 'v4_bootp':
         srv_control.add_hooks('libdhcp_bootp.so')
-    if radius_reservation_in_pool == 'radius-reservaton-in-pool':
+    if radius_reservation_in_pool == 'radius-reservation-in-pool':
         # We can afford the more complex case of subnet reselection if the reservation is in pool.
         srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-address', True)
         srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-pool', True)

@@ -206,7 +206,7 @@ def test_early_hr_lookup_class(backend, dhcp_version):
 @pytest.mark.parametrize('backend', ['memfile', 'MySQL', 'PostgreSQL'])
 def test_early_hr_lookup_class_in_class(backend, dhcp_version):
     """
-    Test to check if Kea looks up Global Host Reservations and assigns client class dependend on other classes.
+    Test to check if Kea looks up Global Host Reservations and assigns client class dependent on other classes.
     After assigning client class dependent on first one, the subnet should be allocated according to second class.
     """
     misc.test_setup()

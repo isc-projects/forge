@@ -1467,7 +1467,7 @@ def test_legal_log_rotate_actions(dhcp_version):
     script_post = f'#!/bin/bash \n' \
                   f'echo $1 >> {world.f_cfg.data_join("actions_post.txt")}'
 
-    # trnsfer scripts to server and make them executable
+    # transfer scripts to server and make them executable
     fabric_sudo_command(f"echo '{script_pre}' > {world.f_cfg.data_join('script_pre.sh')}")
     fabric_sudo_command(f"echo '{script_post}' > {world.f_cfg.data_join('script_post.sh')}")
     fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script*.sh')}")

@@ -332,8 +332,8 @@ def send_and_receive(config_type: str,
         * 'multiple-subnets': multiple classified pools in multiple subnets inside a shared network
     :param radius_reservation_in_pool: whether there is an existing pool in Kea that contains the
                                        lease reserved by RADIUS for the first client in this test
-        * 'radius-reservaton-in-pool': yes
-        * 'radius-reservaton-outside-pool': no
+        * 'radius-reservation-in-pool': yes
+        * 'radius-reservation-outside-pool': no
     :param ha_mode: HA mode, not strictly-related to RADIUS. Default is None meaning no HA
         * 'hot-standby'
         * 'load-balancing'
@@ -343,7 +343,7 @@ def send_and_receive(config_type: str,
 
     leases = []
 
-    if radius_reservation_in_pool == 'radius-reservaton-in-pool':
+    if radius_reservation_in_pool == 'radius-reservation-in-pool':
         # Get a lease that is explicitly configured in RADIUS as
         # Framed-IP-Address that is part of a configured pool in Kea.
         leases.append(get_address(mac='08:00:27:b0:c5:10',
@@ -359,7 +359,7 @@ def send_and_receive(config_type: str,
             # so that the rest of the test is the same.
             pass
 
-    elif radius_reservation_in_pool == 'radius-reservaton-outside-pool':
+    elif radius_reservation_in_pool == 'radius-reservation-outside-pool':
         # Get a lease that is explicitly configured in RADIUS as
         # Framed-IP-Address that is outside of any configured pool in Kea.
         leases.append(get_address(mac='08:00:27:b0:c1:42',

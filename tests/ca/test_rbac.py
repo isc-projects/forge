@@ -526,7 +526,7 @@ def test_rbac_access_by_read_write(make_sure_file_is_correct):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # admin should have read access but not writel
+    # admin should have read access but not write
     _send_cmd({"command": "dhcp-disable", "arguments": {}}, result=403)
     _send_cmd({"command": "dhcp-enable", "arguments": {}}, result=403)
     _send_cmd({"command": "build-report", "arguments": {}})
