@@ -4,10 +4,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=import-outside-toplevel,unused-argument
-
 import pytest
 from src.forge_cfg import world
+
+# pylint: disable=import-outside-toplevel
+# pylint: disable=unused-argument
 
 
 @pytest.fixture(autouse=True, scope='session')

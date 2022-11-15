@@ -4,18 +4,20 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# This file include all operations needed for installing, configuring and managing kerberos server
+# as well as authenticating to it. It's windows part is based on preconfigured windows systems
+# in kea internal testing network. On contrary to all other configuration procedures in forge
+# all operations here can be execute just on one system, primary accessible via MGMT_ADDRESS
+
+# pylint: disable=consider-using-f-string
+# pylint: disable=f-string-without-interpolation
+# pylint: disable=line-too-long
+
 import os
 import time
 
 from src.forge_cfg import world
 from .multi_server_functions import fabric_sudo_command, send_content, fabric_download_file, fabric_send_file
-
-#
-# This file include all operations needed for installing, configuring and managing kerberos server
-# as well as authenticating to it. It's windows part is based on preconfigured windows systems
-# in kea internal testing network. On contrary to all other configuration procedures in forge
-# all operations here can be execute just on one system, primary accessible via MGMT_ADDRESS
-#
 
 
 def kinit(my_domain):
@@ -157,16 +159,16 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
     install_krb(dns_addr, domain, key_life)
     # /etc/krb5.conf
     ubuntu_krb5_conf = f"""[libdefaults]
-	default_realm = {domain.upper()}
-	kdc_timesync = 1
-	ccache_type = 4
-	forwardable = true
-	proxiable = true
+    default_realm = {domain.upper()}
+    kdc_timesync = 1
+    ccache_type = 4
+    forwardable = true
+    proxiable = true
 [realms]
-	{domain.upper()} = {{
-		kdc = {dns_addr}
-		admin_server = {dns_addr}
-	}}
+    {domain.upper()} = {{
+        kdc = {dns_addr}
+        admin_server = {dns_addr}
+    }}
 """
     fedora_krb5_conf = f"""includedir /etc/krb5.conf.d/
 

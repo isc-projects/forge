@@ -6,6 +6,21 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=consider-iterating-dictionary
+# pylint: disable=consider-using-dict-items
+# pylint: disable=consider-using-f-string
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
+# pylint: disable=logging-not-lazy
+# pylint: disable=no-member
+# pylint: disable=no-name-in-module
+# pylint: disable=no-else-return
+# pylint: disable=possibly-unused-variable
+# pylint: disable=undefined-variable
+# pylint: disable=unused-argument
+# pylint: disable=unused-import
+# pylint: disable=unused-variable
+
 import codecs
 import logging
 import os
@@ -303,7 +318,7 @@ def build_msg(opts):
         opts += ["end"]  # end option
         msg /= DHCP(options=opts)
 
-    #transaction id
+    # transaction id
     if world.cfg["values"]["tr_id"] is None:
         msg.xid = randint(0, 256*256*256)
     else:
@@ -388,7 +403,7 @@ def send_wait_for_message(msgtype, presence, exp_message):
         received_names = received_names.strip()
 
     log.debug("Received traffic (answered/unanswered): %d/%d packet(s)."
-                              % (len(ans), len(unans)))
+              % (len(ans), len(unans)))
     if exp_message != "None":
         for x in unans:
             log.error(("Unanswered packet type = %s" % get_msg_type(x)))
@@ -549,11 +564,11 @@ def get_all_leases(decode_duid=True):
     lease = {"hwaddr": mac, "address": world.srvmsg[0].yiaddr}
     try:
         lease.update({"client_id": get_option(world.srvmsg[0], 61)[1]}.hex())
-    except:
+    except BaseException:
         pass
     try:
         lease.update({"valid_lifetime": get_option(world.srvmsg[0], 51)[1]})
-    except:
+    except BaseException:
         pass
 
     return lease

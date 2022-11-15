@@ -6,6 +6,16 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=anomalous-backslash-in-string
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-in
+# pylint: disable=line-too-long
+# pylint: disable=logging-fstring-interpolation
+# pylint: disable=superfluous-parens
+# pylint: disable=unbalanced-tuple-unpacking
+# pylint: disable=unused-variable
+# pylint: disable=useless-object-inheritance
+
 import json
 import logging
 import importlib
@@ -41,7 +51,7 @@ mysql_reservation = Dispatcher('mysql_reservation')
 pgsql_reservation = Dispatcher('pgsql_reservation')
 
 
-##DHCP server configurations
+# DHCP server configurations
 @step(r'Server is configured with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet(subnet, pool, iface=world.f_cfg.server_iface):
     """Adds server configuration with specified subnet and pool.
@@ -83,9 +93,9 @@ def merge_in_subnet(selector, modification, config=None):
     """
     if config is None:
         config = world.dhcp_cfg
-    assert(isinstance(selector, dict))
-    assert(isinstance(modification, dict))
-    assert(isinstance(config, dict))
+    assert isinstance(selector, dict)
+    assert isinstance(modification, dict)
+    assert isinstance(config, dict)
 
     for subnet in config[f'subnet{world.proto[1]}']:
         for k, v in selector.items():
@@ -102,9 +112,9 @@ def merge_in_network_subnet(network_selector, subnet_selector, modification):
     :param subnet_selector: dictionary used to identify the subnet, all keys and values are checked
     :param modification: dictionary with the additions or changes to be merged
     """
-    assert(isinstance(network_selector, dict))
-    assert(isinstance(subnet_selector, dict))
-    assert(isinstance(modification, dict))
+    assert isinstance(network_selector, dict)
+    assert isinstance(subnet_selector, dict)
+    assert isinstance(modification, dict)
 
     for shared_network in world.dhcp_cfg['shared-networks']:
         for k, v in network_selector.items():
@@ -327,10 +337,8 @@ def define_temporary_lease_db_backend(lease_db_type):
 @step(r'Credentials for (\S+) database. User: (\S+); Passwd: (\S+); DB-name: (\S+); Host: (\S+);')
 def define_temporary_lease_db_backend_credentials(db_type, tmp_db_user, tmp_db_passwd, tmp_db_name, tmp_db_host):
     # for now it's just support for leases.
-    if world.f_cfg.tmp_db_type is None:
-        assert False, "You should put 'Use (\S+) as lease database backend.' step first!"
-    if db_type not in ["leases"]:  # , "reservation"]:
-        assert False, "For this time we can use just 'leases'. 'reservation' is not available here."
+    assert world.f_cfg.tmp_db_type is not None, 'world.f_cfg.tmp_db_type is None'
+    assert db_type in ["leases"], 'db_type not in ["leases"]'
     world.f_cfg.db_host = tmp_db_host
     world.f_cfg.db_name = tmp_db_name
     world.f_cfg.db_passwd = tmp_db_passwd
@@ -450,7 +458,7 @@ def host_reservation(reservation_type, reserved_value, unique_host_value_type, u
     dhcp.host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, None)
 
 
-##shared-subnet cfg
+# shared-subnet cfg
 @step(r'Add subnet (\d+) to shared-subnet set (\d+).')
 def shared_subnet(subnet_id, shared_subnet_id):
     """
@@ -479,7 +487,7 @@ def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
     dhcp.set_conf_parameter_shared_subnet(parameter_name, value, int(subnet_id))
 
 
-##subnet options
+# subnet options
 @step(r'Reserve (\S+) (\S+) in subnet (\d+) for host uniquely identified by (\S+) (\S+).')
 def host_reservation_in_subnet(reservation_type, reserved_value, subnet, unique_host_value_type, unique_host_value):
     """Configure a subnet-level host reservation.
@@ -606,7 +614,7 @@ def agent_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, socket
     dhcp.agent_control_channel(host_address, host_port, socket_name)
 
 
-##DNS server configuration
+# DNS server configuration
 @step(r'DNS server is configured on (\S+) address (\S+) on port no. (\d+) and working directory (\S+).')
 def dns_conf(ip_type, address, port, direct):
     ip_type, address, port, direct = test_define_value(ip_type, address, port, direct)
@@ -637,7 +645,7 @@ def configure_loggers(log_type, severity, severity_level, logging_file=None):
     dhcp.add_logger(log_type, severity, severity_level, logging_file)
 
 
-##servers management
+# servers management
 @step(r'Create server configuration.')
 def build_config_files(cfg=None):
     dhcp.build_config_files(cfg=cfg)
@@ -731,7 +739,8 @@ def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address,
         # let's just dump all without logs
         dns.clear_all(remove_logs=False, destination_address=dest)
 
-##DDNS server
+
+# DDNS server
 @step(r'DDNS server has control channel (\S+).')
 def ddns_open_control_channel(socket_name=None):
     ddns.ddns_open_control_channel_socket(socket_name)

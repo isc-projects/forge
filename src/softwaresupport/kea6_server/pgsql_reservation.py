@@ -6,6 +6,16 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-with
+# pylint: disable=line-too-long
+# pylint: disable=modified-iterating-list
+# pylint: disable=possibly-unused-variable
+# pylint: disable=redefined-outer-name
+# pylint: disable=simplifiable-if-expression
+# pylint: disable=unspecified-encoding
+# pylint: disable=unused-argument
+
 import logging
 
 from src.forge_cfg import world
@@ -59,7 +69,7 @@ SELECT LASTVAL() INTO lastval;"""
         # to ipv6_reservations list please add just dicts:
         #     {"ipv6_address_reservation": "2001::1"}
         #  or {"ipv6_prefix_reservation": "2220::", "ipv6_prefix_len_reservation": 3}
-        #TODO: add iaid
+        # TODO: add iaid
         self.ipv6_reservations = []
 
         # to options list please add just dicts {"code": 1, "option_value": "192.168.1.2",
@@ -71,7 +81,7 @@ SELECT LASTVAL() INTO lastval;"""
     def add_reserved_option(self, single_option):
         self.options += single_option
 
-    ## Build config file
+    # Build config file
     def set_ipv4_address(self):
         self.configuration_script += "\n\\set ipv4_address '" + self.ipv4_address + "'"
 
@@ -230,7 +240,6 @@ def upload_db_reservation(exp_failed=False):
         assert not fail_spotted
 
 
-
 def clear_all_reservations():
     db_name = world.f_cfg.db_name
     db_user = world.f_cfg.db_user
@@ -249,13 +258,13 @@ def ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, res
     for each_record in list_of_all_reservations:
         if each_record.reservation_id == reservation_record_id:
             each_record.ipv6_reservations.append({"ipv6_prefix_reservation": reserved_prefix,
-                                                  "ipv6_prefix_len_reservation": reserved_prefix_len}) #TODO iaid
+                                                  "ipv6_prefix_len_reservation": reserved_prefix_len})  # TODO iaid
 
 
 def ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, reservation_record_id):
     for each_record in list_of_all_reservations:
         if each_record.reservation_id == reservation_record_id:
-            each_record.ipv6_reservations.append({"ipv6_address_reservation": reserved_address}) #TODO iaid
+            each_record.ipv6_reservations.append({"ipv6_address_reservation": reserved_address})  # TODO iaid
 
 
 def option_db_record_reservation(reserved_option_code, reserved_option_value, reserved_option_space,
@@ -265,7 +274,7 @@ def option_db_record_reservation(reserved_option_code, reserved_option_value, re
         if each_record.reservation_id == reservation_record_id:
             each_record.options.append({"code": reserved_option_code, "option_value": reserved_option_value,
                                         "space": reserved_option_space, "persistent": reserved_option_persistent,
-                                        "scope": reserved_option_scope}) #TODO client class
+                                        "scope": reserved_option_scope})  # TODO client class
 
 
 if __name__ == '__main__':
@@ -283,15 +292,15 @@ if __name__ == '__main__':
     test_v6_PSQLReservation_class.dhcp4_subnet_id = 4
     test_v6_PSQLReservation_class.dhcp6_subnet_id = 2
     test_v6_PSQLReservation_class.options.append({"code": 1, "option_value": "2001:db8:1::1",
-                                                   "space": "dhcp6", "persistent": 1, "scope": "subnet"})
+                                                  "space": "dhcp6", "persistent": 1, "scope": "subnet"})
     test_v6_PSQLReservation_class.options.append({"code": 2, "option_value": "2001:db8:1::1",
-                                                   "space": "dhcp6", "persistent": 1, "scope": "subnet"})
-    #build config:
+                                                  "space": "dhcp6", "persistent": 1, "scope": "subnet"})
+    # build config:
     test_v6_PSQLReservation_class.build_v6_script()
-    #print config:
+    # print config:
     test_v6_PSQLReservation_class.print_config()
 
-    #v4 reservation test:
+    # v4 reservation test:
     # world.proto = "v4"
     # test_v4_PSQLReservation_class = PSQLReservation()
     # test_v4_PSQLReservation_class.hostname = "22222222some.host.name.com"
@@ -307,9 +316,9 @@ if __name__ == '__main__':
     #                                                "space": "dhcp4", "persistent": 1, "scope": "subnet"})
     # test_v4_PSQLReservation_class.options.append({"code": 2, "option_value": "2001:db8:1::1",
     #                                                "space": "dhcp4", "persistent": 1, "scope": "subnet"})
-    # #build config:
+    # build config:
     # test_v4_PSQLReservation_class.build_v4_script()
-    # #print config:
+    # print config:
     # test_v4_PSQLReservation_class.print_config()
     #
     for each in list_of_all_reservations:

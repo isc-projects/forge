@@ -4,7 +4,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=invalid-name,line-too-long,too-many-branches
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
+# pylint: disable=too-many-branches
 
 # Author: Marcin Godzina
 

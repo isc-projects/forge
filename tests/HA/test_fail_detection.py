@@ -6,7 +6,8 @@
 
 """Kea HA fail detection"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
 
 import pytest
 

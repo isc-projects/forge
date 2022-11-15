@@ -6,6 +6,18 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=consider-using-f-string
+# pylint: disable=empty-docstring
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
+# pylint: disable=redefined-builtin
+# pylint: disable=self-assigning-variable
+# pylint: disable=simplifiable-if-expression
+# pylint: disable=unbalanced-tuple-unpacking
+# pylint: disable=unknown-option-value
+# pylint: disable=unused-argument
+# pylint: disable=useless-object-inheritance
+
 import random
 import json
 import importlib
@@ -44,7 +56,7 @@ def get_server_path():
     return world.f_cfg.software_install_path
 
 
-##building DHCP messages
+# building DHCP messages
 @step(r'Client requests option (\d+).')
 def client_requests_option(opt_type):
     """
@@ -127,7 +139,7 @@ def relay_agent_does_include(opt_type):
     # add " option." to the end of the step - change all tests!
     """
     """
-    #dhcpmsg.relay_agent_does_include(opt_type)
+    # dhcpmsg.relay_agent_does_include(opt_type)
 
 
 @step(r'Client chooses (GLOBAL)|(LINK_LOCAL) UNICAST address.')
@@ -184,7 +196,7 @@ def change_message_filed(message_filed, value, value_type):
     dhcpmsg.change_message_field(message_filed, value, value_type)
 
 
-##checking DHCP respond
+# checking DHCP respond
 @step(r'Server MUST NOT respond.')
 def send_dont_wait_for_message():
     """
@@ -214,7 +226,7 @@ def response_check_include_option(opt_code, expect_include=True):
 def response_check_content(data_type, value, expected=True):
     """
     """
-    #expect, data_type, expected = test_define_value(expect, data_type, expected)
+    # expect, data_type, expected = test_define_value(expect, data_type, expected)
     dhcpmsg.response_check_content(expected, data_type, value)
 
 
@@ -243,7 +255,7 @@ def get_suboption(opt_code, subopt_code):
     return dhcpmsg.get_suboption(opt_code, subopt_code)
 
 
-##building DNS messages
+# building DNS messages
 @step(r'Client for DNS Question Record uses address: (\S+) type (\S+) class (\S+).')
 def dns_question_record(addr, qtype, qclass):
     dns.dns_question_record(str(addr), qtype, qclass)
@@ -254,7 +266,7 @@ def client_send_dns_query(dns_addr=None, dns_port=None):
     dns.prepare_query(dns_addr=dns_addr, dns_port=dns_port)
 
 
-##checking DNS respond
+# checking DNS respond
 @step(r'DNS server (\S+) (NOT )?respond with DNS query.')
 def send_wait_for_query(type, expect_include=True, iface=None):
     """
@@ -281,7 +293,7 @@ def dns_option_content(part_name, value_name, value, expect_include=True):
     # later probably we'll have to change MUST on (\S+) for sth like MAY
 
 
-##save option from received message
+# save option from received message
 @step(r'Client copies (\S+) option from received message.')
 def client_copy_option(option_name):
     """
@@ -357,7 +369,7 @@ def compare_values(value_name, option_name):
     dhcpmsg.compare_values(value_name, option_name)
 
 
-##other
+# other
 @step(r'Set network variable (\S+) with value (\S+).')
 def network_variable(value_name, value):
     value_name, value = test_define_value(value_name, value)

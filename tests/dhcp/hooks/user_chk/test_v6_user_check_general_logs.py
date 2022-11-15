@@ -6,7 +6,8 @@
 
 """Kea6 User Check Hook Library - Logging"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
 
 import glob
 import pytest

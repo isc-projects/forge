@@ -4,7 +4,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=unused-import, unused-wildcard-import, wildcard-import
 # Author: Wlodzimierz Wencel
+
+# pylint: disable=unused-import
+# pylint: disable=unused-wildcard-import
+# pylint: disable=wildcard-import
 
 from src.softwaresupport.kea6_server.mysql_reservation import *

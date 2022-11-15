@@ -4,6 +4,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# pylint: disable=global-statement
+# pylint: disable=global-variable-not-assigned
+# pylint: disable=line-too-long
+
 from src import srv_msg
 
 from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES, get_address4, get_address6, send_discover_with_no_answer
@@ -49,26 +53,25 @@ def add_leading_subnet(subnet: str = None,
         })
     if 'shared-networks' in world.dhcp_cfg:
         delimiter = '.' if world.proto == 'v4' else ':'
-        world.dhcp_cfg['shared-networks'].insert(0,
-            {
-                'name': subnet,
-                f'subnet{v}': [
-                    {
-                        'id': int(subnet.split(delimiter)[2]),
-                        'interface': world.f_cfg.server_iface,
-                        'pools': [
-                            {
-                                'pool': pool
-                            }
-                        ],
-                        'subnet': subnet
-                    }
-                ]
-            }
+        world.dhcp_cfg['shared-networks'].insert(0, {
+            'name': subnet,
+            f'subnet{v}': [
+                {
+                    'id': int(subnet.split(delimiter)[2]),
+                    'interface': world.f_cfg.server_iface,
+                    'pools': [
+                        {
+                            'pool': pool
+                        }
+                    ],
+                    'subnet': subnet
+                }
+            ]
+        }
         )
 
 
-def add_reservation(mac: str, attributes = None):
+def add_reservation(mac: str, attributes=None):
     if attributes is None:
         attributes = []
 
@@ -408,7 +411,7 @@ def send_and_receive(config_type: str,
 
         # ---- Take all addresses from bronze pools. ----
         # Lease the first and only bronze address.
-        expected_lease='192.168.50.7' if world.proto == 'v4' else '2001:db8:50::7'
+        expected_lease = ('192.168.50.7' if world.proto == 'v4' else '2001:db8:50::7')
         if ha_mode is not None and ha_mode == 'load-balancing':
             lease = get_address(mac='08:00:27:b0:c7:01', expected_lease=expected_lease,
                                 server_id=world.f_cfg.srv4_addr_2)
@@ -424,7 +427,7 @@ def send_and_receive(config_type: str,
                                   expected_lease='192.168.70.5' if world.proto == 'v4' else '2001:db8:70::5'))
 
     # Remove None from leases because it doesn't play nice with srv_msg.check_leases().
-    leases = [l for l in leases if l is not None]
+    filter(lambda l: l is not None, leases)
 
     return leases
 

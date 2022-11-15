@@ -5,7 +5,19 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-# author: Wlodzimierz Wencel
+
+# Author: Wlodzimierz Wencel
+
+# pylint: disable=access-member-before-definition
+# pylint: disable=consider-using-f-string
+# pylint: disable=c-extension-no-member
+# pylint: disable=import-error
+# pylint: disable=invalid-name
+# pylint: disable=no-else-return
+# pylint: disable=no-member
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=unspecified-encoding
+# pylint: disable=unused-argument
 
 import os
 import threading
@@ -98,8 +110,10 @@ class ForgeConfiguration:
         self.multiple_tested_servers = [self.mgmt_address]
 
         self.proto = 'v4'  # default value but it is overriden by each test in terrain.declare_all()
-        self.multi_threading_enabled = True  # change this at the beginning of the test and we have
-                                             # easy comparision between single and multi, or use as fixture
+
+        # change this at the beginning of the test and we have
+        # easy comparison between single and multi, or use as fixture
+        self.multi_threading_enabled = True
 
         if self.install_method == 'native':
             self.software_install_path = '/usr'
@@ -121,7 +135,7 @@ class ForgeConfiguration:
         self.isc_dhcp_log_facility = "local7"
         try:
             self.cli_mac = self.gethwaddr(self.iface)
-        except:
+        except BaseException:
             # Print an error message because the raised exception message
             # itself is too cryptic.
             print("ERROR: Could not get hardware address from interface '%s'." % self.iface)
@@ -169,8 +183,8 @@ class ForgeConfiguration:
 
     def basic_validation(self):
         if self.software_install_path == "":
-            print ("Configuration failure, software_install_path is empty. "
-                   "Please use ./src/forge_cfg.py -T to validate configuration.")
+            print("Configuration failure, software_install_path is empty. "
+                  "Please use ./src/forge_cfg.py -T to validate configuration.")
             sys.exit(-1)
         if self.mgmt_address == "":
             print("Configuration failure, mgmt_address is empty. "
@@ -261,6 +275,7 @@ def _conv_arg_to_txt(arg):
     else:
         return str(arg)
 
+
 # stub that replaces lettuce step decorator
 def step(pattern):
     def wrap(func):
@@ -282,7 +297,7 @@ def step(pattern):
 
             try:
                 return func(*args, **kwargs)
-            except:
+            except BaseException:
                 txt = cgitb.text(sys.exc_info())
                 with open(fout, 'a') as f:
                     f.write(txt)

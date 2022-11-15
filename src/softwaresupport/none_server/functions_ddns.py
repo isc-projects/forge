@@ -6,6 +6,7 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=unused-argument
 
 def add_ddns_server(*args):
     pass

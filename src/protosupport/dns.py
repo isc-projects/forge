@@ -6,6 +6,12 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=consider-using-f-string
+# pylint: disable=invalid-name
+# pylint: disable=redefined-builtin
+# pylint: disable=unused-argument
+# pylint: disable=unused-variable
+
 import time
 import random
 import logging
@@ -27,7 +33,7 @@ dnstypes = {"ANY": 0,
             "A": 1,
             "NS": 2,
             "MD": 3,
-            #"MD": 4,
+            # "MD": 4,
             "CNAME": 5,
             "SOA": 6,
             "MB": 7,
@@ -113,7 +119,7 @@ def send_wait_for_query(choose_must, expect_include, iface=None):
         if world.f_cfg.show_packets_from in ['both', 'server']:
             try:  # that is temp solution until we have good respond system checking!
                 world.srvmsg[0].show()
-            except:
+            except BaseException:
                 pass
 
     if expect_include:

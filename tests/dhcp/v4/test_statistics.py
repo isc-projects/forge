@@ -6,7 +6,8 @@
 
 """Kea Statistics"""
 
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
 
 import time
 import pytest

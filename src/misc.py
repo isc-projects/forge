@@ -8,7 +8,9 @@
 
 # This file contains a number of common steps that are general and may be used
 # By a lot of feature files.
-#
+
+# pylint: disable=consider-using-enumerate
+# pylint: disable=superfluous-parens
 
 from scapy.layers.dhcp6 import DHCP6OptOptReq
 
@@ -65,14 +67,14 @@ def test_procedure():
             if world.proto == "v4":
                 # Start with fresh, empty PRL (v4)
                 if hasattr(world, 'prl'):
-                    world.prl = "" # don't request anything by default
+                    world.prl = ""  # don't request anything by default
 
             if world.proto == "v6":
                 # Start with fresh, empty ORO (v6)
                 if hasattr(world, 'oro'):
                     world.oro = DHCP6OptOptReq()
                     # Scapy creates ORO with 23, 24 options request. Let's get rid of them
-                    world.oro.reqopts = [] # don't request anything by default
+                    world.oro.reqopts = []  # don't request anything by default
 
             # some tests skip "test setup" procedure and goes to "test procedure"
             # e.g. tests for server configuration. Then we need to setup

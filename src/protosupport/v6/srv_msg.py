@@ -6,10 +6,29 @@
 
 # Author: Wlodzimierz Wencel
 
-#
 # This file contains a number of common steps that are general and may be used
-# By a lot of feature files.
-#
+# by a lot of feature files.
+
+# pylint: disable=bad-indentation
+# pylint: disable=consider-using-enumerate
+# pylint: disable=consider-using-f-string
+# pylint: disable=import-outside-toplevel
+# pylint: disable=inconsistent-return-statements
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
+# pylint: disable=logging-not-lazy
+# pylint: disable=no-else-return
+# pylint: disable=no-value-for-parameter
+# pylint: disable=possibly-unused-variable
+# pylint: disable=redefined-outer-name
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-function-args
+# pylint: disable=undefined-variable
+# pylint: disable=unknown-option-value
+# pylint: disable=unidiomatic-typecheck
+# pylint: disable=unused-argument
+# pylint: disable=unused-variable
+
 import codecs
 import random
 import os
@@ -81,8 +100,8 @@ def get_option_code(opt_code) -> int:
             opt_code = OPTIONS[opt_code]
     return opt_code
 
-## ======================================================================
-## ================ PREPARE MESSAGE OPTIONS BLOCK START =================
+# ------------------- PREPARE MESSAGE OPTIONS BLOCK START -------------------- #
+
 
 decode_hex = codecs.getdecoder("hex_codec")
 
@@ -189,14 +208,14 @@ def client_does_include(sender_type, opt_type, value=None):
         add_client_option(dhcp6.DHCP6OptClientId(duid=world.cfg["values"]["cli_duid"]))
 
     if opt_type == "wrong-client-id":
-        #used for backwards compatibility
+        # used for backwards compatibility
         add_client_option(dhcp6.DHCP6OptClientId(duid=dhcp6.DUID_LLT(timeval=int(time.time()), lladdr=RandMAC())))
 
     elif opt_type == "empty-client-id":
         add_client_option(dhcp6.DHCP6OptClientId())
 
     elif opt_type == "wrong-server-id":
-        #used for backwards compatibility
+        # used for backwards compatibility
         add_client_option(dhcp6.DHCP6OptServerId(duid=convert_DUID(world.cfg["values"]["server_id"])))
 
     elif opt_type == "server-id":
@@ -316,7 +335,7 @@ def client_does_include(sender_type, opt_type, value=None):
     elif opt_type == "remote-id":
         add_client_option(dhcp6.DHCP6OptRemoteID(enterprisenum=world.cfg["values"]["enterprisenum"],
                                                  remoteid=decode_hex(world.cfg["values"]["remote_id"].replace(':', ''))[0]))
-                                                 # remoteid=world.cfg["values"]["remote_id"].replace(':', '').decode('hex')))
+        #                                        remoteid=world.cfg["values"]["remote_id"].replace(':', '').decode('hex')))
 
     elif opt_type == "subscriber-id":
         # add_client_option(dhcp6.DHCP6OptSubscriberID(subscriberid=world.cfg["values"]["subscriber_id"].
@@ -361,7 +380,7 @@ def apply_message_fields_changes():
 
         try:
             setattr(world.climsg[0], field_details[0], field_details[1])
-        except:
+        except BaseException:
             assert False, "Message does not contain field: %s " % str(field_details[0])
 
 
@@ -400,10 +419,11 @@ def generate_new(opt):
     else:
         assert False,  opt + " generation unsupported"
 
-## ================ PREPARE MESSAGE OPTIONS BLOCK END ===================
 
-## ============================================================
-## ================ BUILD MESSAGE BLOCK START =================
+# -------------------- PREPARE MESSAGE OPTIONS BLOCK END --------------------- #
+
+
+# ------------------------ BUILD MESSAGE BLOCK START ------------------------- #
 
 
 def add_client_option(option):
@@ -535,7 +555,7 @@ def build_msg(msg):
     try:
         if len(world.oro.reqopts) > 0:
             msg = add_option_to_msg(msg, world.oro)
-    except:
+    except BaseException:
         pass
 
     # add all rest options to message.
@@ -567,8 +587,8 @@ def create_relay_forward(level=1):
     for lvl in range(level):
         # all three values: linkaddr, peeraddr and hopcount must be filled
         relay_msg = dhcp6.DHCP6_RelayForward(hopcount=lvl,
-                                              linkaddr=world.cfg["values"]["linkaddr"],
-                                              peeraddr=world.cfg["values"]["peeraddr"])
+                                             linkaddr=world.cfg["values"]["linkaddr"],
+                                             peeraddr=world.cfg["values"]["peeraddr"])
         for each_option in world.relayopts:
             relay_msg /= each_option
         relay_msg /= dhcp6.DHCP6OptRelayMsg(message=msg)
@@ -577,9 +597,9 @@ def create_relay_forward(level=1):
 
     # build full message
     full_msg = IPv6(dst=world.cfg["address_v6"],
-                     src=world.cfg["cli_link_local"])
+                    src=world.cfg["cli_link_local"])
     full_msg /= UDP(sport=world.cfg["source_port"],
-                     dport=world.cfg["destination_port"])
+                    dport=world.cfg["destination_port"])
     full_msg /= msg
 
     # in case if unicast used, get back to multicast address.
@@ -590,11 +610,11 @@ def create_relay_forward(level=1):
     world.cfg["source_port"] = 546  # we should be able to change relay ports from test itself
     world.cfg["relay"] = False
 
-## ================ BUILD MESSAGE BLOCK END ===================
+
+# ------------------------- BUILD MESSAGE BLOCK END -------------------------- #
 
 
-## ===================================================================
-## ================ SEND/RECEIVE MESSAGE BLOCK START =================
+# --------------------- SEND/RECEIVE MESSAGE BLOCK START --------------------- #
 
 
 def send_wait_for_message(condition_type, presence, exp_message):
@@ -608,7 +628,7 @@ def send_wait_for_message(condition_type, presence, exp_message):
     """
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     may_flag = False
-    #debug.recv=[]
+    # debug.recv=[]
     if str(condition_type) in "MUST":
         pass
     elif str(condition_type) in "MAY":
@@ -638,7 +658,7 @@ def send_wait_for_message(condition_type, presence, exp_message):
                     verbose=world.scapy_verbose)
 
     if world.f_cfg.show_packets_from in ['both', 'client']:
-            world.climsg[0].show()
+        world.climsg[0].show()
 
     expected_type_found = False
     received_names = ""
@@ -684,11 +704,11 @@ def get_last_response():
     msg = world.srvmsg[len(world.srvmsg) - 1].copy()
     return msg
 
-## ================ SEND/RECEIVE MESSAGE BLOCK END ===================
+
+# ---------------------- SEND/RECEIVE MESSAGE BLOCK END ---------------------- #
 
 
-## =======================================================================
-## ================ PARSING RECEIVED MESSAGE BLOCK START =================
+# ---------------------- PARSING RECEIVED MESSAGE BLOCK START ----------------------
 
 
 def get_msg_type(msg):
@@ -888,6 +908,7 @@ def get_subopt_from_option(exp_opt_code, exp_subopt_code):
                     received = str(option_in_the_list.optcode)
     return result, received
 
+
 def get_suboption(opt_code, subopt_code):
     opt, _ = get_subopt_from_option(opt_code, subopt_code)
     return opt
@@ -946,7 +967,7 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
     opt_code = get_option_code(opt_code)
     subopt_code = get_option_code(subopt_code)
 
-    #first check if subotion exists and get suboption
+    # first check if subotion exists and get suboption
     if opt_code == 17:
         data_type = "optdata"
     data_type = str(data_type)
@@ -1103,12 +1124,12 @@ def get_all_leases(decode_duid=True):
             for ia_id in msg.ianaopts:
                 if ia_id.optcode == 5:
                     all_addr.append({"duid": current_duid, "iaid": msg.iaid, "valid_lifetime": ia_id.validlft,
-                                     "pref_lifetime":ia_id.preflft, "address": ia_id.addr, "prefix_len": 0})
+                                     "pref_lifetime": ia_id.preflft, "address": ia_id.addr, "prefix_len": 0})
         elif msg.optcode == 25:
             for ia_pd in msg.iapdopt:
                 if ia_pd.optcode == 26:
                     all_addr.append({"duid": current_duid, "iaid": msg.iaid, "valid_lifetime": ia_pd.validlft,
-                                     "pref_lifetime":ia_pd.preflft, "address": ia_pd.prefix, "prefix_len": ia_pd.plen})
+                                     "pref_lifetime": ia_pd.preflft, "address": ia_pd.prefix, "prefix_len": ia_pd.plen})
         msg = msg.payload
 
     return all_addr
@@ -1118,11 +1139,12 @@ def response_get_content(*args):
     # only v4!
     pass
 
-## ================ PARSING RECEIVED MESSAGE BLOCK END ===================
+
+# -------------------- PARSING RECEIVED MESSAGE BLOCK END -------------------- #
 
 
-## =======================================================================
-## ==================== TESTING IN LOOPS BLOCK START =====================
+# ----------------------- TESTING IN LOOPS BLOCK START ----------------------- #
+
 
 def loops_config_sld():
     world.loops["save_leases_details"] = True
@@ -1225,7 +1247,7 @@ def loops(message_type_1, message_type_2, repeat):
             client_copy_option("IA_NA")
             client_send_msg("RELEASE", None, None)
             send_wait_for_message("MAY", True, message_type_2)
-            #dhcpmsg.generate_new("client")
+            # dhcpmsg.generate_new("client")
 
     elif message_type_1 == "RENEW" and message_type_2 == "REPLY":
         # first save server-id option

@@ -6,7 +6,8 @@
 
 """Kea Control channel TLS connection tests"""
 
-# pylint: disable=redefined-outer-name,unused-argument
+# pylint: disable=redefined-outer-name
+# pylint: disable=unused-argument
 
 from base64 import b64encode
 

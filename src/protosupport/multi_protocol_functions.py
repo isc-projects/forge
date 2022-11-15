@@ -6,6 +6,26 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=anomalous-backslash-in-string
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-in
+# pylint: disable=consider-using-with
+# pylint: disable=inconsistent-return-statements
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
+# pylint: disable=missing-timeout
+# pylint: disable=no-else-break
+# pylint: disable=no-else-continue
+# pylint: disable=protected-access
+# pylint: disable=too-many-branches
+# pylint: disable=unbalanced-tuple-unpacking
+# pylint: disable=undefined-variable
+# pylint: disable=unexpected-keyword-arg
+# pylint: disable=unidiomatic-typecheck
+# pylint: disable=unspecified-encoding
+# pylint: disable=unused-argument
+# pylint: disable=unused-variable
+
 import datetime
 import sys
 import os
@@ -55,7 +75,7 @@ def test_pause():
     getch()
 
 
-################################ FILE TRANSFER #################################
+# ------------------------------- FILE TRANSFER ------------------------------ #
 
 
 def copy_file_from_server(remote_path, local_filename='downloaded_file'):
@@ -132,7 +152,7 @@ def user_victory():
     shutil.copy('../doc/.victory.jpg', world.cfg["test_result_dir"] + '/celebrate_success.jpg')
 
 
-############################### FILE INSPECTION ################################
+# ------------------------------ FILE INSPECTION ----------------------------- #
 
 
 def compare_file(local_path):
@@ -387,8 +407,8 @@ def db_table_contains_line(table_name, db_type, line="", grep_cmd=None, expect=T
 
 
 def db_table_contains_line_n_times(table_name, db_type, n, line="", grep_cmd=None, db_name=world.f_cfg.db_name,
-                             db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-                             destination=world.f_cfg.mgmt_address):
+                                   db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
+                                   destination=world.f_cfg.mgmt_address):
     result = db_table_record_count(table_name, db_type, line,
                                    grep_cmd, db_name, db_user, db_passwd,
                                    destination)
@@ -500,7 +520,7 @@ def test_define_value(*args):
     $ sign is very important without it Forge wont find variable in init_all.
 
     You can use any variable form init_all in that way. Also you can add them using step:
-    "Client defines new variable: (\S+) with value (\S+)." """
+    """
     tested_args = []
     for arg in args:
         if arg is None:
@@ -571,7 +591,7 @@ def _process_ctrl_response(response, exp_result):
     try:
         result = json.loads(response)
         log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
-    except:
+    except BaseException:
         log.exception('Problem with parsing json:\n"%s"', str(response))
         result = response
 
@@ -604,7 +624,7 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
     command_file = open(world.cfg["test_result_dir"] + '/command_file', 'w')
     try:
         command_file.write(command)
-    except:
+    except BaseException:
         command_file.close()
         command_file = open(world.cfg["test_result_dir"] + '/command_file', 'wb')  # TODO: why 'w' / 'wb'
         command_file.write(command)
@@ -702,7 +722,7 @@ def assert_result(condition, result, value):
         pass
 
 
-############################## FILE MANIPULATION ###############################
+# ----------------------------- FILE MANIPULATION ---------------------------- #
 
 
 def parse_json_file(condition, parameter_name, parameter_value):

@@ -4,6 +4,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# pylint: disable=consider-using-f-string
+# pylint: disable=line-too-long
+# pylint: disable=no-else-return
+# pylint: disable=simplifiable-if-expression
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-branches
+# pylint: disable=unused-variable
+
 from src import srv_msg, misc
 from src.forge_cfg import world
 
@@ -16,6 +24,7 @@ def _to_list(val):
 
 #########################################################################
 # DHCPv4
+
 
 def _send_discover(chaddr=None, client_id=None, giaddr=None, req_opts=None):
     if chaddr is not None:
@@ -228,6 +237,7 @@ def get_address4(chaddr=None, client_id=None, giaddr=None, req_opts=None,
 #########################################################################
 # DHCPv6
 
+
 DHCPv6_STATUS_CODES = {
     'Success': 0,
     'UnspecFail': 1,
@@ -237,6 +247,7 @@ DHCPv6_STATUS_CODES = {
     'UseMulticast': 5,
     'NoPrefixAvail': 6,
 }
+
 
 def _check_ia_na_options(exp_ia_na_t1,
                          exp_ia_na_t2,
@@ -360,8 +371,8 @@ def send_solicit_and_check_response(duid=None, relay_addr=None, req_ia='IA-NA', 
     srv_msg.client_requests_option(1)
     if duid is not None:
         srv_msg.client_sets_value('Client', 'DUID', duid)
-    #if client_id is not None:
-    #    srv_msg.client_does_include_with_value('client_id', client_id)
+    # if client_id is not None:
+    #     srv_msg.client_does_include_with_value('client_id', client_id)
     srv_msg.client_does_include('Client', 'client-id')
     if req_ia is not None:
         srv_msg.client_does_include('Client', req_ia)
@@ -442,8 +453,8 @@ def send_request_and_check_reply(duid=None,
     if req_ia == 'IA-PD':
         srv_msg.client_copy_option('IA_PD')
     srv_msg.client_copy_option('server-id')
-    #srv_msg.client_save_option('server-id')
-    #srv_msg.client_add_saved_option()
+    # srv_msg.client_save_option('server-id')
+    # srv_msg.client_add_saved_option()
     srv_msg.client_does_include('Client', 'client-id')
     if req_opts is not None:
         for opt in req_opts:

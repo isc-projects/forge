@@ -3,7 +3,9 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-# pylint: disable=invalid-name,line-too-long,too-many-arguments
+
+# pylint: disable=invalid-name,line-too-long
+# pylint: disable=too-many-arguments
 
 import random
 from src import misc

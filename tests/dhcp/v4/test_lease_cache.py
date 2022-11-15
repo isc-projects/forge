@@ -5,7 +5,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """ testing lease caching for all backends """
-# pylint: disable=invalid-name,line-too-long
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
 
 import pytest
 

@@ -6,6 +6,20 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=bad-indentation
+# pylint: disable=import-error
+# pylint: disable=import-outside-toplevel
+# pylint: disable=inconsistent-return-statements
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
+# pylint: disable=no-else-return
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-nested-blocks
+# pylint: disable=too-many-public-methods
+# pylint: disable=trailing-comma-tuple
+# pylint: disable=unused-import
+
 import os
 
 from src.forge_cfg import world
@@ -184,14 +198,14 @@ class KeaConfiguration:
         if self.getoptiondeflength() > 0:
             self.add_to_xml_script('option-def-list')
             for each_optiondef in self.optiondefList:
-                    self.add_to_xml_script('option-def')
-                    self.add_to_xml_script('code', each_optiondef.code)
-                    self.add_to_xml_script('space', each_optiondef.space)
-                    self.add_to_xml_script('name', each_optiondef.name)
-                    self.add_to_xml_script('encapsulate', each_optiondef.encapsulate)
-                    self.add_to_xml_script('record-types', each_optiondef.record_types)
-                    self.add_to_xml_script('type', each_optiondef.op_type)
-                    self.add_to_xml_script('/option-def')
+                self.add_to_xml_script('option-def')
+                self.add_to_xml_script('code', each_optiondef.code)
+                self.add_to_xml_script('space', each_optiondef.space)
+                self.add_to_xml_script('name', each_optiondef.name)
+                self.add_to_xml_script('encapsulate', each_optiondef.encapsulate)
+                self.add_to_xml_script('record-types', each_optiondef.record_types)
+                self.add_to_xml_script('type', each_optiondef.op_type)
+                self.add_to_xml_script('/option-def')
             self.add_to_xml_script('/option-def-list')
 
         # global options
@@ -199,9 +213,9 @@ class KeaConfiguration:
             self.add_to_xml_script('option-data-list')
             for each_option in self.optionList:
                 if each_option.dhcp_client_class is None and each_option.dhcp_subnet_id is None and each_option.shared_network_name is None and each_option.pool_id is None:
-                        self.add_to_xml_script('option-data')
-                        add_option_def(each_option)
-                        self.add_to_xml_script('/option-data')
+                    self.add_to_xml_script('option-data')
+                    add_option_def(each_option)
+                    self.add_to_xml_script('/option-data')
             self.add_to_xml_script('/option-data-list')
 
         # control socket
@@ -343,7 +357,7 @@ class KeaConfiguration:
         # self.add_to_xml_script('/logging')
         self.add_to_xml_script('/config')
 
-        #change self.globalparameterList[0]
+        # change self.globalparameterList[0]
 
         # assert False, self.final_config_script
         import xml.dom.minidom

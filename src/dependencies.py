@@ -29,7 +29,4 @@ def _get_version(module):
 def print_versions():
     print('Dependency versions:')
     for i in [sys.modules[name] for name in sorted(set(sys.modules) & set(globals()) - {'sys'})]:
-        print('  * {}: {}'.format(
-            i.__name__ if hasattr(i, '__name__') else 'unknown',
-            _get_version(i),
-        ))
+        print(f"  * {i.__name__ if hasattr(i, '__name__') else 'unknown'}: {_get_version(i)}")

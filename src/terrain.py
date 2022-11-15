@@ -6,6 +6,13 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-with
+# pylint: disable=line-too-long
+# pylint: disable=protected-access
+# pylint: disable=unspecified-encoding
+# pylint: disable=unused-import
+
 import os
 import time
 import logging
@@ -128,7 +135,7 @@ world.set_values = _set_values
 
 
 def client_id(mac):
-    world.cfg["cli_duid"] = DUID_LLT(timeval = int(time.time()), lladdr = mac)
+    world.cfg["cli_duid"] = DUID_LLT(timeval=int(time.time()), lladdr=mac)
     if "values" in world.cfg:
         world.cfg["values"]["cli_duid"] = world.cfg["cli_duid"]
 
@@ -277,7 +284,7 @@ def declare_all(dhcp_version=None):
     world.f_cfg.db_user = world.f_cfg.db_user_bk
 
 
-#@before.all
+# @before.all
 def test_start():
     """
     Server starting before testing.
@@ -334,13 +341,13 @@ def _clear_remainings():
                 functions.clear_all(destination_address=remote_server)
 
 
-#@before.each_scenario
+# @before.each_scenario
 def initialize(scenario):
     # try to automagically detect DHCP version based on fixture presence
     # or marker presence
     try:
         dhcp_version = scenario._request.getfixturevalue('dhcp_version')
-    except:
+    except BaseException:
         dhcp_version = None
         for v in ['v4', 'v6', 'v4_bootp']:
             if scenario.get_closest_marker(v):
@@ -423,7 +430,7 @@ def initialize(scenario):
     _clear_remainings()
 
 
-#@after.each_scenario
+# @after.each_scenario
 def cleanup(scenario):
     """
     Global cleanup for each scenario. Implemented within tests by "Server is started."
@@ -454,7 +461,7 @@ def cleanup(scenario):
                     download_tcpdump_capture(location=remote_server, file_name='remote.pcap')
 
 
-#@after.all
+# @after.all
 def say_goodbye():
     """
     Server stopping after whole work
@@ -472,7 +479,7 @@ def say_goodbye():
                 # True passed to stop_srv is to hide output in console.
                 try:
                     stop.stop_srv(destination_address=remote_server)
-                except:
+                except BaseException:
                     pass
 
     if world.f_cfg.auto_archive:

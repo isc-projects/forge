@@ -4,6 +4,18 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# pylint: disable=consider-iterating-dictionary
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-in
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
+# pylint: disable=no-else-return
+# pylint: disable=possibly-unused-variable
+# pylint: disable=superfluous-parens
+# pylint: disable=unspecified-encoding
+# pylint: disable=unused-argument
+# pylint: disable=unused-variable
+
 import datetime
 import re
 import os
@@ -886,7 +898,7 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
             # Make sure it ends in "es".
             if reservation_type[-2:] != "es":
                 reservation_type += "es"
-            if not reservation_type in world.dhcp_cfg[sub][subnet]["reservations"][reservation_number]:
+            if reservation_type not in world.dhcp_cfg[sub][subnet]["reservations"][reservation_number]:
                 world.dhcp_cfg[sub][subnet]["reservations"][reservation_number][reservation_type] = []
             world.dhcp_cfg[sub][subnet]["reservations"][reservation_number][reservation_type].append(reserved_value)
         else:
@@ -905,7 +917,6 @@ def _config_db_backend():
                                             "host": world.f_cfg.db_host,
                                             "user": world.f_cfg.db_user,
                                             "password": world.f_cfg.db_passwd}
-
 
     # set reservations
     if world.reservation_backend in ["mysql", "postgresql"]:
@@ -993,7 +1004,7 @@ def delete_parameter_from_hook(hook_number_or_name, parameter_name: str):
         return
 
     if parameter_name in world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"]:
-        del(world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"][parameter_name])
+        del world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"][parameter_name]
 
 
 def ha_add_parameter_to_hook(parameter_name, parameter_value):

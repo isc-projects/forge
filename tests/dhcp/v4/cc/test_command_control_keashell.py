@@ -6,7 +6,8 @@
 
 """Kea Control Channel Script"""
 
-# pylint: disable=consider-using-f-string,line-too-long
+# pylint: disable=consider-using-f-string
+# pylint: disable=line-too-long
 
 import json
 import pytest

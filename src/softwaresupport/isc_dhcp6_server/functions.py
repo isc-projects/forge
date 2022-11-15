@@ -6,6 +6,16 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-with
+# pylint: disable=invalid-name
+# pylint: disable=no-else-continue
+# pylint: disable=possibly-unused-variable
+# pylint: disable=redefined-outer-name
+# pylint: disable=unspecified-encoding
+# pylint: disable=unused-argument
+# pylint: disable=unused-import
+# pylint: disable=unused-variable
 
 import logging
 import os
@@ -246,9 +256,9 @@ def prepare_cfg_subnet(subnet, pool, iface=None):
     :param pool: string with pool
     :param iface: not used
     """
-    ## structure of world.subcfg is [["", "", "", "",""]] but we need only one argument in the list
-    ## every configuration added for subnets in ISC-DHCP is configured on the same level
-    ## so we use here: world.subcfg[0] = [all_options]
+    # structure of world.subcfg is [["", "", "", "",""]] but we need only one argument in the list
+    # every configuration added for subnets in ISC-DHCP is configured on the same level
+    # so we use here: world.subcfg[0] = [all_options]
     if "conf_subnet" not in world.cfg:
         world.cfg["conf_subnet"] = ""
 
@@ -268,7 +278,7 @@ def prepare_cfg_subnet(subnet, pool, iface=None):
         tmp = world.subcfg[world.dhcp["subnet_cnt"]][0]
         world.subcfg[world.dhcp["subnet_cnt"]][0] = ""
 
-    #world.cfg["conf_subnet"] += '''
+    # world.cfg["conf_subnet"] += '''
     world.subcfg[world.dhcp["subnet_cnt"]][0] += f'''
         subnet6 {subnet} {{
             range6 {pool};
@@ -285,7 +295,7 @@ def config_srv_another_subnet(subnet, pool, eth):
     :param pool: string with pool
     :param eth: not used in isc-dhcp
     """
-    ## it will pass ethernet interface but it will have no impact on config files
+    # it will pass ethernet interface but it will have no impact on config files
     world.subcfg.append(["", "", "", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
@@ -332,16 +342,16 @@ def prepare_cfg_add_option(option_name, option_value, space, always_send=None):
 
     # for vendor option, for now we support only one vendor in config file
     else:
-        ## check if we already have space in config
+        # check if we already have space in config
         if "conf_vendor" not in world.cfg:
-            ## if not add new
+            # if not add new
+            # code width 2 length width 2 hash size 3
             world.cfg["conf_vendor"] = '''
                 option space {space} code width 2 length width 2;
                 '''.format(**locals())
-                #code width 2 length width 2 hash size 3
 
-        ## if we have space configured check if we try to add new vendor
-        elif "conf_vendor" in world.cfg and not space in world.cfg["conf_vendor"]:
+        # if we have space configured check if we try to add new vendor
+        elif "conf_vendor" in world.cfg and space not in world.cfg["conf_vendor"]:
             world.cfg["conf_vendor"] += f'''
                 option space {space} code width 2 length width 2;
                 '''
@@ -366,13 +376,13 @@ def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
 
     highest = switch_prefix6_lengths_to_pool(str(prefix), int(length), int(delegated_length))
 
-    #world.cfg["conf_subnet"] += '''prefix6 {prefix} {highest} /{delegated_length};
+    # world.cfg["conf_subnet"] += '''prefix6 {prefix} {highest} /{delegated_length};
     world.subcfg[subnet][0] += f'prefix6 {prefix} {highest} /{delegated_length};'
 
 
 def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
-    #implement this
-    pass #http://linux.die.net/man/5/dhcp-options
+    # implement this
+    pass  # http://linux.die.net/man/5/dhcp-options
 
 
 def config_client_classification(subnet, option_value):
@@ -408,17 +418,17 @@ def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space='dhcp
 
     # for vendor option, for now we support only one vendor in config file
     else:
-        ## check if we already have space in config
+        # check if we already have space in config
         value_type = isc_dhcp_otheroptions_value_type.get(option_name)
         if "conf_vendor" not in world.cfg:
-            ## if not add new
+            # if not add new
+            # code width 2 length width 2 hash size 3
             world.cfg["conf_vendor"] = f'''
                 option space {space} code width 2 length width 2;
                 option {space}.{option_name} code {option_proper_name} = {value_type};
                 '''
-                #code width 2 length width 2 hash size 3
 
-        ## if we have space configured check if we try to add new vendor
+        # if we have space configured check if we try to add new vendor
         elif "conf_vendor" in world.cfg and space not in world.cfg["conf_vendor"]:
             world.cfg["conf_vendor"] += f'''
                 option {space}.{option_name} code {option_proper_name} = {value_type};
@@ -445,12 +455,12 @@ def host_reservation(reservation_type, reserved_value, unique_host_value, un_use
                                     fixed-address6 {reserved_value}; }}'''
     else:
         assert False, "Not supported"
-        #TODO! implement this!
+        # TODO! implement this!
 
 
 def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
     assert False, "not used in isc-dhcp"
-    #TODO implement this if needed
+    # TODO implement this if needed
 
 
 def cfg_write():
@@ -628,7 +638,7 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
             world.subcfg[subnet_id][0] += 'option dhcp6.rapid-commit;'
     else:
         pass
-        #world.subcfg[subnet_id][0] += '{parameter_name} {value};'.format(**locals())
+        # world.subcfg[subnet_id][0] += '{parameter_name} {value};'.format(**locals())
 
 
 def start_srv(start: bool, destination_address: str = world.f_cfg.mgmt_address):
@@ -683,7 +693,7 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                                                                    'forge_dhcpd.log',
                                                                    destination_address),
                              destination_host=destination_address)
-    except:
+    except BaseException:
         pass
 
 
@@ -719,7 +729,7 @@ def clear_logs(destination_address=world.f_cfg.mgmt_address):
     fabric_sudo_command(f'touch {build_log_path()}', destination_host=destination_address)
     try:
         fabric_sudo_command(f'chown syslog:syslog {build_log_path()}', destination_host=destination_address)
-    except:
+    except BaseException:
         fabric_sudo_command(f'chown root:root {build_log_path()}', destination_host=destination_address)
     fabric_sudo_command(f'chmod 644 {build_log_path()}', destination_host=destination_address)
     fabric_sudo_command('systemctl restart rsyslog', destination_host=destination_address)
@@ -740,7 +750,7 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
         clear_logs(destination_address=destination_address)
         clear_leases(destination_address=destination_address, software_install_path=software_install_path,
                      db_user=db_user, db_passwd=db_passwd, db_name=db_name)
-    except:
+    except BaseException:
         pass
 
 

@@ -6,6 +6,16 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-with
+# pylint: disable=inconsistent-return-statements
+# pylint: disable=line-too-long
+# pylint: disable=no-else-return
+# pylint: disable=possibly-unused-variable
+# pylint: disable=unspecified-encoding
+# pylint: disable=unused-argument
+# pylint: disable=unused-import
+
 from src.softwaresupport.multi_server_functions import fabric_send_file, remove_local_file
 from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command, fabric_download_file
 
@@ -194,8 +204,8 @@ def netmask(subnet):
     :param subnet: string with subnet
     :return: string with replaced int value to netmask text
     """
-    ## this is ugly and easiest hack, just for standard values of netmasks
-    ## TODO: enable using all netmasks!
+    # this is ugly and easiest hack, just for standard values of netmasks
+    # TODO: enable using all netmasks!
     tmp_subnet = subnet.split("/")
     if tmp_subnet[1] == '8':
         return tmp_subnet[0] + " netmask 255.0.0.0 "
@@ -230,7 +240,7 @@ def prepare_cfg_subnet(subnet, pool, iface=None):
         # isc-dhcp uses whitespace to separate.
         pool = pool.replace('-', ' ')
 
-    #world.cfg["conf_subnet"] += '''
+    # world.cfg["conf_subnet"] += '''
     world.subcfg[world.dhcp["subnet_cnt"]][0] += '''
         subnet {subnet} {pointer}
             range {pool};
@@ -258,7 +268,7 @@ def config_srv_another_subnet(subnet, pool, eth):
     :param pool: string with pool
     :param eth: not used
     """
-    ## it will pass ethernet interface but it will have no impact on config files
+    # it will pass ethernet interface but it will have no impact on config files
     world.subcfg.append(["", "", "", ""])
     world.dhcp["subnet_cnt"] += 1
 
@@ -324,16 +334,16 @@ def prepare_cfg_add_option(option_name, option_value, space='dhcp', always_send=
 
     # for vendor option, for now we support only one vendor in config file
     else:
-        ## check if we already have space in config
-        if not "conf_vendor" in world.cfg:
-            ## if not add new
+        # check if we already have space in config
+        if "conf_vendor" not in world.cfg:
+            # if not add new
+            # code width 2 length width 2 hash size 3
             world.cfg["conf_vendor"] = '''
                 option space {space} code width 2 length width 2;
                 '''.format(**locals())
-                #code width 2 length width 2 hash size 3
 
-        ## if we have space configured check if we try to add new vendor
-        elif "conf_vendor" in world.cfg and not space in world.cfg["conf_vendor"]:
+        # if we have space configured check if we try to add new vendor
+        elif "conf_vendor" in world.cfg and space not in world.cfg["conf_vendor"]:
             world.cfg["conf_vendor"] += '''
                 option space {space} code width 2 length width 2;
                 '''.format(**locals())
@@ -346,8 +356,8 @@ def prepare_cfg_add_option(option_name, option_value, space='dhcp', always_send=
 
 
 def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space):
-    #implement this
-    pass #http://linux.die.net/man/5/dhcp-options
+    # implement this
+    pass  # http://linux.die.net/man/5/dhcp-options
 
 
 def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space='dhcp', always_send=None):
@@ -379,18 +389,18 @@ def prepare_cfg_add_option_subnet(option_name, subnet, option_value, space='dhcp
 
     # for vendor option, for now we support only one vendor in config file
     else:
-        ## check if we already have space in config
+        # check if we already have space in config
         value_type = isc_dhcp_otheroptions_value_type.get(option_name)
-        if not "conf_vendor" in world.cfg:
-            ## if not add new
+        if "conf_vendor" not in world.cfg:
+            # if not add new
+            # code width 2 length width 2 hash size 3
             world.cfg["conf_vendor"] = '''
                 option space {space} code width 2 length width 2;
                 option {space}.{option_name} code {option_proper_name} = {value_type};
                 '''.format(**locals())
-                #code width 2 length width 2 hash size 3
 
-        ## if we have space configured check if we try to add new vendor
-        elif "conf_vendor" in world.cfg and not space in world.cfg["conf_vendor"]:
+        # if we have space configured check if we try to add new vendor
+        elif "conf_vendor" in world.cfg and space not in world.cfg["conf_vendor"]:
             world.cfg["conf_vendor"] += '''
                 option {space}.{option_name} code {option_proper_name} = {value_type};
                 option space {space} code width 2 length width 2;
@@ -426,7 +436,7 @@ def host_reservation(reservation_type, reserved_value, unique_host_value, un_use
 
 def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
     assert False, "not used in isc-dhcp"
-    #TODO implement this if needed
+    # TODO implement this if needed
 
 
 def cfg_write():

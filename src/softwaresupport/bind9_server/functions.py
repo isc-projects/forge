@@ -6,6 +6,14 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=consider-using-f-string
+# pylint: disable=line-too-long
+# pylint: disable=possibly-unused-variable
+# pylint: disable=redundant-keyword-arg
+# pylint: disable=unnecessary-pass
+# pylint: disable=unspecified-encoding
+# pylint: disable=unused-argument
+
 import os
 import time
 import base64
@@ -41,7 +49,7 @@ def add_defaults(ip_type, address, port, direct):
 
 
 def add_zone(zone, zone_type, file_nem, key):
-    if not "named.conf" in world.cfg:
+    if "named.conf" not in world.cfg:
         assert False, 'Please start configuring DNS server with step: DNS server is configured on...'
 
     world.cfg["named.conf"] += 'zone "{zone}"'.format(**locals())
@@ -56,7 +64,7 @@ def add_zone(zone, zone_type, file_nem, key):
 
 
 def add_key(key_name, algorithm, key_value):
-    if not "named.conf" in world.cfg:
+    if "named.conf" not in world.cfg:
         assert False, 'Please start configuring DNS server with step: DNS server is configured on...'
 
     pointer_s = "{"
@@ -66,7 +74,7 @@ def add_key(key_name, algorithm, key_value):
 
 
 def add_rndc(address, port, alg, value):
-    if not "named.conf" in world.cfg:
+    if "named.conf" not in world.cfg:
         assert False, 'Please start configuring DNS server with step: DNS server is configured on...'
 
     world.cfg["named.conf"] += 'key "rndc-key" {'

@@ -28,7 +28,7 @@ from urllib.parse import urljoin
 from collections import defaultdict
 try:
     import urllib.request
-except:
+except BaseException:
     pass
 
 log = logging.getLogger()
@@ -950,7 +950,7 @@ def test(args, params):
     cmd %= subcmd
     try:
         execute(cmd, cwd=vagrant_dir, log_prefix='|%s {ts}| ' % client_name)  # , raise_error=False)
-    except:
+    except BaseException:
         # wait for all traces in executed command
         sys.stdout.flush()
         sys.stderr.flush()
@@ -994,7 +994,7 @@ def _get_latest_cloud_version(image_tpl):
     try:
         with urllib.request.urlopen(url) as response:
             data = response.read()
-    except:
+    except BaseException:
         log.exception('ignored exception')
         return 0
     cloud_meta = json.loads(data)
@@ -1011,7 +1011,7 @@ def _get_latest_cloud_version(image_tpl):
         if provider_found:
             try:
                 v = int(ver['number'])
-            except:
+            except BaseException:
                 return ver['number']
             if v > latest_version:
                 latest_version = v

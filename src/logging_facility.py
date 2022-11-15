@@ -6,6 +6,7 @@
 
 import logging
 
+
 def logger_initialize(loglevel):
     """
     Initialize logger instance common to the framework
@@ -20,7 +21,7 @@ def logger_initialize(loglevel):
     # Parse the logging level specified as string (most likely from the config file)
     numeric_level = getattr(logging, loglevel.upper(), None)
     if not isinstance(numeric_level, int):
-        raise ValueError('Invalid log level: %s' % loglevel)
+        raise ValueError(f'Invalid log level: {loglevel}')
     logger.setLevel(numeric_level)
 
     # make paramiko logger from fabric quiet
@@ -30,4 +31,4 @@ def logger_initialize(loglevel):
     # This is the only message that is logged using the 'print' function because we
     # always want to have this message printed. Further log messages should go through
     # the logger.
-    print('Logger has been successfully initialized to %s level' % loglevel.upper())
+    print(f'Logger has been successfully initialized to {loglevel.upper()} level')

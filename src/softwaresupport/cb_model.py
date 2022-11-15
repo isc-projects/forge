@@ -4,6 +4,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# pylint: disable=consider-using-f-string
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
+# pylint: disable=no-else-continue
+# pylint: disable=no-else-return
+# pylint: disable=useless-object-inheritance
+
 import copy
 import logging
 

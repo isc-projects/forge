@@ -6,6 +6,12 @@
 
 # Author: Wlodzimierz Wencel
 
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-with
+# pylint: disable=not-context-manager
+# pylint: disable=unspecified-encoding
+# pylint: disable=useless-object-inheritance
+
 import os
 import logging
 import tarfile
@@ -69,7 +75,7 @@ def fabric_send_file(file_local, file_remote,
                      password_loc=world.f_cfg.mgmt_password,
                      mode=None):
     with warnings.catch_warnings():
-        warnings.filterwarnings("ignore",category=DeprecationWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
             with hide('running', 'stdout', 'stderr'):
                 result = put(file_local, file_remote, use_sudo=True, mode=mode)
