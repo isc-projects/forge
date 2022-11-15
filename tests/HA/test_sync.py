@@ -16,13 +16,12 @@ from src import srv_control
 from src import srv_msg
 
 from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.cb_model import setup_server_with_radius
 from src.softwaresupport import radius
 
 from .steps import generate_leases, load_hook_libraries, increase_mac, wait_until_ha_state
 from .steps import HOT_STANDBY, LOAD_BALANCING, PASSIVE_BACKUP
-
-# TODO add checking logs in all those tests
 
 
 @pytest.fixture(autouse=True)
@@ -38,7 +37,17 @@ def kill_kea_on_second_system():
 @pytest.mark.v6
 @pytest.mark.ha
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
-def test_v6_hooks_HA_page_size_sync_mulitple_NA(hook_order):
+def test_HA_hot_standby_multiple_leases_v6(hook_order: str):
+    """
+    Check that Kea HA can sync multiple IA_NA and IA_PD leases provided together
+    in the same exchange.
+
+    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    or reverse alphabetical. This is to test all order combinations for each set
+    of two hook libraries after problems were found on one order of loading HA
+    with leasequery.
+    """
+
     # HA SERVER 1
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
@@ -87,27 +96,42 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA(hook_order):
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     wait_until_ha_state('hot-standby')
-    misc.test_procedure()
 
-    set_of_leases_1 = generate_leases(leases_count=5, iana=3, iapd=2)
+    # Message exchanges
+    misc.test_procedure()
+    set_of_leases_1 = generate_leases(leases_count=4, iana=3, iapd=2)
     srv_msg.check_leases(set_of_leases_1)
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2)
-    # srv_msg.forge_sleep(2, 'seconds')
 
-    # srv_msg.remote_log_includes_line(world.f_cfg.mgmt_address_2,
-    #                                  '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log-CA',
-    #                                  None,
-    #                                  'Bulk apply of 4 IPv6 leases completed.')
+    # Stop server 1 and wait for server 2 to enter partner-down state.
     srv_control.start_srv('DHCP', 'stopped')
     wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2)
 
-    set_of_leases_2 = generate_leases(leases_count=5, iana=3, iapd=2, mac="02:02:0c:03:0a:00")
+    # Check logs in server1.
+    wait_for_message_in_log('HA_STATE_TRANSITION server transitions from PARTNER-DOWN to '
+                            'HOT-STANDBY state, partner state is READY')
+
+    # Check logs in server2.
+    wait_for_message_in_log(r'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received [0-9]* leases '
+                            'from server1', destination=world.f_cfg.mgmt_address_2)
+    wait_for_message_in_log('HA_SYNC_SUCCESSFUL lease database synchronization with '
+                            'server1 completed successfully',
+                            destination=world.f_cfg.mgmt_address_2)
+    wait_for_message_in_log('HA_STATE_TRANSITION server transitions from READY to '
+                            'HOT-STANDBY state, partner state is HOT-STANDBY',
+                            destination=world.f_cfg.mgmt_address_2)
+
+    # More message exchanges
+    set_of_leases_2 = generate_leases(leases_count=4, iana=3, iapd=2, mac="02:02:0c:03:0a:00")
 
     srv_control.start_srv('DHCP', 'started')
     wait_until_ha_state('hot-standby')
 
     srv_msg.check_leases(set_of_leases_1)
     srv_msg.check_leases(set_of_leases_2)
+
+    # Check that bulk apply was used.
+    wait_for_message_in_log(r'Bulk apply of [0-9]* IPv6 leases completed.', 5)
 
 
 @pytest.mark.v4_bootp
@@ -116,7 +140,20 @@ def test_v6_hooks_HA_page_size_sync_mulitple_NA(hook_order):
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
-def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_order):
+def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: str, hook_order: str):
+    """
+    Check that Kea HA nodes can work if they have different sync-page-limit
+    configuration entries.
+
+    :param dhcp_version: v4 or v6, determined by pytest marks
+    :param backend: the database backend to be used for leases
+    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    or reverse alphabetical. This is to test all order combinations for each set
+    of two hook libraries after problems were found on one order of loading HA
+    with leasequery.
+    """
+
+    # HA SERVER 1
     misc.test_setup()
 
     srv_control.define_temporary_lease_db_backend(backend)
@@ -128,8 +165,8 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
-    srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
-    srv_control.configure_loggers('kea-dhcp6.ha-hooks', 'DEBUG', 99)
+    srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.dhcpsrv', 'DEBUG', 99)
+    srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
 
     load_hook_libraries(dhcp_version, hook_order)
@@ -180,7 +217,10 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
+    # Wait for the hot-standby state.
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
+
+    # Message exchanges
     set_of_leases_1 = generate_leases(leases_count=50, iana=1, iapd=1, dhcp_version=dhcp_version)
 
     # turn off server2
@@ -192,37 +232,19 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     # let's wait for full synchronization of server2
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
 
-    # misc.pass_criteria()
-    # if dhcp_version == 'v6':
-    #     log_contains('DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 15 IPv6 leases starting')
-    #     srv_msg.remote_log_includes_line(world.f_cfg.mgmt_address_2,
-    #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-    #                                      None,
-    #                                      'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 15 leases from server1')
-    #     srv_msg.remote_log_includes_line(world.f_cfg.mgmt_address_2,
-    #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-    #                                      'NOT ',
-    #                                      'DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 10 IPv6 leases starting from address 2001:')
-    #     log_doesnt_contain('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from')
-    #     srv_msg.remote_log_includes_line(world.f_cfg.mgmt_address_2,
-    #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-    #                                      None,
-    #                                      'HA_SYNC_SUCCESSFUL lease database synchronization with server1 completed successfully')
-    # else:
-    #     log_contains('DHCPSRV_MEMFILE_GET_PAGE4 obtaining at most 15 IPv4 leases starting')
-    #     srv_msg.remote_log_includes_line(world.f_cfg.mgmt_address_2,
-    #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-    #                                      None,
-    #                                      'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 15 leases from server1')
-    #     srv_msg.remote_log_includes_line(world.f_cfg.mgmt_address_2,
-    #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-    #                                      'NOT ',
-    #                                      'DHCPSRV_MEMFILE_GET_PAGE6 obtaining at most 10 IPv4 leases starting from address =')
-    #     log_doesnt_contain('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from')
-    #     srv_msg.remote_log_includes_line(world.f_cfg.mgmt_address_2,
-    #                                      '$(SOFTWARE_INSTALL_DIR)/var/log/kea.log',
-    #                                      None,
-    #                                      'HA_SYNC_SUCCESSFUL lease database synchronization with server1 completed successfully')
+    # Check logs in server1.
+    wait_for_message_in_log('HA_STATE_TRANSITION server transitions from PARTNER-DOWN to '
+                            'HOT-STANDBY state, partner state is READY')
+
+    # Check logs in server2.
+    wait_for_message_in_log('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 15 leases from '
+                            'server1', 3, destination=world.f_cfg.mgmt_address_2)
+    wait_for_message_in_log('HA_SYNC_SUCCESSFUL lease database synchronization with '
+                            'server1 completed successfully',
+                            destination=world.f_cfg.mgmt_address_2)
+    wait_for_message_in_log('HA_STATE_TRANSITION server transitions from READY to '
+                            'HOT-STANDBY state, partner state is HOT-STANDBY',
+                            destination=world.f_cfg.mgmt_address_2)
 
     # check if all leases are synced
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2, backend=backend)
@@ -243,6 +265,10 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
     # let's wait for full synchronization of server2
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
 
+    # Check logs in server1.
+    wait_for_message_in_log('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from '
+                            'server2', 10)
+
     # Check synced leases.
     srv_msg.check_leases(set_of_leases_1, backend=backend)
     srv_msg.check_leases(set_of_leases_2, backend=backend)
@@ -254,7 +280,19 @@ def test_HA_hot_standby_different_page_size_sync(dhcp_version, backend, hook_ord
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
-def test_HA_passive_backup_sync(dhcp_version, backend, hook_order):
+def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str):
+    """
+    Check that Kea can synchronize leases between HA nodes in passive-backup mode.
+
+    :param dhcp_version: v4 or v6, determined by pytest marks
+    :param backend: the database backend to be used for leases
+    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    or reverse alphabetical. This is to test all order combinations for each set
+    of two hook libraries after problems were found on one order of loading HA
+    with leasequery.
+    """
+
+    # HA SERVER 1
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
     if dhcp_version == 'v6':
@@ -298,10 +336,19 @@ def test_HA_passive_backup_sync(dhcp_version, backend, hook_order):
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
+    # Wait for the passive-backup state.
     wait_until_ha_state('passive-backup', dhcp_version=dhcp_version)
-    set_of_leases_1 = generate_leases(leases_count=5, iana=3, iapd=2, dhcp_version=dhcp_version)
-    # we have no confirmation in syncing so just let's wait a bit
-    srv_msg.forge_sleep(2, 'seconds')
+
+    # Message exchanges
+    leases_count = 4
+    set_of_leases_1 = generate_leases(leases_count=leases_count, iana=3, iapd=2, dhcp_version=dhcp_version)
+
+    # Wait for sync.
+    if world.proto == 'v4':
+        wait_for_message_in_log(r'\[ { "result": 0, "text": "IPv4 lease added." } \]', leases_count)
+    else:
+        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 3 IPv6 leases completed." } \]', leases_count)
+
     # check synced leases
     srv_msg.check_leases(set_of_leases_1, backend=backend)
     srv_msg.check_leases(set_of_leases_1, backend=backend, dest=world.f_cfg.mgmt_address_2)
@@ -315,7 +362,18 @@ def test_HA_passive_backup_sync(dhcp_version, backend, hook_order):
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
-def test_HA_load_balancing_sync(dhcp_version, backend, hook_order):
+def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str):
+    """
+    Check that Kea can synchronize leases between HA nodes in load-balancing mode.
+
+    :param dhcp_version: v4 or v6, determined by pytest marks
+    :param backend: the database backend to be used for leases
+    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    or reverse alphabetical. This is to test all order combinations for each set
+    of two hook libraries after problems were found on one order of loading HA
+    with leasequery.
+    """
+
     # HA SERVER 1
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -380,10 +438,12 @@ def test_HA_load_balancing_sync(dhcp_version, backend, hook_order):
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
+    # Wait for the load-balancing states.
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)
 
     misc.test_procedure()
+
     # get 10 leases
     set_of_leases_1 = generate_leases(leases_count=10, iana=1, iapd=0, dhcp_version=dhcp_version)
 
@@ -423,7 +483,19 @@ def test_HA_load_balancing_sync(dhcp_version, backend, hook_order):
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
-def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend, hook_order):
+def test_HA_load_balancing_both_scopes_for_primary(dhcp_version: str, backend: str, hook_order: str):
+    """
+    Check that a primary load-balancing HA node can take all the traffic when
+    the secondary HA node is offline.
+
+    :param dhcp_version: v4 or v6, determined by pytest marks
+    :param backend: the database backend to be used for leases
+    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    or reverse alphabetical. This is to test all order combinations for each set
+    of two hook libraries after problems were found on one order of loading HA
+    with leasequery.
+    """
+
     # HA SERVER 1
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -455,12 +527,13 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend, hook_o
     # HA SERVER 2
     # we don't need it, server1 wont detect server2 and will go straight to partner-down
 
+    # Wait for the partner-down state.
     resp = wait_until_ha_state('partner-down', dhcp_version=dhcp_version)
-    # wait_until_ha_state('load-balancing', dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)
+
     assert "server2" in resp["arguments"]["scopes"]
     assert "server1" in resp["arguments"]["scopes"]
     misc.test_procedure()
-    # get 10 leases some form server1 and some from server2
+    # Get 40 leases split from server1 and server2.
     l_count = 40
     set_of_leases_1 = generate_leases(leases_count=l_count, iana=1, iapd=0, dhcp_version=dhcp_version)
     assert l_count == len(set_of_leases_1), "Server didn't give us all leases it had configured"
@@ -474,7 +547,19 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version, backend, hook_o
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
-def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend, hook_order):
+def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version: str, backend: str, hook_order: str):
+    """
+    Check that a secondary load-balancing HA node can take all the traffic when
+    the primary HA node is offline.
+
+    :param dhcp_version: v4 or v6, determined by pytest marks
+    :param backend: the database backend to be used for leases
+    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    or reverse alphabetical. This is to test all order combinations for each set
+    of two hook libraries after problems were found on one order of loading HA
+    with leasequery.
+    """
+
     # HA SERVER 1
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -539,6 +624,7 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend, hook
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
+    # Wait for the load-balancing states.
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version)
     wait_until_ha_state('load-balancing', dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)
 
@@ -548,7 +634,7 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version, backend, hook
     assert "server2" in resp["arguments"]["scopes"]
     assert "server1" in resp["arguments"]["scopes"]
     misc.test_procedure()
-    # get 10 leases some form server1 and some from server2
+    # Get 40 leases split from server1 and server2.
     l_count = 40
     set_of_leases_1 = generate_leases(leases_count=l_count, iana=1, iapd=0, dhcp_version=dhcp_version)
     assert l_count == len(set_of_leases_1), f'Server gave us {len(set_of_leases_1)} leases, we wanted {l_count}'

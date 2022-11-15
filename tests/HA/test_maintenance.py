@@ -347,7 +347,7 @@ def test_load_balancing_maintenance(backend):
     wait_until_ha_state("partner-down", dest=world.f_cfg.mgmt_address_2)
 
     # those should be assigned by server 2
-    set_of_leases_5 = generate_leases(leases_count=5, mac="07:02:0c:03:0a:00",
+    set_of_leases_5 = generate_leases(leases_count=4, mac="07:02:0c:03:0a:00",
                                       expected_server_id='00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
 
     srv_msg.check_leases(set_of_leases_5, backend=backend, dest=world.f_cfg.mgmt_address_2)
