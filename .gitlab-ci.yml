@@ -13,6 +13,9 @@ bandit:
 pylint:
   image: "${CI_REGISTRY_IMAGE}:latest"
   script:
+    - pip install --upgrade pip
+    - pip install -r ./requirements.txt
+    - pip install --upgrade pylint pycodestyle
     - ./check-style.sh
 
 semgrep:
