@@ -212,18 +212,15 @@ You can use git clone to download Forge from repository.
 git clone https://gitlab.isc.org/isc-projects/forge.git
 ```
 
-### 5. Install Python virtual environment module dev tools (it should install also python pip)
+### 5. Install python enviroment
+Install Python virtual environment module, dev tools and build-essential (it should install also python pip)
 ```shell
 sudo apt install python3.10-venv
 sudo apt install python3.10-dev
-```
-
-### 6. Some packages need to have **build-essential** installed on Ubuntu 22.04.1
-```shell
 sudo apt install build-essential
 ```
 
-### 7. Make virtual environment and install requirements.
+### 6. Make virtual environment and install requirements.
 We need to enter directory with cloned forge, make new virtual environment, activate it and run pip to install required python modules.
 ```shell
 cd forge
@@ -232,7 +229,7 @@ source ./venv/bin/activate
 ./venv/bin/pip install -r requirements.txt
 ```
 
-### 8. Preparing config file
+### 7. Preparing config file
 You need to copy default config file as a working one:
 
 ```shell
