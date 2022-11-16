@@ -212,9 +212,10 @@ You can use git clone to download Forge from repository.
 git clone https://gitlab.isc.org/isc-projects/forge.git
 ```
 
-### 5. Install Python virtual environment module (it should install also python pip)
+### 5. Install Python virtual environment module dev tools (it should install also python pip)
 ```shell
 sudo apt install python3.10-venv
+sudo apt install python3.10-dev
 ```
 
 ### 6. Some packages need to have **build-essential** installed on Ubuntu 22.04.1
