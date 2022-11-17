@@ -241,7 +241,7 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
                 cmd += f"grep '{line}' | wc -l"
             else:
                 cmd += f'grep "{line}" | wc -l'
-            result = fabric_sudo_command(cmd, destination=destination, ignore_errors=True)
+            result = fabric_sudo_command(cmd, destination_host=destination, ignore_errors=True)
         else:
             log_file = world.f_cfg.log_join(log_file)
             result = get_line_count_in_file(line, log_file, destination, singlequotes)
