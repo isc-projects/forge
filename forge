@@ -544,7 +544,8 @@ def setup(args):
                               MGMT_BRG=mgmt_brg,
                               TRAFFIC_BRG=traffic_brg,
                               SERVER_IMAGE=server_image,
-                              PKG=pkg)
+                              PKG=pkg,
+                              LXC_VERSION=7 if "ubuntu" in server1_name else 2)
     vagrant_dir = get_vagrant_dir(args)
     if not os.path.exists(vagrant_dir):
         os.makedirs(vagrant_dir)
@@ -1054,19 +1055,19 @@ def _package_box(lxc_name, vagrant_dir, box_name):
 
 
 def package_box_and_upload(args):
-    lxc_name = 'forge-client-' + _sanitize_sid(args.sid)
-    box_name = 'forge-clt-%s' % args.system
+    lxc_name = ['forge-client-' + _sanitize_sid(args.sid), 'forge-server-' + _sanitize_sid(args.sid),]
+    box_name = ['forge-clt-%s' % args.system, ]
 
-    vagrant_dir = get_vagrant_dir(args)
-
-    box_path = _package_box(lxc_name, vagrant_dir, box_name)
-
-    image_tpl = 'isc/' + box_name
-    latest_version = _get_latest_cloud_version(image_tpl)
-    new_version = latest_version + 1
-    cmd = "vagrant cloud publish -f -r %s %s %s %s"
-    cmd = cmd % (image_tpl, new_version, 'lxc', box_path)
-    execute(cmd)
+    # vagrant_dir = get_vagrant_dir(args)
+    #
+    # box_path = _package_box(lxc_name, vagrant_dir, box_name)
+    #
+    # image_tpl = 'isc/' + box_name
+    # latest_version = _get_latest_cloud_version(image_tpl)
+    # new_version = latest_version + 1
+    # cmd = "vagrant cloud publish -f -r %s %s %s %s"
+    # cmd = cmd % (image_tpl, new_version, 'lxc', box_path)
+    # execute(cmd)
 
 
 def parse_args():

@@ -7,4 +7,4 @@ sudo dnf install -y socat freeradius bind net-tools tcpdump
 sudo ip -6 route add 2001:db8:1::/64 dev enp0s9
 
 # Generate certificates for the FreeRADIUS server.
-sudo /etc/raddb/certs/bootstrap
+sudo /etc/raddb/certs/bootstrap > ~/bootstrap_output 2>&1

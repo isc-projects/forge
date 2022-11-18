@@ -14,6 +14,9 @@ sudo systemctl stop apt-daily.service apt-daily-upgrade.service
 sudo systemctl disable apt-daily.service apt-daily-upgrade.service
 
 sudo apt update
+# bind9 installation generate a lot of output when generating keys
+# which is logged in jenkins one sign per line
+sudo apt install -y bind9 > ~/bind_install_output 2>&1
 sudo apt install -y socat gnupg freeradius bind9 net-tools tcpdump
 
 # this is needed for ddns tests
