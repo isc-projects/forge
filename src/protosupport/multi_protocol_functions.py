@@ -113,7 +113,7 @@ def sort_container(obj):
     :return: Sorted json dictionary or other list
     """
     if isinstance(obj, dict):
-        return sorted((k, sort_container(v)) for k, v in obj.items())
+        return json.loads(json.dumps(obj, sort_keys=True))
     if isinstance(obj, list):
         return sorted(sort_container(x) for x in obj)
     return obj
