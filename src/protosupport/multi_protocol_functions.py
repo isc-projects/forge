@@ -84,6 +84,7 @@ def copy_file_from_server(remote_path, local_filename='downloaded_file'):
     Path required.
     """
     fabric_download_file(remote_path, world.cfg["test_result_dir"] + f'/{local_filename}')
+    return world.cfg["test_result_dir"] + f'/{local_filename}'
 
 
 def send_file_to_server(local_path, remote_path):
