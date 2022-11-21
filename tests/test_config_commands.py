@@ -23,7 +23,8 @@ from src.protosupport.multi_protocol_functions import remove_file_from_server, c
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-def test_config_commands_usercontext(dhcp_version):
+@pytest.mark.parametrize('channel', ['socket', 'http'])
+def test_config_commands_usercontext(channel, dhcp_version):
     """
     Test check if user-context is properly handled by config commands.
     """
@@ -36,11 +37,12 @@ def test_config_commands_usercontext(dhcp_version):
 
     # Get current config
     cmd = {"command": "config-get", "arguments": {}}
-    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    response = srv_msg.send_ctrl_cmd(cmd, channel)
     config_set = response['arguments']
 
     # Add user context to configuration
-    config_set[f"Dhcp{dhcp_version[1]}"]['user-context'] = {
+    version = 'Dhcp4' if dhcp_version == 'v4' else 'Dhcp6'
+    config_set[version]['user-context'] = {
         "ISC": {
             "relay-info": [
                 {
@@ -63,11 +65,11 @@ def test_config_commands_usercontext(dhcp_version):
 
     # Send modified config to server
     cmd = {"command": "config-set", "arguments": config_set}
-    srv_msg.send_ctrl_cmd(cmd, 'http')
+    srv_msg.send_ctrl_cmd(cmd, channel)
 
     # Get new config from server
     cmd = {"command": "config-get", "arguments": {}}
-    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    response = srv_msg.send_ctrl_cmd(cmd, channel)
     config_get = response['arguments']
     config_get = sort_container(config_get)
 
@@ -78,7 +80,7 @@ def test_config_commands_usercontext(dhcp_version):
     remote_path = world.f_cfg.data_join('config-export.json')
     remove_file_from_server(remote_path)
     cmd = {"command": "config-write", "arguments": {"filename": remote_path}}
-    srv_msg.send_ctrl_cmd(cmd, 'http')
+    srv_msg.send_ctrl_cmd(cmd, channel)
     local_path = copy_file_from_server(remote_path, 'config-export.json')
 
     # Open downloaded file and sort it for easier comparison
