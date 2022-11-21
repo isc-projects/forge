@@ -20,7 +20,8 @@ import base64
 import string
 
 from src.forge_cfg import world
-from src.softwaresupport.bind9_server.bind_configs import config_file_set, keys
+from src.softwaresupport.bind9_server.bind_configs import config_file_set
+# from src.softwaresupport.bind9_server.bind_configs import keys  # those are needed for managed-keys.bind
 from src.softwaresupport.multi_server_functions import fabric_sudo_command, fabric_download_file
 from src.softwaresupport.multi_server_functions import fabric_remove_file_command
 from src.softwaresupport.multi_server_functions import check_local_path_for_downloaded_files, send_content
@@ -238,4 +239,4 @@ def clear_all(destination_address=world.f_cfg.mgmt_address, remove_logs=True):
         fabric_remove_file_command('/tmp/dns.log', destination_host=destination_address)
     fabric_remove_file_command(os.path.join(world.f_cfg.dns_data_path, 'namedb/*'), destination_host=destination_address)
     fabric_remove_file_command(os.path.join(world.f_cfg.dns_data_path, '*.conf'), destination_host=destination_address)
-    fabric_remove_file_command(os.path.join(world.f_cfg.dns_data_path, 'managed-keys.bind'), destination_host=destination_address)
+    # fabric_remove_file_command(os.path.join(world.f_cfg.dns_data_path, 'managed-keys.bind'), destination_host=destination_address)
