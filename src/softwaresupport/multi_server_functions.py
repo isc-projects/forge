@@ -85,13 +85,18 @@ def fabric_send_file(file_local, file_remote,
 def fabric_download_file(remote_path, local_path,
                          destination_host=world.f_cfg.mgmt_address,
                          user_loc=world.f_cfg.mgmt_username,
-                         password_loc=world.f_cfg.mgmt_password, ignore_errors=False):
+                         password_loc=world.f_cfg.mgmt_password,
+                         ignore_errors=False, hide_all=False):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=ignore_errors):
             if ignore_errors:
                 fabric.state.output.warnings = False
-            result = get(remote_path, local_path)
+            if hide_all:
+                with hide('running', 'stdout', 'stderr'):
+                    result = get(remote_path, local_path)
+            else:
+                result = get(remote_path, local_path)
             fabric.state.output.warnings = True
     return result
 

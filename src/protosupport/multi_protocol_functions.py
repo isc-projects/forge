@@ -590,7 +590,8 @@ def _process_ctrl_response(response, exp_result):
     world.control_channel = response
     try:
         result = json.loads(response)
-        log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
+        if world.f_cfg.forge_verbose:
+            log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
     except BaseException:
         log.exception('Problem with parsing json:\n"%s"', str(response))
         result = response
@@ -617,8 +618,8 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
         assert exp_result in [0, None]
         # force expected result to None so it is not checked
         exp_result = None
-
-    log.info(pprint.pformat(command))
+    if world.f_cfg.forge_verbose:
+        log.info(pprint.pformat(command))
     if isinstance(command, dict):
         command = json.dumps(command)
     command_file = open(world.cfg["test_result_dir"] + '/command_file', 'w')
@@ -679,7 +680,8 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
     if headers is not None:
         d_headers.update(headers)
 
-    log.info(pprint.pformat(command))
+    if world.f_cfg.forge_verbose:
+        log.info(pprint.pformat(command))
     if isinstance(command, dict):
         command = json.dumps(command)
     try:

@@ -230,7 +230,8 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                          check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                'dns/dns_log_file',
                                                                destination_address),
-                         destination_host=destination_address, ignore_errors=True)
+                         destination_host=destination_address, ignore_errors=True,
+                         hide_all=not world.f_cfg.forge_verbose)
 
 
 def clear_all(destination_address=world.f_cfg.mgmt_address, remove_logs=True):
