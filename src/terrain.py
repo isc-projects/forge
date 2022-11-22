@@ -268,7 +268,6 @@ def declare_all(dhcp_version=None):
 
     world.loops = {"active": False,
                    "save_leases_details": False}
-    world.scapy_verbose = 99
 
     world.dns_enable = False
     world.dhcp_enable = False

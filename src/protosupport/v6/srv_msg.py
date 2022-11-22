@@ -655,7 +655,9 @@ def send_wait_for_message(condition_type, presence, exp_message):
                     iface=world.cfg["iface"],
                     timeout=factor * world.cfg['wait_interval'],
                     nofilter=1,
-                    verbose=world.scapy_verbose)
+                    verbose=world.f_cfg.scapy_verbose)
+    if world.f_cfg.scapy_verbose == 0:
+        print(".", end='')
 
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
@@ -1174,7 +1176,6 @@ def loops(message_type_1, message_type_2, repeat):
         x_range = 1000
 
     world.loops["active"] = True
-    world.scapy_verbose = 0
 
     if message_type_1 == "SOLICIT" and message_type_2 == "ADVERTISE":
         # short two message exchange without saving leases.

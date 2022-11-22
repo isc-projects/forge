@@ -220,7 +220,6 @@ def test_cve_2019_6474():
     # we will send a lot of exactly the same packets, let's turn of printing them
     tmp = world.f_cfg.show_packets_from
     world.f_cfg.show_packets_from = ""
-    world.scapy_verbose = 0
 
     misc.test_procedure()
     # message that causes kea to write incorrect lease
@@ -233,7 +232,6 @@ def test_cve_2019_6474():
         # kea is actually responding but scapy is unable to detect it
         srv_msg.send_wait_for_message('MUST', None, expect_response=False)
 
-    world.scapy_verbose = 99
     world.f_cfg.show_packets_from = tmp
     # restart kea, before fix it wasn't starting
     srv_control.start_srv('DHCP', 'stopped')

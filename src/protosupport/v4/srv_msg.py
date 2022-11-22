@@ -379,7 +379,9 @@ def send_wait_for_message(msgtype, presence, exp_message):
                      iface=world.cfg["iface"],
                      timeout=factor * world.cfg['wait_interval'],
                      multi=True,
-                     verbose=99)
+                     verbose=world.f_cfg.scapy_verbose)
+    if world.f_cfg.scapy_verbose == 0:
+        print(".", end='')
 
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()

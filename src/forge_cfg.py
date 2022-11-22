@@ -87,7 +87,8 @@ SETTINGS = {
     'DNS_RETRY': 6,
     'DISABLE_DB_SETUP': False,
     'WIN_DNS_ADDR_2016': '',
-    'WIN_DNS_ADDR_2019': ''
+    'WIN_DNS_ADDR_2019': '',
+    'SCAPY_VERBOSE': 1
 }
 
 
