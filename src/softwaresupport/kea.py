@@ -1307,7 +1307,7 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
 
 def clear_logs(destination_address=world.f_cfg.mgmt_address):
     fabric_remove_file_command(world.f_cfg.log_join('kea.log*'),
-                               destination_host=destination_address)
+                               destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
 
 def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
@@ -1318,13 +1318,14 @@ def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_pa
         command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6 logs; ' \
                   'do mysql -u {db_user} -p{db_passwd} -e' \
                   ' "SET foreign_key_checks = 0; delete from $table_name" {db_name}; done'.format(**locals())
-        fabric_run_command(command, destination_host=destination_address)
+        fabric_run_command(command, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
     elif world.f_cfg.db_type == "postgresql":
         command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6 logs;' \
                   ' do psql -U {db_user} -d {db_name} -c "delete from $table_name" ; done'.format(**locals())
-        fabric_run_command(command, destination_host=destination_address)
+        fabric_run_command(command, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
     elif world.f_cfg.db_type in ["memfile", ""]:
-        fabric_remove_file_command(world.f_cfg.get_leases_path(), destination_host=destination_address)
+        fabric_remove_file_command(world.f_cfg.get_leases_path(), destination_host=destination_address,
+                                   hide_all=not world.f_cfg.forge_verbose)
     else:
         raise Exception('Unsupported db type %s' % world.f_cfg.db_type)
 
@@ -1352,8 +1353,10 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
     clear_pid_leftovers(destination_address=destination_address)
 
     # remove other kea runtime data
-    fabric_remove_file_command(world.f_cfg.data_join('*'), destination_host=destination_address)
-    fabric_remove_file_command(world.f_cfg.run_join('*'), destination_host=destination_address)
+    fabric_remove_file_command(world.f_cfg.data_join('*'), destination_host=destination_address,
+                               hide_all=not world.f_cfg.forge_verbose)
+    fabric_remove_file_command(world.f_cfg.run_join('*'), destination_host=destination_address,
+                               hide_all=not world.f_cfg.forge_verbose)
 
     # use kea script for cleaning mysql
     cmd = 'bash {software_install_path}/share/kea/scripts/mysql/wipe_data.sh '
@@ -1364,7 +1367,7 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
                      db_user=db_user,
                      db_passwd=db_passwd,
                      db_name=db_name)
-    fabric_run_command(cmd, destination_host=destination_address)
+    fabric_run_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
     # use kea script for cleaning pgsql
     cmd = 'PGPASSWORD={db_passwd} bash {software_install_path}/share/kea/scripts/pgsql/wipe_data.sh '
@@ -1375,21 +1378,21 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
                      db_user=db_user,
                      db_passwd=db_passwd,
                      db_name=db_name)
-    fabric_run_command(cmd, destination_host=destination_address)
+    fabric_run_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
     # clear kea logs in journald (actually all logs)
     if world.f_cfg.install_method != 'make':
         cmd = 'journalctl --rotate'
-        fabric_sudo_command(cmd, destination_host=destination_address)
+        fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
         cmd = 'journalctl --vacuum-time=1s'
-        fabric_sudo_command(cmd, destination_host=destination_address)
+        fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
 
 def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
     v4 = False
     v6 = False
     result = fabric_sudo_command(os.path.join(world.f_cfg.software_install_path, "sbin/keactrl") + " status",
-                                 destination_host=destination_address)
+                                 destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
     # not very sophisticated but easiest fastest way ;)
     if "DHCPv4 server: inactive" in result:
         v4 = False
@@ -1610,7 +1613,8 @@ def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
                              check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                    'leases.csv',
                                                                    destination_address),
-                             destination_host=destination_address, ignore_errors=True)
+                             destination_host=destination_address, ignore_errors=True,
+                             hide_all=not world.f_cfg.forge_verbose)
 
 
 def save_logs(destination_address=world.f_cfg.mgmt_address):
@@ -1651,7 +1655,8 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
 
     fabric_download_file(log_path,
                          local_dest_dir,
-                         destination_host=destination_address, ignore_errors=True)
+                         destination_host=destination_address, ignore_errors=True,
+                         hide_all=not world.f_cfg.forge_verbose)
 
 
 def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
