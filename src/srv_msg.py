@@ -556,7 +556,7 @@ def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_re
 
 
 def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=False, address=world.f_cfg.mgmt_address, verify=None, cert=None,
-                  headers=None):
+                  headers=None, port=8000):
     """Send request to DHCP Kea server over Unix socket or over HTTP via CA."""
 
     if channel in ['http', 'https']:
@@ -567,13 +567,13 @@ def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=Fa
                 cmd["service"] = ['dhcp6']
 
     if channel == 'http':
-        response = send_ctrl_cmd_via_http(cmd, address, 8000, exp_result=exp_result, exp_failed=exp_failed, headers=headers)
+        response = send_ctrl_cmd_via_http(cmd, address, port, exp_result=exp_result, exp_failed=exp_failed, headers=headers)
         if isinstance(response, dict):
             response = response
         else:
             response = response[0] if response else response
     elif channel == 'https':
-        response = send_ctrl_cmd_via_http(cmd, address, 8000, exp_result=exp_result, exp_failed=exp_failed, https=True,
+        response = send_ctrl_cmd_via_http(cmd, address, port, exp_result=exp_result, exp_failed=exp_failed, https=True,
                                           verify=verify, cert=cert, headers=headers)
         # in https connection to control agent results is returned via dict not list as everywhere else,
         # so there is small trick for temp testing

@@ -680,21 +680,18 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
     if headers is not None:
         d_headers.update(headers)
 
+    addr = "http://" + address + ":" + locale.str(port)
+    addr = addr.replace('http', 'https') if https else addr
+
     if world.f_cfg.forge_verbose:
         log.info(pprint.pformat(command))
+        log.info(f"send to address: {addr}")
+
     if isinstance(command, dict):
         command = json.dumps(command)
+
     try:
-        if https:
-            if cert:
-                response = requests.post("https://" + address + ":" + locale.str(port),
-                                         headers=d_headers, data=command, verify=verify, cert=cert)
-            else:
-                response = requests.post("https://" + address + ":" + locale.str(port),
-                                         headers=d_headers, data=command, verify=verify)
-        else:
-            response = requests.post("http://" + address + ":" + locale.str(port),
-                                     headers=d_headers, data=command)
+        response = requests.post(addr, headers=d_headers, data=command, verify=verify, cert=cert)
     except requests.exceptions.ConnectionError:
         # this is weird, if post fail it should have 400 or 500 but it's not created instead
         response = None

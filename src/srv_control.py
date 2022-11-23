@@ -614,7 +614,27 @@ def agent_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, socket
     dhcp.agent_control_channel(host_address, host_port, socket_name)
 
 
-# DNS server configuration
+def disable_leases_affinity():
+    """
+    Disable lease affinity completely, meaning - lease will be removed from leases file immediately after
+    client send release message (by default Kea will keep those for brief period of time. Default
+    behaviour changed ot 2.3.2
+    """
+    dhcp.disable_lease_affinity()
+
+
+def update_expired_leases_processing(param):
+    """
+    Update configuration map of "expired-leases-processing" with one or more parameters. Param checking is not
+    required it will be done just before sending a config file.
+    To set default config please use update_expired_leases_processing('default')
+    To update configuration with param hold-reclaimed-time please use update_expired_leases_processing({"hold-reclaimed-time": <your value>})
+    :param param: str or dict
+    """
+    dhcp.update_expired_leases_processing(param)
+
+
+##DNS server configuration
 @step(r'DNS server is configured on (\S+) address (\S+) on port no. (\d+) and working directory (\S+).')
 def dns_conf(ip_type, address, port, direct):
     ip_type, address, port, direct = test_define_value(ip_type, address, port, direct)

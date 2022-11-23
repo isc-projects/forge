@@ -1037,6 +1037,26 @@ def update_ha_hook_parameter(param):
             hook["parameters"]["high-availability"][0].update(param)
 
 
+def disable_lease_affinity():
+    world.dhcp_cfg.update({"expired-leases-processing": {"hold-reclaimed-time": 0,
+                                                         "flush-reclaimed-timer-wait-time": 0}})
+
+
+def update_expired_leases_processing(param):
+    if isinstance(param, str):
+        if param == 'default':
+            if "expired-leases-processing" in world.dhcp_cfg:
+                del world.dhcp_cfg["expired-leases-processing"]
+    elif isinstance(param, dict):
+        if "expired-leases-processing" not in world.dhcp_cfg:
+            world.dhcp_cfg.update({"expired-leases-processing": {}})
+        else:
+            world.dhcp_cfg["expired-leases-processing"].update(param)
+    else:
+        assert False, "Please use 'default' to remove expired leases configuration or use dict to pass params " \
+                      "and values inside 'expired-leases-processing'"
+
+
 # Start kea-ctrl-agent.
 def agent_control_channel(host_address, host_port, socket_name='control_socket'):
     if world.f_cfg.install_method == 'make':

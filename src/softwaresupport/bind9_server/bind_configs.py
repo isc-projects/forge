@@ -871,7 +871,6 @@ $ORIGIN 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 
     # v4 configs!
     20: ["""
->>>>>>> e0267734 (disable dns sec validation in bind9)
 options {
     directory "${data_path}";  // Working directory
     listen-on port ${dns_port} { ${dns_addr}; };
