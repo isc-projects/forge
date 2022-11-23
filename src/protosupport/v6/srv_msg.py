@@ -655,7 +655,7 @@ def send_wait_for_message(condition_type, presence, exp_message):
                     iface=world.cfg["iface"],
                     timeout=factor * world.cfg['wait_interval'],
                     nofilter=1,
-                    verbose=world.f_cfg.forge_verbose)
+                    verbose=int(world.f_cfg.forge_verbose))
     if world.f_cfg.forge_verbose == 0:
         print(".", end='')
 
