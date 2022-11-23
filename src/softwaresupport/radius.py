@@ -427,7 +427,7 @@ def send_and_receive(config_type: str,
                                   expected_lease='192.168.70.5' if world.proto == 'v4' else '2001:db8:70::5'))
 
     # Remove None from leases because it doesn't play nice with srv_msg.check_leases().
-    filter(lambda l: l is not None, leases)
+    filter(lambda single_lease: single_lease is not None, leases)
 
     return leases
 
