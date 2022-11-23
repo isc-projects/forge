@@ -3021,6 +3021,7 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed(channel, host_dat
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
     # allow non-unique IP address in multiple reservations
     srv_control.set_conf_parameter_global('ip-reservations-unique', False)
+    srv_control.disable_leases_affinity()
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -3839,6 +3840,7 @@ def test_v6_hosts_cmds_add_reservation_client_data(channel, host_database):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.disable_leases_affinity()
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()

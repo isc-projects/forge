@@ -17,6 +17,48 @@ from src import srv_msg
 
 @pytest.mark.v4
 @pytest.mark.classification
+def test_v4_classification_compare_two_fields_from_packet():
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.create_new_class('Management')
+    srv_control.add_test_to_class(1, 'test', "option[61].hex == pkt4.mac")
+
+    srv_control.config_client_classification(0, 'Management')
+
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('client_id', 'ff:01:11:11:11:11:11:22')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.50')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+
+
+@pytest.mark.v4
+@pytest.mark.classification
 def test_v4_classification_member():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')

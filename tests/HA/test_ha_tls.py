@@ -180,7 +180,7 @@ def test_ha_tls_with_ca(dhcp_version, backend):
 @pytest.mark.v6
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_ha_tls(dhcp_version, backend):
+def test_ha_tls_without_ca(dhcp_version, backend):
     """
     Basic test of TLS functionality in HA Setup.
     Test generates certificate for both HA peers.
@@ -282,9 +282,9 @@ def test_ha_tls(dhcp_version, backend):
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     # Wait for HA pair to communicate
-    wait_until_ha_state('hot-standby', dhcp_version=dhcp_version, channel='https', verify=ca_cert)
+    wait_until_ha_state('hot-standby', dhcp_version=dhcp_version, channel='https', verify=ca_cert, port=8003)
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2, channel='https',
-                        verify=ca_cert)
+                        verify=ca_cert, port=8003)
 
     # let's allow to one more exchange between servers
     srv_msg.forge_sleep(3)
@@ -293,7 +293,7 @@ def test_ha_tls(dhcp_version, backend):
     get_status_HA(True, True, ha_mode='hot-standby', primary_state='hot-standby', secondary_state='hot-standby',
                   primary_role='primary', secondary_role='standby',
                   primary_scopes=['server1'], secondary_scopes=[],
-                  comm_interrupt=False, in_touch=True, channel='https', verify=ca_cert)
+                  comm_interrupt=False, in_touch=True, channel='https', verify=ca_cert, port=8003)
 
     # Acquire a lese and check it in both backends.
     if dhcp_version == 'v6':

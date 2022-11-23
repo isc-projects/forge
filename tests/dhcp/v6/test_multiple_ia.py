@@ -307,6 +307,7 @@ def test_v6_multipleIA_addresses_release_partial_success():
     # 					IA_Address with status code: NoBinding
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
+    srv_control.disable_leases_affinity()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

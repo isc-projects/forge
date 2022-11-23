@@ -126,7 +126,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     if world.proto == 'v4':
         wait_for_message_in_log(r'\[ { "result": 0, "text": "IPv4 lease added." } \]', leases_count)
     else:
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 3 IPv6 leases completed." } \]', leases_count)
+        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 3 IPv6 leases completed." } \]', leases_count, singlequotes=True)
 
     # check if primary has all assigned addresses
     srv_msg.check_leases(set_of_leases_1, backend=backend)

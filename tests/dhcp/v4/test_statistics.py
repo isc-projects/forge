@@ -88,6 +88,7 @@ def test_stats_basic():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.disable_leases_affinity()
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files()

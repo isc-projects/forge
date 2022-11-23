@@ -72,6 +72,7 @@ def test_v6_host_reservation_duplicate_ip_reservations_allowed():
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
     # allow non-unique IP address in multiple reservations
     srv_control.set_conf_parameter_global('ip-reservations-unique', False)
+    srv_control.disable_leases_affinity()
     srv_control.host_reservation_in_subnet('ip-address',
                                            the_same_ip_address,  # the same IP
                                            0,
