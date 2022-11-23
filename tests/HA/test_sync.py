@@ -66,7 +66,6 @@ def test_HA_hot_standby_multiple_leases_v6(hook_order: str):
                                           'sync-page-limit': 2,
                                           "this-server-name": "server1"})
 
-    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -356,12 +355,12 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
 
 
 # disabled, we know it fails due to design of HA load-balancing nothing will change here
-#@pytest.mark.v4_bootp
+# @pytest.mark.v4_bootp
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.disabled
 @pytest.mark.ha
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
 def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str):
     """
@@ -377,7 +376,6 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
 
     # HA SERVER 1
     misc.test_setup()
-    srv_msg.test_pause()
     srv_control.define_temporary_lease_db_backend(backend)
     if dhcp_version == "v6":
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
@@ -390,7 +388,6 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.20-192.168.50.30",
                                                       "client-class": "HA_server2"})
     srv_control.open_control_channel()
-    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
 
     load_hook_libraries(dhcp_version, hook_order)
@@ -427,7 +424,6 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
                                                       "client-class": "HA_server2"})
 
     srv_control.open_control_channel()
-    srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
 
     load_hook_libraries(dhcp_version, hook_order)
@@ -449,7 +445,7 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
     misc.test_procedure()
 
     # get 10 leases
-    set_of_leases_1 = generate_leases(leases_count=1, iana=1, iapd=0, dhcp_version=dhcp_version)
+    set_of_leases_1 = generate_leases(leases_count=10, iana=1, iapd=0, dhcp_version=dhcp_version)
 
     # check if there are indeed saved
     srv_msg.check_leases(set_of_leases_1, backend=backend)
@@ -479,7 +475,6 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
     # check leases on server1
     srv_msg.check_leases(set_of_leases_1, backend=backend)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
 
 @pytest.mark.v4_bootp
 @pytest.mark.v4

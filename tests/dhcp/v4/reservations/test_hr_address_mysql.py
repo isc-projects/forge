@@ -25,13 +25,10 @@ def test_v4_host_reservation_mysql_one_address_inside_pool():
     srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.10', 'MySQL', 1)
     srv_control.update_db_backend_reservation('dhcp4_subnet_id', 1, 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(SRV4_ADDR)')
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
-    result = srv_msg.send_ctrl_cmd_via_http('{"command":"config-get", "service": ["dhcp4"], "arguments": {} }',
-                                            '$(SRV4_ADDR)')
+
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')

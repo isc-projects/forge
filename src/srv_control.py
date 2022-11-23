@@ -634,7 +634,7 @@ def update_expired_leases_processing(param):
     dhcp.update_expired_leases_processing(param)
 
 
-##DNS server configuration
+# DNS server configuration
 @step(r'DNS server is configured on (\S+) address (\S+) on port no. (\d+) and working directory (\S+).')
 def dns_conf(ip_type, address, port, direct):
     ip_type, address, port, direct = test_define_value(ip_type, address, port, direct)

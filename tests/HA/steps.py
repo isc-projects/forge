@@ -356,9 +356,10 @@ def load_hook_libraries(dhcp_version, hook_order):
             srv_control.add_hooks('libdhcp_bootp.so')
 
 
-def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str, secondary_state: str, primary_role: str,
-                  secondary_role: str, primary_scopes: list, secondary_scopes: list,
-                  comm_interrupt: bool, in_touch=True, channel='http', verify=None):
+def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str, secondary_state: str,
+                  primary_role: str, secondary_role: str, primary_scopes: list, secondary_scopes: list,
+                  comm_interrupt: bool, in_touch: bool = True, channel: str = 'http', verify: bool = None,
+                  port: int = 8000):
     """Check HA dependent status returned by 'status-get' command according to parameters.
     This function checks 2 servers in HA pair.
 
@@ -375,12 +376,13 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
     :param in_touch: Are servers in 'in touch' state.
     :param channel: Communication channel for 'status-get' command ('http', 'socket', 'https')
     :param verify: CA certificate for https
+    :param port: number of port used in command control channel
     :return:
     """
     if server1:
         # Get status from Server1 and test the response
         cmd = {"command": "status-get", "arguments": {}}
-        response = srv_msg.send_ctrl_cmd(cmd, channel=channel, verify=verify,
+        response = srv_msg.send_ctrl_cmd(cmd, channel=channel, verify=verify, port=port,
                                          address=world.f_cfg.mgmt_address)['arguments']['high-availability'][0]
 
         assert response['ha-mode'] == ha_mode
@@ -400,7 +402,7 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
     if server2:
         # Get status from Server2 and test the response
         cmd = {"command": "status-get", "arguments": {}}
-        response = srv_msg.send_ctrl_cmd(cmd, channel=channel, verify=verify,
+        response = srv_msg.send_ctrl_cmd(cmd, channel=channel, verify=verify, port=port,
                                          address=world.f_cfg.mgmt_address_2)['arguments']['high-availability'][0]
 
         assert response['ha-mode'] == ha_mode

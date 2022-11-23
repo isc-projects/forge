@@ -685,7 +685,7 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
 
     if world.f_cfg.forge_verbose:
         log.info(pprint.pformat(command))
-        log.info(f"send to address: {addr}")
+        log.info("send to address: %s", addr)
 
     if isinstance(command, dict):
         command = json.dumps(command)
