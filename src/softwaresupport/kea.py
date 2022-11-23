@@ -1050,8 +1050,7 @@ def update_expired_leases_processing(param):
     elif isinstance(param, dict):
         if "expired-leases-processing" not in world.dhcp_cfg:
             world.dhcp_cfg.update({"expired-leases-processing": {}})
-        else:
-            world.dhcp_cfg["expired-leases-processing"].update(param)
+        world.dhcp_cfg["expired-leases-processing"].update(param)
     else:
         assert False, "Please use 'default' to remove expired leases configuration or use dict to pass params " \
                       "and values inside 'expired-leases-processing'"
