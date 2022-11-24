@@ -31,6 +31,6 @@ fi
 
 printf 'Checking %s files...\n' "$(printf '%s\n' "${PY_FILES}" | wc -w)"
 printf '======== pylint ========\n'
-./venv/bin/pylint -j "$(nproc || gnproc || echo 1)" --rcfile=pylint.rc ${PY_FILES}
+pylint -j "$(nproc || gnproc || echo 1)" --rcfile=pylint.rc ${PY_FILES}
 printf '===== pycodestyle ======\n'
-./venv/bin/pycodestyle --max-line-length=3000 ${PY_FILES}
+pycodestyle --max-line-length=3000 ${PY_FILES}
