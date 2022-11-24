@@ -29,8 +29,6 @@ else
   PY_FILES="${@}"
 fi
 
-./create-venv.sh
-
 printf 'Checking %s files...\n' "$(printf '%s\n' "${PY_FILES}" | wc -w)"
 printf '======== pylint ========\n'
 ./venv/bin/pylint -j "$(nproc || gnproc || echo 1)" --rcfile=pylint.rc ${PY_FILES}

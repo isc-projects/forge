@@ -13,6 +13,7 @@ bandit:
 pylint:
   image: "${CI_REGISTRY_IMAGE}:latest"
   script:
+    - ./create-venv.sh
     - ./check-style.sh
 
 semgrep:
