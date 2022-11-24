@@ -5,7 +5,28 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 """Forge - testing tool for Kea and ISC DHCP."""
+
+# pylint: disable=anomalous-backslash-in-string
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-sys-exit
+# pylint: disable=consider-using-with
+# pylint: disable=import-outside-toplevel
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
+# pylint: disable=logging-fstring-interpolation
+# pylint: disable=logging-not-lazy
+# pylint: disable=no-else-break
+# pylint: disable=redefined-builtin
+# pylint: disable=redefined-outer-name
+# pylint: disable=reimported
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-locals
+# pylint: disable=unnecessary-pass
+# pylint: disable=unspecified-encoding
+# pylint: disable=wrong-import-order
 
 from __future__ import print_function
 import boto3
@@ -45,7 +66,7 @@ MGMT_ADDRESS = "172.28.0.31"
 MGMT_ADDRESS_2 = "172.28.0.32"
 MGMT_ADDRESS_3 = "172.28.0.33"
 DNS4_ADDR = SRV4_ADDR
-#DNS6_ADDR = "2001:db8:0:f101::1"
+# DNS6_ADDR = "2001:db8:0:f101::1"
 DNS6_ADDR = SRV_IPV6_ADDR_GLOBAL
 IFACE = "enp0s9"
 SERVER_IFACE = "enp0s9"
@@ -156,7 +177,7 @@ def show_config(name):
         print('%s = %s' % (name, cfg['Forge'][name]))
     else:
         for k, v in cfg['Forge'].items():
-            print('%s = %s' % (k , v))
+            print('%s = %s' % (k, v))
 
 
 class ExecutionError(Exception):
@@ -753,7 +774,7 @@ def _install_kea_native_on_server(args, server_idx):
 
     # prepare pkg source repo url
     repository_url = 'https://packages.aws.isc.org'
-    major_minor= '.'.join(args.version.split('.')[0:2])
+    major_minor = '.'.join(args.version.split('.')[0:2])
     repo_name = f'kea-{major_minor}-{args.system}'
     repo_url = urljoin(repository_url, 'repository')
     repo_url += '/%s-ci/' % repo_name
@@ -927,7 +948,7 @@ def _install_dhcpd_on_server(args, server_idx):
     execute(cmd_tpl % cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     # enable logging for isc-dhcp
-    cmd = "sudo sed -i '1s/^/local7.debug\\t\/var\/log\/forge_dhcpd.log\\n/' /etc/rsyslog.conf"
+    cmd = "sudo sed -i '1s/^/local7.debug\\t\\/var\\/log\\/forge_dhcpd.log\\n/' /etc/rsyslog.conf"
     execute(cmd_tpl % cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     # restart syslog
@@ -990,6 +1011,7 @@ def clean(args):
     # delete bridges
     if args.lxc:
         delete_lxc_bridges(args)
+
 
 def _get_latest_cloud_version(image_tpl):
     url = 'https://app.vagrantup.com/api/v1/box/' + image_tpl

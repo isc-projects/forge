@@ -7,3 +7,7 @@ pytest == 6.2.5
 PyCryptodome
 requests
 boto3
+
+# Linting
+pylint == 2.15.5
+pycodestyle == 2.9.0
