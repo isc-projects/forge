@@ -9,5 +9,5 @@ requests
 boto3
 
 # Linting
-pylint == 2.15.5
+pylint == 2.13.9
 pycodestyle == 2.9.0
