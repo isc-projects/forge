@@ -273,6 +273,7 @@ def test_prefix_delegation_onlyPD_multiple_request_release():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
+    srv_control.disable_leases_affinity()
     # pool of two prefixes
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
