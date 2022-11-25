@@ -743,7 +743,9 @@ def client_save_option(option_name, count=0):
 
 def client_copy_option(option_name):
     """
-    Copy option from received message
+    Copy all options with given name from the last received message.
+
+    :param option_name: the name of the option, as specified in {OPTIONS}
     """
     assert world.srvmsg
 
@@ -759,8 +761,13 @@ def client_copy_option(option_name):
     # looking for till the end of the message
     # it would be nice to remove 'status code' sub-option
     # before sending it back to server
-    opt.payload = scapy.packet.NoPayload()
-    add_client_option(opt)
+    if isinstance(opt, list):
+        for i in opt:
+            i.payload = scapy.packet.NoPayload()
+            add_client_option(i)
+    else:
+        opt.payload = scapy.packet.NoPayload()
+        add_client_option(opt)
 
 
 def get_option(msg, opt_code):
@@ -769,6 +776,7 @@ def get_option(msg, opt_code):
     :param msg: scapy message to retrieve the option from
     :param opt_code: option code or name
     :return: scapy message representing the option or None if the option doesn't exist
+             or list of options if there are multiple
     '''
 
     # Ensure the option code is an integer.
@@ -800,7 +808,13 @@ def get_option(msg, opt_code):
                         ]
     while x:
         if x.optcode == opt_code:
-            tmp = x.copy()
+            if tmp is None:
+                tmp = x.copy()
+            elif isinstance(tmp, list):
+                tmp.append(x.copy())
+            else:
+                tmp = [tmp]
+                tmp.append(x.copy())
             # del tmp.payload
             world.opts.append(x)
 
@@ -1280,15 +1294,16 @@ def save_info():
     pass
 
 
-def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
+def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
     """
     Check that the latest received response has an IA_NA option containing
     an IA_Address suboption with the given address and containing the given
     status code.
 
-    Arguments:
-    address -- the expected address as value of the IA_Address suboption
-    status_code -- the expected status code (default: Success)
+    :param address: the expected address as value of the IA_Address suboption
+    :param status_code: the expected status code (default: Success)
+    :param expect: True if the address is expected to be found,
+                   False if it is expected to be missing
     """
 
     response_check_include_option(True, 'IA_NA')
@@ -1296,24 +1311,25 @@ def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
     # message in which the option could appear, the status of the message
     # is assumed to be Success.
     if get_suboption('IA_NA', 'status-code'):
-        response_check_suboption_content('status-code', 'IA_NA', True, 'statuscode', status_code)
+        response_check_suboption_content('status-code', 'IA_NA', expect, 'statuscode', status_code)
     else:
         assert status_code == DHCPv6_STATUS_CODES['Success'], \
-            'status code missing so implied Success, but expected {}'.format(status_code)
+            f'status code missing so it is Success by default, but expected {status_code}'
 
     if status_code == DHCPv6_STATUS_CODES['Success']:
-        response_check_suboption_content('IA_address', 'IA_NA', True, 'addr', address)
+        response_check_suboption_content('IA_address', 'IA_NA', expect, 'addr', address)
 
 
-def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
+def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
     """
     Check that the latest received response has an IA_PD option containing
     an IA_Prefix suboption with the given address and containing the given
     status code.
 
-    Arguments:
-    prefix -- the expected prefix as value of the IA_Prefix suboption
-    status_code -- the expected status code (default: Success)
+    :param prefix: the expected prefix as value of the IA_Prefix suboption
+    :param status_code: the expected status code (default: Success)
+    :param expect: True if the address is expected to be found,
+                   False if it is expected to be missing
     """
 
     response_check_include_option(True, 'IA_PD')
@@ -1324,10 +1340,10 @@ def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
         response_check_suboption_content('status-code', 'IA_PD', 'statuscode', status_code)
     else:
         assert status_code == DHCPv6_STATUS_CODES['Success'], \
-            'status code missing so implied Success, but expected {}'.format(status_code)
+            f'status code missing so it is Success by default, but expected {status_code}'
 
     if status_code == DHCPv6_STATUS_CODES['Success']:
-        response_check_suboption_content('IA-Prefix', 'IA_PD', True, 'prefix', prefix)
+        response_check_suboption_content('IA-Prefix', 'IA_PD', expect, 'prefix', prefix)
 
 
 def SARR(address=None, delegated_prefix=None, relay_information=False,
@@ -1400,6 +1416,9 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         client_sets_value('DUID', duid)
         if iaid is not None:
             client_sets_value('ia_id', iaid)
+            # Set the IAID for IAPDs as well.
+            # It's handled under the different name 'ia_pd' in forge.
+            client_sets_value('ia_pd', iaid)
         # Build and send a renew.
         if address is not None:
             client_copy_option('IA_NA')
@@ -1453,6 +1472,9 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     client_sets_value('DUID', duid)
     if iaid is not None:
         client_sets_value('ia_id', iaid)
+        # Set the IAID for IAPDs as well.
+        # It's handled under the different name 'ia_pd' in forge.
+        client_sets_value('ia_pd', iaid)
     # Build and send a solicit.
     client_does_include('Client', 'client-id')
     if address is not None:

@@ -11,6 +11,7 @@ import pytest
 from src import misc
 from src import srv_msg
 from src import srv_control
+from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import lease_file_contains, lease_file_doesnt_contain
 from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 
@@ -1838,3 +1839,343 @@ def test_v6_flexid_replace_duid_release_pgsql():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 0)
+
+
+# Checks what leases are received when IAIDs are the same or different.
+@pytest.mark.v6
+@pytest.mark.flexid
+def test_v6_iaids():
+    # No flex ID
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::f')
+    world.dhcp_cfg['subnet6'][0]['pd-pools'] = [
+        {
+            'delegated-len': 120,
+            'prefix': '2001:db8:2::',
+            'prefix-len': 80
+        }
+    ]
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Different leases for different IAIDs
+    srv_msg.SARR('2001:db8:1::1', iaid=1)
+    srv_msg.SARR('2001:db8:1::1', iaid=1)
+    srv_msg.SARR('2001:db8:1::2', iaid=2)
+    srv_msg.SARR('2001:db8:1::3', iaid=0)
+    srv_msg.SARR('2001:db8:1::4', iaid=0, duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
+    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=1)
+    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=1)
+    srv_msg.SARR(delegated_prefix='2001:db8:2::100', iaid=2)
+    srv_msg.SARR(delegated_prefix='2001:db8:2::200', iaid=0)
+    srv_msg.SARR(delegated_prefix='2001:db8:2::300', iaid=0, duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
+
+
+# Checks the behavior of ignore-iaid.
+@pytest.mark.v6
+@pytest.mark.flexid
+def test_v6_flexid_ignore_iaid():
+    # Flex ID with ignore-iaid.
+    # The value for identifier-expression is not relevant, but is mandatory.
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::f')
+    world.dhcp_cfg['subnet6'][0]['pd-pools'] = [
+        {
+            'delegated-len': 120,
+            'prefix': '2001:db8:2::',
+            'prefix-len': 80
+        }
+    ]
+    srv_control.add_hooks('libdhcp_flex_id.so')
+    srv_control.add_parameter_to_hook('libdhcp_flex_id.so', 'identifier-expression', 'option[1].hex')
+    srv_control.add_parameter_to_hook('libdhcp_flex_id.so', 'ignore-iaid', True)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Regardless of IAID, the lease is the same. Unless the DUID changes.
+    srv_msg.SARR('2001:db8:1::1', iaid=1)
+    srv_msg.SARR('2001:db8:1::1', iaid=1)
+    srv_msg.SARR('2001:db8:1::1', iaid=2)
+    srv_msg.SARR('2001:db8:1::1', iaid=0)
+    srv_msg.SARR('2001:db8:1::2', iaid=0, duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
+    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=1)
+    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=1)
+    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=2)
+    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=0)
+    srv_msg.SARR(delegated_prefix='2001:db8:2::100', iaid=0, duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
+
+
+# Checks the behavior of ignore-iaid when a packet contains multiple IA requests.
+# ignore-iaid should have no effect in this case.
+@pytest.mark.v6
+@pytest.mark.flexid
+def test_v6_flexid_ignore_iaid_multiple_ias():
+    # Flex ID with ignore-iaid.
+    # The value for identifier-expression is not important, but is mandatory.
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::f')
+    world.dhcp_cfg['subnet6'][0]['pd-pools'] = [
+        {
+            'delegated-len': 120,
+            'prefix': '2001:db8:2::',
+            'prefix-len': 80
+        }
+    ]
+    srv_control.add_hooks('libdhcp_flex_id.so')
+    srv_control.add_parameter_to_hook('libdhcp_flex_id.so', 'identifier-expression', 'option[1].hex')
+    srv_control.add_parameter_to_hook('libdhcp_flex_id.so', 'ignore-iaid', True)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Check SARR + reply-renew twice with two IA_NAs and two IA_PDs. It should behave like
+    # ignore-iaid is disabled. The second time, the client should get the same leases.
+    for _ in range(2):
+        # Send a solicit.
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_sets_value('Client', 'ia_id', 1)
+        srv_msg.client_does_include('Client', 'IA_Address')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_sets_value('Client', 'ia_id', 2)
+        srv_msg.client_does_include('Client', 'IA_Address')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_sets_value('Client', 'ia_pd', 3)
+        srv_msg.client_does_include('Client', 'IA_Prefix')
+        srv_msg.client_does_include('Client', 'IA-PD')
+        srv_msg.client_sets_value('Client', 'ia_pd', 4)
+        srv_msg.client_does_include('Client', 'IA_Prefix')
+        srv_msg.client_does_include('Client', 'IA-PD')
+        srv_msg.client_send_msg('SOLICIT')
+
+        # Expect an advertise.
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+        srv_msg.response_check_include_option('client-id')
+        srv_msg.response_check_include_option('server-id')
+        srv_msg.check_IA_NA('2001:db8:1::1')
+        srv_msg.check_IA_NA('2001:db8:1::2')
+        srv_msg.check_IA_NA('2001:db8:1::3', expect=False)
+        srv_msg.check_IA_PD('2001:db8:2::')
+        srv_msg.check_IA_PD('2001:db8:2::100')
+        srv_msg.check_IA_NA('2001:db8:1::200', expect=False)
+
+        # Send a request.
+        srv_msg.client_copy_option('IA_NA')
+        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('server-id')
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_send_msg('REQUEST')
+
+        # Expect a reply.
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+        srv_msg.check_IA_NA('2001:db8:1::1')
+        srv_msg.check_IA_NA('2001:db8:1::2')
+        srv_msg.check_IA_NA('2001:db8:1::3', expect=False)
+        srv_msg.check_IA_PD('2001:db8:2::')
+        srv_msg.check_IA_PD('2001:db8:2::100')
+        srv_msg.check_IA_NA('2001:db8:1::200', expect=False)
+        # Send a renew.
+        srv_msg.client_copy_option('IA_NA')
+        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('server-id')
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_send_msg('RENEW')
+
+        # Expect a reply.
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+        srv_msg.check_IA_NA('2001:db8:1::1')
+        srv_msg.check_IA_NA('2001:db8:1::2')
+        srv_msg.check_IA_NA('2001:db8:1::3', expect=False)
+        srv_msg.check_IA_PD('2001:db8:2::')
+        srv_msg.check_IA_PD('2001:db8:2::100')
+        srv_msg.check_IA_NA('2001:db8:1::200', expect=False)
+
+    # Check SARR + reply-renew twice with two IA_NAs and two IA_PDs, and changing IAIDs.
+    # It should behave like ignore-iaid is disabled.
+    for i in range(1, 3):
+        # Send a solicit.
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_sets_value('Client', 'ia_id', 100 * i + 5)
+        srv_msg.client_does_include('Client', 'IA_Address')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_sets_value('Client', 'ia_id', 100 * i + 6)
+        srv_msg.client_does_include('Client', 'IA_Address')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_sets_value('Client', 'ia_pd', 100 * i + 7)
+        srv_msg.client_does_include('Client', 'IA_Prefix')
+        srv_msg.client_does_include('Client', 'IA-PD')
+        srv_msg.client_sets_value('Client', 'ia_pd', 100 * i + 8)
+        srv_msg.client_does_include('Client', 'IA_Prefix')
+        srv_msg.client_does_include('Client', 'IA-PD')
+        srv_msg.client_send_msg('SOLICIT')
+
+        # Expect an advertise.
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+        srv_msg.response_check_include_option('client-id')
+        srv_msg.response_check_include_option('server-id')
+        # Next free address is 3.
+        srv_msg.check_IA_NA(f'2001:db8:1::{1 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{2 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{3 + 2 * i:x}', expect=False)
+        # Next free PD is 200.
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{1 + 2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 + 2 * i:x}00', expect=False)
+
+        # Send a request.
+        srv_msg.client_copy_option('IA_NA')
+        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('server-id')
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_send_msg('REQUEST')
+
+        # Expect a reply.
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+        srv_msg.check_IA_NA(f'2001:db8:1::{1 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{2 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{3 + 2 * i:x}', expect=False)
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{1 + 2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 + 2 * i:x}00', expect=False)
+
+        # Send a renew.
+        srv_msg.client_copy_option('IA_NA')
+        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('server-id')
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_send_msg('RENEW')
+
+        # Expect a reply.
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+        srv_msg.check_IA_NA(f'2001:db8:1::{1 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{2 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{3 + 2 * i:x}', expect=False)
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{1 + 2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 + 2 * i:x}00', expect=False)
+
+    # Check SARR + reply-renew twice with one IA_NA and two IA_PDs, and changing IAIDs.
+    # The ignore-iaid should only take effect for the single IA_NA.
+    for i in range(1, 3):
+        # Send a solicit.
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_sets_value('Client', 'ia_id', 100 * i + 9)
+        srv_msg.client_does_include('Client', 'IA_Address')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_sets_value('Client', 'ia_pd', 100 * i + 10)
+        srv_msg.client_does_include('Client', 'IA_Prefix')
+        srv_msg.client_does_include('Client', 'IA-PD')
+        srv_msg.client_sets_value('Client', 'ia_pd', 100 * i + 11)
+        srv_msg.client_does_include('Client', 'IA_Prefix')
+        srv_msg.client_does_include('Client', 'IA-PD')
+        srv_msg.client_send_msg('SOLICIT')
+
+        # Expect an advertise.
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+        srv_msg.response_check_include_option('client-id')
+        srv_msg.response_check_include_option('server-id')
+        # Next free address is 7.
+        srv_msg.check_IA_NA('2001:db8:1::7')
+        srv_msg.check_IA_NA('2001:db8:1::8', expect=False)
+        # Next free PD is 600.
+        srv_msg.check_IA_PD(f'2001:db8:2::{4 + 2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{5 + 2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{6 + 2 * i:x}00', expect=False)
+
+        # Send a request.
+        srv_msg.client_copy_option('IA_NA')
+        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('server-id')
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_send_msg('REQUEST')
+
+        # Expect a reply.
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+        srv_msg.check_IA_NA('2001:db8:1::7')
+        srv_msg.check_IA_NA('2001:db8:1::8', expect=False)
+        srv_msg.check_IA_PD(f'2001:db8:2::{4 + 2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{5 + 2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{6 + 2 * i:x}00', expect=False)
+
+        # Send a renew.
+        srv_msg.client_copy_option('IA_NA')
+        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('server-id')
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_send_msg('RENEW')
+
+        # Expect a reply.
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+        srv_msg.check_IA_NA('2001:db8:1::7')
+        srv_msg.check_IA_NA('2001:db8:1::8', expect=False)
+        srv_msg.check_IA_PD(f'2001:db8:2::{4 + 2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{5 + 2 * i:x}00')
+        srv_msg.check_IA_PD(f'2001:db8:2::{6 + 2 * i:x}00', expect=False)
+
+    # Check SARR + reply-renew twice with two IA_NAs and one IA_PD, and changing IAIDs.
+    # The ignore-iaid should only take effect for the single IA_PD.
+    for i in range(1, 3):
+        # Send a solicit.
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_sets_value('Client', 'ia_id', 100 * i + 12)
+        srv_msg.client_does_include('Client', 'IA_Address')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_sets_value('Client', 'ia_id', 100 * i + 13)
+        srv_msg.client_does_include('Client', 'IA_Address')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_sets_value('Client', 'ia_pd', 100 * i + 14)
+        srv_msg.client_does_include('Client', 'IA_Prefix')
+        srv_msg.client_does_include('Client', 'IA-PD')
+        srv_msg.client_send_msg('SOLICIT')
+
+        # Expect an advertise.
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+        srv_msg.response_check_include_option('client-id')
+        srv_msg.response_check_include_option('server-id')
+        # Next free address is 8.
+        srv_msg.check_IA_NA(f'2001:db8:1::{6 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{7 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{8 + 2 * i:x}', expect=False)
+        # Next free PD is a00.
+        srv_msg.check_IA_PD('2001:db8:2::a00')
+        srv_msg.check_IA_PD('2001:db8:2::b00', expect=False)
+
+        # Send a request.
+        srv_msg.client_copy_option('IA_NA')
+        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('server-id')
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_send_msg('REQUEST')
+
+        # Expect a reply.
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+        srv_msg.check_IA_NA(f'2001:db8:1::{6 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{7 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{8 + 2 * i:x}', expect=False)
+        srv_msg.check_IA_PD('2001:db8:2::a00')
+        srv_msg.check_IA_PD('2001:db8:2::b00', expect=False)
+
+        # Send a renew.
+        srv_msg.client_copy_option('IA_NA')
+        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('server-id')
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_send_msg('RENEW')
+
+        # Expect a reply.
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+        srv_msg.check_IA_NA(f'2001:db8:1::{6 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{7 + 2 * i:x}')
+        srv_msg.check_IA_NA(f'2001:db8:1::{8 + 2 * i:x}', expect=False)
+        srv_msg.check_IA_PD('2001:db8:2::a00')
+        srv_msg.check_IA_PD('2001:db8:2::b00', expect=False)

@@ -650,12 +650,12 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
     return dhcpmsg.DORA(address, options, exchange, response_type, chaddr, init_reboot, subnet_mask, fqdn)
 
 
-def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success']):
-    return dhcpmsg.check_IA_NA(address, status_code)
+def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
+    return dhcpmsg.check_IA_NA(address, status_code, expect)
 
 
-def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success']):
-    return dhcpmsg.check_IA_PD(prefix, status_code)
+def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
+    return dhcpmsg.check_IA_PD(prefix, status_code, expect)
 
 
 def SA(address=None, delegated_prefix=None, relay_information=False,
