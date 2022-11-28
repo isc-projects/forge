@@ -741,11 +741,12 @@ def client_save_option(option_name, count=0):
         world.savedmsg[count].append(opt)
 
 
-def client_copy_option(option_name):
+def client_copy_option(option_name, copy_all=False):
     """
-    Copy all options with given name from the last received message.
+    Copy options with given name from the last received message.
 
     :param option_name: the name of the option, as specified in {OPTIONS}
+    :param copy_all: True if you all options are copied, False otherwise
     """
     assert world.srvmsg
 
@@ -753,7 +754,7 @@ def client_copy_option(option_name):
     opt_code = OPTIONS.get(option_name)
 
     # find and copy option
-    opt = get_option(world.srvmsg[0], opt_code)
+    opt = get_option(world.srvmsg[0], opt_code, get_all=copy_all)
 
     assert opt, "Received message does not contain option " + option_name
 
@@ -761,7 +762,7 @@ def client_copy_option(option_name):
     # looking for till the end of the message
     # it would be nice to remove 'status code' sub-option
     # before sending it back to server
-    if isinstance(opt, list):
+    if copy_all and isinstance(opt, list):
         for i in opt:
             i.payload = scapy.packet.NoPayload()
             add_client_option(i)
@@ -770,11 +771,13 @@ def client_copy_option(option_name):
         add_client_option(opt)
 
 
-def get_option(msg, opt_code):
+def get_option(msg, opt_code, get_all=False):
     '''
     Retrieve from scapy message {msg}, the DHCPv6 option having IANA code {opt_code}.
     :param msg: scapy message to retrieve the option from
     :param opt_code: option code or name
+    :param get_all: True if it should return all options with given code,
+                    False if a single option is required
     :return: scapy message representing the option or None if the option doesn't exist
              or list of options if there are multiple
     '''
@@ -808,13 +811,16 @@ def get_option(msg, opt_code):
                         ]
     while x:
         if x.optcode == opt_code:
-            if tmp is None:
-                tmp = x.copy()
-            elif isinstance(tmp, list):
-                tmp.append(x.copy())
+            if get_all:
+                if tmp is None:
+                    tmp = x.copy()
+                elif isinstance(tmp, list):
+                    tmp.append(x.copy())
+                else:
+                    tmp = [tmp]
+                    tmp.append(x.copy())
             else:
-                tmp = [tmp]
-                tmp.append(x.copy())
+                tmp = x.copy()
             # del tmp.payload
             world.opts.append(x)
 
@@ -1328,7 +1334,7 @@ def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success'], expect=True)
 
     :param prefix: the expected prefix as value of the IA_Prefix suboption
     :param status_code: the expected status code (default: Success)
-    :param expect: True if the address is expected to be found,
+    :param expect: True if the prefix is expected to be found,
                    False if it is expected to be missing
     """
 

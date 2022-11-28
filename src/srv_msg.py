@@ -295,13 +295,13 @@ def dns_option_content(part_name, value_name, value, expect_include=True):
 
 # save option from received message
 @step(r'Client copies (\S+) option from received message.')
-def client_copy_option(option_name):
+def client_copy_option(option_name, copy_all=False):
     """
     When we need to send the same option back to server (e.g. Server ID) we can use this step.
     Copied option is automatically added to next generated message, and erased.
     """
     assert len(world.srvmsg), "No messages received, nothing to copy."
-    dhcpmsg.client_copy_option(option_name)
+    dhcpmsg.client_copy_option(option_name, copy_all)
 
 
 def clean_saved_options():

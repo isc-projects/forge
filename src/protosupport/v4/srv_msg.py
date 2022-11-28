@@ -267,7 +267,8 @@ def client_save_option(opt_name, count=0):
         world.savedmsg[count].append(get_option(world.srvmsg[0], opt_code))
 
 
-def client_copy_option(opt_name):
+def client_copy_option(opt_name, copy_all=False):
+    assert not copy_all, 'copy_all not implemented'
     opt_code = world.kea_options4.get(opt_name)
 
     assert opt_name in world.kea_options4, "Unsupported option name " + opt_name

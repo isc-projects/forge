@@ -1959,8 +1959,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA('2001:db8:1::200', expect=False)
 
         # Send a request.
-        srv_msg.client_copy_option('IA_NA')
-        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('IA_NA', copy_all=True)
+        srv_msg.client_copy_option('IA_PD', copy_all=True)
         srv_msg.client_copy_option('server-id')
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
         srv_msg.client_does_include('Client', 'client-id')
@@ -1975,8 +1975,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_PD('2001:db8:2::100')
         srv_msg.check_IA_NA('2001:db8:1::200', expect=False)
         # Send a renew.
-        srv_msg.client_copy_option('IA_NA')
-        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('IA_NA', copy_all=True)
+        srv_msg.client_copy_option('IA_PD', copy_all=True)
         srv_msg.client_copy_option('server-id')
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
         srv_msg.client_does_include('Client', 'client-id')
@@ -2025,8 +2025,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_PD(f'2001:db8:2::{2 + 2 * i:x}00', expect=False)
 
         # Send a request.
-        srv_msg.client_copy_option('IA_NA')
-        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('IA_NA', copy_all=True)
+        srv_msg.client_copy_option('IA_PD', copy_all=True)
         srv_msg.client_copy_option('server-id')
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
         srv_msg.client_does_include('Client', 'client-id')
@@ -2042,8 +2042,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_PD(f'2001:db8:2::{2 + 2 * i:x}00', expect=False)
 
         # Send a renew.
-        srv_msg.client_copy_option('IA_NA')
-        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('IA_NA', copy_all=True)
+        srv_msg.client_copy_option('IA_PD', copy_all=True)
         srv_msg.client_copy_option('server-id')
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
         srv_msg.client_does_include('Client', 'client-id')
@@ -2088,8 +2088,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_PD(f'2001:db8:2::{6 + 2 * i:x}00', expect=False)
 
         # Send a request.
-        srv_msg.client_copy_option('IA_NA')
-        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('IA_NA', copy_all=True)
+        srv_msg.client_copy_option('IA_PD', copy_all=True)
         srv_msg.client_copy_option('server-id')
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
         srv_msg.client_does_include('Client', 'client-id')
@@ -2104,8 +2104,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_PD(f'2001:db8:2::{6 + 2 * i:x}00', expect=False)
 
         # Send a renew.
-        srv_msg.client_copy_option('IA_NA')
-        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('IA_NA', copy_all=True)
+        srv_msg.client_copy_option('IA_PD', copy_all=True)
         srv_msg.client_copy_option('server-id')
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
         srv_msg.client_does_include('Client', 'client-id')
@@ -2149,8 +2149,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_PD('2001:db8:2::b00', expect=False)
 
         # Send a request.
-        srv_msg.client_copy_option('IA_NA')
-        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('IA_NA', copy_all=True)
+        srv_msg.client_copy_option('IA_PD', copy_all=True)
         srv_msg.client_copy_option('server-id')
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
         srv_msg.client_does_include('Client', 'client-id')
@@ -2165,8 +2165,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_PD('2001:db8:2::b00', expect=False)
 
         # Send a renew.
-        srv_msg.client_copy_option('IA_NA')
-        srv_msg.client_copy_option('IA_PD')
+        srv_msg.client_copy_option('IA_NA', copy_all=True)
+        srv_msg.client_copy_option('IA_PD', copy_all=True)
         srv_msg.client_copy_option('server-id')
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
         srv_msg.client_does_include('Client', 'client-id')
