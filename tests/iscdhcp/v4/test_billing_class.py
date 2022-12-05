@@ -83,5 +83,5 @@ def test_v4_dhcpd_billing_class_limit():
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
-    wait_for_message_in_log('no available billing: lease limit reached in all matching classes (last: \'vnd1001\')',
+    wait_for_message_in_log("no available billing: lease limit reached in all matching classes (last: 'vnd1001')",
                             count=1, log_file=build_log_path())

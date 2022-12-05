@@ -16,7 +16,7 @@ from src import srv_msg
 
 from src.forge_cfg import world
 
-from src.protosupport.multi_protocol_functions import file_contains_line
+from src.protosupport.multi_protocol_functions import file_contains_line, file_contains_line_n_times
 from src.protosupport.multi_protocol_functions import lease_file_contains, lease_file_doesnt_contain
 
 
@@ -247,8 +247,10 @@ def test_v4_lease_cmds_legal_logging_del_using_hw_address():
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
-@pytest.mark.disabled
 def test_v4_lease_cmds_legal_logging_wipe():
+    """
+    Check that the lease4-wipe is logged in the forensic log.
+    """
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
@@ -331,8 +333,15 @@ def test_v4_lease_cmds_legal_logging_wipe():
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.test_fail()
-    # File stored in var/lib/kea/kea-legal*.txt MUST contain line or phrase:
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+                               'Address: 192.168.50.1 has been assigned for 1 hrs 6 mins 40 secs '
+                               'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+                               'Address: 192.168.50.2 has been assigned for 1 hrs 6 mins 40 secs '
+                               'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05')
+    # TODO:
+    # file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+    #                            'Administrator wiped the lease database.')
 
 
 @pytest.mark.v6
@@ -551,8 +560,10 @@ def test_v6_lease_cmds_legal_logging_del_using_duid():
 @pytest.mark.hook
 @pytest.mark.lease_cmds
 @pytest.mark.legal_logging
-@pytest.mark.disabled
 def test_v6_lease_cmds_legal_logging_wipe():
+    """
+    Check that the lease6-wipe is logged in the forensic log.
+    """
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
@@ -575,6 +586,7 @@ def test_v6_lease_cmds_legal_logging_wipe():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.check_IA_NA('2001:db8:1::1')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
@@ -589,6 +601,7 @@ def test_v6_lease_cmds_legal_logging_wipe():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.check_IA_NA('2001:db8:1::1')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:11:22:33:44:55:66')
@@ -602,6 +615,7 @@ def test_v6_lease_cmds_legal_logging_wipe():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.check_IA_NA('2001:db8:1::2')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
@@ -616,6 +630,9 @@ def test_v6_lease_cmds_legal_logging_wipe():
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.check_IA_NA('2001:db8:1::2')
+
+    srv_msg.send_ctrl_cmd_via_socket('{"command":"lease6-wipe", "arguments": {"subnet-id":1}}')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:11:11:11:11:11:11')
@@ -628,14 +645,21 @@ def test_v6_lease_cmds_legal_logging_wipe():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
-    srv_msg.response_check_option_content(3, 'sub-option', 13)
-    srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
-
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"lease6-wipe", "arguments": {"subnet-id":1}}')
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.check_IA_NA('2001:db8:1::1')
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.test_fail()
-    # TODO File stored in kea-legal*.txt MUST contain line or phrase: Address:3000::5 has been assigned for 0 hrs 10 mins 0 secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+                               'Address: 2001:db8:1::1 has been assigned for 1 hrs 6 mins 40 secs '
+                               'to a device with DUID: 00:03:00:01:66:55:44:33:22:11 and '
+                               'hardware address: hwtype=1 66:55:44:33:22:11 (from DUID)')
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+                               'Address: 2001:db8:1::2 has been assigned for 1 hrs 6 mins 40 secs '
+                               'to a device with DUID: 00:03:00:01:11:22:33:44:55:66 and '
+                               'hardware address: hwtype=1 11:22:33:44:55:66 (from DUID)')
+    # TODO:
+    # file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+    #                            'Administrator wiped the lease database.')
 
 
 @pytest.mark.v6

@@ -289,7 +289,7 @@ def test_ddns_gss_tsig_manual_expiration(system_and_domain):
     addr = "192.168.50.21" if world.proto == 'v4' else "2001:db8:1::51"
     _get_lease(addr, f"name1.{my_domain}.", "01:01:01:01:01:11", suffix=my_domain)
 
-    # wait_for_message_in_log('FQDN: [name1.example.com.]', log_file='kea.log_ddns')
+    # wait_for_message_in_log(r'FQDN: \[name1\.example\.com\.\]', log_file='kea.log_ddns')
     srv_msg.forge_sleep(1)
     _check_dns_record(f"name1.{my_domain}.", rdata=addr, dns_addr=dns_addr, iface=iface)
 

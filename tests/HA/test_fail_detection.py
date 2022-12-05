@@ -124,9 +124,10 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
 
     # Wait for sync.
     if world.proto == 'v4':
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "IPv4 lease added." } \]', leases_count)
+        wait_for_message_in_log(r'\[ { "result": 0, "text": "IPv4 lease added\." } \]', leases_count)
     else:
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 3 IPv6 leases completed." } \]', leases_count, singlequotes=True)
+        # 4 IPv6 leases == 2 IA_NA + 2 IA_PD in each response
+        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 4 IPv6 leases completed\." } \]', leases_count)
 
     # check if primary has all assigned addresses
     srv_msg.check_leases(set_of_leases_1, backend=backend)
@@ -152,6 +153,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
         srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::4')
         srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
                                                            '2001:db8:b::11-2001:db8:b::16')
+        srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
         srv_control.shared_subnet('2001:db8:a::/64', 0)
         srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
@@ -193,6 +195,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
         srv_control.config_srv_another_subnet(world.f_cfg.server2_iface,
                                               '2001:db8:b::/64',
                                               '2001:db8:b::11-2001:db8:b::16')
+        srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
         srv_control.shared_subnet('2001:db8:a::/64', 0)
         srv_control.shared_subnet('2001:db8:b::/64', 0)
 
@@ -235,7 +238,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     # let's wait until secondary system switch status
     wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)
     # check leases in secondary system
-    set_of_leases_2 = generate_leases(leases_count=leases_count, iana=1, iapd=1, dhcp_version=dhcp_version,
+    set_of_leases_2 = generate_leases(leases_count=leases_count, dhcp_version=dhcp_version,
                                       mac="02:02:0c:03:0a:00")
     # start primary
     srv_control.start_srv('DHCP', 'started')
@@ -244,9 +247,10 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
 
     # Wait for sync.
     if world.proto == 'v4':
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "IPv4 lease added." } \]', leases_count)
+        wait_for_message_in_log(r'\[ { "result": 0, "text": "IPv4 lease added\." } \]', leases_count)
     else:
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 3 IPv6 leases completed." } \]', leases_count)
+        # 2 IPv6 leases == 1 IA_NA + 1 IA_PD in each response, enabled by default in generate_leases().
+        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 2 IPv6 leases completed\." } \]', leases_count)
 
     # check if primary has all assigned addresses
     srv_msg.check_leases(set_of_leases_1, backend=backend)
