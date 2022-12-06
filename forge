@@ -567,7 +567,7 @@ def setup(args):
                               TRAFFIC_BRG=traffic_brg,
                               SERVER_IMAGE=server_image,
                               PKG=pkg,
-                              LXC_VERSION=7 if "ubuntu" in server1_name else 2)
+                              LXC_VERSION=7 if "ubuntu" in server1_name else 1)
     vagrant_dir = get_vagrant_dir(args)
     if not os.path.exists(vagrant_dir):
         os.makedirs(vagrant_dir)
