@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
   # SERVER 1
   config.vm.define "${SERVER1_NAME}" do |srv|
     srv.vm.box = "isc/${SERVER_IMAGE}"
-    srv.vm.box_version = "${LXC_VERSION}"
+    #srv.vm.box_version = "${LXC_VERSION}"
     srv.vm.hostname = "${SERVER1_NAME}"
     srv.vm.provider "lxc" do |v|
       v.container_name = "${SERVER1_NAME}"
@@ -38,7 +38,7 @@ Vagrant.configure("2") do |config|
   # SERVER 2
   config.vm.define "${SERVER2_NAME}" do |srv|
     srv.vm.box = "isc/${SERVER_IMAGE}"
-    srv.vm.box_version = "${LXC_VERSION}"
+    #srv.vm.box_version = "${LXC_VERSION}"
     srv.vm.hostname = "${SERVER2_NAME}"
     srv.vm.provider "lxc" do |v|
       v.container_name = "${SERVER2_NAME}"
@@ -71,7 +71,7 @@ Vagrant.configure("2") do |config|
   # CLIENT
   config.vm.define "${CLIENT_NAME}" do |clnt|
     clnt.vm.box = "isc/forge-clt-ubuntu-20.04"
-    clnt.vm.box_version = "3"
+    #clnt.vm.box_version = "3"
     clnt.vm.hostname = "${CLIENT_NAME}"
     clnt.vm.provider "lxc" do |v|
       v.container_name = "${CLIENT_NAME}"
