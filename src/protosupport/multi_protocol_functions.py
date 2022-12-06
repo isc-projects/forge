@@ -236,7 +236,7 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
             cmd += 'grep "$(cat <<EOF\n'
             cmd += f'{line}\n'
             cmd += 'EOF\n'
-            cmd += f')" | wc -l'
+            cmd += ')" | wc -l'
             result = fabric_sudo_command(cmd, destination_host=destination, ignore_errors=True)
         else:
             log_file = world.f_cfg.log_join(log_file)
