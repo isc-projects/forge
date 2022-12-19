@@ -331,6 +331,7 @@ SHAREDNETWORK_V4_CONFIG = [
     }
 ]
 
+
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -359,7 +360,6 @@ def test_config_commands_usercontext(scope, dhcp_version):
         config_set[f"Dhcp{dhcp_version[1]}"]['shared-networks'] = SHAREDNETWORK_V4_CONFIG
     if scope == 'shared_network' and dhcp_version == 'v6':
         config_set[f"Dhcp{dhcp_version[1]}"]['shared-networks'] = SHAREDNETWORK_V6_CONFIG
-
 
     # Sort config for easier comparison
     config_set = sort_container(config_set)
