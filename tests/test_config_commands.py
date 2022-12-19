@@ -18,14 +18,327 @@ from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import sort_container
 from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
 
+GLOBAL_CONFIG = {
+    "ISC": {
+        "relay-info": [
+            {
+                "hop": 0,
+                "link": "2001:db8:2::1000",
+                "options": "0x00120008706F727431323334",
+                "peer": "fe80::1"
+            }
+        ]
+    },
+    "version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}],
+    "class": "!@#$%^&*(`)'_+=-?|\"\\\b\f\n\r\t",
+    "tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
+              "bra,nch3": {"leaf1": 1,
+                           "leaf2": ["vein1", "vein2"]}}
+}
+
+SHAREDNETWORK_V6_CONFIG = [
+    {
+        "user-context": {"tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
+                                   "bra,nch3": {"leaf1": 1,
+                                                "leaf2": ["vein1", "vein2"]}}},
+        "calculate-tee-times": True,
+        "interface-id": "interface-abc",
+        "max-preferred-lifetime": 3000,
+        "max-valid-lifetime": 4000,
+        "min-preferred-lifetime": 3000,
+        "min-valid-lifetime": 4000,
+        "name": "name-abc",
+        "option-data": [],
+        "preferred-lifetime": 3000,
+        "rapid-commit": False,
+        "rebind-timer": 2000,
+        "relay": {
+            "ip-addresses": []
+        },
+        "renew-timer": 1000,
+        "store-extended-info": False,
+        "subnet6": [],
+        "t1-percent": 0.5,
+        "t2-percent": 0.8,
+        "valid-lifetime": 4000
+    },
+    {
+        "calculate-tee-times": True,
+        "interface-id": "interface-xyz",
+        "max-preferred-lifetime": 3000,
+        "max-valid-lifetime": 4000,
+        "min-preferred-lifetime": 3000,
+        "min-valid-lifetime": 4000,
+        "name": "name-xyz",
+        "option-data": [],
+        "preferred-lifetime": 3000,
+        "rapid-commit": False,
+        "rebind-timer": 2000,
+        "relay": {
+            "ip-addresses": []
+        },
+        "renew-timer": 1000,
+        "store-extended-info": False,
+        "subnet6": [
+            {
+                "user-context": {"version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}]},
+                "calculate-tee-times": True,
+                "id": 3,
+                "max-preferred-lifetime": 3000,
+                "max-valid-lifetime": 4000,
+                "min-preferred-lifetime": 3000,
+                "min-valid-lifetime": 4000,
+                "option-data": [],
+                "pd-pools": [],
+                "pools": [
+                    {
+                        "option-data": [],
+                        "pool": "2001:db8:c::1/128"
+                    }
+                ],
+                "preferred-lifetime": 3000,
+                "rebind-timer": 2000,
+                "relay": {
+                    "ip-addresses": []
+                },
+                "renew-timer": 1000,
+                "reservations": [],
+                "store-extended-info": False,
+                "subnet": "2001:db8:c::/64",
+                "t1-percent": 0.5,
+                "t2-percent": 0.8,
+                "valid-lifetime": 4000
+            },
+            {
+                "calculate-tee-times": True,
+                "id": 4,
+                "max-preferred-lifetime": 3000,
+                "max-valid-lifetime": 4000,
+                "min-preferred-lifetime": 3000,
+                "min-valid-lifetime": 4000,
+                "option-data": [],
+                "pd-pools": [],
+                "pools": [
+                    {
+                        "option-data": [],
+                        "pool": "2001:db8:d::1/128"
+                    }
+                ],
+                "preferred-lifetime": 3000,
+                "rebind-timer": 2000,
+                "relay": {
+                    "ip-addresses": []
+                },
+                "renew-timer": 1000,
+                "reservations": [],
+                "store-extended-info": False,
+                "subnet": "2001:db8:d::/64",
+                "t1-percent": 0.5,
+                "t2-percent": 0.8,
+                "valid-lifetime": 4000
+            }
+        ],
+        "t1-percent": 0.5,
+        "t2-percent": 0.8,
+        "valid-lifetime": 4000
+    }
+]
+
+SHAREDNETWORK_V4_CONFIG = [
+    {
+        "user-context": {"tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
+                                   "bra,nch3": {"leaf1": 1,
+                                                "leaf2": ["vein1", "vein2"]}}},
+        "calculate-tee-times": False,
+        "interface": "enp0s9",
+        "max-valid-lifetime": 4000,
+        "min-valid-lifetime": 4000,
+        "name": "name-abc",
+        "option-data": [],
+        "rebind-timer": 2000,
+        "relay": {
+            "ip-addresses": []
+        },
+        "renew-timer": 1000,
+        "store-extended-info": False,
+        "subnet4": [
+            {
+                "user-context": {"version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}]},
+                "4o6-interface": "",
+                "4o6-interface-id": "",
+                "4o6-subnet": "",
+                "calculate-tee-times": False,
+                "id": 1,
+                "interface": "enp0s9",
+                "max-valid-lifetime": 4000,
+                "min-valid-lifetime": 4000,
+                "option-data": [
+                    {
+                        "always-send": False,
+                        "code": 4,
+                        "csv-format": True,
+                        "data": "199.199.199.10",
+                        "name": "time-servers",
+                        "space": "dhcp4"
+                    }
+                ],
+                "pools": [
+                    {
+                        "option-data": [],
+                        "pool": "192.168.50.1/32"
+                    }
+                ],
+                "rebind-timer": 2000,
+                "relay": {
+                    "ip-addresses": []
+                },
+                "renew-timer": 1000,
+                "reservations": [],
+                "store-extended-info": False,
+                "subnet": "192.168.50.0/24",
+                "t1-percent": 0.5,
+                "t2-percent": 0.875,
+                "valid-lifetime": 4000
+            },
+            {
+                "4o6-interface": "",
+                "4o6-interface-id": "",
+                "4o6-subnet": "",
+                "calculate-tee-times": False,
+                "id": 2,
+                "interface": "enp0s9",
+                "max-valid-lifetime": 4000,
+                "min-valid-lifetime": 4000,
+                "option-data": [],
+                "pools": [
+                    {
+                        "option-data": [],
+                        "pool": "192.168.51.1/32"
+                    }
+                ],
+                "rebind-timer": 2000,
+                "relay": {
+                    "ip-addresses": []
+                },
+                "renew-timer": 1000,
+                "reservations": [],
+                "store-extended-info": False,
+                "subnet": "192.168.51.0/24",
+                "t1-percent": 0.5,
+                "t2-percent": 0.875,
+                "valid-lifetime": 4000
+            }
+        ],
+        "t1-percent": 0.5,
+        "t2-percent": 0.875,
+        "valid-lifetime": 4000
+    },
+    {
+        "calculate-tee-times": False,
+        "max-valid-lifetime": 4000,
+        "min-valid-lifetime": 4000,
+        "name": "name-xyz",
+        "option-data": [],
+        "rebind-timer": 2000,
+        "relay": {
+            "ip-addresses": [
+                "192.168.50.3"
+            ]
+        },
+        "renew-timer": 1000,
+        "store-extended-info": False,
+        "subnet4": [
+            {
+                "4o6-interface": "",
+                "4o6-interface-id": "",
+                "4o6-subnet": "",
+                "calculate-tee-times": False,
+                "id": 3,
+                "max-valid-lifetime": 4000,
+                "min-valid-lifetime": 4000,
+                "option-data": [
+                    {
+                        "always-send": False,
+                        "code": 4,
+                        "csv-format": True,
+                        "data": "199.199.199.100",
+                        "name": "time-servers",
+                        "space": "dhcp4"
+                    }
+                ],
+                "pools": [
+                    {
+                        "option-data": [],
+                        "pool": "192.168.52.1/32"
+                    }
+                ],
+                "rebind-timer": 2000,
+                "relay": {
+                    "ip-addresses": [
+                        "192.168.50.3"
+                    ]
+                },
+                "renew-timer": 1000,
+                "reservations": [],
+                "store-extended-info": False,
+                "subnet": "192.168.52.0/24",
+                "t1-percent": 0.5,
+                "t2-percent": 0.875,
+                "valid-lifetime": 4000
+            },
+            {
+                "4o6-interface": "",
+                "4o6-interface-id": "",
+                "4o6-subnet": "",
+                "calculate-tee-times": False,
+                "id": 4,
+                "max-valid-lifetime": 4000,
+                "min-valid-lifetime": 4000,
+                "option-data": [
+                    {
+                        "always-send": False,
+                        "code": 4,
+                        "csv-format": True,
+                        "data": "199.199.199.200",
+                        "name": "time-servers",
+                        "space": "dhcp4"
+                    }
+                ],
+                "pools": [
+                    {
+                        "option-data": [],
+                        "pool": "192.168.53.1/32"
+                    }
+                ],
+                "rebind-timer": 2000,
+                "relay": {
+                    "ip-addresses": [
+                        "192.168.50.3"
+                    ]
+                },
+                "renew-timer": 1000,
+                "reservations": [],
+                "store-extended-info": False,
+                "subnet": "192.168.53.0/24",
+                "t1-percent": 0.5,
+                "t2-percent": 0.875,
+                "valid-lifetime": 4000
+            }
+        ],
+        "t1-percent": 0.5,
+        "t2-percent": 0.875,
+        "valid-lifetime": 4000
+    }
+]
 
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-def test_config_commands_usercontext(dhcp_version):
+@pytest.mark.parametrize('scope', ['global', 'shared_network'])
+def test_config_commands_usercontext(scope, dhcp_version):
     """
-    Test check if user-context is properly handled by config commands.
+    Test check if global user-context is properly handled by config commands.
     """
 
     misc.test_setup()
@@ -40,23 +353,13 @@ def test_config_commands_usercontext(dhcp_version):
     config_set = response['arguments']
 
     # Add user context to configuration
-    config_set[f"Dhcp{dhcp_version[1]}"]['user-context'] = {
-        "ISC": {
-            "relay-info": [
-                {
-                    "hop": 0,
-                    "link": "2001:db8:2::1000",
-                    "options": "0x00120008706F727431323334",
-                    "peer": "fe80::1"
-                }
-            ]
-        },
-        "version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}],
-        "class": "!@#$%^&*(`)'_+=-?|\"\\\b\f\n\r\t",
-        "tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
-                  "bra,nch3": {"leaf1": 1,
-                               "leaf2": ["vein1", "vein2"]}}
-    }
+    if scope == 'global':
+        config_set[f"Dhcp{dhcp_version[1]}"]['user-context'] = GLOBAL_CONFIG
+    if scope == 'shared_network' and dhcp_version == 'v4':
+        config_set[f"Dhcp{dhcp_version[1]}"]['shared-networks'] = SHAREDNETWORK_V4_CONFIG
+    if scope == 'shared_network' and dhcp_version == 'v6':
+        config_set[f"Dhcp{dhcp_version[1]}"]['shared-networks'] = SHAREDNETWORK_V6_CONFIG
+
 
     # Sort config for easier comparison
     config_set = sort_container(config_set)
