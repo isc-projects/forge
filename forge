@@ -386,6 +386,8 @@ def _get_server_name(args, idx):
         short_sys = 'u1804'
     elif args.system == 'ubuntu-20.04':
         short_sys = 'u2004'
+    elif args.system == 'ubuntu-22.04':
+        short_sys = 'u2204'
     elif args.system == 'fedora-30':
         short_sys = 'f30'
     elif args.system == 'fedora-32':
