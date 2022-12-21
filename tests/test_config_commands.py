@@ -18,6 +18,7 @@ from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import sort_container
 from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
 
+# Configuration snippets used in tests
 GLOBAL_CONFIG = {
     "ISC": {
         "relay-info": [
@@ -331,15 +332,56 @@ SHAREDNETWORK_V4_CONFIG = [
     }
 ]
 
+CLASS_v4_CONFIG = [
+    {
+        "boot-file-name": "",
+        "name": "first-class",
+        "next-server": "0.0.0.0",
+        "option-data": [],
+        "option-def": [],
+        "server-hostname": "",
+        "user-context": {"version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}]}
+    },
+    {
+        "boot-file-name": "",
+        "name": "economy-class",
+        "next-server": "0.0.0.0",
+        "option-data": [],
+        "option-def": [],
+        "server-hostname": "",
+        "user-context": {"tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
+                                   "bra,nch3": {"leaf1": 1,
+                                                "leaf2": ["vein1", "vein2"]}}}
+    }
+]
+
+CLASS_v6_CONFIG = [
+    {
+        "name": "first-class",
+        "option-data": [],
+        "user-context": {"version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}]}
+    },
+    {
+        "name": "economy-class",
+        "option-data": [],
+        "user-context": {"tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
+                                   "bra,nch3": {"leaf1": 1,
+                                                "leaf2": ["vein1", "vein2"]}}}
+    }
+]
+
 
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-@pytest.mark.parametrize('scope', ['global', 'shared_network'])
+@pytest.mark.parametrize('scope', ['global', 'shared_network', 'class'])
 def test_config_commands_usercontext(scope, dhcp_version):
     """
-    Test check if global user-context is properly handled by config commands.
+    Test check if user-context is properly handled by config commands.
+    Global, subnet, shared networks and client class containers are tested by parametrization.
+    Config snippets are added to result of "config-get" and sent to server by "config-set"
+    Forge uses "config-get" and "config-write" to check if changes were applied.
     """
 
     misc.test_setup()
@@ -360,6 +402,10 @@ def test_config_commands_usercontext(scope, dhcp_version):
         config_set[f"Dhcp{dhcp_version[1]}"]['shared-networks'] = SHAREDNETWORK_V4_CONFIG
     if scope == 'shared_network' and dhcp_version == 'v6':
         config_set[f"Dhcp{dhcp_version[1]}"]['shared-networks'] = SHAREDNETWORK_V6_CONFIG
+    if scope == 'class' and dhcp_version == 'v4':
+        config_set[f"Dhcp{dhcp_version[1]}"]['client-classes'] = CLASS_v4_CONFIG
+    if scope == 'class' and dhcp_version == 'v6':
+        config_set[f"Dhcp{dhcp_version[1]}"]['client-classes'] = CLASS_v6_CONFIG
 
     # Sort config for easier comparison
     config_set = sort_container(config_set)
