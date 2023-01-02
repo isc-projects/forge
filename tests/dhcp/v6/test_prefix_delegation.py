@@ -572,6 +572,7 @@ def test_prefix_delegation_noprefixavail_release():
     srv_msg.response_check_option_content(25, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 25, 'statuscode', 0)
 
+    srv_msg.forge_sleep(3)
     misc.test_procedure()
     srv_msg.generate_new('IA_PD')
     srv_msg.client_does_include('Client', 'IA-PD')
