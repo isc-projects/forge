@@ -598,7 +598,6 @@ def test_prefix_delegation_noprefixavail():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
     # pool of two prefixes
-
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
