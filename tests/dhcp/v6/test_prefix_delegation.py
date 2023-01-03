@@ -500,7 +500,6 @@ def test_prefix_delegation_noprefixavail_release():
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
     # pool of two prefixes
-    srv_control.disable_leases_affinity()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -572,8 +571,8 @@ def test_prefix_delegation_noprefixavail_release():
     srv_msg.response_check_option_content(25, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 25, 'statuscode', 0)
 
-    #Kea needs time to update leases after release
-    #srv_msg.forge_sleep(1)
+    # Kea needs time to update leases after release due to issue kea#2698
+    srv_msg.forge_sleep(1)
 
     misc.test_procedure()
     srv_msg.generate_new('IA_PD')
@@ -599,7 +598,6 @@ def test_prefix_delegation_noprefixavail():
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)
     # pool of two prefixes
 
-    srv_msg.disable_lease_affinity()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
