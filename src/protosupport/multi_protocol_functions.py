@@ -230,10 +230,8 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
                     service_name = f'kea-dhcp{world.proto[1]}'
                 else:
                     service_name = f'isc-kea-dhcp{world.proto[1]}-server'
-            cmd = 'ts=`systemctl show -p ActiveEnterTimestamp %s | awk \'{{print $2 $3}}\'`;' % service_name  # get time of log beginning
-            cmd += ' ts=${ts:-$(date +"%Y-%m-%d%H:%M:%S")};'  # if started for the first time then ts is empty so set to current date
-            cmd += ' journalctl -u %s --since $ts |' % service_name  # get logs since last start of kea service
-            cmd += 'grep "$(cat <<EOF\n'
+            cmd = f'journalctl -u {service_name} |'  # get logs of kea service
+            cmd += ' grep "$(cat <<EOF\n'
             cmd += f'{line}\n'
             cmd += 'EOF\n'
             cmd += ')" | wc -l'
