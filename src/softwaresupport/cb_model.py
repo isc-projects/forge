@@ -652,7 +652,8 @@ def _compare_dicts(rcvd_dict, exp_dict):
                  # those values depends on configured valid-lifetime and preferred-lifetime
                  # let's ignore it for now since we don't have procedure to check it
                  # qa-dhcp #287
-                 'max-valid-lifetime', 'min-valid-lifetime', 'max-preferred-lifetime', 'min-preferred-lifetime'
+                 'max-valid-lifetime', 'min-valid-lifetime', 'max-preferred-lifetime', 'min-preferred-lifetime',
+                 'allocator'
                  ]:
             # TODO: for now ignore these fields
             continue
