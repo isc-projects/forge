@@ -10,11 +10,12 @@
 
 import pytest
 
+from src.forge_cfg import world
 from src import references
 from src import misc
 from src import srv_msg
 from src import srv_control
-
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 
 @pytest.mark.v6
 @pytest.mark.PD
@@ -507,6 +508,7 @@ def test_prefix_delegation_noprefixavail_release():
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
@@ -573,7 +575,8 @@ def test_prefix_delegation_noprefixavail_release():
     srv_msg.response_check_suboption_content(13, 25, 'statuscode', 0)
 
     # Kea needs time to update leases after release due to issue kea#2698
-    srv_msg.forge_sleep(1)
+    wait_for_message_in_log('2001:db8:1::20:0:0,00:03:00:01:ff:ff:ff:ff:ff:01,0',
+                            log_file=world.f_cfg.get_leases_path())
 
     misc.test_procedure()
     srv_msg.generate_new('IA_PD')
