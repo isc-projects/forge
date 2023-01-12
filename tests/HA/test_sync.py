@@ -112,7 +112,7 @@ def test_HA_hot_standby_multiple_leases_v6(hook_order: str):
                             'HOT-STANDBY state, partner state is READY')
 
     # Check logs in server2.
-    wait_for_message_in_log(r'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received [0-9]* leases '
+    wait_for_message_in_log(r'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received [0-9][0-9]* leases '
                             'from server1', destination=world.f_cfg.mgmt_address_2)
     wait_for_message_in_log('HA_SYNC_SUCCESSFUL lease database synchronization with '
                             'server1 completed successfully',
@@ -130,8 +130,8 @@ def test_HA_hot_standby_multiple_leases_v6(hook_order: str):
     srv_msg.check_leases(set_of_leases_1)
     srv_msg.check_leases(set_of_leases_2)
 
-    # Check that bulk apply was used.
-    wait_for_message_in_log(r'Bulk apply of [0-9]* IPv6 leases completed.', 5)
+    # Check that bulk apply was used. 5 IPv6 leases == 3 IA_NA + 2 IA_PD in each response
+    wait_for_message_in_log('Bulk apply of 5 IPv6 leases completed.', 4)
 
 
 @pytest.mark.v4_bootp
@@ -221,7 +221,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
 
     # Message exchanges
-    set_of_leases_1 = generate_leases(leases_count=50, iana=1, iapd=1, dhcp_version=dhcp_version)
+    set_of_leases_1 = generate_leases(leases_count=50, dhcp_version=dhcp_version)
 
     # turn off server2
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
@@ -257,7 +257,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
     wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)
 
     # create leases in HA 2
-    set_of_leases_2 = generate_leases(leases_count=50, iana=1, iapd=1, dhcp_version=dhcp_version,
+    set_of_leases_2 = generate_leases(leases_count=50, dhcp_version=dhcp_version,
                                       mac="02:02:0c:03:0a:00")
 
     # start server1
@@ -297,6 +297,7 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
     srv_control.define_temporary_lease_db_backend(backend)
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
+        srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
     elif dhcp_version in ['v4', 'v4_bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
     srv_control.open_control_channel()
@@ -320,6 +321,7 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::ffff',
                                       world.f_cfg.server2_iface)
+        srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
     elif dhcp_version in ['v4', 'v4_bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.200',
@@ -345,9 +347,10 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
 
     # Wait for sync.
     if world.proto == 'v4':
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "IPv4 lease added." } \]', leases_count)
+        wait_for_message_in_log(r'\[ { "result": 0, "text": "IPv4 lease added\." } \]', leases_count)
     else:
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 3 IPv6 leases completed." } \]', leases_count)
+        # 5 IPv6 leases == 3 IA_NA + 2 IA_PD in each response
+        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 5 IPv6 leases completed\." } \]', leases_count)
 
     # check synced leases
     srv_msg.check_leases(set_of_leases_1, backend=backend)

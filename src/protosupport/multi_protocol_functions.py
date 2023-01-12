@@ -187,26 +187,24 @@ def compare_file(local_path):
         assert len(downloaded_stripped) < len(local_stripped), 'Local file is part of a downloaded life.'
 
 
-def get_line_count_in_file(line, file, destination=world.f_cfg.mgmt_address, singlequotes=False):
+def get_line_count_in_file(line, file, destination=world.f_cfg.mgmt_address):
     """
     Retrieves the number of lines contained in a file.
 
     :param line: line (or part of file or glob pattern) being checked
-    :param file: name of file being checked
+    :param file: name of file being checked, or glob pattern potentially matching multiple files
     :param destination: address of server hosting the file
-    :param singlequotes: encloses grep text in singlequotes(') instead of
-                         doublequotes(") for proper escaping of doublequotes(")
     """
-    if singlequotes:
-        result = fabric_sudo_command(f"grep '{line}' {file} | wc -l",
-                                     destination_host=destination, ignore_errors=True)
-    else:
-        result = fabric_sudo_command(f'grep "{line}" {file} | wc -l',
-                                     destination_host=destination, ignore_errors=True)
+    command = 'grep "$(cat <<EOF\n'
+    command += f'{line}\n'
+    command += 'EOF\n'
+    command += f')" {file} | wc -l'
+    result = fabric_sudo_command(command, destination_host=destination, ignore_errors=True)
+    assert result.succeeded, f'Command in get_line_count_in_file failed:\n{command}'
     return int(result)
 
 
-def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_address, singlequotes=False):
+def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_address):
     """
     Retrieves the number of lines contained in a log file.
 
@@ -214,14 +212,12 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
     :param log_file: name of the log file being checked. If None, default values
                      representing Kea logs are used.
     :param destination: address of server hosting the file
-    :param singlequotes: encloses grep text in singlequotes(') instead of
-                         doublequotes(") for proper escaping of doublequotes(")
     """
     if world.f_cfg.install_method == 'make':
         if log_file is None:
             log_file = 'kea.log'
         log_file = world.f_cfg.log_join(log_file)
-        result = get_line_count_in_file(line, log_file, destination, singlequotes)
+        result = get_line_count_in_file(line, log_file, destination)
     else:
         if log_file is None or log_file == 'kea.log_ddns':
             if log_file == 'kea.log_ddns':
@@ -234,74 +230,71 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
                     service_name = f'kea-dhcp{world.proto[1]}'
                 else:
                     service_name = f'isc-kea-dhcp{world.proto[1]}-server'
-            cmd = 'ts=`systemctl show -p ActiveEnterTimestamp %s | awk \'{{print $2 $3}}\'`;' % service_name  # get time of log beginning
-            cmd += ' ts=${ts:-$(date +"%Y-%m-%d%H:%M:%S")};'  # if started for the first time then ts is empty so set to current date
-            cmd += ' journalctl -u %s --since $ts |' % service_name  # get logs since last start of kea service
-            if singlequotes:
-                cmd += f"grep '{line}' | wc -l"
-            else:
-                cmd += f'grep "{line}" | wc -l'
+            cmd = f'journalctl -u {service_name} |'  # get logs of kea service
+            cmd += ' grep "$(cat <<EOF\n'
+            cmd += f'{line}\n'
+            cmd += 'EOF\n'
+            cmd += ')" | wc -l'
             result = fabric_sudo_command(cmd, destination_host=destination, ignore_errors=True)
         else:
             log_file = world.f_cfg.log_join(log_file)
-            result = get_line_count_in_file(line, log_file, destination, singlequotes)
+            result = get_line_count_in_file(line, log_file, destination)
     return int(result)
 
 
-def file_contains_line(file, line, destination=world.f_cfg.mgmt_address, singlequotes=False):
-    result = get_line_count_in_file(line, file, destination=destination, singlequotes=singlequotes)
+def file_contains_line(file, line, destination=world.f_cfg.mgmt_address):
+    result = get_line_count_in_file(line, file, destination=destination)
     assert result > 0, f'Expected file "{file}" to contain line "{line}", but it does not.'
 
 
-def file_contains_line_n_times(file, n, line, destination=world.f_cfg.mgmt_address, singlequotes=False):
-    result = get_line_count_in_file(line, file, destination=destination, singlequotes=singlequotes)
-    assert result == n, f'Expected file to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
+def file_contains_line_n_times(file, n, line, destination=world.f_cfg.mgmt_address):
+    result = get_line_count_in_file(line, file, destination=destination)
+    assert result == n, f'Expected file {file} to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
 
 
-def file_doesnt_contain_line(file, line, destination=world.f_cfg.mgmt_address, singlequotes=False):
-    result = get_line_count_in_file(line, file, destination=destination, singlequotes=singlequotes)
+def file_doesnt_contain_line(file, line, destination=world.f_cfg.mgmt_address):
+    result = get_line_count_in_file(line, file, destination=destination)
     assert result == 0, f'Expected file "{file}" to not contain line "{line}".' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
 
 
-def lease_file_contains(line, destination=world.f_cfg.mgmt_address, singlequotes=False):
-    file_contains_line(world.f_cfg.get_leases_path(), line, destination=destination, singlequotes=singlequotes)
+def lease_file_contains(line, destination=world.f_cfg.mgmt_address):
+    file_contains_line(world.f_cfg.get_leases_path(), line, destination=destination)
 
 
-def lease_file_doesnt_contain(line, destination=world.f_cfg.mgmt_address, singlequotes=False):
-    file_doesnt_contain_line(world.f_cfg.get_leases_path(), line, destination=destination, singlequotes=singlequotes)
+def lease_file_doesnt_contain(line, destination=world.f_cfg.mgmt_address):
+    file_doesnt_contain_line(world.f_cfg.get_leases_path(), line, destination=destination)
 
 
-def log_contains(line, log_file=None, destination=world.f_cfg.mgmt_address, singlequotes=False):
-    result = get_line_count_in_log(line, log_file, destination=destination, singlequotes=singlequotes)
+def log_contains(line, log_file=None, destination=world.f_cfg.mgmt_address):
+    result = get_line_count_in_log(line, log_file, destination=destination)
     assert result > 0, f'Expected log file {log_file} to contain line "{line}", but it does not.'
 
 
-def log_doesnt_contain(line, log_file=None, destination=world.f_cfg.mgmt_address, singlequotes=False):
-    result = get_line_count_in_log(line, log_file, destination=destination, singlequotes=singlequotes)
+def log_doesnt_contain(line, log_file=None, destination=world.f_cfg.mgmt_address):
+    result = get_line_count_in_log(line, log_file, destination=destination)
     assert result == 0, f'Expected log file {log_file} to not contain line "{line}".' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
 
 
-def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination=world.f_cfg.mgmt_address, singlequotes=False):
+def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination=world.f_cfg.mgmt_address):
     """
     Wait until a line appears a certain number of times in a file.
 
     :param line: line (or part of file or glob pattern) being checked
     :param count: number of matching lines to wait for
     :param timeout: time to wait for in seconds
-    :param file: name of file being checked. Default: None aka default log file
+    :param file: name of file being checked, or glob pattern potentially matching multiple files.
+                 Default: None i.e. default log file
     :param destination: address of server hosting the file
-    :param singlequotes: encloses grep text in singlequotes(') instead of
-                         doublequotes(") for proper escaping of doublequotes(")
     """
     started_at = datetime.datetime.now()
     count = int(count)
     should_finish_by = started_at + datetime.timedelta(seconds=timeout)
     while True:
         # Get the number of line occurrences in the log.
-        result = get_line_count_in_log(line, log_file, destination=destination, singlequotes=singlequotes)
+        result = get_line_count_in_log(line, log_file, destination=destination)
 
         # If enough lines have been logged, we are done waiting.
         if count <= result:
@@ -310,7 +303,8 @@ def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination
         # Assert that the timeout hasn't passed yet.
         assert datetime.datetime.now() < should_finish_by, \
             f'Timeout {timeout}s exceeded while waiting for {count} ' \
-            f'line{"" if count == 1 else "s"} of "{line}" in log file {log_file}.'
+            f'line{"" if count == 1 else "s"} of "{line}" in log file {log_file}. ' \
+            f'Instead got {result} lines.'
 
         # Sleep a bit to avoid busy waiting.
         forge_sleep(100, 'milliseconds')
@@ -801,7 +795,7 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
             if "client_id" in lease:
                 lease['client_id'] = ':'.join(lease['client_id'][i:i + 2] for i in range(0, 14, 2))
             for attribute in lease:
-                cmd += "| grep -E %s " % lease[attribute]
+                cmd += "| grep %s " % lease[attribute]
             cmd += "| grep -c ^"
 
             result = fabric_sudo_command(cmd, ignore_errors=True, destination_host=destination)
@@ -821,7 +815,7 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
                 if "address" in lease:
                     lease["address"] = convert_address_to_hex(lease["address"])
                 for attribute in lease:
-                    cmd += "| grep -E -i %s " % lease[attribute]
+                    cmd += "| grep -i %s " % lease[attribute]
                 cmd += "| grep -c ^"
             elif world.f_cfg.proto == 'v6':
                 table = 'lease6'
@@ -829,7 +823,7 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
                 if "duid" in lease:
                     lease["duid"] = lease["duid"].replace(":", "")
                 for attribute in lease:
-                    cmd += "| grep -E -i %s " % lease[attribute]
+                    cmd += "| grep -i %s " % lease[attribute]
                 cmd += "| grep -c ^"
 
             else:

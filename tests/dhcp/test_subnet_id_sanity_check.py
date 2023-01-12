@@ -580,7 +580,8 @@ def test_v6_sanity_check_subnet_id_del_renew():
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep(2, 'seconds')
 
-    log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks (the lease should have subnet-id 999) and was dropped.')
+    log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed'
+                 ' subnet-id checks (the lease should have subnet-id 999) and was dropped.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -688,7 +689,8 @@ def test_v6_sanity_check_subnet_id_del():
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep(2, 'seconds')
 
-    log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed subnet-id checks (the lease should have subnet-id 999) and was dropped.')
+    log_contains('DHCPSRV_LEASE_SANITY_FAIL_DISCARD The lease 2001:db8::1 with subnet-id 666 failed'
+                 ' subnet-id checks (the lease should have subnet-id 999) and was dropped.')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')

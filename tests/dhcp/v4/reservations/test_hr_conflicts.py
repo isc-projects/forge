@@ -50,7 +50,7 @@ def test_v4_host_reservation_conflicts_duplicate_mac_reservations(backend):
         srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
         # expected error logs
-        log_contains(r'ERROR \[kea-dhcp4.dhcp4')
+        log_contains(r'ERROR \[kea-dhcp4\.dhcp4')
         log_contains(r'failed to add new host using the HW address')
     else:
         srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -121,7 +121,7 @@ def test_v4_host_reservation_conflicts_duplicate_ip_reservations():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
     # expected error logs
-    log_contains(r'ERROR \[kea-dhcp4.dhcp4')
+    log_contains(r'ERROR \[kea-dhcp4\.dhcp4')
     log_contains(r'failed to add new host using the HW address')
 
 
@@ -158,7 +158,7 @@ def test_v4_host_reservation_duplicate_ip_reservations_allowed(backend):
         assert _add_reservation({"hw-address": "bb:bb:bb:bb:bb:bb", "ip-address": the_same_ip_address})["text"] == "Host added."
 
     # these error logs should not appear
-    log_doesnt_contain(r'ERROR \[kea-dhcp4.dhcp4')
+    log_doesnt_contain(r'ERROR \[kea-dhcp4\.dhcp4')
     log_doesnt_contain(r'failed to add new host using the HW address')
 
     # first request address by aa:aa:aa:aa:aa:aa

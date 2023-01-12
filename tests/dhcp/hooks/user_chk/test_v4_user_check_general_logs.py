@@ -57,9 +57,9 @@ def test_user_check_hook_no_registry_logging():
     # Server MUST respond with ACK message.
     # Client download file from server stored in: /tmp/user_chk_outcome.txt.
     # Client download file from server stored in: /tmp/user_chk_registry.txt.
-    # File stored in kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp4.hooks
-    # File stored in kea.log MUST contain line or phrase: ERROR \[kea-dhcp4.hooks
-    # File stored in kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp4.callouts
+    # File stored in kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp4\.hooks
+    # File stored in kea.log MUST contain line or phrase: ERROR \[kea-dhcp4\.hooks
+    # File stored in kea.log MUST NOT contain line or phrase: DEBUG \[kea-dhcp4\.callouts
 
 
 @pytest.mark.v4
@@ -95,8 +95,8 @@ def test_user_check_hook_with_registry_unknown_user_logging():
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file(glob.glob("**/v4_outcome_1.txt", recursive=True)[0],)
-    log_contains(r'INFO  \[kea-dhcp4.hooks')
-    log_contains(r'DEBUG \[kea-dhcp4.callouts')
+    log_contains(r'INFO  \[kea-dhcp4\.hooks')
+    log_contains(r'DEBUG \[kea-dhcp4\.callouts')
 
 
 @pytest.mark.v4
@@ -131,8 +131,8 @@ def test_user_check_hook_with_registry_unknown_user_logging_2():
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file(glob.glob("**/v4_outcome_1.txt", recursive=True)[0])
-    # File stored in kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.hooks
-    # File stored in kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.callouts
+    # File stored in kea.log MUST contain line or phrase: INFO  \[kea-dhcp4\.hooks
+    # File stored in kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4\.callouts
 
     misc.test_setup()
     srv_msg.send_file_to_server(glob.glob("**/v4_registry_1.txt", recursive=True)[0],
@@ -160,5 +160,5 @@ def test_user_check_hook_with_registry_unknown_user_logging_2():
     # Check the outcome file for correct content
     srv_msg.copy_remote('/tmp/user_chk_outcome.txt')
     srv_msg.compare_file(glob.glob("**/v4_outcome_1.txt", recursive=True)[0])
-    # File stored in kea.log MUST contain line or phrase: INFO  \[kea-dhcp4.hooks
-    # File stored in kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4.callouts
+    # File stored in kea.log MUST contain line or phrase: INFO  \[kea-dhcp4\.hooks
+    # File stored in kea.log MUST contain line or phrase: DEBUG \[kea-dhcp4\.callouts

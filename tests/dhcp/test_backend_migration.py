@@ -98,7 +98,7 @@ def test_v4_lease_dump(backend):
     for i in range(5):
         line = f'192.168.50.{i+1},1a:1b:1c:1d:1e:{i+1:02},aa:bb:cc:dd:11:{i+1:02},{valid_lifetime},' \
                f'{expire},1,1,1,my.host.some.name{i+1},1,{{ "value": 1 }}'
-        file_contains_line(dump_file_path, line, singlequotes=True)
+        file_contains_line(dump_file_path, line)
 
     # delete assigned lease
     for i in range(5):
@@ -510,14 +510,14 @@ def test_v6_lease_dump(backend):
     for i in range(5):
         line = f'2001:db8:1::{i+1},1a:1b:1c:1d:1e:1f:20:21:22:23:{i+1:02},{valid_lifetime},{expire},' \
                f'1,7777,0,123{i},128,1,1,urania.example.org{i+1},1a:2b:3c:4d:5e:6f:{i+1:02},0,,1,0'
-        file_contains_line(dump_file_path, line, singlequotes=True)
+        file_contains_line(dump_file_path, line)
 
     # Check CSV file for subnet 2 acquired lease
     line = f'2001:db8:2::1,00:03:00:01:f6:f5:f4:f3:f2:01,4000,{cltt2+4000}' \
            f',2,3000,0,5678,128,0,0,,f6:f5:f4:f3:f2:01,0,{{ "ISC": ' \
            f'{{ "relay-info": \\[ {{ "hop": 0&#x2c "link": "2001:db8:2::1000"&#x2c "options": ' \
            f'"0x00120008706F727431323334"&#x2c "peer": "fe80::1" }} \\] }} }},1,2'
-    file_contains_line(dump_file_path, line, singlequotes=True)
+    file_contains_line(dump_file_path, line)
 
     # delete subnet 1 leases
     for i in range(5):

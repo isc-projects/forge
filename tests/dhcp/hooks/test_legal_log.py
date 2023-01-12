@@ -1400,6 +1400,7 @@ def test_legal_log_rotation(dhcp_version):
         log_message = 'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs ' \
                       'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 ' \
                       'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)'
+
     # Check contents of the log files
     for name in log_files:
         file_contains_line_n_times(world.f_cfg.data_join(name), 3, log_message)
