@@ -17,6 +17,7 @@ from src import srv_msg
 from src import srv_control
 from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 
+
 @pytest.mark.v6
 @pytest.mark.PD
 @pytest.mark.rfc3633
