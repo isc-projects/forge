@@ -659,16 +659,16 @@ def _compare_dicts(rcvd_dict, exp_dict):
             continue
         if k in exp_dict:
             if exp_dict[k]:
-                assert k in rcvd_dict
+                assert k in rcvd_dict, f'expected: {k} in {rcvd_dict}'
                 _compare(rcvd_dict[k], exp_dict[k])
             else:
-                assert k not in rcvd_dict or rcvd_dict[k] == exp_dict[k]
+                assert k not in rcvd_dict or rcvd_dict[k] == exp_dict[k], f'expected: {k} not in {rcvd_dict} or {rcvd_dict[k]} == {exp_dict[k]}'
         if k in rcvd_dict and rcvd_dict[k]:
             if k not in exp_dict:
                 if k in CONFIG_DEFAULTS[world.proto]:
-                    assert rcvd_dict[k] == CONFIG_DEFAULTS[world.proto][k]
+                    assert rcvd_dict[k] == CONFIG_DEFAULTS[world.proto][k], f'expected: {rcvd_dict[k]} == {CONFIG_DEFAULTS[world.proto][k]}'
                 else:
-                    assert k in exp_dict
+                    assert k in exp_dict, f'expected: {k} in {exp_dict}'
             else:
                 _compare(rcvd_dict[k], exp_dict[k])
 
