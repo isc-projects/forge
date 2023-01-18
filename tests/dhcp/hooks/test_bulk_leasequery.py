@@ -708,3 +708,77 @@ def test_v6_junk_over_tcp(backend):
         srv_msg.tcp_get_message(prefix=lease["address"])
         _check_address_and_duid_in_single_lq_message(lease["duid"], prefix=lease["address"])
         _check_leasequery_relay_data()
+
+
+@pytest.mark.v6
+@pytest.mark.hook
+@pytest.mark.parametrize('backend', ['memfile'])
+def test_v6_multiple_relays(backend):
+    """
+    Test of v6 lease query messages asking for ip address, se multiple relay ids and remote ids in the same subnet
+    Test sends queries to trigger "leaseunknown", "leaseunassigned", and "leaseactive" responses.
+    """
+    bulk_leasequery_configuration = {"parameters": {
+                "requesters": ["2001:db8:1::2000"],
+                "advanced": {
+                     "bulk-query-enabled": True,
+                     "active-query-enabled": False,
+                     "extended-info-tables-enabled": True,
+                     "lease-query-ip": "2001:db8:1::1000",
+                     "lease-query-tcp-port": 547,
+                     "max-requester-connections": 10,
+                     "max-concurrent-queries": 4,
+                     "max-requester-idle-time":  3000,
+                     "max-leases-per-fetch": 5,
+                }}}
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::100')
+
+    world.dhcp_cfg['store-extended-info'] = True
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    # adding hook and required parameters
+    srv_control.add_hooks('libdhcp_lease_query.so')
+    # Set permitted requester to forge machine ip
+    world.dhcp_cfg["hooks-libraries"][0].update(bulk_leasequery_configuration)
+
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    # collect multiple leases from each subnet, simulating relay with both relay id and remote id
+    leases_relay_1 = _get_lease(mac="01:02:0c:03:0a:00", link_addr="2001:db8:a::1000",
+                                remote_id="0a0027000001", relay_id='00:03:00:01:ff:ff:ff:ff:ff:01',
+                                leases_count=5, pd_count=0, addr_count=2)
+
+    leases_relay_2 = _get_lease(mac="01:02:0d:03:0a:00", link_addr="2001:db8:a::1000",
+                                remote_id="0a0027111111", relay_id='00:03:00:01:ff:00:00:00:00:01',
+                                leases_count=5, pd_count=0, addr_count=2)
+
+    # let's check all leases using remote id (lq query type 5):
+    _send_leasequery(5, remote_id="0a0027000001")
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=9, leasequery_done=1)
+    for lease in leases_relay_1:
+        srv_msg.tcp_get_message(address=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
+
+    _send_leasequery(3, relay_id="00:03:00:01:ff:ff:ff:ff:ff:01")
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=9, leasequery_done=1)
+    for lease in leases_relay_1:
+        srv_msg.tcp_get_message(address=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
+
+    _send_leasequery(5, remote_id="0a0027111111")
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=9, leasequery_done=1)
+    for lease in leases_relay_2:
+        srv_msg.tcp_get_message(address=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
+
+    _send_leasequery(3, relay_id="00:03:00:01:ff:00:00:00:00:01")
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=9, leasequery_done=1)
+    for lease in leases_relay_2:
+        srv_msg.tcp_get_message(address=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
