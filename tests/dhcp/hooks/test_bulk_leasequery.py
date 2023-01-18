@@ -641,6 +641,7 @@ def test_v6_negative(backend):
     srv_msg.response_check_option_content(13, 'statuscode', 0)
     srv_msg.response_check_include_option(45, expect_include=False)
 
+
 @pytest.mark.v6
 @pytest.mark.hook
 @pytest.mark.parametrize('backend', ['memfile'])
