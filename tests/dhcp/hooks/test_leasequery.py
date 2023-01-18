@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium.
+# Copyright (C) 2013-2023 Internet Systems Consortium.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -6,7 +6,7 @@
 
 # Author: Marcin Godzina
 
-"""DHCPv4 leasequery tests"""
+"""DHCPv4 and DHCPv6 leasequery tests"""
 
 import pytest
 
@@ -24,7 +24,6 @@ def test_v4_leasequery_ip(backend, rai_version):
     """
     Test of v4 lease query messages asking for ip address.
     Test sends queries to trigger "leaseunknown", "leaseunassigned", and "leaseactive" responses.
-    :param backend:
     """
 
     misc.test_setup()
@@ -400,3 +399,407 @@ def test_v4_leasequery_denied():
     srv_msg.response_check_content('ciaddr', '192.168.50.1')
     srv_msg.response_check_include_option(53)
     srv_msg.response_check_option_content(53, 'value', 11)
+
+
+@pytest.mark.v6
+@pytest.mark.hook
+@pytest.mark.parametrize('backend', ['memfile'])
+def test_v6_negative(backend):
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
+    srv_control.config_srv_prefix('2001:db8:3::', 0, 126, 128)
+    world.dhcp_cfg['store-extended-info'] = True
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    # adding hook and required parameters
+    srv_control.add_hooks('libdhcp_lease_query.so')
+    # Set permitted requester to forge machine ip
+    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"requesters": ["fe80::a00:27ff:fe6d:ee67"]}})
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+
+    # missing client-id
+    srv_msg.client_sets_value('Client', 'lq-query-type', 2)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+    srv_msg.client_does_include('Client', 'lq-query')
+    # srv_msg.client_copy_option('server-id')
+    srv_msg.client_send_msg('LEASEQUERY')
+    srv_msg.send_wait_for_message('MUST', None, expect_response=False)
+    # reason: DHCPV6_LEASEQUERY must supply a D6O_CLIENTID
+
+    # incorrect server-id
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_sets_value('Client', 'lq-query-type', 2)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'server_id', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_does_include('Client', 'server-id')
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    srv_msg.send_wait_for_message('MUST', None, expect_response=False)
+    # unknown server-id: type=00002, len=00010: 00:03:00:01:ff:ff:ff:ff:ff:01
+
+    # missing lq-query-options
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    srv_msg.send_wait_for_message('MUST', None, expect_response=False)
+    # reason: DHCPV6_LEASEQUERY must supply a D6O_LQ_QUERY option
+
+    # wrong query id
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_sets_value('Client', 'lq-query-type', 7)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lq-query option
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lease-query message
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    # sending and testing the response to allowed requester
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 7)  # rfc5007 section 4.1.3.
+
+    # wrong query id
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_sets_value('Client', 'lq-query-type', 4)  # this type is for BULK leasequery
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lq-query option
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lease-query message
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    # sending and testing the response to allowed requester
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 7)  # rfc5007 section 4.1.3.
+
+    # non existing lease by duid
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_sets_value('Client', 'lq-query-type', 2)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lq-query option
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lease-query message
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    # sending and testing the response to allowed requester
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    opt = srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 0)
+    assert opt.statusmsg == b'no active leases', "Status code option include incorrect message"
+    srv_msg.response_check_include_option(45, expect_include=False)
+    srv_msg.response_check_include_option(48, expect_include=False)
+
+    # non existing lease by link
+    srv_msg.client_sets_value('Client', 'lq-query-type', 1)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "3000::1")
+
+    srv_msg.client_sets_value('Client', 'IA_Address', '2001:db8:1::2')
+    srv_msg.client_does_include('Client', 'IA_Address')  # this will add option to world.iaad
+    # rather to world.cliopts because it not suppose to be used that way
+    # let's change it just for this test
+    world.cliopts.append(world.iaad[-1])
+    world.iaad = []
+
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    opt = srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 0)
+    srv_msg.response_check_include_option(45, expect_include=False)
+    srv_msg.response_check_include_option(48, expect_include=False)
+
+    # missing IA Address in query by address
+    srv_msg.client_sets_value('Client', 'lq-query-type', 1)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "3000::1")
+
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    opt = srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 8)
+    srv_msg.response_check_include_option(45, expect_include=False)
+    srv_msg.response_check_include_option(48, expect_include=False)
+
+    # missing duid in query by duid
+    srv_msg.client_sets_value('Client', 'lq-query-type', 2)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    opt = srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 8)
+    srv_msg.response_check_include_option(45, expect_include=False)
+    srv_msg.response_check_include_option(48, expect_include=False)
+
+    # query correct but link is not configured on this server
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_sets_value('Client', 'lq-query-type', 2)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "3000::/64")
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    # sending and testing the response to allowed requester
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 9)
+
+    # let's do the same query, but with different address allowed in leasequery configuration
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
+    srv_control.config_srv_prefix('2001:db8:3::', 0, 126, 128)
+    world.dhcp_cfg['store-extended-info'] = True
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    # adding hook and required parameters
+    srv_control.add_hooks('libdhcp_lease_query.so')
+    # Set permitted requester to forge machine ip
+    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"requesters": ["3300::11"]}})
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'restarted')
+
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_sets_value('Client', 'lq-query-type', 2)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "3000::/64")
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    # we shouldn't get response
+    srv_msg.send_wait_for_message('MUST', None, expect_response=False)
+
+    # and check if kea is actually working
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+
+
+@pytest.mark.v6
+@pytest.mark.hook
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_v6_get_leases(backend):
+    """
+    Test of v6 lease query messages asking for all assigned leases, with request by link and duid
+    """
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
+    srv_control.config_srv_prefix('2001:db8:3::', 0, 126, 128)
+    world.dhcp_cfg['store-extended-info'] = True
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    # adding hook and required parameters
+    srv_control.add_hooks('libdhcp_lease_query.so')
+    # Set permitted requester to forge machine ip
+    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"requesters": ["fe80::a00:27ff:fe6d:ee67"]}})
+
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    # let's add leases with just address
+    cmd = {"command": "lease6-add", "arguments": {"subnet-id": 1,
+                                                  "ip-address": "2001:db8:1::1",
+                                                  "duid": '00:03:00:01:f6:f5:f4:f3:f2:04',
+                                                  "iaid": 1234}}
+    srv_msg.send_ctrl_cmd(cmd)
+
+    # let's get a lease with an address and prefix
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
+
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+
+    # leasequery type 2 - based on client id should return prefix and address
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.client_sets_value('Client', 'lq-query-type', 2)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lq-query option
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lease-query message
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    # sending and testing the response to allowed requester
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 0)
+    # 45 it's Leasequery option - Client data option, and has suboptions
+    srv_msg.response_check_include_option(45)
+    srv_msg.response_check_option_content(45, 'sub-option', 1)
+    srv_msg.response_check_suboption_content(1, 45, 'duid', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.response_check_option_content(45, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 45, 'addr', "2001:db8:1::2")
+    srv_msg.response_check_option_content(45, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 45, 'prefix', "2001:db8:3::")
+    srv_msg.response_check_option_content(45, 'sub-option', 46)
+
+    # leasequery type 1 - based on link should return just address
+    srv_msg.client_sets_value('Client', 'lq-query-type', 1)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+
+    srv_msg.client_sets_value('Client', 'IA_Address', '2001:db8:1::2')
+    srv_msg.client_does_include('Client', 'IA_Address')  # this will add option to world.iaad
+    # rather to world.cliopts because it not suppose to be used that way
+    # let's change it just for this test
+    world.cliopts.append(world.iaad[-1])
+    world.iaad = []
+
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lease-query message
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 0)
+    # 45 it's Leasequery option - Client data option, and has suboptions
+    srv_msg.response_check_include_option(45)
+    srv_msg.response_check_option_content(45, 'sub-option', 1)
+    srv_msg.response_check_suboption_content(1, 45, 'duid', '00:03:00:01:ff:ff:ff:ff:ff:01')
+    srv_msg.response_check_option_content(45, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 45, 'addr', "2001:db8:1::2")
+    srv_msg.response_check_option_content(45, 'sub-option', 26, expect_include=False)
+    srv_msg.response_check_option_content(45, 'sub-option', 46)
+
+    # now let's checked lease that been added via command control channel
+
+    # leasequery type 2 - based on client id should return address
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.client_sets_value('Client', 'lq-query-type', 2)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lq-query option
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lease-query message
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    # sending and testing the response to allowed requester
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 0)
+    # 45 it's Leasequery option - Client data option, and has suboptions
+    srv_msg.response_check_include_option(45)
+    srv_msg.response_check_option_content(45, 'sub-option', 1)
+    srv_msg.response_check_suboption_content(1, 45, 'duid', '00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.response_check_option_content(45, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 45, 'addr', "2001:db8:1::1")
+    srv_msg.response_check_option_content(45, 'sub-option', 26, expect_include=False)
+    srv_msg.response_check_option_content(45, 'sub-option', 46)
+
+    # and the same lease via query by link
+
+    # leasequery type 1 - based on link should return just address
+    srv_msg.client_sets_value('Client', 'lq-query-type', 1)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+
+    srv_msg.client_sets_value('Client', 'IA_Address', '2001:db8:1::1')
+    srv_msg.client_does_include('Client', 'IA_Address')  # this will add option to world.iaad
+    # rather to world.cliopts because it not suppose to be used that way
+    # let's change it just for this test
+    world.cliopts.append(world.iaad[-1])
+    world.iaad = []
+
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 0)
+    # 45 it's Leasequery option - Client data option, and has suboptions
+    srv_msg.response_check_include_option(45)
+    srv_msg.response_check_option_content(45, 'sub-option', 1)
+    srv_msg.response_check_suboption_content(1, 45, 'duid', '00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.response_check_option_content(45, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 45, 'addr', "2001:db8:1::1")
+    srv_msg.response_check_option_content(45, 'sub-option', 26, expect_include=False)
+    srv_msg.response_check_option_content(45, 'sub-option', 46)
