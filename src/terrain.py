@@ -69,7 +69,10 @@ values_v6 = {"T1": 0,  # IA_NA IA_PD
              "iiminor": 0,
              "archtypes": 1,
              "erpdomain": "",
-             "user_class_data": ""}
+             "user_class_data": "",
+             "relay_id": None,
+             "lq-query-type": 1,
+             "lq-query-address": "0::0"}
 
 srv_values_v6 = {"T1": 1000,
                  "T2": 2000,
@@ -124,6 +127,7 @@ def _set_values():
         # reset values to 'default for scenario'
         world.cfg["values"]["cli_duid"] = world.cfg["cli_duid"]
         world.cfg["values"]["server_id"] = ""
+        world.cfg["values"]["relay_id"] = ""
         world.cfg["values"]["ia_id"] = world.cfg["ia_id"]
         world.cfg["values"]["ia_pd"] = world.cfg["ia_pd"]
     else:
@@ -170,7 +174,7 @@ def _v4_initialize():
 
 def _v6_initialize():
     world.dhcp_enable = True
-    # RFC 3315 define two addresess:
+    # RFC 3315 define two addresses:
     # All_DHCP_Relay_Agents_and_Servers = ff02::1:2
     # All DHCP_Servers ff05::1:3.
     world.cfg["address_v6"] = "ff02::1:2"
@@ -399,6 +403,7 @@ def initialize(scenario):
     world.dns_an = []
     world.dns_ns = []
     world.dns_ar = []
+    world.tcpmsg = []
     world.question_record = None
     world.dns_query = None
 

@@ -207,11 +207,11 @@ def send_dont_wait_for_message():
 
 
 @step(r'Server (\S+) (NOT )?respond with (\w+) message.')
-def send_wait_for_message(server_type, message, expect_response=True):
+def send_wait_for_message(server_type, message, expect_response=True, protocol='UDP', address=None, port=None):
     """
     This step causes to send message to server and capture respond.
     """
-    return dhcpmsg.send_wait_for_message(server_type, expect_response, message)
+    return dhcpmsg.send_wait_for_message(server_type, expect_response, message, protocol, address=address, port=port)
 
 
 @step(r'(Response|Relayed Message) MUST (NOT )?include option (\d+).')
@@ -219,7 +219,7 @@ def response_check_include_option(opt_code, expect_include=True):
     """
     Use this step for parsing respond. For more details please read manual section "Parsing respond"
     """
-    dhcpmsg.response_check_include_option(expect_include, opt_code)
+    return dhcpmsg.response_check_include_option(expect_include, opt_code)
 
 
 @step(r'(Response|Relayed Message) MUST (NOT )?contain (\S+) (\S+).')
@@ -237,9 +237,8 @@ def response_check_option_content(opt_code, data_type, expected_value, expect_in
     """
     data_type, expected_value = test_define_value(data_type, expected_value)
     if data_type == "sub-option":
-        dhcpmsg.response_check_include_suboption(opt_code, expect_include, expected_value)
-    else:
-        dhcpmsg.response_check_option_content(opt_code, expect_include, data_type, expected_value)
+        return dhcpmsg.response_check_include_suboption(opt_code, expect_include, expected_value)
+    return dhcpmsg.response_check_option_content(opt_code, expect_include, data_type, expected_value)
 
 
 @step(r'(Response|Relayed Message) sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
@@ -736,3 +735,16 @@ def get_tcpdump_capture(location, file_name):
     :param file_name: name of capture file
     """
     download_tcpdump_capture(location=location, file_name=file_name)
+
+
+def tcp_messages_include(**kwargs):
+    dhcpmsg.tcp_messages_include(**kwargs)
+
+
+def tcp_get_message(**kwargs):
+    return dhcpmsg.tcp_get_message(**kwargs)
+
+
+def send_over_tcp(msg, address=None, port=None, parse=False, number_of_connections=1):
+    return dhcpmsg.send_over_tcp(msg, address=address, port=port, parse=parse,
+                                 number_of_connections=number_of_connections)

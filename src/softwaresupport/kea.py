@@ -1175,7 +1175,7 @@ def add_mt_if_we_can(cfg):
         if 'multi-threading' not in cfg[f'Dhcp{world.proto[1]}']:
             log.debug("Adding MT configuration.")
             cfg[f"Dhcp{world.proto[1]}"].update({"multi-threading": {"enable-multi-threading": True,
-                                                                     "thread-pool-size": 2,
+                                                                     "thread-pool-size": 0,
                                                                      "packet-queue-size": 16}})
 
         if "libdhcp_ha.so" in list_of_used_hooks:

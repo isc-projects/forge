@@ -1,4 +1,5 @@
-scapy
+# scapy
+git+https://github.com/wwencel/scapy.git@bulk-lease-query
 
 # required by forge
 fabric3

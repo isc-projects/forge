@@ -33,8 +33,12 @@ import codecs
 import random
 import os
 import logging
+import select
+import socket
+from time import time
 
 import scapy
+from scapy.compat import raw
 from scapy.sendrecv import sr
 from scapy.layers import dhcp6
 from scapy.layers.inet6 import IPv6, UDP
@@ -81,6 +85,7 @@ OPTIONS = {"client-id": 1,
            "remote-id": 37,
            "subscriber-id": 38,
            "fqdn": 39,
+           "lq-client-data": 45,
            "client-arch-type": 61,
            "erp-local-domain-name": 65,
            "client-link-layer-addr": 79}
@@ -156,6 +161,9 @@ def client_send_msg(msgname, iface=None, addr=None):
     elif msgname == "INFOREQUEST":
         msg = build_msg(dhcp6.DHCP6_InfoRequest())
 
+    elif msgname == "LEASEQUERY":
+        msg = build_msg(dhcp6.DHCP6_Leasequery())
+
     else:
         assert False, "Invalid message type: %s" % msgname
 
@@ -209,7 +217,7 @@ def client_does_include(sender_type, opt_type, value=None):
 
     if opt_type == "wrong-client-id":
         # used for backwards compatibility
-        add_client_option(dhcp6.DHCP6OptClientId(duid=dhcp6.DUID_LLT(timeval=int(time.time()), lladdr=RandMAC())))
+        add_client_option(dhcp6.DHCP6OptClientId(duid=dhcp6.DUID_LLT(timeval=int(time()), lladdr=RandMAC())))
 
     elif opt_type == "empty-client-id":
         add_client_option(dhcp6.DHCP6OptClientId())
@@ -220,6 +228,12 @@ def client_does_include(sender_type, opt_type, value=None):
 
     elif opt_type == "server-id":
         add_client_option(dhcp6.DHCP6OptServerId(duid=convert_DUID(world.cfg["values"]["server_id"])))
+
+    elif opt_type == "relay-id":
+        if convert_DUID(world.cfg["values"]["relay_id"]):
+            add_client_option(dhcp6.DHCP6OptRelayId(duid=convert_DUID(world.cfg["values"]["relay_id"])))
+        else:
+            add_client_option(dhcp6.DHCP6OptRelayId())
 
     elif opt_type == "empty-server-id":
         add_client_option(dhcp6.DHCP6OptServerId())
@@ -361,6 +375,12 @@ def client_does_include(sender_type, opt_type, value=None):
 
     elif opt_type == "time-elapsed":
         add_client_option(dhcp6.DHCP6OptElapsedTime(elapsedtime=world.cfg["values"]["elapsedtime"]))
+    elif opt_type == "lq-query":
+        tmp = world.cliopts.copy()
+        world.cliopts = []
+        add_client_option(dhcp6.DHCP6OptLqQuery(querytype=world.cfg["values"]["lq-query-type"],
+                                                linkaddr=world.cfg["values"]["lq-query-address"],
+                                                queryopts=tmp))
     else:
         assert "unsupported option: " + opt_type
 
@@ -535,11 +555,13 @@ def build_raw(msg, append):
         world.climsg[0] = world.climsg[0] / Raw(load=append)
 
 
-def build_msg(msg):
+def build_msg(msg_dhcp):
+    msg = IPv6(dst=world.cfg["address_v6"], src=world.cfg["cli_link_local"])
+    msg /= UDP(sport=world.cfg["source_port"], dport=world.cfg["destination_port"])
 
-    msg = IPv6(dst=world.cfg["address_v6"],
-               src=world.cfg["cli_link_local"])/UDP(sport=world.cfg["source_port"],
-                                                    dport=world.cfg["destination_port"])/msg
+    # print("IP/UPD layers in bytes: ", raw(msg))
+
+    msg /= msg_dhcp
 
     # get back to multicast address.
     world.cfg["address_v6"] = "ff02::1:2"
@@ -562,10 +584,8 @@ def build_msg(msg):
     world.cliopts = world.cliopts[::-1]
     while world.cliopts:
         msg /= world.cliopts.pop()
-    # for each_option in world.cliopts:
-    #     msg /= each_option
-    #
-    # world.cliopts = []
+
+    # print("DHCP layer in bytes: ", raw(msg.getlayer(2)), "\n")
     return msg
 
 
@@ -613,11 +633,139 @@ def create_relay_forward(level=1):
 
 # ------------------------- BUILD MESSAGE BLOCK END -------------------------- #
 
-
 # --------------------- SEND/RECEIVE MESSAGE BLOCK START --------------------- #
 
+def read_dhcp6_msgs(d: bytes, msg: list):
+    """
+    Recursively parse bytes received via TCP channel
+    :param d: bytes
+    :param msg: list of DHCP6 messages
+    :return: list of DHCP6 messages
+    """
+    if len(d) == 0:
+        return msg
+    stop = int.from_bytes(d[:2], "big")
+    pkt = dhcp6.DHCP6(d[2:stop+2])
+    pkt.build()
+    msg.append(pkt)
+    if len(d[stop:]) > 0:
+        msg = read_dhcp6_msgs(d[stop+2:], msg)
+    return msg
 
-def send_wait_for_message(condition_type, presence, exp_message):
+
+def close_sockets(socket_list):
+    for each_socket in socket_list:
+        each_socket.close()
+
+
+def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: int = 3, parse: bool = True,
+                  number_of_connections: int = 1):
+    """
+    Send message over TCP channel and listen for response
+    :param msg: bytes representing DHCP6 message
+    :param address: address to which message will be sent
+    :param port: port number on which receiving end is listening
+    :param timeout: how long kea will wait from last received message
+    :param parse: should received bytes be parsed into DHCP6 messages
+    :param number_of_connections: how many connections should forge open
+    :return: list of parsed DHCP6 messages
+    """
+    if address is None:
+        address = world.f_cfg.srv_ipv6_addr_global
+    if port is None:
+        port = 547
+    received = b''
+
+    socket_list = [socket.socket(socket.AF_INET6, socket.SOCK_STREAM) for _ in range(number_of_connections)]
+    n = random.randint(100, 3000)  # to generate transaction id
+    try:
+        for each_socket in socket_list:
+            each_socket.connect((address, port))
+            d = msg[:1] + n.to_bytes(3, 'big') + msg[4:]
+            msg_length = len(d)
+            c_msg = msg_length.to_bytes(2, 'big') + d
+            if world.f_cfg.show_packets_from in ['both', 'client']:
+                log.info("TCP msg (bytes): %s" % c_msg)
+                log.info("TCP msg (hex): %s" % ' '.join(c_msg.hex()[i:i+2] for i in range(0, len(c_msg.hex()), 2)))
+            each_socket.send(c_msg)
+            n += 1
+    except ConnectionRefusedError as e:
+        assert False, f"TCP connection on {socket} to {address}:{port} was unsuccessful with error: {e}"
+
+    end = time() + timeout
+    while 1:
+        read_sockets, write_sockets, error_sockets = select.select(socket_list, [], [], 3)
+        for r_sock in read_sockets:
+            data = r_sock.recv(4096)
+            if data:
+                received += data
+                log.info("%d bytes received via TCP connection.", len(received))
+        if parse and len(received) > 0:
+            msgs = read_dhcp6_msgs(received, [])
+            # At this point of forge and kea development we expect only leasequery messages via tcp
+            # and correct message exchange will be concluded with leasequery-done message (type 16)
+            # so that's the point in which we close sockets and return all messages. If message
+            # leasequery-done will not be last message received and we reach timeout value - messages
+            # will also ve returned, infinite wait won't happen
+            if msgs[-1].msgtype == 16:
+                close_sockets(socket_list)
+                return msgs
+        else:
+            msgs = received
+        if time() > end:
+            close_sockets(socket_list)
+            break
+
+    # if number_of_connections == 1:
+    #     higher number_of_connections is just when we send junk to Kea, and do not expect to receive anything
+        # assert not len(received) == 0, "No TCP response received."
+    return msgs
+    # try:
+    #     with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as tcp_client:
+    #         end = time() + timeout
+    #         tcp_client.connect((address, port))
+    #         msg_len = len(msg)
+    #         msg = msg_len.to_bytes(2, 'big') + msg
+    #         if world.f_cfg.show_packets_from in ['both', 'client']:
+    #             log.info("TCP msg (bytes): %s" % msg)
+    #             log.info("TCP msg (hex): %s" % ' '.join(msg.hex()[i:i+2] for i in range(0, len(msg.hex()), 2)))
+    #         tcp_client.send(msg)
+    #
+    #         while 1:
+    #             read_sockets, write_sockets, error_sockets = select.select([tcp_client], [], [], 3)
+    #             for sock in read_sockets:
+    #                 # incoming message from remote server
+    #                 if sock == tcp_client:
+    #                     data = sock.recv(4096)
+    #                     if not data:
+    #                         print('\nDisconnected from server')
+    #                         break
+    #                     received += data
+    #             log.info("%d bytes received via TCP connection.", len(received))
+    #             # in some cases we don't want to parse replies
+    #             if parse:
+    #                 msgs = read_dhcp6_msgs(received, [])
+    #
+    #                 # At this point of forge and kea development we expect only leasequery messages via tcp
+    #                 # and correct message exchange will be concluded with leasequery-done message (type 16)
+    #                 # so that's the point in which we close sockets and return all messages. If message
+    #                 # leasequery-done will not be last message received and we reach timeout value - messages
+    #                 # will also ve returned, infinite wait won't happen
+    #                 if msgs[-1].msgtype == 16:
+    #                     return msgs
+    #                 if time() > end:
+    #                     break
+    #
+    # except ConnectionRefusedError as e:
+    #     assert False, f"TCP connection to {address}:{port} was unsuccessful with error: {e}"
+    #
+    # assert not len(received) == 0, "No TCP response received."
+    # return msgs
+
+
+def send_wait_for_message(condition_type, presence, exp_message, protocol='UDP',
+                          address=None, port=None):
+    # print(protocol)
     """
     Block until the given message is (not) received.
     Parameter:
@@ -627,17 +775,7 @@ def send_wait_for_message(condition_type, presence, exp_message):
     message ('message <message>'): Output (part) to wait for.
     """
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
-    may_flag = False
     # debug.recv=[]
-    if str(condition_type) in "MUST":
-        pass
-    elif str(condition_type) in "MAY":
-        may_flag = True
-    # we needs to get it operational
-    # problem: break test with success. (for now we can break test only with fail)
-    else:
-        assert False, "Invalid expected behavior: %s." % str(condition_type)
-
     # Uncomment this to get debug.recv filled with all received messages
     conf.debug_match = True
 
@@ -646,84 +784,80 @@ def send_wait_for_message(condition_type, presence, exp_message):
     apply_message_fields_changes()
 
     factor = 1
+    world.srvmsg = []
+
     pytest_current_test = os.environ.get('PYTEST_CURRENT_TEST')
     if 'HA' in pytest_current_test.split('/'):
         factor = max(factor, world.f_cfg.ha_packet_wait_interval_factor)
     if '_radius' in pytest_current_test.lower():
         factor = max(factor, world.f_cfg.radius_packet_wait_interval_factor)
-    ans, unans = sr(world.climsg,
-                    iface=world.cfg["iface"],
-                    timeout=factor * world.cfg['wait_interval'],
-                    nofilter=1,
-                    verbose=int(world.f_cfg.forge_verbose))
-    if world.f_cfg.forge_verbose == 0:
-        print(".", end='')
 
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
 
-    expected_type_found = False
-    received_names = ""
-    world.srvmsg = []
-    for x in ans:
-        a, b = x
-        world.srvmsg.append(b)
+    if protocol == 'UDP':
+        ans, unans = sr(world.climsg,
+                        iface=world.cfg["iface"],
+                        timeout=factor * world.cfg['wait_interval'],
+                        nofilter=1,
+                        verbose=0)
+        if world.f_cfg.forge_verbose == 0:
+            print(".", end='')
 
-        if world.f_cfg.show_packets_from in ['both', 'server']:
-            b.show()
+        for x in ans:
+            a, b = x
+            world.srvmsg.append(b)
 
-        if not world.loops["active"]:
-            log.info("Received packet type=%s" % get_msg_type(b))
+    else:
+        world.tcpmsg = send_over_tcp(raw(world.climsg[0].getlayer(2)), address, port)
+        if len(world.tcpmsg) > 0:
+            world.srvmsg = world.tcpmsg.copy()
+        unans = []
 
-        received_names = get_msg_type(b) + " " + received_names
-        if get_msg_type(b) == exp_message:
-            expected_type_found = True
-        received_names = received_names.strip()
+    if world.f_cfg.show_packets_from in ['both', 'server']:
+        for msg in world.srvmsg:
+            msg.show()
+
+    if len(world.srvmsg) > 0:
+        received_name = get_msg_type(world.srvmsg[0])
+
+    if not world.loops["active"]:
+        for msg in world.srvmsg:
+            log.info("Received packet %s (code %s)" % (get_msg_type(msg), msg.msgtype))
 
     if exp_message is not None:
         for x in unans:
             log.error(("Unanswered packet type=%s" % dhcp6.dhcp6_cls_by_type[x.msgtype]))
 
-    if not world.loops["active"]:
-        log.debug("Received traffic (answered/unanswered): %d/%d packet(s)." % (len(ans), len(unans)))
-
-    if may_flag:
-        if len(world.srvmsg) != 0:
-            assert True, "Response received."
-        if len(world.srvmsg) == 0:
-            assert True, "Response not received."  # stop the test... ??
-    elif presence:
+    if presence:
         assert len(world.srvmsg) != 0, "No response received."
-        assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
+        assert received_name == exp_message, f"Expected message {exp_message} not received (got {received_name})"
     elif not presence:
-        assert len(world.srvmsg) == 0, "Response received (got " + received_names + "), not expected"
+        assert len(world.srvmsg) == 0, f"Response received ({received_name}) was not expected!"
 
     return world.srvmsg
 
 
 def get_last_response():
     assert len(world.srvmsg), "No response received."
-    msg = world.srvmsg[len(world.srvmsg) - 1].copy()
-    return msg
-
+    return world.srvmsg[-1].copy()
 
 # ---------------------- SEND/RECEIVE MESSAGE BLOCK END ---------------------- #
-
 
 # ---------------------- PARSING RECEIVED MESSAGE BLOCK START ----------------------
 
 
 def get_msg_type(msg):
-    msg_types = {"ADVERTISE": dhcp6.DHCP6_Advertise,
-                 "REQUEST": dhcp6.DHCP6_Request,
-                 "REPLY": dhcp6.DHCP6_Reply,
-                 "RELAYREPLY": dhcp6.DHCP6_RelayReply}
+    msg_types = {2: "ADVERTISE",
+                 3: "REQUEST",
+                 7: "REPLY",
+                 13: "RELAYREPLY",
+                 15: "LEASEQUERY-REPLY",
+                 17: "LEASEQUERY-DATA",
+                 16: "LEASEQUERY-DONE"}
 
-    # 0th is IPv6, 1st is UDP, 2nd should be DHCP6
-    for msg_name in list(msg_types.keys()):
-        if type(msg.getlayer(2)) == msg_types[msg_name]:
-            return msg_name
-
+    if msg.msgtype in msg_types:
+        return msg_types[msg.msgtype]
     return "UNKNOWN-TYPE"
 
 
@@ -795,47 +929,52 @@ def get_option(msg, opt_code, get_all=False):
     # clear all opts/subopts
     world.opts = []
     world.subopts = []
-    tmp = None
+    tmp = []
     # TODO: get rid of x and tmp_msg
-    if len(world.rlymsg) == 0:  # relay message is already cropped to exact layer
-        x = tmp_msg.getlayer(3)  # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
-    else:
-        x = tmp_msg
-
+    if len(world.rlymsg) == 0 and len(world.tcpmsg) == 0:  # relay message is already cropped to exact layer
+        tmp_msg = tmp_msg.getlayer(3)  # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
+    elif len(world.tcpmsg) != 0:
+        tmp_msg = tmp_msg.getlayer(1)
     # check all message, for expected option and all suboptions in IA_NA/IA_PD
-    check_suboptions = ["ianaopts",
+    check_suboptions = ["clientoptions",
+                        "ianaopts",
                         "iapdopt",
-                        "vso",
+                        "iaprefopts",
+                        "relaysupplied",
                         "userclassdata",
-                        "vcdata"
-                        ]
-    while x:
-        if x.optcode == opt_code:
-            if get_all:
-                if tmp is None:
-                    tmp = x.copy()
-                elif isinstance(tmp, list):
-                    tmp.append(x.copy())
-                else:
-                    tmp = [tmp]
-                    tmp.append(x.copy())
-            else:
-                tmp = x.copy()
-            # del tmp.payload
-            world.opts.append(x)
+                        "queryopts",
+                        "vcdata",
+                        "vso"]
+    while tmp_msg:
+        if tmp_msg.optcode == opt_code:
+            opt = tmp_msg.copy()
+            del opt.payload
+            tmp.append(opt)
+            world.opts.append(opt)
 
         for each in check_suboptions:
-            if x.fields.get(each):
-                tmp2 = x.copy()
-                del tmp2.payload
-                world.subopts.append([x.optcode, tmp2])
+            if tmp_msg.fields.get(each):
+                # there can be multiple suboptions, we need them all!
+                for sub_option in tmp_msg.fields.get(each):
+                    # and sometimes options are combined in two, I don't know why, so we have to loop over them again
+                    # to get all options that are send as suboptions.
+                    while sub_option:
+                        t = sub_option.copy()
+                        del t.payload
+                        world.subopts.append([tmp_msg.optcode, t])
+                        sub_option = sub_option.payload
 
         # add Status Code to suboptions even if it is option in main message
         # TODO check if it is still needed!
-        if x.optcode == 13:
-            world.subopts.append([0, x])
+        if tmp_msg.optcode == 13:
+            opt = tmp_msg.copy()
+            del opt.payload
+            world.subopts.append([0, opt])
 
-        x = x.payload
+        tmp_msg = tmp_msg.payload
+
+    if len(tmp) > 0 and not get_all:
+        return tmp[0]
     return tmp
 
 
@@ -875,12 +1014,11 @@ def response_check_include_option(must_include, opt_code):
     opt = get_option(world.srvmsg[0], opt_code)
 
     opt_descr = _get_opt_descr(opt_code)
-
     if must_include:
         assert opt, "Expected option {opt_descr} not present in the message.".format(**locals()) + \
                     "\nPacket:" + str(world.srvmsg[0].show(dump=True))
     else:
-        assert opt is None, "Unexpected option {opt_descr} found in the message.".format(**locals()) + \
+        assert len(opt) == 0, "Unexpected option {opt_descr} found in the message.".format(**locals()) + \
                             "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
     return opt
@@ -903,11 +1041,16 @@ def get_subopt_from_option(exp_opt_code, exp_subopt_code):
 
     result = []
     received = ''
-    list_fields = ["ianaopts",
+    list_fields = ["clientoptions",
+                   "ianaopts",
                    "iapdopt",
-                   "vso",
+                   "iaprefopts",
+                   "message",
+                   "relaysupplied",
                    "userclassdata",
-                   "vcdata"]
+                   "queryopts",
+                   "vcdata",
+                   "vso"]
     # firstly we go through all options that can include sub-options
     for opt_code, opt_data in world.subopts:
         # we need to be sure that option 13 is in 25 or 3
@@ -949,23 +1092,25 @@ def extract_duid(option):
 
 
 def response_check_include_suboption(opt_code, expect, expected_value):
-    '''
+    """
     Assert that suboption {expected_value} exists inside option {opt_code}
     if {expect} is True or doesn't exist if {expect} is False.
     :param opt_code: option code or name
     :param expect: whether the suboption should exist
     :param expected_value: suboption code or name
     :return: tuple(the list of suboptions, the suboption code)
-    '''
-
-    x, receive_tmp = get_subopt_from_option(opt_code, expected_value)
+    """
+    x = []
+    for option_code, option in world.subopts:
+        if option_code == opt_code and option.optcode == int(expected_value):
+            x.append(option)
     opt_descr = _get_opt_descr(opt_code)
     subopt_descr = _get_opt_descr(expected_value)
     if expect:
         assert len(x) > 0, "Expected sub-option {subopt_descr} not present in the option {opt_descr}".format(**locals())
     else:
         assert len(x) == 0, "NOT expected sub-option {subopt_descr} is present in the option {opt_descr}".format(**locals())
-    return x, receive_tmp
+    return x
 
 
 values_equivalent = {7: "prefval", 13: "statuscode", 21: "sipdomains", 22: "sipservers", 23: "dnsservers",
@@ -995,8 +1140,7 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
     data_type = str(data_type)
     expected_value = str(expected_value)
     received = []
-    opts, receive_tmp = response_check_include_suboption(opt_code, True, subopt_code)
-    assert int(subopt_code) == int(receive_tmp), "You should never see this error, if so, please report that bug a"
+    opts = response_check_include_suboption(opt_code, True, subopt_code)
     # that is duplicated code but lets leave it for now
     for opt in opts:
         tmp_field = opt.fields.get(data_type)
@@ -1006,6 +1150,9 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
             tmp_field = opt.fields.get(data_type)
         if type(tmp_field) is list:
             received.append(",".join(tmp_field))
+        if data_type == 'duid':
+            txt_duid = extract_duid(tmp_field)
+            received.append(":".join([txt_duid[i:i+2] for i in range(0, len(txt_duid), 2)]))
         else:
             if isinstance(tmp_field, bytes):
                 received.append(tmp_field.decode('utf-8'))
@@ -1091,6 +1238,7 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
         else:
             assert expected_value not in received, "Received value of " + data_type + ": " + ",".join(received) + \
                                                    " should not be equal to value from client - " + str(expected_value)
+    return received
 
 
 def save_value_from_option(value_name, option_name):
@@ -1161,6 +1309,63 @@ def response_get_content(*args):
     # only v4!
     pass
 
+
+def tcp_messages_include(**kwargs):
+    """
+    Checks how many messages of each type are in received over tcp list
+    :param kwargs: types of messages e.g. leasequery_reply=1, leasequery_data=199, leasequery_done=1
+    """
+    expected_msg_count = sum(list(kwargs.values()))
+    assert expected_msg_count == len(world.tcpmsg),\
+        f"Expected message count is {expected_msg_count} but number of received messages is {len(world.tcpmsg)}"
+    received_msg_count = {}
+    for msg in world.tcpmsg:
+        m_type = get_msg_type(msg).lower().replace("-", "_")
+        if m_type not in received_msg_count:
+            received_msg_count.update({m_type: 1})
+        else:
+            received_msg_count[m_type] += 1
+
+    assert kwargs == received_msg_count, f"Expected set of messages is {kwargs} but received was {received_msg_count}"
+
+
+def tcp_get_message(**kwargs):
+    """
+    Find one message in the list of all received via TCP channel. Messages can be retrived via it's index in the list
+    or using address/prefix to find one specific message e.g.
+    * tcp_get_message(address=lease["address"])
+    * tcp_get_message(prefix=lease["address"])
+    * tcp_get_message(order=3)
+    :param kwargs: define which type of search should be performed and with what value
+    :return: DHCP6 message
+    """
+    # we can look for address or prefix, address in scapy is represented by addr and prefix is represented by prefix
+    scapy_field = "addr"
+    if "prefix" in kwargs:
+        scapy_field = "prefix"
+
+    if any(x in kwargs for x in ["address", "prefix"]):
+        for msg in world.tcpmsg:
+            if get_msg_type(msg) in ["LEASEQUERY-DONE", "UNKNOWN-TYPE"]:
+                continue
+
+            msg_opt = get_option(msg.copy(), 45)
+            if hasattr(msg, "clientoptions"):
+                msg_opt = msg_opt.clientoptions
+            for x in msg_opt:
+                while x:
+                    # now we need address in addr or prefix in prefix:
+                    if hasattr(x, scapy_field) and getattr(x, scapy_field) == kwargs["address" if "address" in kwargs else "prefix"]:
+                        world.srvmsg = [msg.copy()]
+                        return msg.copy()
+                    x = x.payload
+
+    elif "order" in kwargs:
+        world.srvmsg = [world.tcpmsg[kwargs["order"]].copy()]
+        return world.srvmsg[0]
+    else:
+        assert False, "You can choose particular message by it's index or IP address that is suppose to have"
+    assert False, f"Message with {scapy_field}={kwargs['address']} you are looking for couldn't be found."
 
 # -------------------- PARSING RECEIVED MESSAGE BLOCK END -------------------- #
 
