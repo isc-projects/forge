@@ -716,56 +716,11 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
             close_sockets(socket_list)
             break
 
-    # if number_of_connections == 1:
-    #     higher number_of_connections is just when we send junk to Kea, and do not expect to receive anything
-        # assert not len(received) == 0, "No TCP response received."
     return msgs
-    # try:
-    #     with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as tcp_client:
-    #         end = time() + timeout
-    #         tcp_client.connect((address, port))
-    #         msg_len = len(msg)
-    #         msg = msg_len.to_bytes(2, 'big') + msg
-    #         if world.f_cfg.show_packets_from in ['both', 'client']:
-    #             log.info("TCP msg (bytes): %s" % msg)
-    #             log.info("TCP msg (hex): %s" % ' '.join(msg.hex()[i:i+2] for i in range(0, len(msg.hex()), 2)))
-    #         tcp_client.send(msg)
-    #
-    #         while 1:
-    #             read_sockets, write_sockets, error_sockets = select.select([tcp_client], [], [], 3)
-    #             for sock in read_sockets:
-    #                 # incoming message from remote server
-    #                 if sock == tcp_client:
-    #                     data = sock.recv(4096)
-    #                     if not data:
-    #                         print('\nDisconnected from server')
-    #                         break
-    #                     received += data
-    #             log.info("%d bytes received via TCP connection.", len(received))
-    #             # in some cases we don't want to parse replies
-    #             if parse:
-    #                 msgs = read_dhcp6_msgs(received, [])
-    #
-    #                 # At this point of forge and kea development we expect only leasequery messages via tcp
-    #                 # and correct message exchange will be concluded with leasequery-done message (type 16)
-    #                 # so that's the point in which we close sockets and return all messages. If message
-    #                 # leasequery-done will not be last message received and we reach timeout value - messages
-    #                 # will also ve returned, infinite wait won't happen
-    #                 if msgs[-1].msgtype == 16:
-    #                     return msgs
-    #                 if time() > end:
-    #                     break
-    #
-    # except ConnectionRefusedError as e:
-    #     assert False, f"TCP connection to {address}:{port} was unsuccessful with error: {e}"
-    #
-    # assert not len(received) == 0, "No TCP response received."
-    # return msgs
 
 
 def send_wait_for_message(condition_type, presence, exp_message, protocol='UDP',
                           address=None, port=None):
-    # print(protocol)
     """
     Block until the given message is (not) received.
     Parameter:
