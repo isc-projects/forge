@@ -669,7 +669,7 @@ def test_prefix_delegation_release_nobinding():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 33)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -690,6 +690,9 @@ def test_prefix_delegation_release_nobinding():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3, expect_include=False)
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 25, 'statuscode', 3)
@@ -703,7 +706,7 @@ def test_prefix_delegation_release_nobinding():
 def test_prefix_delegation_release_dual_nobinding():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 33)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -726,70 +729,14 @@ def test_prefix_delegation_release_dual_nobinding():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 25, 'statuscode', 3)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 3)
-
-    references.references_check('RFC')
-
-
-@pytest.mark.v6
-@pytest.mark.PD
-@pytest.mark.rfc3633
-def test_prefix_delegation_release_nobinding2():
-
-    misc.test_setup()
-    srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    misc.test_procedure()
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    srv_msg.response_check_include_option(25)
-
-    misc.test_procedure()
-    srv_msg.client_copy_option('server-id')
-    srv_msg.client_copy_option('IA_PD')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.response_check_include_option(25)
-    srv_msg.response_check_option_content(25, 'sub-option', 26)
-
-    misc.test_procedure()
-    srv_msg.client_copy_option('server-id')
-    srv_msg.client_save_option('IA_PD')
-    srv_msg.client_add_saved_option()
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_send_msg('RELEASE')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.response_check_include_option(25)
-    # must not contain status code == 3.
-
-    misc.test_procedure()
-    srv_msg.client_copy_option('server-id')
-    srv_msg.client_add_saved_option()
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_send_msg('RELEASE')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.response_check_include_option(25)
-    srv_msg.response_check_option_content(25, 'sub-option', 13)
-    srv_msg.response_check_suboption_content(13, 25, 'statuscode', 3)
 
     references.references_check('RFC')
 
@@ -1584,7 +1531,7 @@ def test_prefix_delegation_multiple_request():
 def test_prefix_delegation_multiple_PD_and_IA_request():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::4')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)
     # pool for 4 addresses and 4 prefix, all 8 with success
 
     srv_control.build_and_send_config_files()
@@ -1656,7 +1603,7 @@ def test_prefix_delegation_multiple_PD_and_IA_request():
     srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::4')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8::')
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:4000::')
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:8000::')
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:c000::')
@@ -1671,7 +1618,7 @@ def test_prefix_delegation_multiple_PD_and_IA_request():
 def test_prefix_delegation_multiple_PD_and_IA_request_partial_success():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::1-3000::2')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 33)
     # pool for 2 addresses and 2 prefix, half success
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1742,9 +1689,8 @@ def test_prefix_delegation_multiple_PD_and_IA_request_partial_success():
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8::')
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:8000::')
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:8001::')
     srv_msg.response_check_suboption_content(13, 25, 'statuscode', 6)
 
     references.references_check('RFC')

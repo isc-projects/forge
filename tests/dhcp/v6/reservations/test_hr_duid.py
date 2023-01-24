@@ -311,9 +311,9 @@ def test_v6_host_reservation_duid_requesting_reserved_prefix_outside_the_pool():
 def test_v6_host_reservation_duid_requesting_reserved_prefix_inside_empty_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 33)
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1:0:4000::/34',
+                                           '2001:db8:1:0:4000::/100',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -420,5 +420,6 @@ def test_v6_host_reservation_duid_requesting_reserved_prefix_inside_empty_pool()
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:0:4000::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 100)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)

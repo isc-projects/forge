@@ -121,14 +121,14 @@ def test_v6_host_reservation_all_values_duid_2():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
+    srv_control.config_srv_prefix('2001:db8:1::', 0, 48, 49)
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::100')
-    srv_control.host_reservation_in_subnet_add_value(0, 0, 'prefixes', '2001:db8:1::/40')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'prefixes', '2001:db8:1::/60')
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_options('enable-updates', True)
     srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
@@ -158,14 +158,56 @@ def test_v6_host_reservation_all_values_duid_2():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::100', expect_include=False)
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1::', expect_include=False)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:8000::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 49)
     srv_msg.response_check_include_option(39)
     srv_msg.response_check_option_content(39, 'fqdn', 'reserved-hostname.my.domain.com.', expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 60)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'some-different-name')
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 60)
 
 
 @pytest.mark.v6
