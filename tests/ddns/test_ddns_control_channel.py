@@ -513,7 +513,6 @@ def test_ddns6_control_channel_usercontext():
     response = _send_through_ddns_socket(cmd)
     config_set = response['arguments']
 
-
     # Modify configuration
     config_set['DhcpDdns']['user-context'] = {"version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}]}
     config_set['DhcpDdns']['forward-ddns']['ddns-domains'][0]['user-context'] = {
