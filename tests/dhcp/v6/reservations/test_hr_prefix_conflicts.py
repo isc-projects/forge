@@ -14,6 +14,7 @@ import pytest
 from src import misc
 from src import srv_control
 from src import srv_msg
+from src.forge_cfg import world
 
 
 @pytest.mark.v6
@@ -22,7 +23,7 @@ from src import srv_msg
 def test_v6_host_reservation_conflicts_two_entries_for_one_host_1():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)
     srv_control.host_reservation_in_subnet('prefix',
                                            '2001:db8:1:0:4000::/110',
                                            0,
@@ -56,6 +57,8 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_1():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_include_option(25)
@@ -68,7 +71,7 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_1():
 def test_v6_host_reservation_conflicts_two_entries_for_one_host_2():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)
     srv_control.host_reservation_in_subnet('prefix',
                                            '2001:db8:1:0:4000::/110',
                                            0,
@@ -114,7 +117,7 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_2():
 def test_v6_host_reservation_conflicts_two_entries_for_one_host_3():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)
     srv_control.host_reservation_in_subnet('prefix',
                                            '2001:db8:1:0:4000::/110',
                                            0,
@@ -155,13 +158,6 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_3():
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:0:4000::')
     srv_msg.response_check_suboption_content(26, 25, 'plen', 110)
-
-
-
-    # srv_msg.response_check_include_option(25)
-    # srv_msg.response_check_option_content(25, 'sub-option', 26)
-    # srv_msg.response_check_include_option(3)
-    # srv_msg.response_check_option_content(3, 'sub-option', 5)
 
 
 @pytest.mark.v6
@@ -466,14 +462,14 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 35)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 35)
     srv_control.host_reservation_in_subnet('prefix',
                                            '2001:db8:1:0:8000::/110',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1::/33',
+                                           '2001:db8:1::/110',
                                            0,
                                            'hw-address',
                                            '00:03:00:01:f6:f5:f4:f3:f2:02')
@@ -528,7 +524,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_control.set_time('valid-lifetime', 7)
     srv_control.set_time('preferred-lifetime', 8)
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 33)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -608,14 +604,14 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_control.set_time('valid-lifetime', 7)
     srv_control.set_time('preferred-lifetime', 8)
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 33)
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1:0:8000::/33',
+                                           '2001:db8:1:0:8000::/110',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1::/33',
+                                           '2001:db8:1::/110',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:02')
@@ -640,6 +636,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:0:8000::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 110)
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'IA-PD')
@@ -668,6 +665,8 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:0:8000::', expect_include=False)
@@ -675,7 +674,6 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
 
-from src.forge_cfg import world
 @pytest.mark.v6
 @pytest.mark.host_reservation
 def test_v6_reserve_both_address_and_prefix():

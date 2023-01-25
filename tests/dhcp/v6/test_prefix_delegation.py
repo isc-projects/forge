@@ -1459,7 +1459,7 @@ def test_prefix_delegation_multiple_request():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/32', '3000::5-3000::5')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1516,7 +1516,7 @@ def test_prefix_delegation_multiple_request():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1::')
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8::')
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:4000::')
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:8000::')
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:c000::')
