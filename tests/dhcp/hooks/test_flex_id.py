@@ -16,6 +16,7 @@ from src.protosupport.multi_protocol_functions import lease_file_contains, lease
 from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 
 
+@pytest.mark.disabled
 @pytest.mark.v4
 @pytest.mark.flexid
 def test_v4_flexid_libreload():
@@ -805,6 +806,7 @@ def test_v6_flexid_1():
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::f')
 
 
+@pytest.mark.disabled
 @pytest.mark.v6
 @pytest.mark.flexid
 def test_v6_flexid_libreload():

@@ -102,7 +102,6 @@ def test_ca_config_set():
                 "dhcp-disable",
                 "dhcp-enable",
                 "leases-reclaim",
-                "libreload",
                 "list-commands",
                 "server-tag-get",
                 "shutdown",

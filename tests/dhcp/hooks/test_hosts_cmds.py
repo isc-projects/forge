@@ -19,6 +19,7 @@ from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
 from src.protosupport.multi_protocol_functions import log_contains
 
 
+@pytest.mark.disabled
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
@@ -1934,6 +1935,7 @@ def test_v4_hosts_cmds_reservation_get_by_ID(channel):
     }
 
 
+@pytest.mark.disabled
 @pytest.mark.v6
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
