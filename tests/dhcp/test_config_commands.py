@@ -42,6 +42,7 @@ SHAREDNETWORK_V6_CONFIG = [
         "user-context": {"tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
                                    "bra,nch3": {"leaf1": 1,
                                                 "leaf2": ["vein1", "vein2"]}}},
+        "allocator": "iterative",
         "calculate-tee-times": True,
         "interface-id": "interface-abc",
         "max-preferred-lifetime": 3000,
@@ -50,6 +51,7 @@ SHAREDNETWORK_V6_CONFIG = [
         "min-valid-lifetime": 4000,
         "name": "name-abc",
         "option-data": [],
+        "pd-allocator": "iterative",
         "preferred-lifetime": 3000,
         "rapid-commit": False,
         "rebind-timer": 2000,
@@ -64,6 +66,7 @@ SHAREDNETWORK_V6_CONFIG = [
         "valid-lifetime": 4000
     },
     {
+        "allocator": "iterative",
         "calculate-tee-times": True,
         "interface-id": "interface-xyz",
         "max-preferred-lifetime": 3000,
@@ -72,6 +75,7 @@ SHAREDNETWORK_V6_CONFIG = [
         "min-valid-lifetime": 4000,
         "name": "name-xyz",
         "option-data": [],
+        "pd-allocator": "iterative",
         "preferred-lifetime": 3000,
         "rapid-commit": False,
         "rebind-timer": 2000,
@@ -83,6 +87,7 @@ SHAREDNETWORK_V6_CONFIG = [
         "subnet6": [
             {
                 "user-context": {"version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}]},
+                "allocator": "iterative",
                 "calculate-tee-times": True,
                 "id": 3,
                 "max-preferred-lifetime": 3000,
@@ -90,6 +95,7 @@ SHAREDNETWORK_V6_CONFIG = [
                 "min-preferred-lifetime": 3000,
                 "min-valid-lifetime": 4000,
                 "option-data": [],
+                "pd-allocator": "iterative",
                 "pd-pools": [],
                 "pools": [
                     {
@@ -112,12 +118,14 @@ SHAREDNETWORK_V6_CONFIG = [
             },
             {
                 "calculate-tee-times": True,
+                "allocator": "iterative",
                 "id": 4,
                 "max-preferred-lifetime": 3000,
                 "max-valid-lifetime": 4000,
                 "min-preferred-lifetime": 3000,
                 "min-valid-lifetime": 4000,
                 "option-data": [],
+                "pd-allocator": "iterative",
                 "pd-pools": [],
                 "pools": [
                     {
@@ -150,6 +158,7 @@ SHAREDNETWORK_V4_CONFIG = [
         "user-context": {"tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
                                    "bra,nch3": {"leaf1": 1,
                                                 "leaf2": ["vein1", "vein2"]}}},
+        "allocator": "iterative",
         "calculate-tee-times": False,
         "interface": "enp0s9",
         "max-valid-lifetime": 4000,
@@ -165,6 +174,7 @@ SHAREDNETWORK_V4_CONFIG = [
         "subnet4": [
             {
                 "user-context": {"version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}]},
+                "allocator": "iterative",
                 "4o6-interface": "",
                 "4o6-interface-id": "",
                 "4o6-subnet": "",
@@ -202,6 +212,7 @@ SHAREDNETWORK_V4_CONFIG = [
                 "valid-lifetime": 4000
             },
             {
+                "allocator": "iterative",
                 "4o6-interface": "",
                 "4o6-interface-id": "",
                 "4o6-subnet": "",
@@ -235,6 +246,7 @@ SHAREDNETWORK_V4_CONFIG = [
         "valid-lifetime": 4000
     },
     {
+        'allocator': 'iterative',
         "calculate-tee-times": False,
         "max-valid-lifetime": 4000,
         "min-valid-lifetime": 4000,
@@ -250,6 +262,7 @@ SHAREDNETWORK_V4_CONFIG = [
         "store-extended-info": False,
         "subnet4": [
             {
+                'allocator': 'iterative',
                 "4o6-interface": "",
                 "4o6-interface-id": "",
                 "4o6-subnet": "",
@@ -288,6 +301,7 @@ SHAREDNETWORK_V4_CONFIG = [
                 "valid-lifetime": 4000
             },
             {
+                'allocator': 'iterative',
                 "4o6-interface": "",
                 "4o6-interface-id": "",
                 "4o6-subnet": "",
