@@ -84,6 +84,7 @@ def copy_file_from_server(remote_path, local_filename='downloaded_file'):
     Path required.
     """
     fabric_download_file(remote_path, world.cfg["test_result_dir"] + f'/{local_filename}')
+    return world.cfg["test_result_dir"] + f'/{local_filename}'
 
 
 def send_file_to_server(local_path, remote_path):
@@ -113,7 +114,7 @@ def sort_container(obj):
     :return: Sorted json dictionary or other list
     """
     if isinstance(obj, dict):
-        return sorted((k, sort_container(v)) for k, v in obj.items())
+        return json.loads(json.dumps(obj, sort_keys=True))
     if isinstance(obj, list):
         return sorted(sort_container(x) for x in obj)
     return obj

@@ -14,6 +14,8 @@ from src import misc
 from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import sort_container
+from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
 
 
 def _send_through_ddns_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_socket'),
@@ -489,3 +491,75 @@ def test_ddns6_control_channel_version_get():
     response = _send_through_ddns_socket(cmd)
     assert response["arguments"]["extended"]
     # TODO at least version of kea could be held in forge
+
+
+@pytest.mark.v6
+def test_ddns6_control_channel_usercontext():
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_options('generated-prefix', 'six')
+    srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
+    srv_control.add_forward_ddns('six.example.com.', 'forge.sha1.key')
+    srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'forge.sha1.key')
+    srv_control.add_keys('forge.sha1.key', 'HMAC-SHA1', 'PN4xKZ/jDobCMlo4rpr70w==')
+    srv_control.ddns_open_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    #  Get current config
+    cmd = dict(command='config-get', arguments={})
+    response = _send_through_ddns_socket(cmd)
+    config_set = response['arguments']
+
+    # Modify configuration
+    config_set['DhcpDdns']['user-context'] = {"version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}]}
+    config_set['DhcpDdns']['forward-ddns']['ddns-domains'][0]['user-context'] = {
+        "tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
+                  "bra,nch3": {"leaf1": 1,
+                               "leaf2": ["vein1", "vein2"]}}}
+    config_set['DhcpDdns']['forward-ddns']['ddns-domains'][0]['dns-servers'][0]['user-context'] = {
+        "password": {"id": 2, "name_": "bestpassword"}}
+
+    config_set['DhcpDdns']['loggers'][0]['user-context'] = {"version": [{"number": 2, "rev": 4}, {"id": 6, "no": 8}]}
+
+    config_set['DhcpDdns']['reverse-ddns']['ddns-domains'][0]['user-context'] = {
+        "tr,ee": {"Branch1": {"treeHouse": 1}, "Brnch2": 2,
+                  "Brnch3": {"leaf_1": 1,
+                             "leaf_2": ["Vein1", "Vein2"]}}}
+    config_set['DhcpDdns']['reverse-ddns']['ddns-domains'][0]['dns-servers'][0]['user-context'] = {
+        "login": {"iD": 5, "name2": "123456"}}
+
+    config_set['DhcpDdns']['tsig-keys'][0]['user-context'] = {"owner": {"id": 1, "name": "John Doe"}}
+
+    # Sort config for easier comparison
+    config_set = sort_container(config_set)
+
+    # Send modified config to server
+    cmd = dict(command='config-set', arguments=config_set)
+    response = _send_through_ddns_socket(cmd)
+
+    # Get new config from server
+    cmd = dict(command='config-get', arguments={})
+    response = _send_through_ddns_socket(cmd)
+    config_get = response['arguments']
+    config_get = sort_container(config_get)
+
+    # Compare what we send and what Kea returned.
+    assert config_set == config_get, "Send and received configurations are different"
+
+    # Write config to file and download it
+    remote_path = world.f_cfg.data_join('config-export.json')
+    remove_file_from_server(remote_path)
+    cmd = dict(command='config-write', arguments={"filename": remote_path})
+    _send_through_ddns_socket(cmd)
+    local_path = copy_file_from_server(remote_path, 'config-export.json')
+
+    # Open downloaded file and sort it for easier comparison
+    with open(local_path, 'r', encoding="utf-8") as config_file:
+        config_write = json.load(config_file)
+    config_write = sort_container(config_write)
+
+    # Compare downloaded file with send config.
+    assert config_set == config_write, "Send and downloaded file configurations are different"

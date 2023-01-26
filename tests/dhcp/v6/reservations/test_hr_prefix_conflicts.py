@@ -14,6 +14,7 @@ import pytest
 from src import misc
 from src import srv_control
 from src import srv_msg
+from src.forge_cfg import world
 
 
 @pytest.mark.v6
@@ -22,14 +23,14 @@ from src import srv_msg
 def test_v6_host_reservation_conflicts_two_entries_for_one_host_1():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1:0:4000::/34',
+                                           '2001:db8:1:0:4000::/110',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1:0:8000::/34',
+                                           '2001:db8:1:0:8000::/110',
                                            0,
                                            'hw-address',
                                            'f6:f5:f4:f3:f2:01')
@@ -56,6 +57,8 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_1():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_include_option(25)
@@ -68,9 +71,9 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_1():
 def test_v6_host_reservation_conflicts_two_entries_for_one_host_2():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1:0:4000::/34',
+                                           '2001:db8:1:0:4000::/110',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -114,9 +117,9 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_2():
 def test_v6_host_reservation_conflicts_two_entries_for_one_host_3():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1:0:4000::/34',
+                                           '2001:db8:1:0:4000::/110',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -150,8 +153,11 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_3():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'address', '3000::3')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:0:4000::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 110)
 
 
 @pytest.mark.v6
@@ -159,34 +165,60 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_3():
 def test_v6_host_reservation_conflicts_two_entries_for_one_host_different_subnets_prefix():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)
     srv_control.config_srv_another_subnet_no_interface('3001::/30', '3001::1-3001::10')
+    srv_control.host_reservation_in_subnet('ip-address',
+                                           '3000::3',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:01')
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1:0:4000::/34',
+                                           '2001:db8:1:0:4000::/110',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.host_reservation_in_subnet('ip-address',
-                                           '3001::3',
-                                           1,
-                                           'hw-address',
-                                           'f6:f5:f4:f3:f2:01')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
+
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::3')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:0:4000::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 110)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'address', '3000::3')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:0:4000::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 110)
 
 
 @pytest.mark.v6
@@ -194,44 +226,62 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_different_subnet
 def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_used_prefix():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 33)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_copy_option('server-id')
     srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
-    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
     srv_msg.client_does_include('Client', 'client-id')
@@ -239,34 +289,19 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
 
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:33')
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-
-    misc.test_procedure()
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_copy_option('server-id')
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:33')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'REPLY')
-
-    # bigger prefix pool + reservation
+    # bigger prefix pool + reservation for existing
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 34)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:8001::/34',
+                                           '2001:db8::/33',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
@@ -296,108 +331,20 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:8001::', expect_include=False)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8::', expect_include=False)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:c000::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 34)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
 
-
-@pytest.mark.v6
-@pytest.mark.host_reservation
-def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_used_prefix_2():
-    misc.test_setup()
-    srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
+    # let's request it with fabricated IA_PD, we should get already assigned prefix
     misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-
-    misc.test_procedure()
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_copy_option('server-id')
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'REPLY')
-
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-
-    misc.test_procedure()
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_copy_option('server-id')
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'REPLY')
-
-    misc.test_procedure()
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    srv_msg.response_check_include_option(3)
-    srv_msg.response_check_option_content(3, 'sub-option', 5)
-    srv_msg.response_check_include_option(25)
-    srv_msg.response_check_option_content(25, 'sub-option', 13)
-    srv_msg.response_check_suboption_content(13, 25, 'statuscode', 6)
-
-    # bigger prefix pool + reservation
-    misc.test_setup()
-    srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 36)
-    srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:8001::/34',
-                                           0,
-                                           'duid',
-                                           '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_control.build_and_send_config_files()
-
-    srv_control.start_srv('DHCP', 'reconfigured')
-
-    misc.test_procedure()
-    srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-
-    misc.test_procedure()
-    srv_msg.client_copy_option('server-id')
-    srv_msg.client_copy_option('IA_NA')
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
-    srv_msg.client_sets_value('Client', 'plen', 32)
-    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:1:0:8000::')
+    srv_msg.client_sets_value('Client', 'plen', 33)
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8::')
     srv_msg.client_does_include('Client', 'IA_Prefix')
     srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
@@ -405,9 +352,8 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
-    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:8001::', expect_include=False)
-    srv_msg.response_check_include_option(3)
-    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:c000::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 34)
 
 
 @pytest.mark.v6
@@ -416,44 +362,62 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 33)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'IA-PD')
-    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_copy_option('server-id')
     srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
-    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
 
     misc.test_procedure()
-    srv_msg.client_does_include('Client', 'IA-PD')
     srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:22')
     srv_msg.client_does_include('Client', 'client-id')
@@ -461,6 +425,12 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
     #  SAVE VALUES
     srv_msg.client_save_option('IA_PD')
 
@@ -492,14 +462,14 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 35)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 35)
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1:0:8000::/33',
+                                           '2001:db8:1:0:8000::/110',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1::/33',
+                                           '2001:db8:1::/110',
                                            0,
                                            'hw-address',
                                            '00:03:00:01:f6:f5:f4:f3:f2:02')
@@ -523,6 +493,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1::', expect_include=False)
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:0:8000::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 110)
 
     # Sleep for 17 seconds.
     misc.test_procedure()
@@ -553,7 +524,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_control.set_time('valid-lifetime', 7)
     srv_control.set_time('preferred-lifetime', 8)
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 33)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -633,14 +604,14 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_control.set_time('valid-lifetime', 7)
     srv_control.set_time('preferred-lifetime', 8)
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
-    srv_control.config_srv_prefix('2001:db8:1::', 0, 32, 33)
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 33)
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1:0:8000::/33',
+                                           '2001:db8:1:0:8000::/110',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
     srv_control.host_reservation_in_subnet('prefix',
-                                           '2001:db8:1::/33',
+                                           '2001:db8:1::/110',
                                            0,
                                            'duid',
                                            '00:03:00:01:f6:f5:f4:f3:f2:02')
@@ -665,6 +636,7 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:0:8000::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 110)
 
     misc.test_procedure()
     srv_msg.client_does_include('Client', 'IA-PD')
@@ -693,10 +665,131 @@ def test_v6_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
-    # Response sub-option 26 from option 25 MUST NOT contain prefix 2001:db8:1::. # this can be in message but with validlifetime 0
-    # todo: associate validlifetimes with address from single suboption.
     srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:1:0:8000::', expect_include=False)
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
+
+
+@pytest.mark.v6
+@pytest.mark.host_reservation
+def test_v6_reserve_both_address_and_prefix():
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 35)
+    r = {"reservations": [{
+        "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+        "ip-addresses": [
+            "3000::100"
+        ],
+
+        "prefixes": [
+            "2001:db8:4::/50"
+        ]
+    }]}
+    world.dhcp_cfg["subnet6"][0].update(r)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::100')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:4::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 50)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::100')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:4::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 50)
+
+
+@pytest.mark.v6
+@pytest.mark.host_reservation
+def test_v6_reserve_both_address_and_prefix_different_reservations():
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
+    srv_control.config_srv_prefix('2001:db8::', 0, 32, 35)
+    srv_control.host_reservation_in_subnet('prefix',
+                                           '2001:db8:4::/50',
+                                           0,
+                                           'hw-address',
+                                           'f6:f5:f4:f3:f2:01')
+    srv_control.host_reservation_in_subnet('ip-address',
+                                           '3000::100',
+                                           0,
+                                           'duid',
+                                           '00:03:00:01:f6:f5:f4:f3:f2:02')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::100')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:4::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 50)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::100')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:4::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 50)
