@@ -1692,7 +1692,7 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
 
     kea_admin = world.f_cfg.sbin_join('kea-admin')
 
-    # MySQL
+    # -------------------------------- MySQL --------------------------------- #
     cmd = "mysql -u root -N -B -e \"DROP DATABASE IF EXISTS {db_name};\"".format(**locals())
     result = fabric_sudo_command(cmd, destination_host=dest)
     assert result.succeeded
@@ -1716,7 +1716,13 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
         result = fabric_run_command(cmd, destination_host=dest)
     assert result.succeeded
 
-    # PostgreSQL
+    # ------------------------------ PostgreSQL ------------------------------ #
+
+    # This command is required to drop {db_user}, but fails if {db_name} is not created.
+    # Let's ignore its result.
+    cmd = f"cd /; psql -U postgres -c 'ALTER DATABASE {db_name} OWNER TO postgres;'"
+    fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest, ignore_errors=True)
+
     cmd = "cd /; psql -U postgres -t -c \"DROP DATABASE IF EXISTS {db_name}\"".format(**locals())
     result = fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
     assert result.succeeded
@@ -1731,6 +1737,9 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     result = fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
     assert result.succeeded
     cmd = "cd /; psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user};\"".format(**locals())
+    result = fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
+    assert result.succeeded
+    cmd = f"cd /; psql -U postgres -c 'ALTER DATABASE {db_name} OWNER TO {db_user};'"
     result = fabric_sudo_command(cmd, sudo_user='postgres', destination_host=dest)
     assert result.succeeded
     if init_db:
