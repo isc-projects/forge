@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,6 +17,7 @@ from src import srv_msg
 
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import wait_for_message_in_log
+from src.softwaresupport import kea
 
 from .steps import generate_leases, wait_until_ha_state, send_increased_elapsed_time, send_heartbeat
 from .steps import HOT_STANDBY, LOAD_BALANCING
@@ -288,7 +289,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
-                                          "max-response-delay": 1500,
+                                          "max-response-delay": 4000,
                                           "max-unacked-clients": 2,
                                           "this-server-name": "server1"})
 
@@ -323,7 +324,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
-                                          "max-response-delay": 1500,
+                                          "max-response-delay": 4000,
                                           "max-unacked-clients": 2,
                                           "this-server-name": "server2"})
     world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
@@ -342,7 +343,13 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2, backend=backend)
 
     # stop server2
+    kea.insert_message_in_server_logs('Just about to stop server2.')
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
+    kea.insert_message_in_server_logs('server2 is now stopped.')
+
+    # The primary node is expected to not enter partner-down untill all these DISCOVERs or SOLICITs
+    # were sent. It's a sensitive timing issue, because after each message, forge waits to make sure
+    # there is no answer, and that takes time.
     if dhcp_version == 'v4':
         send_increased_elapsed_time(4, dhcp_version=dhcp_version, mac=["02:03:0d:04:0b:01",
                                                                        "03:04:0e:05:0c:02",

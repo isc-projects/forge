@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 Internet Systems Consortium.
+# Copyright (C) 2020-2023 Internet Systems Consortium.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -289,7 +289,7 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
     """
     Send messages with increased elapsed time (v6) or secs field (v4) to simulate one node failure
     :param msg_count: how many messages send
-    :param elapsed: value of time we are starting with
+    :param elapsed: value of time in seconds we are starting with
     :param dhcp_version: dhcp version
     :param mac: in load-balancing v4 we need to send specific mac addresses
     :param duid: in load-balancing v6 we need to send specific duids
@@ -297,7 +297,7 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
     tmp = world.f_cfg.show_packets_from
     world.f_cfg.show_packets_from = ""
     if dhcp_version == 'v6':
-        # v6 is in milliseconds not seconds so let's multiply elapsed time
+        # v6 is in 1/100 of a second, not seconds so let's multiply elapsed time.
         elapsed *= 100
         for i in range(msg_count):
             if isinstance(duid, list):
