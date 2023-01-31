@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1746,3 +1746,24 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
         cmd = "{kea_admin} db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
         result = fabric_run_command(cmd, destination_host=dest)
     assert result.succeeded
+
+
+def insert_message_in_server_logs(message: str):
+    """
+    Insert a message in all the server logs, for debugging purposes.
+    The messages are formatted in similar fashion to Kea's log messages.
+
+    :param message: the message to be logged
+    """
+
+    # Get only the hosts that are configured in forge.
+    hosts = [host for host in [world.f_cfg.mgmt_address, world.f_cfg.mgmt_address_2, world.f_cfg.mgmt_address_3] if len(host)]
+
+    # Format the message.
+    message = f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]} FORGE {message}'
+
+    # Log.
+    for host in hosts:
+        for file in [world.cfg["kea_log_file"], world.cfg["kea_ca_log_file"]]:
+            result = fabric_sudo_command(f'echo {message} >> {file}', destination_host=host)
+            assert result.succeeded

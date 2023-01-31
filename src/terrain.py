@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -264,7 +264,8 @@ def declare_all(dhcp_version=None):
         world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
                                            f'var/lib/kea/kea-leases{world.proto[1]}.csv')
 
-    world.cfg['kea_logs'] = os.path.join(world.f_cfg.software_install_path + '/var/log/kea.log')
+    world.cfg['kea_log_file'] = os.path.join(world.f_cfg.software_install_path + '/var/log/kea.log')
+    world.cfg['kea_ca_log_file'] = os.path.join(world.f_cfg.software_install_path + '/var/log/kea.log-CA')
 
     world.loops = {"active": False,
                    "save_leases_details": False}
