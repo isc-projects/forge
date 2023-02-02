@@ -729,14 +729,6 @@ def send_wait_for_message(condition_type, presence: str, exp_message: bool, prot
     :param port: destination port for TCP connection
     :return: list of replies from server
     """
-    """
-    Block until the given message is (not) received.
-    Parameter:
-    new: (' new', optional): Only check the output printed since last time
-                             this step was used for this process.
-    process_name ('<name> stderr'): Name of the process to check the output of.
-    message ('message <message>'): Output (part) to wait for.
-    """
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # debug.recv=[]
     # Uncomment this to get debug.recv filled with all received messages

@@ -411,6 +411,12 @@ def test_v6_assign_and_reply_simultaneously(backend):
     # now let's check if returned addresses were actually assigned
     # let's check if all received addresses were assigned previously and keep in mind that we could have more
     # assigned addresses then blq returned (don't check last message leasequery done)
+
+    # pylint: disable=cell-var-from-loop
+    # this error keeps popping up, in this case I think it's false positive
+    # to evaluate this you can print address of values ia_address and ia_prefix
+    # print(hex(id(ia_address)))
+
     for i in range(len(world.tcpmsg) - 1):
         srv_msg.tcp_get_message(order=i)
         msg = srv_msg.response_check_include_option(45)
@@ -419,13 +425,13 @@ def test_v6_assign_and_reply_simultaneously(backend):
         lease = []
         if len(ia_address) > 0:
             # amongst all generated leases find one with returned address
-            lease = list(filter(lambda d: d["address"] == ia_address[0].addr, first_set_of_leases + leases_set_no2))
+            lease += list(filter(lambda d: d["address"] == ia_address[0].addr, first_set_of_leases + leases_set_no2))
             assert len(lease) > 0, f"Received via BLQ address {ia_address[0].addr} was not assigned!"
         # if no IA address option was found, there has to be IA Prefix
         else:
-            prefix = srv_msg.get_option(msg, 26)[0]
-            lease = list(filter(lambda d: d["address"] == prefix[0].prefix, first_set_of_leases + leases_set_no2))
-            assert len(lease) > 0, f"Received via BLQ prefix {prefix[0].prefix} was not assigned!"
+            ia_prefix = srv_msg.get_option(msg, 26)
+            lease += list(filter(lambda d: d["address"] == ia_prefix[0].prefix, first_set_of_leases + leases_set_no2))
+            assert len(lease) > 0, f"Received via BLQ prefix {ia_prefix[0].prefix} was not assigned!"
         # and at the end let's check if duids of lease assigned and received via BLQ is equal
         srv_msg.response_check_include_option(45)
         srv_msg.response_check_option_content(45, 'sub-option', 1)
