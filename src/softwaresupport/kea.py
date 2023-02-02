@@ -949,11 +949,14 @@ def delete_hooks(hook_patterns):
                 del world.dhcp_cfg['hooks-libraries'][i]
 
 
-def add_parameter_to_hook(hook_number_or_name, parameter_name: str, parameter_value):
+def add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value):
     """
     Determine the hook library with number {hook_number_or_name} if it's an int,
     or that contains pattern {hook_number_or_name} if it's a str.
     Add to the hook library's parameters: "{parameter_name}": {parameter_value}
+
+    Other usage is to pass full dictionary as second argument and parameter_value set to None,
+    this way passed dictionary will be saved in parameters of particular hook
 
     :param hook_number_or_name: hook index starting with 1 or pattern contained in the library name
     :param parameter_name: the parameter's JSON key
@@ -970,7 +973,10 @@ def add_parameter_to_hook(hook_number_or_name, parameter_name: str, parameter_va
 
     if "parameters" not in world.dhcp_cfg["hooks-libraries"][hook_no].keys():
         world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"] = {}
-    if parameter_value in ["True", "true"]:
+    if isinstance(parameter_name, dict) and parameter_value is None:
+        world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"] = parameter_name
+        return
+    elif parameter_value in ["True", "true"]:
         parameter_value = True
     elif parameter_value in ["False", 'false']:
         parameter_value = False

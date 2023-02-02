@@ -36,7 +36,7 @@ def test_v4_leasequery_ip(backend, rai_version):
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"requesters": ["$(CIADDR)"]}})
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', {"requesters": ["$(CIADDR)"]})
     world.cfg["source_port"] = 67
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -138,7 +138,7 @@ def test_v4_leasequery_mac(backend, rai_version):
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"requesters": ["$(CIADDR)"]}})
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', {"requesters": ["$(CIADDR)"]})
     world.cfg["source_port"] = 67
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -241,7 +241,7 @@ def test_v4_leasequery_client(backend, rai_version):
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"requesters": ["$(CIADDR)"]}})
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', {"requesters": ["$(CIADDR)"]})
     world.cfg["source_port"] = 67
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -341,7 +341,7 @@ def test_v4_leasequery_denied():
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Adding different ip than forge machine
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"requesters": ["$(MGMT_ADDRESS)"]}})
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', {"requesters": [world.f_cfg.mgmt_address]})
     world.cfg["source_port"] = 67
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -415,7 +415,7 @@ def test_v6_negative(backend):
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"requesters": ["fe80::a00:27ff:fe6d:ee67"]}})
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', {"requesters": [world.f_cfg.cli_link_local]})
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.build_and_send_config_files()
@@ -599,8 +599,7 @@ def test_v6_negative(backend):
     srv_control.agent_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
-    # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"requesters": ["3300::11"]}})
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', {"requesters": ["3300::11"]})
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.build_and_send_config_files()
@@ -647,7 +646,7 @@ def test_v6_get_leases(backend):
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"requesters": ["fe80::a00:27ff:fe6d:ee67"]}})
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', {"requesters": [world.f_cfg.cli_link_local]})
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()

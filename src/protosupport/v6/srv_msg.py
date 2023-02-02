@@ -349,11 +349,8 @@ def client_does_include(sender_type, opt_type, value=None):
     elif opt_type == "remote-id":
         add_client_option(dhcp6.DHCP6OptRemoteID(enterprisenum=world.cfg["values"]["enterprisenum"],
                                                  remoteid=decode_hex(world.cfg["values"]["remote_id"].replace(':', ''))[0]))
-        #                                        remoteid=world.cfg["values"]["remote_id"].replace(':', '').decode('hex')))
 
     elif opt_type == "subscriber-id":
-        # add_client_option(dhcp6.DHCP6OptSubscriberID(subscriberid=world.cfg["values"]["subscriber_id"].
-        #                                              replace(':', '').decode('hex')))
         add_client_option(dhcp6.DHCP6OptSubscriberID(subscriberid=decode_hex(world.cfg["values"]["subscriber_id"].replace(':', ''))[0]))
 
     elif opt_type == "interface-id":
@@ -559,7 +556,7 @@ def build_msg(msg_dhcp):
     msg = IPv6(dst=world.cfg["address_v6"], src=world.cfg["cli_link_local"])
     msg /= UDP(sport=world.cfg["source_port"], dport=world.cfg["destination_port"])
 
-    # print("IP/UPD layers in bytes: ", raw(msg))
+    # print("IP/UDP layers in bytes: ", raw(msg))
 
     msg /= msg_dhcp
 
@@ -706,7 +703,7 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
             # and correct message exchange will be concluded with leasequery-done message (type 16)
             # so that's the point in which we close sockets and return all messages. If message
             # leasequery-done will not be last message received and we reach timeout value - messages
-            # will also ve returned, infinite wait won't happen
+            # will also be returned, infinite wait won't happen
             if msgs[-1].msgtype == 16:
                 close_sockets(socket_list)
                 return msgs
@@ -719,8 +716,19 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
     return msgs
 
 
-def send_wait_for_message(condition_type, presence, exp_message, protocol='UDP',
-                          address=None, port=None):
+def send_wait_for_message(condition_type, presence: str, exp_message: bool, protocol: str = 'UDP',
+                          address: str = None, port: int = None):
+    """
+    Send messages to server either TCP or UDP, check if response is received.
+    :param condition_type: not used
+    :param presence: name of message that should be received from a server (if we expect multiple messages,
+                     than this is name of the first message)
+    :param exp_message: condition if message is expected or not
+    :param protocol: choose protocol, for now it's UPD for dhcp messages and TCP for bulk lease query
+    :param address: destination address for TCP connection
+    :param port: destination port for TCP connection
+    :return: list of replies from server
+    """
     """
     Block until the given message is (not) received.
     Parameter:
@@ -755,7 +763,7 @@ def send_wait_for_message(condition_type, presence, exp_message, protocol='UDP',
                         iface=world.cfg["iface"],
                         timeout=factor * world.cfg['wait_interval'],
                         nofilter=1,
-                        verbose=0)
+                        verbose=int(world.f_cfg.forge_verbose))
         if world.f_cfg.forge_verbose == 0:
             print(".", end='')
 
@@ -1286,7 +1294,7 @@ def tcp_messages_include(**kwargs):
 
 def tcp_get_message(**kwargs):
     """
-    Find one message in the list of all received via TCP channel. Messages can be retrived via it's index in the list
+    Find one message in the list of all received via TCP channel. Messages can be retrieved via its index in the list
     or using address/prefix to find one specific message e.g.
     * tcp_get_message(address=lease["address"])
     * tcp_get_message(prefix=lease["address"])
@@ -1319,7 +1327,7 @@ def tcp_get_message(**kwargs):
         world.srvmsg = [world.tcpmsg[kwargs["order"]].copy()]
         return world.srvmsg[0]
     else:
-        assert False, "You can choose particular message by it's index or IP address that is suppose to have"
+        assert False, "You can choose particular message by its index or IP address that is suppose to have"
     assert False, f"Message with {scapy_field}={kwargs['address']} you are looking for couldn't be found."
 
 # -------------------- PARSING RECEIVED MESSAGE BLOCK END -------------------- #

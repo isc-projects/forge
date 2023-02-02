@@ -299,8 +299,9 @@ def delete_hooks(hook_patterns):
 
 
 @step(r'To hook no. (\d+) add parameter named (\S+) with value: (.+)')
-def add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value):
-    parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
+def add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value=None):
+    if not isinstance(parameter_name, dict):
+        parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     dhcp.add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value)
 
 

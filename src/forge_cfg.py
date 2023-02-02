@@ -43,6 +43,7 @@ SETTINGS = {
     'GIADDR4': None,
     'IFACE': None,
     'CLI_LINK_LOCAL': '',
+    'CLIENT_IPV6_ADDR_GLOBAL': '',
     'SERVER_IFACE': None,
     'SERVER2_IFACE': '',
     'OUTPUT_WAIT_INTERVAL': 1,
@@ -154,6 +155,18 @@ class ForgeConfiguration:
                     addr = addr.split('%')[0]
                 if addr.startswith('fe80'):
                     self.cli_link_local = addr
+                    break
+        # it could be simplified but let's keep it completely separate from cli_link_local
+        # address detection
+        if self.client_ipv6_addr_global == '':
+            addrs = netifaces.ifaddresses(self.iface)
+            if netifaces.AF_INET6 not in addrs:
+                raise Exception("ERROR: IPv6 is required on interface '%s'." % self.iface)
+            addrs6 = addrs[netifaces.AF_INET6]
+            for addr in addrs6:
+                addr = addr['addr']
+                if 'fe80::' not in addr:
+                    self.client_ipv6_addr_global = addr
                     break
 
         # used defined variables

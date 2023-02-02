@@ -136,16 +136,16 @@ def _check_address_and_duid_in_single_lq_message(duid, addr=None, prefix=None):
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_v6_multiple_networks(backend):
     """
-    Test of v6 lease query messages asking for ip address.
-    Test sends queries to trigger "leaseunknown", "leaseunassigned", and "leaseactive" responses.
+    Configure 4 different subnets and assign multiple leases from each. Than send multiple
+    bulk leasequery messages with different query types to check if returned leases are correct
     """
     bulk_leasequery_configuration = {"parameters": {
-                "requesters": ["2001:db8:1::2000"],
+                "requesters": [world.f_cfg.client_ipv6_addr_global],
                 "advanced": {
                      "bulk-query-enabled": True,
                      "active-query-enabled": False,
                      "extended-info-tables-enabled": True,
-                     "lease-query-ip": "2001:db8:1::1000",
+                     "lease-query-ip": world.f_cfg.srv_ipv6_addr_global,
                      "lease-query-tcp-port": 547,
                      "max-requester-connections": 10,
                      "max-concurrent-queries": 4,
@@ -173,7 +173,7 @@ def test_v6_multiple_networks(backend):
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update(bulk_leasequery_configuration)
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', bulk_leasequery_configuration["parameters"])
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -345,7 +345,6 @@ def test_v6_multiple_networks(backend):
 def test_v6_assign_and_reply_simultaneously(backend):
     """
     Let's trigger BLQ over TCP while assigning leases
-    Test sends queries to trigger "leaseunknown", "leaseunassigned", and "leaseactive" responses.
     :param backend: string, backends used in this test
     """
 
@@ -359,19 +358,21 @@ def test_v6_assign_and_reply_simultaneously(backend):
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {
-        "requesters": ["2001:db8:1::2000"],
+    blq = {
+        "requesters": [world.f_cfg.client_ipv6_addr_global],
         "advanced": {
             "bulk-query-enabled": True,
             "active-query-enabled": False,
             "extended-info-tables-enabled": True,
-            "lease-query-ip": "2001:db8:1::1000",
+            "lease-query-ip": world.f_cfg.srv_ipv6_addr_global,
             "lease-query-tcp-port": 547,
             "max-requester-connections": 10,
             "max-concurrent-queries": 4,
             "max-requester-idle-time":  3000,
             "max-leases-per-fetch": 5,
-        }}})
+        }}
+
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', blq)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -407,6 +408,28 @@ def test_v6_assign_and_reply_simultaneously(backend):
 
     leases_set_no2 = process_to_get_leases.get()
 
+    # now let's check if returned addresses were actually assigned
+    # let's check if all received addresses were assigned previously and keep in mind that we could have more
+    # assigned addresses then blq returned (don't check last message leasequery done)
+    for i in range(len(world.tcpmsg) - 1):
+        srv_msg.tcp_get_message(order=i)
+        msg = srv_msg.response_check_include_option(45)
+        # get address option
+        ia_address = srv_msg.get_option(msg, 5)
+        lease = []
+        if len(ia_address) > 0:
+            # amongst all generated leases find one with returned address
+            lease = list(filter(lambda d: d["address"] == ia_address[0].addr, first_set_of_leases + leases_set_no2))
+            assert len(lease) > 0, f"Received via BLQ address {ia_address[0].addr} was not assigned!"
+        # if no IA address option was found, there has to be IA Prefix
+        else:
+            prefix = srv_msg.get_option(msg, 26)[0]
+            lease = list(filter(lambda d: d["address"] == prefix[0].prefix, first_set_of_leases + leases_set_no2))
+            assert len(lease) > 0, f"Received via BLQ prefix {prefix[0].prefix} was not assigned!"
+        # and at the end let's check if duids of lease assigned and received via BLQ is equal
+        srv_msg.response_check_include_option(45)
+        srv_msg.response_check_option_content(45, 'sub-option', 1)
+        srv_msg.response_check_suboption_content(1, 45, 'duid', lease[0]['duid'])
     # now let's check how many responses we got
     _send_leasequery(5, remote_id='0a0027000001')
     srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=124, leasequery_done=1)
@@ -440,25 +463,26 @@ def test_v6_message_build(backend):
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {
-        "requesters": ["2001:db8:1::2000"],
+    blq = {
+        "requesters": [world.f_cfg.client_ipv6_addr_global],
         "advanced": {
             "bulk-query-enabled": True,
             "active-query-enabled": False,
             "extended-info-tables-enabled": True,
-            "lease-query-ip": "2001:db8:1::1000",
+            "lease-query-ip": world.f_cfg.srv_ipv6_addr_global,
             "lease-query-tcp-port": 547,
             "max-requester-connections": 10,
             "max-concurrent-queries": 10,
             "max-requester-idle-time":  3000,
             "max-leases-per-fetch": 50,
-        }}})
+        }}
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', blq)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
-    _get_lease(mac="01:02:0c:03:0a:00", link_addr="2001:db8:1::1000",
+    _get_lease(mac="01:02:0c:03:0a:00", link_addr=world.f_cfg.srv_ipv6_addr_global,
                remote_id="0a0027000001", relay_id='00:03:00:01:ff:ff:ff:ff:ff:01',
                leases_count=1, pd_count=0, addr_count=2)
     _send_leasequery(5, remote_id='0a0027000001', duid='00:03:00:01:11:11:11:11:11:01')
@@ -506,20 +530,21 @@ def test_v6_negative(backend):
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {
-        "requesters": ["2001:db8:1::2000"],
+    blq = {
+        "requesters": [world.f_cfg.client_ipv6_addr_global],
         "advanced": {
             "bulk-query-enabled": True,
             "active-query-enabled": False,
             "extended-info-tables-enabled": True,
-            "lease-query-ip": "2001:db8:1::1000",
+            "lease-query-ip": world.f_cfg.srv_ipv6_addr_global,
             "lease-query-tcp-port": 547,
             "max-requester-connections": 10,
             "max-concurrent-queries": 10,
             "max-requester-idle-time":  3000,
             "max-leases-per-fetch": 50,
-        }}})
+        }}
 
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', blq)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -659,20 +684,21 @@ def test_v6_junk_over_tcp(backend):
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {
-        "requesters": ["2001:db8:1::2000"],
+    blq = {
+        "requesters": [world.f_cfg.client_ipv6_addr_global],
         "advanced": {
             "bulk-query-enabled": True,
             "active-query-enabled": False,
             "extended-info-tables-enabled": True,
-            "lease-query-ip": "2001:db8:1::1000",
+            "lease-query-ip": world.f_cfg.srv_ipv6_addr_global,
             "lease-query-tcp-port": 547,
             "max-requester-connections": 10,
             "max-concurrent-queries": 10,
             "max-requester-idle-time":  3000,
             "max-leases-per-fetch": 50,
-        }}})
+        }}
 
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', blq)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -691,7 +717,7 @@ def test_v6_junk_over_tcp(backend):
     srv_msg.send_over_tcp(junk * 10, number_of_connections=7)
 
     # let's check if kea still works
-    all_leases = _get_lease(mac="01:02:0c:03:0a:00", link_addr="2001:db8:1::1000",
+    all_leases = _get_lease(mac="01:02:0c:03:0a:00", link_addr=world.f_cfg.srv_ipv6_addr_global,
                             remote_id="0a0027000001", relay_id='00:03:00:01:ff:ff:ff:ff:ff:01',
                             leases_count=1, pd_count=2, addr_count=2)
     _send_leasequery(5, remote_id='0a0027000001')
@@ -716,15 +742,14 @@ def test_v6_junk_over_tcp(backend):
 def test_v6_multiple_relays(backend):
     """
     Test of v6 lease query messages asking for ip address, se multiple relay ids and remote ids in the same subnet
-    Test sends queries to trigger "leaseunknown", "leaseunassigned", and "leaseactive" responses.
     """
     bulk_leasequery_configuration = {"parameters": {
-                "requesters": ["2001:db8:1::2000"],
+                "requesters": [world.f_cfg.client_ipv6_addr_global],
                 "advanced": {
                      "bulk-query-enabled": True,
                      "active-query-enabled": False,
                      "extended-info-tables-enabled": True,
-                     "lease-query-ip": "2001:db8:1::1000",
+                     "lease-query-ip": world.f_cfg.srv_ipv6_addr_global,
                      "lease-query-tcp-port": 547,
                      "max-requester-connections": 10,
                      "max-concurrent-queries": 4,
@@ -742,7 +767,7 @@ def test_v6_multiple_relays(backend):
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
-    world.dhcp_cfg["hooks-libraries"][0].update(bulk_leasequery_configuration)
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', bulk_leasequery_configuration["parameters"])
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
