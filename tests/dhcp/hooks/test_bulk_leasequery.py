@@ -488,7 +488,7 @@ def test_v6_message_build(backend):
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
-    _get_lease(mac="01:02:0c:03:0a:00", link_addr=world.f_cfg.srv_ipv6_addr_global,
+    _get_lease(mac="01:02:0c:03:0a:00", link_addr="2001:db8:1::1000",
                remote_id="0a0027000001", relay_id='00:03:00:01:ff:ff:ff:ff:ff:01',
                leases_count=1, pd_count=0, addr_count=2)
     _send_leasequery(5, remote_id='0a0027000001', duid='00:03:00:01:11:11:11:11:11:01')
@@ -723,7 +723,7 @@ def test_v6_junk_over_tcp(backend):
     srv_msg.send_over_tcp(junk * 10, number_of_connections=7)
 
     # let's check if kea still works
-    all_leases = _get_lease(mac="01:02:0c:03:0a:00", link_addr=world.f_cfg.srv_ipv6_addr_global,
+    all_leases = _get_lease(mac="01:02:0c:03:0a:00", link_addr="2001:db8:1::1000",
                             remote_id="0a0027000001", relay_id='00:03:00:01:ff:ff:ff:ff:ff:01',
                             leases_count=1, pd_count=2, addr_count=2)
     _send_leasequery(5, remote_id='0a0027000001')
