@@ -716,19 +716,8 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
     return msgs
 
 
-def send_wait_for_message(condition_type, presence: str, exp_message: bool, protocol: str = 'UDP',
-                          address: str = None, port: int = None):
-    """
-    Send messages to server either TCP or UDP, check if response is received.
-    :param condition_type: not used
-    :param presence: name of message that should be received from a server (if we expect multiple messages,
-                     than this is name of the first message)
-    :param exp_message: condition if message is expected or not
-    :param protocol: choose protocol, for now it's UPD for dhcp messages and TCP for bulk lease query
-    :param address: destination address for TCP connection
-    :param port: destination port for TCP connection
-    :return: list of replies from server
-    """
+def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
+                          protocol: str = 'UDP', address: str = None, port: int = None):
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # debug.recv=[]
     # Uncomment this to get debug.recv filled with all received messages

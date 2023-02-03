@@ -207,11 +207,20 @@ def send_dont_wait_for_message():
 
 
 @step(r'Server (\S+) (NOT )?respond with (\w+) message.')
-def send_wait_for_message(server_type, message, expect_response=True, protocol='UDP', address=None, port=None):
+def send_wait_for_message(requirement_level: str, message: str, expect_response: bool = True,
+                          protocol: str = 'UDP', address: str = None, port: int = None):
     """
-    This step causes to send message to server and capture respond.
+    Send messages to server either TCP or UDP, check if response is received.
+    :param requirement_level: not used. RFC-grade requirement level e.g. 'MAY', 'MUST'
+    :param message: name of message that should be received from a server (if we expect multiple messages,
+                     than this is name of the first message)
+    :param expect_response: condition if message is expected or not
+    :param protocol: choose protocol, for now it's UDP for DHCP messages and TCP for bulk lease query
+    :param address: destination address for TCP connection
+    :param port: destination port for TCP connection
+    :return: list of replies from server
     """
-    return dhcpmsg.send_wait_for_message(server_type, expect_response, message, protocol, address=address, port=port)
+    return dhcpmsg.send_wait_for_message(requirement_level, expect_response, message, protocol, address=address, port=port)
 
 
 @step(r'(Response|Relayed Message) MUST (NOT )?include option (\d+).')

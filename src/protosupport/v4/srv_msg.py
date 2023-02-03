@@ -364,10 +364,8 @@ def get_msg_type(msg):
     return "UNKNOWN-TYPE"
 
 
-def send_wait_for_message(msgtype, presence, exp_message, protocol='UDP', address=None, port=None):
-    """
-    Block until the given message is (not) received.
-    """
+def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
+                          protocol: str = 'UDP', address: str = None, port: int = None):
     # We need to use srp() here (send and receive on layer 2)
     factor = 1
     pytest_current_test = os.environ.get('PYTEST_CURRENT_TEST')
