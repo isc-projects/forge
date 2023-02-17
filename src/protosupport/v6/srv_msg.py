@@ -1045,6 +1045,8 @@ def response_check_include_suboption(opt_code, expect, expected_value):
     :return: tuple(the list of suboptions, the suboption code)
     """
     x = []
+    opt_code = get_option_code(opt_code)
+    expected_value = get_option_code(expected_value)
     for option_code, option in world.subopts:
         if option_code == opt_code and option.optcode == int(expected_value):
             x.append(option)
