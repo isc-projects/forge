@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -25,6 +25,7 @@ def test_v4_all_hooks_start():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     # flex id
+    srv_control.configure_multi_threading(False)
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,

@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -622,6 +622,16 @@ def disable_leases_affinity():
     behaviour changed ot 2.3.2
     """
     dhcp.disable_lease_affinity()
+
+
+def configure_multi_threading(mt: bool, pool: int = 0, queue: int = 0):
+    """
+    Configure multithreading settings directly, this will also disable automated check
+    :param mt: bool, "enable-multi-threading" value
+    :param pool: int, "thread-pool-size" value
+    :param queue: int, "packet-queue-size" value
+    """
+    dhcp.configure_multi_threading(mt, pool, queue)
 
 
 def update_expired_leases_processing(param):

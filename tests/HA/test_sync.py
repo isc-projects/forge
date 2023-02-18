@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2020-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -715,7 +715,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
 
     # ---- HA server1 ----
     misc.test_setup()
-
+    srv_control.configure_multi_threading(False)
     # Clear data.
     srv_control.clear_some_data('all')
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,5 +24,5 @@ from src.softwaresupport.kea import prepare_cfg_add_option_shared_network, confi
 from src.softwaresupport.kea import kea_otheroptions, add_option_to_defined_class, config_require_client_classification
 from src.softwaresupport.kea import host_reservation, host_reservation_extension, add_siaddr, disable_client_echo
 from src.softwaresupport.kea import update_ha_hook_parameter, db_setup, generate_certificate
-from src.softwaresupport.kea import disable_lease_affinity, update_expired_leases_processing
+from src.softwaresupport.kea import disable_lease_affinity, update_expired_leases_processing, configure_multi_threading
 # TODO remove this file :) but this is another set of reworks so for another time

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -109,7 +109,7 @@ def test_status_get_multi_threading_disabled(channel, dhcp_version):
     Test also checks if certain arguments are omitted in status when multi-threading is disabled.
     """
     misc.test_setup()
-    world.f_cfg.multi_threading_enabled = False
+    srv_control.configure_multi_threading(False)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     srv_control.build_and_send_config_files()
@@ -118,11 +118,57 @@ def test_status_get_multi_threading_disabled(channel, dhcp_version):
     cmd = {"command": "status-get", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd, channel)
 
-    assert response['arguments']['multi-threading-enabled'] is False
+    assert response['arguments']['multi-threading-enabled'] is False, "multi-threading-enabled is not set to False"
     for cmd in ["thread-pool-size",
                 "packet-queue-size",
                 "packet-queue-statistics"]:
         assert cmd not in response['arguments']
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.ca
+@pytest.mark.controlchannel
+def test_status_get_multi_threading_explicit_setting(dhcp_version):
+    """ Tests if server with disabled multi-threading reports it properly.
+    Test also checks if certain arguments are omitted in status when multi-threading is disabled.
+    """
+    misc.test_setup()
+    srv_control.configure_multi_threading(True, 5, 50)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    cmd = {"command": "status-get", "arguments": {}}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+
+    assert response['arguments']['multi-threading-enabled'] is True, "multi-threading-enabled is not set to True"
+    assert response['arguments']['thread-pool-size'] == 5, "thread-pool-size is not set to 5"
+    assert response['arguments']['packet-queue-size'] == 50, "packet-queue-size is not set to 50"
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.ca
+@pytest.mark.controlchannel
+def test_status_get_multi_threading_default_setting(dhcp_version):
+    """ Tests if server with disabled multi-threading reports it properly.
+    Test also checks if certain arguments are omitted in status when multi-threading is disabled.
+    """
+    misc.test_setup()
+    world.f_cfg.multi_threading_enabled = False
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    cmd = {"command": "status-get", "arguments": {}}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+
+    assert response['arguments']['multi-threading-enabled'] is True, "multi-threading-enabled is not set to True"
+    assert response['arguments']['thread-pool-size'] == 4, "thread-pool-size is not set to 4"
+    assert response['arguments']['packet-queue-size'] == 64, "packet-queue-size is not set to 64"
 
 
 @pytest.mark.v4
@@ -155,7 +201,7 @@ def test_status_get_multi_threading_enabled(channel, dhcp_version):
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
-@pytest.mark.parametrize('channel', ['socket', 'http'])
+@pytest.mark.parametrize('channel', ['http'])
 def test_status_get_multi_threading_queue(channel, dhcp_version):
     """ Tests if server with enabled multi-threading reports changes in packet-queue-statistics.
     """

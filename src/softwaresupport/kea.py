@@ -1166,8 +1166,19 @@ def _set_kea_ctrl_config():
     '''.format(**locals())
 
 
+def configure_multi_threading(mt, pool=0, queue=0):
+    world.dhcp_cfg.update({"multi-threading": {"enable-multi-threading": mt,
+                                               "thread-pool-size": pool,
+                                               "packet-queue-size": queue}})
+    world.f_cfg.multi_threading_enabled = False  # MT configured, automated process is not needed
+
+
 def add_mt_if_we_can(cfg):
     log.debug("Checking if we can add MT.")
+    if not world.f_cfg.multi_threading_enabled:
+        # if multithreading is disabled or already set - exit
+        return cfg
+
     # hooks that are not MT compatible (ever or at this moment)
     list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_radius.so", "libdhcp_user_chk.so"]
 
@@ -1177,7 +1188,7 @@ def add_mt_if_we_can(cfg):
         list_of_used_hooks.append(hooks["library"].split("/")[-1])
 
     # if any of configured hooks is not working with multi-threading then do NOT enable multi-threading in kea config
-    if len(set(list_of_used_hooks).intersection(list_of_non_mt_hooks)) == 0 and world.f_cfg.multi_threading_enabled:
+    if len(set(list_of_used_hooks).intersection(list_of_non_mt_hooks)) == 0:
         if 'multi-threading' not in cfg[f'Dhcp{world.proto[1]}']:
             log.debug("Adding MT configuration.")
             cfg[f"Dhcp{world.proto[1]}"].update({"multi-threading": {"enable-multi-threading": True,
