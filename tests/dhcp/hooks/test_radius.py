@@ -46,7 +46,6 @@ def test_radius(dhcp_version: str,
     # Provide RADIUS configuration and start RADIUS server.
     radius.add_usual_reservations()
     radius.init_and_start_radius()
-    srv_control.configure_multi_threading(False)
 
     # Configure and start Kea.
     configs = radius.configurations()
@@ -99,7 +98,6 @@ def test_radius_framed_pool(dhcp_version: str, attribute_cardinality: str):
     # Provid§e RADIUS configuration and start RADIUS server.
     radius.add_reservation('08:00:27:b0:c1:41', attributes)
     radius.init_and_start_radius()
-    srv_control.configure_multi_threading(False)
 
     # Configure and start Kea.
     configs = radius.configurations()
@@ -140,7 +138,6 @@ def test_radius_no_attributes(dhcp_version: str):
     # Provide RADIUS configuration and start RADIUS server.
     radius.add_reservation('08:00:27:b0:c1:41')
     radius.init_and_start_radius()
-    srv_control.configure_multi_threading(False)
 
     # Configure with an unguarded pool and start Kea.
     setup_server_with_radius(**{
@@ -200,7 +197,6 @@ def test_radius_giaddr(dhcp_version: str,
         'Framed-IPv6-Address = "2001:db8:50::5"',
     ])
     radius.init_and_start_radius()
-    srv_control.configure_multi_threading(False)
 
     # Configure and start Kea.
     configs = radius.configurations()

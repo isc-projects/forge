@@ -1166,20 +1166,17 @@ def _set_kea_ctrl_config():
     '''.format(**locals())
 
 
-def configure_multi_threading(mt, pool=0, queue=0):
-    world.dhcp_cfg.update({"multi-threading": {"enable-multi-threading": mt,
+def configure_multi_threading(enable_mt, pool=0, queue=0):
+    world.dhcp_cfg.update({"multi-threading": {"enable-multi-threading": enable_mt,
                                                "thread-pool-size": pool,
                                                "packet-queue-size": queue}})
     world.f_cfg.multi_threading_enabled = False  # MT configured, automated process is not needed
 
 
-def add_mt_if_we_can(cfg):
-    log.debug("Checking if we can add MT.")
-    if not world.f_cfg.multi_threading_enabled:
-        # if multithreading is disabled or already set - exit
-        return cfg
-
+def disable_mt_if_required(cfg):
+    # let's change behaviour, now let's disable mt in all places we have to do it.
     # hooks that are not MT compatible (ever or at this moment)
+    # world.f_cfg.multi_threading_enabled will still define need in automated MT configuration
     list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_radius.so", "libdhcp_user_chk.so"]
 
     # all configured hooks
@@ -1187,29 +1184,28 @@ def add_mt_if_we_can(cfg):
     for hooks in cfg[f'Dhcp{world.proto[1]}']["hooks-libraries"]:
         list_of_used_hooks.append(hooks["library"].split("/")[-1])
 
-    # if any of configured hooks is not working with multi-threading then do NOT enable multi-threading in kea config
-    if len(set(list_of_used_hooks).intersection(list_of_non_mt_hooks)) == 0:
+    # if any of configured hooks is not working with multi-threading then disable multi-threading in kea config
+    if len(set(list_of_used_hooks).intersection(list_of_non_mt_hooks)) != 0:
         if 'multi-threading' not in cfg[f'Dhcp{world.proto[1]}']:
-            log.debug("Adding MT configuration.")
-            cfg[f"Dhcp{world.proto[1]}"].update({"multi-threading": {"enable-multi-threading": True,
-                                                                     "thread-pool-size": 0,
-                                                                     "packet-queue-size": 16}})
+            log.debug("Disable MT")
+            cfg[f"Dhcp{world.proto[1]}"].update({"multi-threading": {"enable-multi-threading": False}})
 
-        if "libdhcp_ha.so" in list_of_used_hooks:
-            ha_mt = {"multi-threading": {"enable-multi-threading": True,
-                                         "http-dedicated-listener": True,
-                                         "http-listener-threads": 2,
-                                         "http-client-threads": 2}}
+    # if non of forbidden hooks were found and ha is detected, enable MT mode in HA
+    elif "libdhcp_ha.so" in list_of_used_hooks and world.f_cfg.multi_threading_enabled:
+        ha_mt = {"multi-threading": {"enable-multi-threading": True,
+                                     "http-dedicated-listener": True,
+                                     "http-listener-threads": 2,
+                                     "http-client-threads": 2}}
 
-            # HA needs to enable it's own MT connectivity
-            for hook in cfg[f"Dhcp{world.proto[1]}"]["hooks-libraries"]:
-                if "libdhcp_ha.so" in hook["library"]:
-                    # change port number to not go through CA, CA will be run in the test for all other commands
-                    for peer in hook["parameters"]["high-availability"][0]["peers"]:
-                        # let's replace any port number with new
-                        peer["url"] = ":".join(peer["url"].split(":")[:2])+":8003/"
-                    # and add mt settings
-                    hook["parameters"]["high-availability"][0].update(ha_mt)
+        # HA needs to enable it's own MT connectivity
+        for hook in cfg[f"Dhcp{world.proto[1]}"]["hooks-libraries"]:
+            if "libdhcp_ha.so" in hook["library"]:
+                # change port number to not go through CA, CA will be run in the test for all other commands
+                for peer in hook["parameters"]["high-availability"][0]["peers"]:
+                    # let's replace any port number with new
+                    peer["url"] = ":".join(peer["url"].split(":")[:2])+":8003/"
+                # and add mt settings
+                hook["parameters"]["high-availability"][0].update(ha_mt)
     return cfg
 
 
@@ -1231,7 +1227,7 @@ def _cfg_write():
 
     world.dhcp_cfg = {dhcp: world.dhcp_cfg}
 
-    world.dhcp_cfg = add_mt_if_we_can(world.dhcp_cfg)
+    world.dhcp_cfg = disable_mt_if_required(world.dhcp_cfg)
 
     if world.ddns_enable:
         world.ddns_cfg = {"DhcpDdns": world.ddns_cfg}
@@ -1256,7 +1252,7 @@ def _write_cfg2(cfg):
                       indent=4, separators=(',', ': '))
 
     if f'Dhcp{world.proto[1]}' in cfg:
-        cfg = add_mt_if_we_can(cfg)
+        cfg = disable_mt_if_required(cfg)
         with open(f'kea-dhcp{world.proto[1]}.conf', 'w') as cfg_file:
             json.dump({f'Dhcp{world.proto[1]}': cfg[f'Dhcp{world.proto[1]}']},
                       cfg_file, sort_keys=False, indent=4, separators=(',', ': '))

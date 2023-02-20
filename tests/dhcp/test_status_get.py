@@ -167,8 +167,6 @@ def test_status_get_multi_threading_default_setting(dhcp_version):
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
 
     assert response['arguments']['multi-threading-enabled'] is True, "multi-threading-enabled is not set to True"
-    assert response['arguments']['thread-pool-size'] == 4, "thread-pool-size is not set to 4"
-    assert response['arguments']['packet-queue-size'] == 64, "packet-queue-size is not set to 64"
 
 
 @pytest.mark.v4

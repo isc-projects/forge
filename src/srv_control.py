@@ -624,14 +624,14 @@ def disable_leases_affinity():
     dhcp.disable_lease_affinity()
 
 
-def configure_multi_threading(mt: bool, pool: int = 0, queue: int = 0):
+def configure_multi_threading(enable_mt: bool, pool: int = 0, queue: int = 0):
     """
     Configure multithreading settings directly, this will also disable automated check
-    :param mt: bool, "enable-multi-threading" value
+    :param enable_mt: bool, "enable-multi-threading" value
     :param pool: int, "thread-pool-size" value
     :param queue: int, "packet-queue-size" value
     """
-    dhcp.configure_multi_threading(mt, pool, queue)
+    dhcp.configure_multi_threading(enable_mt, pool, queue)
 
 
 def update_expired_leases_processing(param):

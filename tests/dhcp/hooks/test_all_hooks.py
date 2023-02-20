@@ -25,7 +25,6 @@ def test_v4_all_hooks_start():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     # flex id
-    srv_control.configure_multi_threading(False)
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-hostname',
                                            0,
