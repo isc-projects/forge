@@ -982,7 +982,6 @@ def get_subopt_from_option(exp_opt_code, exp_subopt_code):
     # Ensure option codes are integers.
     exp_opt_code = get_option_code(exp_opt_code)
     exp_subopt_code = get_option_code(exp_subopt_code)
-
     result = []
     received = ''
     list_fields = ["clientoptions",
@@ -1002,7 +1001,10 @@ def get_subopt_from_option(exp_opt_code, exp_subopt_code):
         # as sub-option from option 25. And that's important!
         if opt_code != exp_opt_code:
             continue
-
+        if opt_code == exp_opt_code:
+            if opt_data.optcode == exp_subopt_code:
+                result.append(opt_data)
+                received = str(opt_data.optcode)
         # now we need to find specific sub-option list:
         for list_field in list_fields:
             # if we found list - we need to check every option on that list
