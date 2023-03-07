@@ -910,13 +910,6 @@ def get_option(msg, opt_code, get_all=False):
                         world.subopts.append([tmp_msg.optcode, t])
                         sub_option = sub_option.payload
 
-        # add Status Code to suboptions even if it is option in main message
-        # TODO check if it is still needed!
-        if tmp_msg.optcode == 13:
-            opt = tmp_msg.copy()
-            del opt.payload
-            world.subopts.append([0, opt])
-
         tmp_msg = tmp_msg.payload
 
     if len(result) > 0 and not get_all:
