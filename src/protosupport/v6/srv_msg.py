@@ -873,12 +873,13 @@ def get_option(msg, opt_code, get_all=False):
     # clear all opts/subopts
     world.opts = []
     world.subopts = []
-    tmp = []
-    # TODO: get rid of x and tmp_msg
+    result = []
+
     if len(world.rlymsg) == 0 and len(world.tcpmsg) == 0:  # relay message is already cropped to exact layer
         tmp_msg = tmp_msg.getlayer(3)  # 0th is IPv6, 1st is UDP, 2nd is DHCP6, 3rd is the first option
     elif len(world.tcpmsg) != 0:
         tmp_msg = tmp_msg.getlayer(1)
+
     # check all message, for expected option and all suboptions in IA_NA/IA_PD
     check_suboptions = ["clientoptions",
                         "ianaopts",
@@ -889,11 +890,12 @@ def get_option(msg, opt_code, get_all=False):
                         "queryopts",
                         "vcdata",
                         "vso"]
+
     while tmp_msg:
         if tmp_msg.optcode == opt_code:
             opt = tmp_msg.copy()
             del opt.payload
-            tmp.append(opt)
+            result.append(opt)
             world.opts.append(opt)
 
         for each in check_suboptions:
@@ -917,10 +919,10 @@ def get_option(msg, opt_code, get_all=False):
 
         tmp_msg = tmp_msg.payload
 
-    if len(tmp) > 0 and not get_all:
-        tmp = tmp[-1]
+    if len(result) > 0 and not get_all:
+        result = result[-1]
 
-    return tmp
+    return result
 
 
 def unknown_option_to_str(data_type, opt):
