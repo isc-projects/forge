@@ -918,7 +918,8 @@ def get_option(msg, opt_code, get_all=False):
         tmp_msg = tmp_msg.payload
 
     if len(tmp) > 0 and not get_all:
-        return tmp[0]
+        tmp = tmp[-1]
+
     return tmp
 
 
