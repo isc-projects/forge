@@ -10,6 +10,7 @@
 # By a lot of feature files.
 
 # pylint: disable=consider-using-enumerate
+# pylint: disable=invalid-name
 # pylint: disable=superfluous-parens
 
 from scapy.layers.dhcp6 import DHCP6OptOptReq
@@ -85,26 +86,54 @@ def test_procedure():
             pass
 
 
-def merge_containers(target, source):
+def merge_containers(target, source, identify=None, last_list_parent_key=None):
     """
     Recursively merges dicts and lists from {source} into {target}.
     :param target: container being merged into
     :param source: container being merged
+    :param identify: dict used to uniquely identify elements within the source and target lists that
+                     are being merged. Keys in this dict are so-called last-list-parent-keys - a way
+                     to limit the places where these unique keys are considered. Values in this dict
+                     are the unique IDs for the elements in the source and target lists being
+                     merged. By default None which means no smart merging is attempted.
+                     E.g. {'output_options': 'output'} for:
+                     {
+                         "name": "kea-dhcp6",
+                         "output_options": [
+                             {
+                                 "output": "/opt/kea/var/log/kea.log",
+                                 "flush": true,
+                                 "maxsize": 10240000,
+                                 "maxver": 1,
+                                 "pattern": ""
+                             }
+                         ],
+                         "debuglevel": 99,
+                         "severity": "DEBUG"
+                     }
+    :param last_list_parent_key: The last dict key that hosted a list in the recursive path. This
+                                 will be matched against keys in {identify}. Only for internal
+                                 recursive calls. Don't set this explicitly from external calls.
+
     """
     if (isinstance(target, dict)):
         for k, v in source.items():
             if (k in target and isinstance(target[k], dict) and isinstance(v, dict)):
-                merge_containers(target[k], v)
+                merge_containers(target[k], v, identify, k)
             elif (k in target and isinstance(target[k], list) and isinstance(v, list)):
-                merge_containers(target[k], v)
+                merge_containers(target[k], v, identify, k)
             else:
                 target[k] = v
     elif (isinstance(target, list)):
-        # TODO: The current merging is simple, it just makes sure the element is in the list.
-        # It could be much smarter by recursing inside the list all the way to leaves and merge
-        # those, just as dicts do in the other if-branch. However this requires some form of
-        # identification of list elements. Providing the keys for each list would solve it. Maybe
-        # through the use of paths e.g. pools[pool="192.168.0.1-192.168.0.2"].
-        for i in range(len(source)):
-            if (source[i] not in target):
-                target.append(source[i])
+        if identify is not None and last_list_parent_key is not None and last_list_parent_key in identify:
+            # We have information about what to merge.
+            list_id = identify[last_list_parent_key]
+            for (s, t) in [(s, t) for s in source for t in target if s[list_id] == t[list_id]]:
+                merge_containers(t, s, identify, None)
+                break
+        else:
+            # No information about what to merge. Just do a best-effort approach
+            # and add source elements to target if they are not already there.
+            for s in source:
+                if (s not in target):
+                    target.append(s)

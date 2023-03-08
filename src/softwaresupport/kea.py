@@ -26,6 +26,7 @@ import logging
 from src import srv_msg
 
 from src.forge_cfg import world
+from src.misc import merge_containers
 from src.protosupport.multi_protocol_functions import add_variable, substitute_vars
 from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
 from src.protosupport.multi_protocol_functions import wait_for_message_in_log
@@ -470,7 +471,16 @@ def add_defaults6():
     add_interface(iface, add_to_existing=False)
 
 
-def add_logger(log_type, severity, severity_level, logging_file=None):
+def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_name=True):
+    """
+    Adds a logger with specified values to the Kea configuration.
+    :param log_type: name of the logger (e.g. 'kea-dhcp6', 'kea-dhcp6.options')
+    :param severity: logger severity (e.g. 'DEBUG', 'INFO')
+    :param severity_level: debug level
+    :param logging_file: the output for the log messages ('stdout', 'syslog', or file name)
+    :param merge_by_name: whether to merge into other existing loggers if the name is matched.
+                          True by default. If False, the logger is simply added without any checks.
+    """
     if world.f_cfg.install_method == 'make':
         if logging_file is None:
             logging_file = 'kea.log'
@@ -489,7 +499,17 @@ def add_logger(log_type, severity, severity_level, logging_file=None):
 
     if "loggers" not in world.dhcp_cfg:
         world.dhcp_cfg["loggers"] = []
-    world.dhcp_cfg["loggers"].append(logger)
+
+    if merge_by_name:
+        found = False
+        for cfg_logger in world.dhcp_cfg['loggers']:
+            if cfg_logger['name'] == logger['name']:
+                merge_containers(cfg_logger, logger, {'output_options': 'output'})
+                found = True
+        if not found:
+            world.dhcp_cfg['loggers'].append(logger)
+    else:
+        world.dhcp_cfg['loggers'].append(logger)
 
 
 # Configure a control socket.
