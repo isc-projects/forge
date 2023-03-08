@@ -49,7 +49,7 @@ def test_reservation_mode_in_globals(dhcp_version, backend):
                 }]
             }],
             reservations=[{"hw-address": "00:00:00:00:00:01",
-                           "ip-address": '1.1.1.1'}])
+                           "ip-address": '2.2.2.88'}])
 
     else:
         init_cfg = dict(
@@ -63,7 +63,7 @@ def test_reservation_mode_in_globals(dhcp_version, backend):
                 }]
             }],
             reservations=[{"duid": "00:03:00:01:00:00:00:00:00:01",
-                           "ip-addresses": ['2001:db8:1::3']}])
+                           "ip-addresses": ['2001:db8:1::88']}])
 
     init_cfg['check-config'] = True
 
@@ -74,7 +74,7 @@ def test_reservation_mode_in_globals(dhcp_version, backend):
 
     # change reservation-mode to 'global' and now address should be returned from global reservations
     cfg.set_global_parameter(backend=backend, reservation_mode='global')
-    get_address(mac_addr="00:00:00:00:00:01", exp_addr='1.1.1.1' if dhcp_version == 'v4' else '2001:db8:1::3')
+    get_address(mac_addr="00:00:00:00:00:01", exp_addr='2.2.2.88' if dhcp_version == 'v4' else '2001:db8:1::88')
 
     # now change reservation-mode to 'disabled' and then the address should be returned from subnet pool
     # (not from reservations)
