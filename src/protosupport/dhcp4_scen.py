@@ -100,7 +100,7 @@ def send_discover_and_check_offer(
     msgs = srv_msg.send_wait_for_message('MUST', 'OFFER')
     rcvd_yiaddr = msgs[0].yiaddr
     if exp_yiaddr is not None:
-        assert rcvd_yiaddr == exp_yiaddr
+        assert rcvd_yiaddr == exp_yiaddr, f'received {rcvd_yiaddr} != expected {exp_yiaddr}'
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.response_check_include_option('server-id')
