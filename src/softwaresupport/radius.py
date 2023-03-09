@@ -101,11 +101,9 @@ def add_usual_reservations():
         'Framed-IPv6-Pool = "blues"',
     ])
 
-    add_reservation('08:00:27:b0:c1:42', [
-        'Framed-IP-Address = "192.168.52.52"',
-        'Framed-IPv6-Address = "2001:db8:52::52"',
-        'Framed-Pool = "gold"',
-        'Framed-IPv6-Pool = "gold"',
+    add_reservation('08:00:27:b0:c1:50', [
+        'Framed-IP-Address = "192.168.50.50"',
+        'Framed-IPv6-Address = "2001:db8:50::50"',
     ])
 
     add_reservation('08:00:27:b0:c5:01', [
@@ -229,10 +227,12 @@ def configurations(interface: str = world.f_cfg.server_iface):
                             {
                                 'client-class': 'gold',
                                 'pool': '192.168.50.5 - 192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5 - 2001:db8:50::5'
-                            }, {
+                            },
+                            {
                                 'client-class': 'silver',
                                 'pool': '192.168.50.6 - 192.168.50.6' if world.proto == 'v4' else '2001:db8:50::6 - 2001:db8:50::6'
-                            }, {
+                            },
+                            {
                                 'client-class': 'bronze',
                                 'pool': '192.168.50.7 - 192.168.50.7' if world.proto == 'v4' else '2001:db8:50::7 - 2001:db8:50::7'
                             }
@@ -245,7 +245,8 @@ def configurations(interface: str = world.f_cfg.server_iface):
                             {
                                 'client-class': 'gold',
                                 'pool': '192.168.60.5 - 192.168.60.5' if world.proto == 'v4' else '2001:db8:60::5 - 2001:db8:60::5'
-                            }, {
+                            },
+                            {
                                 'client-class': 'silver',
                                 'pool': '192.168.60.6 - 192.168.60.6' if world.proto == 'v4' else '2001:db8:60::6 - 2001:db8:60::6'
                             }
@@ -258,6 +259,9 @@ def configurations(interface: str = world.f_cfg.server_iface):
                         'pools': [
                             {
                                 'pool': '192.168.70.5 - 192.168.70.5' if world.proto == 'v4' else '2001:db8:70::5 - 2001:db8:70::5'
+                            },
+                            {
+                                'pool': '192.168.70.20 - 192.168.70.30' if world.proto == 'v4' else '2001:db8:70::20 - 2001:db8:70::30'
                             }
                         ],
                         'subnet': '192.168.70.0/24' if world.proto == 'v4' else '2001:db8:70::/64'
@@ -363,8 +367,8 @@ def send_and_receive(config_type: str,
     elif radius_reservation_in_pool == 'radius-reservation-outside-pool':
         # Get a lease that is explicitly configured in RADIUS as
         # Framed-IP-Address that is outside of any configured pool in Kea.
-        leases.append(get_address(mac='08:00:27:b0:c1:42',
-                                  expected_lease='192.168.52.52' if world.proto == 'v4' else '2001:db8:52::52'))
+        leases.append(get_address(mac='08:00:27:b0:c1:50',
+                                  expected_lease='192.168.50.50' if world.proto == 'v4' else '2001:db8:50::50'))
 
         # A client with a gold Framed-Pool should get the lease because the
         # pool has a free lease.

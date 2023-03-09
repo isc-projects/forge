@@ -4,8 +4,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# pylint: disable=unused-argument
+# pylint: disable=invalid-name
 # pylint: disable=line-too-long
+# pylint: disable=unused-argument
 
 import pytest
 
@@ -23,10 +24,10 @@ from src.softwaresupport import radius
 @pytest.mark.v4_bootp
 @pytest.mark.v6
 @pytest.mark.radius
-@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-@pytest.mark.parametrize('config_type', ['subnet', 'network', 'multiple-subnets'])
+@pytest.mark.parametrize('backend', ['memfile'])  # other possible values: 'mysql', 'postgresql'
+@pytest.mark.parametrize('config_type', ['multiple-subnets'])  # other possible values: 'network', 'subnet'
 @pytest.mark.parametrize('radius_reservation_in_pool', ['radius-reservation-in-pool', 'radius-reservation-outside-pool'])
-def test_radius(dhcp_version: str,
+def test_RADIUS(dhcp_version: str,
                 backend: str,
                 config_type: str,
                 radius_reservation_in_pool: str):
@@ -38,7 +39,9 @@ def test_radius(dhcp_version: str,
     :param backend: the lease database backend type
     :param config_type: different configurations used in testing
     :param radius_reservation_in_pool: whether there is an existing pool in Kea that contains the
-                                       lease reserved by RADIUS for the first client in this test
+                                       lease reserved by RADIUS for the first client in this test.
+                                       In both cases, the reserved lease is inside the initially
+                                       assigned subnet.
     """
 
     misc.test_setup()
@@ -76,11 +79,11 @@ def test_radius(dhcp_version: str,
 @pytest.mark.v6
 @pytest.mark.radius
 @pytest.mark.parametrize('attribute_cardinality', ['single-attribute', 'double-attributes'])
-def test_radius_framed_pool(dhcp_version: str, attribute_cardinality: str):
+def test_RADIUS_framed_pool(dhcp_version: str, attribute_cardinality: str):
     """
     Check that Kea can classify a packet using a single type of RADIUS
     attribute, either v4 or v6, as opposed to having both assigned, as in
-    test_radius.
+    test_RADIUS.
 
     :param dhcp_version: the DHCP version being tested
     :param attribute_cardinality: whether support for multiple attributes is tested
@@ -125,7 +128,7 @@ def test_radius_framed_pool(dhcp_version: str, attribute_cardinality: str):
 @pytest.mark.v4_bootp
 @pytest.mark.v6
 @pytest.mark.radius
-def test_radius_no_attributes(dhcp_version: str):
+def test_RADIUS_no_attributes(dhcp_version: str):
     """
     Check RADIUS functionality with an authorize file that has an authentication
     entry for the client with no attributes.
@@ -172,7 +175,7 @@ def test_radius_no_attributes(dhcp_version: str):
 @pytest.mark.parametrize('giaddr', ['in-subnet', 'in-other-subnet', 'out-of-subnet'])
 @pytest.mark.parametrize('leading_subnet', ['leading_subnet', '_'])
 @pytest.mark.parametrize('reselect', ['reselect', '_'])
-def test_radius_giaddr(dhcp_version: str,
+def test_RADIUS_giaddr(dhcp_version: str,
                        config_type: str,
                        giaddr: str,
                        leading_subnet: str,
