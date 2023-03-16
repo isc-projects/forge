@@ -260,7 +260,8 @@ def test_remote_subnet4_set_all_values(backend):
                                                                                                  "data": '192.0.2.2',
                                                                                                  "always-send": True,
                                                                                                  "csv-format": True,
-                                                                                                 "never-send": False}]}],
+                                                                                                 "never-send": False
+                                                                                                 }]}],
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
                                                                      "reservation-mode": "all",
                                                                      "server-hostname": "name-xyz",

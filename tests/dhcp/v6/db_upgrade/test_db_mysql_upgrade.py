@@ -227,7 +227,8 @@ def test_v6_upgrade_mysql_db():
                                     "csv-format": True,
                                     "data": "4491",
                                     "name": "vendor-opts",
-                                    "never-send": False,"space": "dhcp6"}]
+                                    "never-send": False,
+                                    "space": "dhcp6"}]
     assert resp["prefixes"] == ["2001:db8:2:abcd::/64"]
 
     # check lease
