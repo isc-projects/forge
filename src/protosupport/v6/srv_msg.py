@@ -642,7 +642,7 @@ def read_dhcp6_msgs(d: bytes, msg: list):
     if len(d) == 0:
         return msg
     stop = int.from_bytes(d[:2], "big")
-    pkt = dhcp6.DHCP6(d[2:stop+2])
+    pkt = dhcp6.DHCP6(d[2:stop + 2])
     pkt.build()
     msg.append(pkt)
     if len(d[stop:]) > 0:
@@ -656,7 +656,7 @@ def close_sockets(socket_list):
 
 
 def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: int = 3, parse: bool = True,
-                  number_of_connections: int = 1):
+                  number_of_connections: int = 1, print_all: bool = True):
     """
     Send message over TCP channel and listen for response
     :param msg: bytes representing DHCP6 message
@@ -665,6 +665,7 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
     :param timeout: how long kea will wait from last received message
     :param parse: should received bytes be parsed into DHCP6 messages
     :param number_of_connections: how many connections should forge open
+    :param print_all: print all to stdout (use false for massive messages)
     :return: list of parsed DHCP6 messages
     """
     if address is None:
@@ -674,18 +675,20 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
     received = b''
 
     socket_list = [socket.socket(socket.AF_INET6, socket.SOCK_STREAM) for _ in range(number_of_connections)]
-    n = random.randint(100, 3000)  # to generate transaction id
+    new_xid = random.randint(100, 3000)  # to generate transaction id
     try:
         for each_socket in socket_list:
             each_socket.connect((address, port))
-            d = msg[:1] + n.to_bytes(3, 'big') + msg[4:]
+            world.blq_trid = new_xid
+            d = msg[:1] + new_xid.to_bytes(3, 'big') + msg[4:]
             msg_length = len(d)
             c_msg = msg_length.to_bytes(2, 'big') + d
-            if world.f_cfg.show_packets_from in ['both', 'client']:
-                log.info("TCP msg (bytes): %s" % c_msg)
-                log.info("TCP msg (hex): %s" % ' '.join(c_msg.hex()[i:i+2] for i in range(0, len(c_msg.hex()), 2)))
+            if world.f_cfg.show_packets_from in ['both', 'client'] and print_all:
+                log.info('Transaction id of BLQ message was changed to %s', new_xid)
+                log.info("TCP msg (bytes): %s", c_msg)
+                log.info("TCP msg (hex): %s", ' '.join(c_msg.hex()[i:i+2] for i in range(0, len(c_msg.hex()), 2)))
             each_socket.send(c_msg)
-            n += 1
+            new_xid += 1
     except ConnectionRefusedError as e:
         assert False, f"TCP connection on {socket} to {address}:{port} was unsuccessful with error: {e}"
 
@@ -729,6 +732,8 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
 
     factor = 1
     world.srvmsg = []
+    world.tcpmsg = []
+    received_name = ""
 
     pytest_current_test = os.environ.get('PYTEST_CURRENT_TEST')
     if 'HA' in pytest_current_test.split('/'):
@@ -753,6 +758,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
             world.srvmsg.append(b)
 
     else:
+        address = world.f_cfg.srv_ipv6_addr_global if address is None else address
         world.tcpmsg = send_over_tcp(raw(world.climsg[0].getlayer(2)), address, port)
         if len(world.tcpmsg) > 0:
             world.srvmsg = world.tcpmsg.copy()
@@ -771,7 +777,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
 
     if exp_message is not None:
         for x in unans:
-            log.error(("Unanswered packet type=%s" % dhcp6.dhcp6_cls_by_type[x.msgtype]))
+            log.error(("Unanswered packet type=%s" % get_msg_type(x)))
 
     if presence:
         assert len(world.srvmsg) != 0, "No response received."

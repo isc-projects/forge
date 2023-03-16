@@ -25,10 +25,14 @@ import codecs
 import logging
 import os
 import struct
+import socket
+import select
+import random
 
+from time import time
 from random import randint
 
-from scapy.all import get_if_raw_hwaddr, Ether, srp
+from scapy.all import get_if_raw_hwaddr, Ether, srp, raw
 from scapy.config import conf
 from scapy.fields import Field
 from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
@@ -36,7 +40,7 @@ from scapy.packet import Raw
 from scapy.layers.inet import IP, UDP
 
 from src.forge_cfg import world
-from src.protosupport.v6.srv_msg import apply_message_fields_changes, change_message_field, client_add_saved_option
+from src.protosupport.v6.srv_msg import apply_message_fields_changes, close_sockets
 
 from src import misc
 
@@ -131,6 +135,10 @@ def client_send_msg(msgname, iface=None, addr=None):
         # msg code: 10
         msg = build_msg([("message-type", "lease_query")] + options)
 
+    elif msgname == "BULK_LEASEQUERY":
+        # msg code: 14
+        msg = build_msg([("message-type", "bulk_leasequery")] + options)
+
     elif msgname == "BOOTP_REQUEST":
         world.cfg["values"]["broadcastBit"] = True
         # Gitlab issue kea#2361
@@ -139,7 +147,6 @@ def client_send_msg(msgname, iface=None, addr=None):
         # that's where Kea correctly ends up reading it from. So let's put some four-byte padding.
         padding = ['\x00\x00\x00\x00']
         msg = build_msg(padding + options)
-
     else:
         assert False, "Invalid message type: %s" % msgname
 
@@ -212,7 +219,7 @@ def client_does_include(sender_type, opt_type, value):
         'vendor_class',
         'vendor_specific_information',
     ]:
-        world.cliopts += [(opt_type, convert_to_hex(value))]
+        world.cliopts += [(opt_type, value if isinstance(value, bytes) else convert_to_hex(value))]
     else:
         try:
             world.cliopts += [(opt_type, str(value))]
@@ -222,14 +229,8 @@ def client_does_include(sender_type, opt_type, value):
 
 def response_check_content(expect, data_type, expected):
 
-    if data_type == 'yiaddr':
-        received = world.srvmsg[0].yiaddr
-    elif data_type == 'ciaddr':
-        received = world.srvmsg[0].ciaddr
-    elif data_type == 'siaddr':
-        received = world.srvmsg[0].siaddr
-    elif data_type == 'giaddr':
-        received = world.srvmsg[0].giaddr
+    if data_type in ['yiaddr', 'ciaddr', 'siaddr', 'giaddr']:
+        received = getattr(world.srvmsg[0], data_type)
     elif data_type == 'src_address':
         received = world.srvmsg[0].src
     elif data_type == 'chaddr':
@@ -326,8 +327,8 @@ def build_msg(opts):
         msg.xid = int(world.cfg["values"]["tr_id"])
     world.cfg["values"]["tr_id"] = msg.xid
 
-    msg.siaddr = world.cfg["values"]["siaddr"]
     msg.ciaddr = world.cfg["values"]["ciaddr"]
+    msg.siaddr = world.cfg["values"]["siaddr"]
     msg.yiaddr = world.cfg["values"]["yiaddr"]
     msg.htype = world.cfg["values"]["htype"]
     msg.hlen = world.cfg["values"]["hlen"]
@@ -347,7 +348,9 @@ def get_msg_type(msg):
                  10: "LEASEQUERY",
                  11: "LEASEUNASSIGNED",
                  12: "LEASEUNKNOWN",
-                 13: "LEASEACTIVE"
+                 13: "LEASEACTIVE",
+                 14: "BULK_LEASEQUERY",
+                 15: "LEASEQUERY_DONE"
                  }
     # option 53 it's message type
     opt = get_option(msg, 53)
@@ -364,8 +367,135 @@ def get_msg_type(msg):
     return "UNKNOWN-TYPE"
 
 
+def read_dhcp4_msgs(d: bytes, msg: list):
+    """
+    Recursively parse bytes received via TCP channel
+    :param d: bytes
+    :param msg: list of DHCP6 messages
+    :return: list of DHCP6 messages
+    """
+    if len(d) == 0:
+        return msg
+    stop = int.from_bytes(d[:2], "big")
+    pkt = BOOTP(d[2:stop + 2])
+    pkt.build()
+    msg.append(pkt)
+    if len(d[stop:]) > 0:
+        msg = read_dhcp4_msgs(d[stop+2:], msg)
+    return msg
+
+
+def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: int = 3, parse: bool = True,
+                  number_of_connections: int = 1, print_all: bool = True):
+    """
+    Send message over TCP channel and listen for response
+    :param msg: bytes representing DHCP6 message
+    :param address: address to which message will be sent
+    :param port: port number on which receiving end is listening
+    :param timeout: how long kea will wait from last received message
+    :param parse: should received bytes be parsed into DHCP6 messages
+    :param number_of_connections: how many connections should forge open
+    :param print_all: print all to stdout (use false for massive messages)
+    :return: list of parsed DHCP6 messages
+    """
+    if address is None:
+        address = world.f_cfg.dns4_addr
+    if port is None:
+        port = 87
+    received = b''
+
+    socket_list = [socket.socket(socket.AF_INET, socket.SOCK_STREAM) for _ in range(number_of_connections)]
+    new_xid = random.randint(100, 9000)  # to generate transaction id
+    try:
+        for each_socket in socket_list:
+            world.blq_trid = new_xid
+            each_socket.connect((address, port))
+            d = msg[:4] + new_xid.to_bytes(4, 'big') + msg[8:]
+            msg_length = len(d)
+            c_msg = msg_length.to_bytes(2, 'big') + d
+            if world.f_cfg.show_packets_from in ['both', 'client'] and print_all:
+                log.info('Transaction id of BLQ message was changed to %s', new_xid)
+                log.info("TCP msg (bytes): %s", c_msg)
+                log.info("TCP msg (hex): %s", ' '.join(c_msg.hex()[i:i+2] for i in range(0, len(c_msg.hex()), 2)))
+            each_socket.send(c_msg)
+            new_xid += 1
+    except ConnectionRefusedError as e:
+        assert False, f"TCP connection on {socket} to {address}:{port} was unsuccessful with error: {e}"
+
+    end = time() + timeout
+    while 1:
+        read_sockets, write_sockets, error_sockets = select.select(socket_list, [], [], 3)
+        for r_sock in read_sockets:
+            data = r_sock.recv(4096)
+            if data:
+                received += data
+                log.info("%d bytes received via TCP connection.", len(received))
+        if parse and len(received) > 0:
+            msgs = read_dhcp4_msgs(received, [])
+            # At this point of forge and kea development we expect only leasequery messages via tcp
+            # and correct message exchange will be concluded with leasequery-done message (15 in v4)
+            # so that's the point in which we close sockets and return all messages. If message
+            # leasequery-done will not be last message received and we reach timeout value - messages
+            # will also be returned, infinite wait won't happen
+            if get_msg_type(msgs[-1]) == "LEASEQUERY_DONE":
+                close_sockets(socket_list)
+                return msgs
+        else:
+            msgs = received
+        if time() > end:
+            close_sockets(socket_list)
+            break
+    return msgs
+
+
+def tcp_messages_include(**kwargs):
+    """
+    Checks how many messages of each type are in received over tcp list
+    :param kwargs: types of messages e.g. leasequery_reply=1, leasequery_data=199, leasequery_done=1
+    """
+    expected_msg_count = sum(list(kwargs.values()))
+    assert expected_msg_count == len(world.tcpmsg),\
+        f"Expected message count is {expected_msg_count} but number of received messages is {len(world.tcpmsg)}"
+    received_msg_count = {}
+    for msg in world.tcpmsg:
+        m_type = get_msg_type(msg).lower().replace("-", "_")
+        if m_type not in received_msg_count:
+            received_msg_count.update({m_type: 1})
+        else:
+            received_msg_count[m_type] += 1
+
+    assert kwargs == received_msg_count, f"Expected set of messages is {kwargs} but received was {received_msg_count}"
+
+
+def tcp_get_message(**kwargs):
+    """
+    Find one message in the list of all received via TCP channel. Messages can be retrieved via its index in the list
+    or using address/prefix to find one specific message e.g.
+    * tcp_get_message(address=lease["address"])
+    * tcp_get_message(prefix=lease["address"])
+    * tcp_get_message(order=3)
+    :param kwargs: define which type of search should be performed and with what value
+    :return: DHCP6 message
+    """
+    # we can look for address or prefix, address in scapy is represented by addr and prefix is represented by prefix
+
+    if "order" in kwargs:
+        world.srvmsg = [world.tcpmsg[kwargs["order"]].copy()]
+        return world.srvmsg[0]
+    else:
+        for msg in world.tcpmsg:
+            if get_msg_type(msg) in ["LEASEQUERY-DONE", "UNKNOWN-TYPE"]:
+                continue
+            for x, y in kwargs.items():
+                if getattr(msg, x) == y:
+                    world.srvmsg = [msg.copy()]
+                    return msg.copy()
+    assert False, f"Message with {kwargs} you are looking for couldn't be found."
+
+
 def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
                           protocol: str = 'UDP', address: str = None, port: int = None):
+    world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # We need to use srp() here (send and receive on layer 2)
     factor = 1
     pytest_current_test = os.environ.get('PYTEST_CURRENT_TEST')
@@ -374,61 +504,64 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     if '_radius' in pytest_current_test.lower():
         factor = max(factor, world.f_cfg.radius_packet_wait_interval_factor)
     apply_message_fields_changes()
-    ans, unans = srp(world.climsg,
-                     iface=world.cfg["iface"],
-                     timeout=factor * world.cfg['wait_interval'],
-                     multi=True,
-                     verbose=int(world.f_cfg.forge_verbose))
-    if world.f_cfg.forge_verbose == 0:
-        print(".", end='')
+    world.srvmsg = []
+    world.tcpmsg = []
+    received_name = ""
 
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
         print('\n')
 
-    expected_type_found = False
+    if protocol == 'UDP':
+        ans, unans = srp(world.climsg,
+                         iface=world.cfg["iface"],
+                         timeout=factor * world.cfg['wait_interval'],
+                         multi=True,
+                         verbose=int(world.f_cfg.forge_verbose))
+        if world.f_cfg.forge_verbose == 0:
+            print(".", end='')
 
-    received_names = ""
-    world.cliopts = []
-    world.srvmsg = []
-    for x in ans:
-        a, b = x
-        world.srvmsg.append(b)
-        if world.f_cfg.show_packets_from in ['both', 'server']:
-            b.show()
-            print('\n')
-
-        received_names = get_msg_type(b) + " " + received_names
-        if get_msg_type(b) == exp_message:
-            expected_type_found = True
-        received_names = received_names.strip()
-
-    log.debug("Received traffic (answered/unanswered): %d/%d packet(s)."
-              % (len(ans), len(unans)))
-    if exp_message != "None":
-        for x in unans:
-            log.error(("Unanswered packet type = %s" % get_msg_type(x)))
-
-        if presence:
-            assert len(world.srvmsg) != 0, "No response received."
-            assert expected_type_found, "Expected message " + exp_message + " not received (got " + received_names + ")"
-        elif not presence:
-            assert len(world.srvmsg) == 0, "Response received (got " + received_names + "), not expected"
-        assert presence == bool(world.srvmsg), "No response received."
+        for x in ans:
+            a, b = x
+            world.srvmsg.append(b)
     else:
-        assert len(world.srvmsg) == 0, "Response message " + received_names + "received but none message expected."
-        # TODO: make assertion for receiving message that not suppose to come!
+        address = world.f_cfg.dns4_addr if address is None else address
+        world.tcpmsg = send_over_tcp(raw(world.climsg[0].getlayer(3)), address, port)
+        if len(world.tcpmsg) > 0:
+            world.srvmsg = world.tcpmsg.copy()
+        unans = []
+
+    if world.f_cfg.show_packets_from in ['both', 'server']:
+        for msg in world.srvmsg:
+            msg.show()
+
+    if len(world.srvmsg) > 0:
+        received_name = get_msg_type(world.srvmsg[0])
+
+    if not world.loops["active"]:
+        for msg in world.srvmsg:
+            log.info("Received packet %s" % (get_msg_type(msg)))
+
+    if exp_message is not None:
+        for x in unans:
+            log.error(("Unanswered packet type=%s" % get_msg_type(x)))
+
+    if presence:
+        assert len(world.srvmsg) != 0, "No response received."
+        assert received_name == exp_message, f"Expected message {exp_message} not received (got {received_name})"
+    elif not presence:
+        assert len(world.srvmsg) == 0, f"Response received ({received_name}) was not expected!"
 
     return world.srvmsg
 
 
 def get_option(msg, opt_code):
-    '''
+    """
     Retrieve from scapy message {msg}, the DHCPv6 option having IANA code {opt_code}.
     :param msg: scapy message to retrieve the option from
     :param opt_code: option code or name
     :return: scapy message representing the option or None if the option doesn't exist
-    '''
+    """
 
     # Ensure the option code is an integer.
     opt_code = get_option_code(opt_code)
@@ -444,7 +577,10 @@ def get_option(msg, opt_code):
     if isinstance(opt_name, Field):
         opt_name = opt_name.name
 
-    x = msg.getlayer(4)  # 0th is Ethernet, 1 is IPv4, 2 is UDP, 3 is BOOTP, 4 is DHCP options
+    if len(world.tcpmsg) == 0:
+        x = msg.getlayer(4)  # 0 is Ethernet, 1 is IPv4, 2 is UDP, 3 is BOOTP, 4 is DHCP options
+    else:
+        x = msg.getlayer(1)  # if tcp connection is used, than BOOTP is layer 0 and DHCP options is 1
     # BOOTP messages may be optionless, so check first
     if x is not None:
         for opt in x.options:
@@ -521,6 +657,7 @@ def response_check_include_option(expected, opt_code):
     else:
         assert opt is None, "Expected option {opt_descr} present in the message. But not expected!".format(**locals()) + \
                             "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+    return opt
 
 
 def response_check_option_content(opt_code, expect, data_type, expected):
@@ -539,6 +676,8 @@ def response_check_option_content(opt_code, expect, data_type, expected):
         else:
             assert False, "In option 81 you can look only for: 'fqdn' or 'flags'."
     elif opt_code == 61:
+        expected = convert_to_hex(expected)
+    elif opt_code == 82:
         expected = convert_to_hex(expected)
     elif isinstance(received[1], bytes):
         received = (received[0], received[1])
@@ -564,14 +703,17 @@ def get_all_leases(decode_duid=True):
 
     lease = {"hwaddr": mac, "address": world.srvmsg[0].yiaddr}
     try:
-        lease.update({"client_id": get_option(world.srvmsg[0], 61)[1]}.hex())
+        lease.update({"client_id": get_option(world.srvmsg[0], 61)[1].hex()})
     except BaseException:
         pass
     try:
         lease.update({"valid_lifetime": get_option(world.srvmsg[0], 51)[1]})
     except BaseException:
         pass
-
+    try:
+        lease.update({"server_id": get_option(world.srvmsg[0], 54)[1]})
+    except BaseException:
+        pass
     return lease
 
 

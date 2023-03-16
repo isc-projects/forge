@@ -754,6 +754,6 @@ def tcp_get_message(**kwargs):
     return dhcpmsg.tcp_get_message(**kwargs)
 
 
-def send_over_tcp(msg, address=None, port=None, parse=False, number_of_connections=1):
+def send_over_tcp(msg, address=None, port=None, parse=False, number_of_connections=1, print_all=True):
     return dhcpmsg.send_over_tcp(msg, address=address, port=port, parse=parse,
-                                 number_of_connections=number_of_connections)
+                                 number_of_connections=number_of_connections, print_all=print_all)
