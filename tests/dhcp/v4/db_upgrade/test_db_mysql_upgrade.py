@@ -231,6 +231,7 @@ def test_v4_upgrade_mysql_db():
                                         "csv-format": True,
                                         "data": "10.1.1.202,10.1.1.203",
                                         "name": "domain-name-servers",
+                                        "never-send": False,
                                         "space": "dhcp4"}]
     assert response["server-hostname"] == "hal9000"
 
@@ -265,9 +266,13 @@ def test_v4_upgrade_mysql_db():
     assert subnet["boot-file-name"] == "file-name"
     assert subnet["id"] == 2
     assert subnet["metadata"] == {"server-tags": ["abc"]}
-    assert subnet["option-data"] == [{"always-send": True, "code": 6,
-                                      "csv-format": True, "data": "192.0.2.1",
-                                      "name": "domain-name-servers", "space": "dhcp4"}]
+    assert subnet["option-data"] == [{"always-send": True,
+                                      "code": 6,
+                                      "csv-format": True,
+                                      "data": "192.0.2.1",
+                                      "name": "domain-name-servers",
+                                      "never-send": False,
+                                      "space": "dhcp4"}]
     assert subnet["pools"][0]["pool"] == "192.168.50.10/32"
     assert subnet["rebind-timer"] == 500
     assert subnet["relay"] == {"ip-addresses": ["192.168.5.5"]}
@@ -285,6 +290,7 @@ def test_v4_upgrade_mysql_db():
                                        "csv-format": True,
                                        "data": "192.0.2.1",
                                        "name": "domain-name-servers",
+                                       "never-send": False,
                                        "space": "dhcp4"}]
     assert network["rebind-timer"] == 200
     assert network["renew-timer"] == 100
@@ -304,6 +310,7 @@ def test_v4_upgrade_mysql_db():
                                   "data": "isc.example.com",
                                   "metadata": {"server-tags": ["abc"]},
                                   "name": "host-name",
+                                  "never-send": False,
                                   "space": "dhcp4"}
 
     resp = _send_cmd("remote-option-def4-get", {"server-tags": ["abc"], "option-defs": [{"code": 222}]})["arguments"]

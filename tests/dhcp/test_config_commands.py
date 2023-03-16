@@ -190,6 +190,7 @@ SHAREDNETWORK_V4_CONFIG = [
                         "csv-format": True,
                         "data": "199.199.199.10",
                         "name": "time-servers",
+                        "never-send": False,
                         "space": "dhcp4"
                     }
                 ],
@@ -277,6 +278,7 @@ SHAREDNETWORK_V4_CONFIG = [
                         "csv-format": True,
                         "data": "199.199.199.100",
                         "name": "time-servers",
+                        "never-send": False,
                         "space": "dhcp4"
                     }
                 ],
@@ -316,6 +318,7 @@ SHAREDNETWORK_V4_CONFIG = [
                         "csv-format": True,
                         "data": "199.199.199.200",
                         "name": "time-servers",
+                        "never-send": False,
                         "space": "dhcp4"
                     }
                 ],

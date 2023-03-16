@@ -2082,7 +2082,9 @@ def test_remote_global_option4_global_get_basic(channel, backend):
     assert response == {"arguments": {"count": 1, "options": [{"always-send": False, "code": 6, "csv-format": True,
                                                                "data": "192.0.2.1, 192.0.2.2",
                                                                "metadata": {"server-tags": ["abc"]},
-                                                               "name": "domain-name-servers", "space": "dhcp4"}]},
+                                                               "name": "domain-name-servers",
+                                                               "never-send": False,
+                                                               "space": "dhcp4"}]},
                         "result": 0, "text": "DHCPv4 option 6 in 'dhcp4' found."}
 
 
@@ -2241,7 +2243,9 @@ def test_remote_global_option4_global_get_csv_false(backend):
     assert response == {"arguments": {"count": 1, "options": [{"always-send": True, "code": 6, "csv-format": False,
                                                                "data": "C0000301C0000302",
                                                                "metadata": {"server-tags": ["abc"]},
-                                                               "name": "domain-name-servers", "space": "dhcp4"}]},
+                                                               "name": "domain-name-servers",
+                                                               "never-send": False,
+                                                               "space": "dhcp4"}]},
                         "result": 0, "text": "DHCPv4 option 6 in 'dhcp4' found."}
 
 
@@ -2267,11 +2271,16 @@ def test_remote_global_option4_global_get_all(backend):
     assert response == {"arguments": {"count": 2,
                                       "options": [{"always-send": False, "code": 6, "csv-format": True,
                                                    "metadata": {"server-tags": ["abc"]},
-                                                   "data": "192.0.2.1, 192.0.2.2", "name": "domain-name-servers",
+                                                   "data": "192.0.2.1, 192.0.2.2",
+                                                   "name": "domain-name-servers",
+                                                   "never-send": False,
                                                    "space": "dhcp4"},
                                                   {"always-send": False, "code": 16, "csv-format": True,
                                                    "metadata": {"server-tags": ["abc"]},
-                                                   "data": "199.199.199.1", "name": "swap-server", "space": "dhcp4"}]},
+                                                   "data": "199.199.199.1",
+                                                   "name": "swap-server",
+                                                   "never-send": False,
+                                                   "space": "dhcp4"}]},
                         "result": 0, "text": "2 DHCPv4 option(s) found."}
 
     cmd = dict(command="remote-option4-global-del", arguments={"remote": {"type": backend},
@@ -2284,7 +2293,9 @@ def test_remote_global_option4_global_get_all(backend):
 
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {"arguments": {"count": 1, "options": [{"always-send": False, "code": 16, "csv-format": True,
-                                                               "data": "199.199.199.1", "name": "swap-server",
+                                                               "data": "199.199.199.1",
+                                                               "name": "swap-server",
+                                                               "never-send": False,
                                                                "metadata": {"server-tags": ["abc"]},
                                                                "space": "dhcp4"}]},
                         "result": 0, "text": "1 DHCPv4 option(s) found."}

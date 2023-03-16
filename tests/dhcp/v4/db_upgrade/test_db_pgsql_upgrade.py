@@ -141,6 +141,7 @@ def test_v4_upgrade_pgsql_db():
                                         "csv-format": True,
                                         "data": "10.1.1.202,10.1.1.203",
                                         "name": "domain-name-servers",
+                                        "never-send": False,
                                         "space": "dhcp4"}]
     assert response["server-hostname"] == "hal9000"
     # check lease
