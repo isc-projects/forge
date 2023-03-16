@@ -792,6 +792,8 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
 
     if backend == 'memfile':
         for lease in leases_list_copy:
+            if 'server_id' in lease:
+                del lease['server_id']
             cmd = "cat %s " % world.f_cfg.get_leases_path()
             if "client_id" in lease:
                 lease['client_id'] = ':'.join(lease['client_id'][i:i + 2] for i in range(0, 14, 2))
@@ -808,6 +810,8 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
 
     elif backend.lower() in ['mysql', 'postgresql', 'pgsql']:
         for lease in leases_list_copy:
+            if 'server_id' in lease:
+                del lease['server_id']
             if world.f_cfg.proto == 'v4':
                 table = 'lease4'
                 cmd = "cat /tmp/db_out "
