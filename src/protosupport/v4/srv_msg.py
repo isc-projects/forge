@@ -40,7 +40,7 @@ from scapy.packet import Raw
 from scapy.layers.inet import IP, UDP
 
 from src.forge_cfg import world
-from src.protosupport.v6.srv_msg import apply_message_fields_changes, close_sockets
+from src.protosupport.v6.srv_msg import apply_message_fields_changes, close_sockets, client_add_saved_option
 
 from src import misc
 
