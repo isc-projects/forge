@@ -62,4 +62,4 @@ def test_v4_rai_option11_server_identifier_override():
     # for now we will keep testing implemented part of this feature
     # srv_msg.response_check_option_content(54, 'value', address)
     srv_msg.response_check_include_option(82)
-    srv_msg.response_check_option_content(82, 'value', b'\x0b\x04\xc0\xa82\xfd')
+    srv_msg.response_check_option_content(82, 'value', "0b04c0a832fd")

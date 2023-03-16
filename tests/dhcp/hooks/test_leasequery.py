@@ -109,7 +109,7 @@ def test_v4_leasequery_ip(backend, rai_version):
     srv_msg.response_check_include_option(53)  # DHCP Message Type
     srv_msg.response_check_option_content(53, 'value', 13)  # Lease Active
     srv_msg.response_check_include_option(82)  # dhcp-agent-options
-    srv_msg.response_check_option_content(82, 'value', b'\x01\x06\x06\x01\x06\x02\x06\x03')
+    srv_msg.response_check_option_content(82, 'value', "0106060106020603")
     srv_msg.response_check_include_option(51)  # dhcp-lease-time
     srv_msg.response_check_include_option(58)  # dhcp-renewal-time
     srv_msg.response_check_include_option(59)  # dhcp-rebind-time
@@ -210,7 +210,7 @@ def test_v4_leasequery_mac(backend, rai_version):
     srv_msg.response_check_include_option(53)  # DHCP Message Type
     srv_msg.response_check_option_content(53, 'value', 13)  # Lease Active
     srv_msg.response_check_include_option(82)  # dhcp-agent-options
-    srv_msg.response_check_option_content(82, 'value', b'\x01\x06\x06\x01\x06\x02\x06\x03')
+    srv_msg.response_check_option_content(82, 'value', "0106060106020603")
     srv_msg.response_check_include_option(51)  # dhcp-lease-time
     srv_msg.response_check_include_option(58)  # dhcp-renewal-time
     srv_msg.response_check_include_option(59)  # dhcp-rebind-time
@@ -319,7 +319,7 @@ def test_v4_leasequery_client(backend, rai_version):
     srv_msg.response_check_include_option(53)  # DHCP Message Type
     srv_msg.response_check_option_content(53, 'value', 13)  # Lease Active
     srv_msg.response_check_include_option(82)  # dhcp-agent-options
-    srv_msg.response_check_option_content(82, 'value', b'\x01\x06\x06\x01\x06\x02\x06\x03')
+    srv_msg.response_check_option_content(82, 'value', "0106060106020603")
     srv_msg.response_check_include_option(51)  # dhcp-lease-time
     srv_msg.response_check_include_option(58)  # dhcp-renewal-time
     srv_msg.response_check_include_option(59)  # dhcp-rebind-time
