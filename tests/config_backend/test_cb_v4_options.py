@@ -72,6 +72,7 @@ def test_subnet_option(backend):
                                        "csv-format": True,
                                        "data": "10.0.0.1",
                                        "name": "domain-name-servers",
+                                       "never-send": True,
                                        "space": "dhcp4"}],
                           "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
@@ -115,6 +116,7 @@ def test_multiple_subnet_option(backend):
                                        "csv-format": True,
                                        "data": "10.0.0.1",
                                        "name": "domain-name-servers",
+                                       "never-send": False,
                                        "space": "dhcp4"}],
                           "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
@@ -123,7 +125,7 @@ def test_multiple_subnet_option(backend):
                arguments={"subnets": [{"id": 9}],
                           "options": [{"always-send": False, "code": 6, "csv-format": True,
                                        "data": "10.0.0.2", "name": "domain-name-servers",
-                                       "space": "dhcp4"}], "remote": {"type": backend}})
+                                       "never-send": True, "space": "dhcp4"}], "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
 
     srv_msg.forge_sleep(3, "seconds")
@@ -176,6 +178,7 @@ def test_subnet_in_network_option(backend):
                                        "csv-format": True,
                                        "data": "10.0.0.1",
                                        "name": "domain-name-servers",
+                                       "never-send": True,
                                        "space": "dhcp4"}],
                           "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
@@ -207,6 +210,7 @@ def test_option_on_all_levels(backend):
                                            "code": 6,
                                            "csv-format": True,
                                            "name": "domain-name-servers",
+                                           "never-send": True,
                                            "space": "dhcp4",
                                            "data": "10.0.0.1"}],
                               "remote": {"type": backend}})
@@ -218,6 +222,7 @@ def test_option_on_all_levels(backend):
                                             "code": 6,
                                             "csv-format": True,
                                             "name": "domain-name-servers",
+                                            "never-send": True,
                                             "space": "dhcp4",
                                             "data": "10.0.0.2"}],
                                "remote": {"type": backend}})
@@ -229,6 +234,7 @@ def test_option_on_all_levels(backend):
                                            "code": 6,
                                            "csv-format": True,
                                            "name": "domain-name-servers",
+                                           "never-send": True,
                                            "space": "dhcp4",
                                            "data": "10.0.0.3"}],
                               "remote": {"type": backend}})
@@ -258,6 +264,7 @@ def test_network_option(backend):
                                        "csv-format": True,
                                        "data": "10.0.0.1",
                                        "name": "domain-name-servers",
+                                       "never-send": True,
                                        "space": "dhcp4"}],
                           "remote": {"type": backend}})
 
@@ -290,6 +297,7 @@ def test_pool_option(backend):
                                        "csv-format": True,
                                        "data": "10.0.0.1",
                                        "name": "domain-name-servers",
+                                       "never-send": True,
                                        "space": "dhcp4"}],
                           "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)

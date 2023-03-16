@@ -95,6 +95,7 @@ def test_subnet_option(backend):
                                        "csv-format": True,
                                        "data": "2001:db8:1::1",
                                        "name": "dns-servers",
+                                       "never-send": True,
                                        "space": "dhcp6"}],
                           "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
@@ -137,6 +138,7 @@ def test_subnet_in_network_option(backend):
                                        "csv-format": True,
                                        "data": "2001:db8:1::1",
                                        "name": "dns-servers",
+                                       "never-send": True,
                                        "space": "dhcp6"}],
                           "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
@@ -171,6 +173,7 @@ def test_option_on_all_levels(backend):
                                            "code": 23,
                                            "csv-format": True,
                                            "name": "dns-servers",
+                                           "never-send": False,
                                            "space": "dhcp6",
                                            "data": "2001:db8:1::1"}],
                               "remote": {"type": backend}})
@@ -182,6 +185,7 @@ def test_option_on_all_levels(backend):
                                             "code": 23,
                                             "csv-format": True,
                                             "name": "dns-servers",
+                                            "never-send": False,
                                             "space": "dhcp6",
                                             "data": "2001:db8:1::2"}],
                                "remote": {"type": backend}})
@@ -193,6 +197,7 @@ def test_option_on_all_levels(backend):
                                            "code": 23,
                                            "csv-format": True,
                                            "name": "dns-servers",
+                                           "never-send": True,
                                            "space": "dhcp6",
                                            "data": "2001:db8:1::3"}],
                               "remote": {"type": backend}})
@@ -204,6 +209,7 @@ def test_option_on_all_levels(backend):
                                           "code": 23,
                                           "csv-format": True,
                                           "name": "dns-servers",
+                                          "never-send": True,
                                           "space": "dhcp6",
                                           "data": "2001:db8:1::3"}],
                              "remote": {"type": backend}})
@@ -235,6 +241,7 @@ def test_network_option(backend):
                                        "csv-format": True,
                                        "data": "2001:db8:1::1",
                                        "name": "dns-servers",
+                                       "never-send": False,
                                        "space": "dhcp6"}],
                           "remote": {"type": backend}})
 
@@ -267,6 +274,7 @@ def test_pool_option(backend):
                                        "csv-format": True,
                                        "data": "2001:db8:1::1",
                                        "name": "dns-servers",
+                                       "never-send": False,
                                        "space": "dhcp6"}],
                           "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)
@@ -312,6 +320,7 @@ def test_pd_pool_option(backend):
                      "csv-format": True,
                      "data": "2001:db8:1::1",
                      "name": "dns-servers",
+                     "never-send": False,
                      "space": "dhcp6"}],
         "remote": {"type": backend}})
     srv_msg.send_ctrl_cmd(cmd, exp_result=0)

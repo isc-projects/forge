@@ -259,7 +259,8 @@ def test_remote_subnet4_set_all_values(backend):
                                                                                 "option-data": [{"code": 6,
                                                                                                  "data": '192.0.2.2',
                                                                                                  "always-send": True,
-                                                                                                 "csv-format": True}]}],
+                                                                                                 "csv-format": True,
+                                                                                                 "never-send": False}]}],
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
                                                                      "reservation-mode": "all",
                                                                      "server-hostname": "name-xyz",
@@ -270,7 +271,8 @@ def test_remote_subnet4_set_all_values(backend):
                                                                      "option-data": [{"code": 6,
                                                                                       "data": '192.0.2.1',
                                                                                       "always-send": True,
-                                                                                      "csv-format": True}]}]})
+                                                                                      "csv-format": True,
+                                                                                      "never-send": False}]}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "192.168.50.0/24"}]},
@@ -380,6 +382,7 @@ def test_remote_subnet4_get_all_values(backend):
                             'csv-format': True,
                             'data': '192.0.2.1',
                             'name': 'domain-name-servers',
+                            "never-send": False,
                             'space': 'dhcp4'
                         }
                     ],
@@ -392,6 +395,7 @@ def test_remote_subnet4_get_all_values(backend):
                                     'csv-format': True,
                                     'data': '192.0.2.2',
                                     'name': 'domain-name-servers',
+                                    "never-send": False,
                                     'space': 'dhcp4'
                                 }
                             ],
@@ -761,7 +765,8 @@ def test_remote_subnet4_get_by_id(backend):
                                                                                 "option-data": [{"code": 6,
                                                                                                  "data": '192.0.2.2',
                                                                                                  "always-send": True,
-                                                                                                 "csv-format": True}]}],
+                                                                                                 "csv-format": True,
+                                                                                                 "never-send": True}]}],
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
                                                                      "reservation-mode": "global",
                                                                      "server-hostname": "name-xyz",
@@ -772,7 +777,8 @@ def test_remote_subnet4_get_by_id(backend):
                                                                      "option-data": [{"code": 6,
                                                                                       "data": '192.0.2.1',
                                                                                       "always-send": True,
-                                                                                      "csv-format": True}]}]})
+                                                                                      "csv-format": True,
+                                                                                      "never-send": True}]}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"subnets": [{"id": 2, "subnet": "192.168.50.0/24"}]},
@@ -794,10 +800,11 @@ def test_remote_subnet4_get_by_id(backend):
                                                    "match-client-id": False, "next-server": "0.0.0.0",
                                                    "option-data": [{"always-send": True, "code": 6, "csv-format": True,
                                                                     "data": "192.0.2.1", "name": "domain-name-servers",
-                                                                    "space": "dhcp4"}],
+                                                                    "never-send": True, "space": "dhcp4"}],
                                                    "pools": [{"option-data": [{"always-send": True, "code": 6,
                                                                                "csv-format": True, "data": "192.0.2.2",
                                                                                "name": "domain-name-servers",
+                                                                               "never-send": True,
                                                                                "space": "dhcp4"}],
                                                               "pool": "192.168.50.1-192.168.50.100"}],
                                                    "rebind-timer": 500,
@@ -1088,6 +1095,7 @@ def test_remote_network4_get_all_values(backend):
                                                            "option-data": [{"always-send": True, "code": 6,
                                                                             "csv-format": True, "data": "192.0.2.1",
                                                                             "name": "domain-name-servers",
+                                                                            "never-send": False,
                                                                             "space": "dhcp4"}],
                                                            "relay": {"ip-addresses": []},
                                                            "user-context": {"some weird network": 55}}]},
@@ -2464,7 +2472,8 @@ def remote_class_set_all_parameters(dhcp_version, backend):
                                        "name": "foo",
                                        "only-if-required": True,
                                        "option-data": [{"always-send": True, "code": 7, "csv-format": True,
-                                                        "data": "123", "name": "preference", "space": "dhcp6"}],
+                                                        "data": "123", "name": "preference",
+                                                        "never-send": False, "space": "dhcp6"}],
                                        "test": "member('UNKNOWN')",
                                        "valid-lifetime": 1000,
                                        "min-valid-lifetime": 100,
@@ -2496,9 +2505,11 @@ def remote_class_set_all_parameters(dhcp_version, backend):
                                            "next-server": "10.11.12.13",
                                            "option-data": [{"always-send": True, "code": 6, "csv-format": True,
                                                             "data": "192.0.2.1, 192.0.2.2",
-                                                            "name": "domain-name-servers", "space": "dhcp4"},
+                                                            "name": "domain-name-servers",
+                                                            "never-send": False, "space": "dhcp4"},
                                                            {"always-send": True, "code": 222, "csv-format": True,
-                                                            "data": "22", "name": "foooption", "space": "myspace"}],
+                                                            "data": "22", "name": "foooption",
+                                                            "never-send": False, "space": "myspace"}],
                                            "option-def": [{"array": False, "code": 222, "encapsulate": "",
                                                            "name": "foooption", "record-types": "",
                                                            "space": "myspace", "type": "uint32"}],

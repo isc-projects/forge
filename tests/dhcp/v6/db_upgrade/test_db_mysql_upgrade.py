@@ -226,7 +226,8 @@ def test_v6_upgrade_mysql_db():
                                     "code": 17,
                                     "csv-format": True,
                                     "data": "4491",
-                                    "name": "vendor-opts", "space": "dhcp6"}]
+                                    "name": "vendor-opts",
+                                    "never-send": False,"space": "dhcp6"}]
     assert resp["prefixes"] == ["2001:db8:2:abcd::/64"]
 
     # check lease
@@ -276,12 +277,14 @@ def test_v6_upgrade_mysql_db():
                                       "csv-format": True,
                                       "data": "123",
                                       "name": "preference",
+                                      "never-send": False,
                                       "space": "dhcp6"}]
 
     assert subnet["pools"][0] == {"option-data": [{"always-send": True,
                                                    "code": 7,
                                                    "csv-format": True,
                                                    "data": "12",
+                                                   "never-send": False,
                                                    "name": "preference",
                                                    "space": "dhcp6"}],
                                   "pool": "2001:db8:1::10/128"}
@@ -305,6 +308,7 @@ def test_v6_upgrade_mysql_db():
                                        "code": 7,
                                        "csv-format": True,
                                        "data": "123",
+                                       "never-send": False,
                                        "name": "preference",
                                        "space": "dhcp6"}]
     assert network["rebind-timer"] == 200
@@ -325,6 +329,7 @@ def test_v6_upgrade_mysql_db():
                                   "data": "isc.example.com",
                                   "metadata": {"server-tags": ["abc"]},
                                   "name": "sip-server-dns",
+                                  "never-send": False,
                                   "space": "dhcp6"}
 
     resp = _send_cmd("remote-option-def6-get", {"server-tags": ["abc"], "option-defs": [{"code": 222}]})["arguments"]

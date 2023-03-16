@@ -341,6 +341,7 @@ def test_remote_subnet6_get_all_values(backend):
                             'csv-format': True,
                             'data': '123',
                             'name': 'preference',
+                            'never-send': False,
                             'space': 'dhcp6'
                         }
                     ],
@@ -361,6 +362,7 @@ def test_remote_subnet6_get_all_values(backend):
                                     'csv-format': True,
                                     'data': '12',
                                     'name': 'preference',
+                                    'never-send': False,
                                     'space': 'dhcp6'
                                 }
                             ],
@@ -741,10 +743,12 @@ def test_remote_subnet6_get_by_id(backend):
                                                    "id": 2, "interface": srv_msg.get_server_interface(),
                                                    "option-data": [{"always-send": True, "code": 7, "csv-format": True,
                                                                     "data": "12", "name": "preference",
+                                                                    "never-send": False,
                                                                     "space": "dhcp6"}],
                                                    "pools": [{"option-data": [{"always-send": True, "code": 7,
                                                                                "csv-format": True, "data": "123",
                                                                                "name": "preference",
+                                                                               "never-send": False,
                                                                                "space": "dhcp6"}],
                                                               "pool": "2001:db8:1::1-2001:db8:1::10"}],
                                                    "rebind-timer": 500, "renew-timer": 200,
@@ -1016,6 +1020,7 @@ def test_remote_network6_get_all_values(backend):
                                                            "option-data": [{"always-send": True, "code": 7,
                                                                             "csv-format": True, "data": "123",
                                                                             "name": "preference",
+                                                                            "never-send": False,
                                                                             "space": "dhcp6"}],
                                                            "relay": {"ip-addresses": []},
                                                            "user-context": {"some weird network": 55}}]},
@@ -1999,7 +2004,8 @@ def test_remote_global_option6_global_get_basic(channel, backend):
     assert response == {"arguments": {"count": 1, "options": [{"always-send": False, "code": 7, "csv-format": True,
                                                                "data": "123",
                                                                "metadata": {"server-tags": ["abc"]},
-                                                               "name": "preference", "space": "dhcp6"}]},
+                                                               "name": "preference",
+                                                               "never-send": False, "space": "dhcp6"}]},
                         "result": 0, "text": "DHCPv6 option 7 in 'dhcp6' found."}
 
 
@@ -2159,7 +2165,8 @@ def test_remote_global_option6_global_get_csv_false(backend):
     assert response == {"arguments": {"count": 1, "options": [{"always-send": True, "code": 22, "csv-format": False,
                                                                "data": "C0000301C00003020A0B0C0D0E0F0807",
                                                                "metadata": {"server-tags": ["abc"]},
-                                                               "name": "sip-server-addr", "space": "dhcp6"}]},
+                                                               "name": "sip-server-addr",
+                                                               "never-send": False, "space": "dhcp6"}]},
                         "result": 0, "text": "DHCPv6 option 22 in 'dhcp6' found."}
 
 
@@ -2186,11 +2193,11 @@ def test_remote_global_option6_global_get_all(backend):
                                       "options": [{"always-send": False, "code": 7, "csv-format": True,
                                                    "metadata": {"server-tags": ["abc"]},
                                                    "data": "123", "name": "preference",
-                                                   "space": "dhcp6"},
+                                                   "never-send": False, "space": "dhcp6"},
                                                   {"always-send": False, "code": 22, "csv-format": True,
                                                    "metadata": {"server-tags": ["abc"]},
                                                    "data": "2001:db8::2", "name": "sip-server-addr",
-                                                   "space": "dhcp6"}]},
+                                                   "never-send": False, "space": "dhcp6"}]},
                         "result": 0, "text": "2 DHCPv6 option(s) found."}
 
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": backend},
@@ -2205,7 +2212,7 @@ def test_remote_global_option6_global_get_all(backend):
     assert response == {"arguments": {"count": 1, "options": [{"always-send": False, "code": 22, "csv-format": True,
                                                                "data": "2001:db8::2", "name": "sip-server-addr",
                                                                "metadata": {"server-tags": ["abc"]},
-                                                               "space": "dhcp6"}]},
+                                                               "never-send": False, "space": "dhcp6"}]},
                         "result": 0, "text": "1 DHCPv6 option(s) found."}
 
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": backend},
