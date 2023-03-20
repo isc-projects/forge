@@ -223,6 +223,7 @@ def declare_all(dhcp_version=None):
     world.srvmsg = []  # Server's response(s)
     world.rlymsg = []  # Server's response(s) Relayed by Relay Agent
     world.tmpmsg = []  # container for temporary stored messages
+    world.tcpmsg = []  # Server's response(s) via TCP
     world.cliopts = []  # Option(s) to be included in the next message sent
     world.relayopts = []  # option(s) to be included in Relay Forward message.
     world.rsoo = []  # List of relay-supplied-options
