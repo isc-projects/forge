@@ -399,7 +399,7 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
     :return: list of parsed DHCP6 messages
     """
     if address is None:
-        address = world.f_cfg.giaddr4
+        address = world.f_cfg.dns4_addr
     if port is None:
         port = 87
     received = b''
