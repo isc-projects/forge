@@ -396,9 +396,9 @@ def _get_server_name(args, idx):
         short_sys = 'f34'
     elif args.system == 'fedora-36':
         short_sys = 'f36'
-    elif args.system == 'alpine-316':
+    elif args.system == 'alpine-3.16':
         short_sys = 'a316'
-    elif args.system == 'alpine-317':
+    elif args.system == 'alpine-3.17':
         short_sys = 'a317'
     else:
         raise Exception('unsupported system %s' % args.system)
@@ -831,11 +831,11 @@ def _install_kea_native_on_server(args, server_idx):
         for pkg in pkgs:
             url = f'{repository_url}/repository/kea-{major_minor}-{args.system.split("-")[0]}-{distro_version}-' \
                   f'ci/{args.version.split("-")[1]}/v{distro_version}/x86_64/{pkg}'
-            cmd = f'wget {url}'
+            cmd = cmd_tpl % f'wget {url}'
             execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
         # install all downloaded pkgs
-        cmd = f'sudo apk add {" ".join(pkgs)} --allow-untrusted'
+        cmd = cmd_tpl % f'sudo apk add {" ".join(pkgs)} --allow-untrusted'
         execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     elif 'ubuntu' in args.system:
