@@ -396,6 +396,10 @@ def _get_server_name(args, idx):
         short_sys = 'f34'
     elif args.system == 'fedora-36':
         short_sys = 'f36'
+    elif args.system == 'alpine-316':
+        short_sys = 'a316'
+    elif args.system == 'alpine-317':
+        short_sys = 'a317'
     else:
         raise Exception('unsupported system %s' % args.system)
 
@@ -524,7 +528,9 @@ def setup(args):
     else:
         vagrant_tpl = 'vagrant/Vagrantfile.in'
 
-    if 'ubuntu' in args.system or 'debian' in args.system:
+    if 'alpine' in args.system:
+        pkg = 'apk'
+    elif 'ubuntu' in args.system or 'debian' in args.system:
         pkg = 'deb'
     else:
         pkg = 'rpm'
@@ -544,6 +550,11 @@ def setup(args):
     parts = SRV_IPV6_ADDR_GLOBAL.rsplit(':', 1)
     srv2_addr6 = '%s:%04d' % (parts[0], int(parts[1]) + 1)
 
+    lxc_version = 1
+    if "ubuntu" in server1_name:
+        lxc_version = 7
+    elif 'alpine-3.16' in args.system:
+        lxc_version = 4
     # generate Vagrantfile
     with open(vagrant_tpl, 'r') as f_in:
         txt = f_in.read()
@@ -569,7 +580,7 @@ def setup(args):
                               TRAFFIC_BRG=traffic_brg,
                               SERVER_IMAGE=server_image,
                               PKG=pkg,
-                              LXC_VERSION=7 if "ubuntu" in server1_name else 1)
+                              LXC_VERSION=lxc_version)
     vagrant_dir = get_vagrant_dir(args)
     if not os.path.exists(vagrant_dir):
         os.makedirs(vagrant_dir)
@@ -766,10 +777,15 @@ def _install_kea_native_on_server(args, server_idx):
     execute(cmd, cwd=vagrant_dir, attempts=3, log_prefix=log_prefix)
 
     cmd = cmd_tpl % './hammer.py prepare-system -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,forge,shell'
+    if 'alpine' in args.system:
+        cmd = cmd.replace(",radius", "")
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     if server_idx == 1:
-        if 'ubuntu' in args.system:
+        if 'alpine' in args.system:
+            # TODO implement this
+            pass
+        elif 'ubuntu' in args.system:
             _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix)
         else:
             _install_krb_on_fedora(server_name, vagrant_dir, log_prefix)
@@ -781,7 +797,48 @@ def _install_kea_native_on_server(args, server_idx):
     repo_url = urljoin(repository_url, 'repository')
     repo_url += '/%s-ci/' % repo_name
 
-    if 'ubuntu' in args.system:
+    if 'alpine' in args.system:
+        # nexus repository is RAW not APK, so unfortunately we have to download packages
+        # and then install all from local files
+        distro_version = args.system.split("-")[1]
+
+        version = f'{args.version}.apk'
+        if 'isc' in args.version:
+            version = version.replace('isc', 'r')
+        pkgs = ["isc-kea-dhcp4",
+                "isc-kea-dhcp6",
+                "isc-kea-dhcp-ddns",
+                "isc-kea-hooks",
+                "isc-kea-admin",
+                "isc-kea-ctrl-agent",
+                "isc-kea-common",
+                "isc-kea-premium-cb-cmds",
+                "isc-kea-premium-class-cmds",
+                "isc-kea-premium-ddns-tuning",
+                "isc-kea-premium-flex-id",
+                "isc-kea-premium-forensic-log",
+                # "isc-kea-premium-gss-tsig",
+                "isc-kea-premium-host-cache",
+                "isc-kea-premium-host-cmds",
+                "isc-kea-premium-lease-query",
+                "isc-kea-premium-limits",
+                # "isc-kea-premium-radius",  no radius pkg for alpine
+                "isc-kea-premium-rbac",
+                "isc-kea-premium-subnet-cmds"]
+        pkgs = [f'{x}-{version}' for x in pkgs ]
+
+        # let's download all, one by one, if some fail it will be easier to debug
+        for pkg in pkgs:
+            url = f'{repository_url}/repository/kea-{major_minor}-{args.system.split("-")[0]}-{distro_version}-' \
+                  f'ci/{args.version.split("-")[1]}/v{distro_version}/x86_64/{pkg}'
+            cmd = f'wget {url}'
+            execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+        # install all downloaded pkgs
+        cmd = f'sudo apk add {" ".join(pkgs)} --allow-untrusted'
+        execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    elif 'ubuntu' in args.system:
         # fix certificate issue
         cmd = cmd_tpl % "sudo apt-get install -y ca-certificates openssl"
         execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
@@ -884,7 +941,10 @@ def _install_kea_make_on_server(args, server_idx):
     execute(cmd1, cwd=vagrant_dir, log_prefix=log_prefix)
 
     if server_idx == 1:
-        if 'ubuntu' in args.system:
+        if 'alpine' in args.system:
+            # TODO implement this
+            pass
+        elif 'ubuntu' in args.system:
             _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix)
         else:
             _install_krb_on_fedora(server_name, vagrant_dir, log_prefix)
