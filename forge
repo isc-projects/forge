@@ -825,7 +825,7 @@ def _install_kea_native_on_server(args, server_idx):
                 # "isc-kea-premium-radius",  no radius pkg for alpine
                 "isc-kea-premium-rbac",
                 "isc-kea-premium-subnet-cmds"]
-        pkgs = [f'{x}-{version}' for x in pkgs ]
+        pkgs = [f'{x}-{version}' for x in pkgs]
 
         # let's download all, one by one, if some fail it will be easier to debug
         for pkg in pkgs:
