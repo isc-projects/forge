@@ -1790,7 +1790,7 @@ def insert_message_in_server_logs(message: str):
     """
 
     # Get only the hosts that are configured in forge.
-    hosts = [host for host in [world.f_cfg.mgmt_address, world.f_cfg.mgmt_address_2, world.f_cfg.mgmt_address_3] if len(host)]
+    hosts = [host for host in [world.f_cfg.mgmt_address, world.f_cfg.mgmt_address_2] if len(host)]
 
     # Format the message.
     message = f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]} FORGE {message}'
