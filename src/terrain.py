@@ -310,13 +310,20 @@ def test_start():
     # Initialize the common logger.
     logging_facility.logger_initialize(world.f_cfg.loglevel)
 
-    # check remote system if it is redhat or debian based
+    # let's assume debian is always
+    world.server_system = 'debian'
+    # and now check if it's redhat or alpine
     result = fabric_run_command('ls -al /etc/redhat-release',
                                 hide_all=True, ignore_errors=True)
     if result.succeeded:
         world.server_system = 'redhat'
+        world.server_system_version = result.stdout
     else:
-        world.server_system = 'debian'
+        result = fabric_run_command('ls -al /etc/alpine-release',
+                                    hide_all=True, ignore_errors=True)
+        if result.succeeded:
+            world.server_system = 'alpine'
+            world.server_system_version = result.stdout
     print('server running on %s based system' % world.server_system)
 
     # stop any SUT running

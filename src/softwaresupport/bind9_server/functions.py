@@ -171,7 +171,7 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
     else:
         srv_name = 'bind9'
 
-    if world.f_cfg.dns_data_path.startswith('/etc'):
+    if world.f_cfg.dns_data_path.startswith('/etc') and world.server_system != 'alpine':
         fabric_sudo_command('systemctl stop %s' % srv_name,
                             hide_all=value, destination_host=destination_address)
     else:
@@ -182,7 +182,7 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address):
     stop_srv(destination_address=destination_address)
-    start_srv(True, None, destination_address=destination_address)
+    start_srv(True, destination_address=destination_address)
 
 
 def start_srv(success, destination_address=world.f_cfg.mgmt_address):
@@ -191,7 +191,7 @@ def start_srv(success, destination_address=world.f_cfg.mgmt_address):
     else:
         srv_name = 'bind9'
 
-    if world.f_cfg.dns_data_path.startswith('/etc'):
+    if world.f_cfg.dns_data_path.startswith('/etc') and world.server_system != 'alpine':
         fabric_sudo_command('systemctl restart %s' % srv_name,
                             destination_host=destination_address)
     else:
