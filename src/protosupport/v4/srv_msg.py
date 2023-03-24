@@ -371,8 +371,8 @@ def read_dhcp4_msgs(d: bytes, msg: list):
     """
     Recursively parse bytes received via TCP channel
     :param d: bytes
-    :param msg: list of DHCP6 messages
-    :return: list of DHCP6 messages
+    :param msg: list of DHCP4 messages
+    :return: list of DHCP4 messages
     """
     if len(d) == 0:
         return msg
@@ -393,7 +393,7 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
     :param address: address to which message will be sent
     :param port: port number on which receiving end is listening
     :param timeout: how long kea will wait from last received message
-    :param parse: should received bytes be parsed into DHCP6 messages
+    :param parse: should received bytes be parsed into DHCP4 messages
     :param number_of_connections: how many connections should forge open
     :param print_all: print all to stdout (use false for massive messages)
     :return: list of parsed DHCP4 messages
@@ -475,7 +475,7 @@ def tcp_get_message(**kwargs):
     * tcp_get_message(prefix=lease["address"])
     * tcp_get_message(order=3)
     :param kwargs: define which type of search should be performed and with what value
-    :return: DHCP6 message
+    :return: DHCP4 message
     """
     # we can look for address or prefix, address in scapy is represented by addr and prefix is represented by prefix
 
@@ -557,7 +557,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
 
 def get_option(msg, opt_code):
     """
-    Retrieve from scapy message {msg}, the DHCPv6 option having IANA code {opt_code}.
+    Retrieve from scapy message {msg}, the DHCPv4 option having IANA code {opt_code}.
     :param msg: scapy message to retrieve the option from
     :param opt_code: option code or name
     :return: scapy message representing the option or None if the option doesn't exist
