@@ -389,19 +389,19 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
                   number_of_connections: int = 1, print_all: bool = True):
     """
     Send message over TCP channel and listen for response
-    :param msg: bytes representing DHCP6 message
+    :param msg: bytes representing DHCP4 message
     :param address: address to which message will be sent
     :param port: port number on which receiving end is listening
     :param timeout: how long kea will wait from last received message
     :param parse: should received bytes be parsed into DHCP6 messages
     :param number_of_connections: how many connections should forge open
     :param print_all: print all to stdout (use false for massive messages)
-    :return: list of parsed DHCP6 messages
+    :return: list of parsed DHCP4 messages
     """
     if address is None:
         address = world.f_cfg.dns4_addr
     if port is None:
-        port = 87
+        port = 67
     received = b''
 
     socket_list = [socket.socket(socket.AF_INET, socket.SOCK_STREAM) for _ in range(number_of_connections)]
