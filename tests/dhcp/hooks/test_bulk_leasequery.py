@@ -1416,14 +1416,14 @@ def test_v4_junk_over_tcp(backend):
     _send_leasequery_v4(remote_id="020601020c030a22")
     srv_msg.tcp_messages_include(leaseactive=5, leasequery_done=1)
     for lease in leases_with_remote_id:
-        srv_msg.tcp_get_message(ciaddr=lease["address"]).show()
+        srv_msg.tcp_get_message(ciaddr=lease["address"])
         _check_leaseactive(lease, start_time, renew_time, rebind_time, valid_lifetime)
 
     # should get back leases_with_relay_id, spread between 2 subnets
     _send_leasequery_v4(relay_id='0c0601020c330a11')
     srv_msg.tcp_messages_include(leaseactive=5, leasequery_done=1)
     for lease in leases_with_relay_id:
-        srv_msg.tcp_get_message(ciaddr=lease["address"]).show()
+        srv_msg.tcp_get_message(ciaddr=lease["address"])
         _check_leaseactive(lease, start_time, renew_time, rebind_time, valid_lifetime)
 
 
@@ -1499,7 +1499,7 @@ def test_v4_assign_and_reply_simultaneously(backend):
     all_leases = leases_set_no1+leases_set_no2
     # let's go through all leaseactive messages and check if all leases returned were actually assigned
     for i, msg in enumerate(world.tcpmsg[:-1]):
-        srv_msg.tcp_get_message(order=i).show()
+        srv_msg.tcp_get_message(order=i)
         needed_lease = list(filter(lambda d: d["address"] == msg.ciaddr, all_leases))[0]
         print(needed_lease)
         _check_leaseactive(needed_lease, start_time, renew_time, rebind_time, valid_lifetime)
