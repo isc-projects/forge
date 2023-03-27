@@ -201,7 +201,7 @@ def start_srv(success, destination_address=world.f_cfg.mgmt_address):
 
     time.sleep(world.f_cfg.sleep_time_1 + 4)
 
-    if world.f_cfg.dns_data_path.startswith('/etc'):
+    if world.f_cfg.dns_data_path.startswith('/etc') and world.server_system != 'alpine':
         fabric_sudo_command("systemctl status %s | grep 'Active: active (running)'" % srv_name,
                             destination_host=destination_address)
     else:

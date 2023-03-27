@@ -463,7 +463,7 @@ def _init_radius(destination: str = world.f_cfg.mgmt_address):
     global AUTHORIZE_CONTENT
     authorize_file = 'authorize.txt'
     with TemporaryFile(authorize_file, AUTHORIZE_CONTENT):
-        if world.server_system == 'redhat':
+        if world.server_system in ['redhat', 'alpine']:
             # freeradius 3.x
             fabric_send_file(authorize_file, '/etc/raddb/mods-config/files/authorize',
                              destination_host=destination)
@@ -493,7 +493,7 @@ client {mgmt_address} {{
     clients_conf_content = clients_conf_content.format(mgmt_address=destination)
     clients_conf_file = 'clients.conf'
     with TemporaryFile(clients_conf_file, clients_conf_content):
-        if world.server_system == 'redhat':
+        if world.server_system in ['redhat', 'alpine']:
             # freeradius 3.x
             fabric_send_file(clients_conf_file, '/etc/raddb/clients.conf',
                              destination_host=destination)
@@ -514,6 +514,9 @@ def _start_radius(destination: str = world.f_cfg.mgmt_address):
     """
     if world.server_system == 'redhat':
         cmd = 'sudo systemctl restart radiusd'
+    elif world.server_system == 'alpine':
+        fabric_sudo_command('killall radiusd', destination_host=destination, ignore_errors=True)
+        cmd = '/usr/sbin/radiusd'
     else:
         cmd = 'sudo systemctl restart freeradius'
     fabric_sudo_command(cmd, destination_host=destination)

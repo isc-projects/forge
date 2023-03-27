@@ -782,8 +782,6 @@ def _install_kea_native_on_server(args, server_idx):
     execute(cmd, cwd=vagrant_dir, attempts=3, log_prefix=log_prefix)
 
     cmd = cmd_tpl % './hammer.py prepare-system -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,forge,shell'
-    if 'alpine' in args.system:
-        cmd = cmd.replace(",radius", "")
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     if server_idx == 1:
