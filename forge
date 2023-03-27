@@ -156,14 +156,19 @@ def _save_config(config):
 def update_config(name, value):
     if name not in CONFIG_FIELDS:
         raise Exception('Unknown config field %s' % name)
-    if name == 'kea-dirs':
+    if name == 'ccache-dir' and 'alpine' in value:
+        # we don't have shared ccache for alpine available on ubuntu system (lxc runner)
+        # so let's mitigate this issue
+        value = '/mnt/ccache'
+        log.info("We don't have ccache in alpine, resetting path to %s", value)
+    if name in ['kea-dirs', 'ccache-dir']:
         value = os.path.abspath(value)
         if not os.path.exists(value):
             raise Exception('Folder %s does not exists.' % value)
         if not os.path.isdir(value):
             raise Exception('%s is not a directory.' % value)
 
-    print('Setting %s to %s' % (name, value))
+    log.info('Setting %s to %s', name, value)
     cfg = _load_config()
     cfg.set('Forge', name, value)
     _save_config(cfg)
@@ -331,7 +336,7 @@ def set_init_all(args):
     path = os.path.abspath('init_all.py')
     with open(path, 'w') as f:
         f.write(txt)
-    print('Generated %s.' % path)
+    log.info('Generated %s.', path)
 
 
 def get_vagrant_dir(args):
