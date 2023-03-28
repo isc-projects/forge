@@ -707,6 +707,8 @@ def test_HA_and_RADIUS(dhcp_version: str,
     :param radius_reservation_in_pool: whether there is an existing pool in Kea that contains the
                                        lease reserved by RADIUS for the first client in this test
     """
+    if world.server_system == 'alpine' and world.f_cfg.install_method != 'make':
+        pytest.skip("We don't have radius hook package, skipping test")
 
     # Constants
     leases_count = 50

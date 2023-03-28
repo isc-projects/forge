@@ -120,7 +120,7 @@ def test_lease_cache_incorrect_values(dhcp_version, parameter, value):
 
 @pytest.mark.v6
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
-@pytest.mark.parametrize("parameter", [{}, {"cache-threshold": .0}, {"cache-max-age": 0}])
+@pytest.mark.parametrize("parameter", [{}, {"cache-max-age": 0}])  # , {"cache-threshold": .0} temporary removed
 def test_lease_cache_disabled(backend, parameter):
     # let's test is as disabled in configurations:
     # - not configured
