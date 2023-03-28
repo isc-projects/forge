@@ -60,7 +60,7 @@ def test_HA_hot_standby_multiple_leases_v6(hook_order: str):
 
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1500,
                                           "max-unacked-clients": 0,
                                           'sync-page-limit': 2,
@@ -86,7 +86,7 @@ def test_HA_hot_standby_multiple_leases_v6(hook_order: str):
 
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1500,
                                           "max-unacked-clients": 0,
                                           'sync-page-limit': 2,
@@ -173,7 +173,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
 
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1500,
                                           "max-unacked-clients": 0,
                                           "sync-page-limit": 10,
@@ -208,7 +208,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
 
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1500,
                                           "max-unacked-clients": 0,
                                           "sync-page-limit": 15,
@@ -397,7 +397,7 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
 
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1500,
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server1"})
@@ -433,7 +433,7 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
 
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1500,
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2"})
@@ -583,7 +583,7 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version: str, backend:
 
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1500,
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server1"})
@@ -619,7 +619,7 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version: str, backend:
 
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1500,
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2"})  # this is now secondary!
@@ -759,7 +759,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
     elif ha_mode == 'passive-backup':
         srv_control.update_ha_hook_parameter(PASSIVE_BACKUP)
     srv_control.update_ha_hook_parameter({'heartbeat-delay': 1000,
-                                          'max-ack-delay': 0,
+                                          'max-ack-delay': 100,
                                           'max-response-delay': 1500,
                                           'max-unacked-clients': 0,
                                           'sync-page-limit': 10,
@@ -822,7 +822,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
     elif ha_mode == 'passive-backup':
         srv_control.update_ha_hook_parameter(PASSIVE_BACKUP)
     srv_control.update_ha_hook_parameter({'heartbeat-delay': 1000,
-                                          'max-ack-delay': 0,
+                                          'max-ack-delay': 100,
                                           'max-response-delay': 1500,
                                           'max-unacked-clients': 0,
                                           'sync-page-limit': 15,

@@ -253,7 +253,7 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1100,
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server1",
@@ -285,7 +285,7 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1100,
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2",
@@ -597,7 +597,7 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1100,
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server1",
@@ -629,7 +629,7 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 0,
+                                          "max-ack-delay": 100,
                                           "max-response-delay": 1100,
                                           "max-unacked-clients": 0,
                                           "this-server-name": "server2",
