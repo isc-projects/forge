@@ -45,7 +45,7 @@ def pytest_runtest_logfinish(nodeid, location):
     banner = f' END {world.get_test_progress()}: {nodeid} '
     stars = 140 - len(banner)
     half_stars = int(stars / 2)
-    banner = '\n\u001b[36;1m'+ ('*' * half_stars) + banner + ('*' * (stars - half_stars)) + '\u001b[0m'
+    banner = '\n\u001b[36;1m' + ('*' * half_stars) + banner + ('*' * (stars - half_stars)) + '\u001b[0m'
     world.current_test_index += 1
     print(banner)
 
