@@ -6,6 +6,7 @@
 
 # pylint: disable=invalid-name
 # pylint: disable=line-too-long
+# pylint: disable=too-many-branches
 # pylint: disable=unused-argument
 
 import pytest
@@ -201,9 +202,17 @@ def test_RADIUS_giaddr(dhcp_version: str,
 
     # Provide RADIUS configuration and start RADIUS server.
     radius.add_usual_reservations()
-    radius.add_reservation('08:00:27:b0:aa:aa', [
-        'Framed-IP-Address = "192.168.50.5"',
-        'Framed-IPv6-Address = "2001:db8:50::5"',
+    radius.add_reservation('08:00:27:b0:50:50', [
+        'Framed-IP-Address = "192.168.50.123"',
+        'Framed-IPv6-Address = "2001:db8:50::123"',
+    ])
+    radius.add_reservation('08:00:27:b0:77:77', [
+        'Framed-IP-Address = "192.168.77.123"',
+        'Framed-IPv6-Address = "2001:db8:77::123"',
+    ])
+    radius.add_reservation('08:00:27:b0:99:99', [
+        'Framed-IP-Address = "192.168.99.123"',
+        'Framed-IPv6-Address = "2001:db8:99::123"',
     ])
     radius.init_and_start_radius()
 
@@ -247,17 +256,110 @@ def test_RADIUS_giaddr(dhcp_version: str,
     elif giaddr == 'out-of-subnet':
         giaddr_value = '192.168.77.77'
 
+    leases = []
+
     if giaddr == 'out-of-subnet':
-        # If a subnet is not selected initially, there will be no RADIUS request
-        # sent, and there is no chance of the client getting the address reserved in RADIUS.
-        radius.send_message_and_expect_no_more_leases(mac='08:00:27:b0:aa:aa',
+        # If a subnet is not selected initially, nothing makes the client able to get a lease. Not
+        # even the RADIUS reselect is able to select a subnet for the packet, so zero chances for a
+        # dynamic lease. On top of that, there is no RADIUS request sent, so also zero chances of
+        # the client getting the address reserved in RADIUS.
+        radius.send_message_and_expect_no_more_leases(mac='08:00:27:b0:50:50',
                                                       giaddr=giaddr_value)
         wait_for_message_in_log('DHCP4_SUBNET_SELECTION_FAILED.*failed to select subnet for the client')
-    else:
-        # The client should get the lease configured in RADIUS.
-        lease = radius.get_address(mac='08:00:27:b0:aa:aa',
-                                   giaddr=giaddr_value,
-                                   expected_lease='192.168.50.5')
+        radius.send_message_and_expect_no_more_leases(mac='08:00:27:b0:77:77',
+                                                      giaddr=giaddr_value)
+        wait_for_message_in_log('DHCP4_SUBNET_SELECTION_FAILED.*failed to select subnet for the client', 2)
+        radius.send_message_and_expect_no_more_leases(mac='08:00:27:b0:99:99',
+                                                      giaddr=giaddr_value)
+        wait_for_message_in_log('DHCP4_SUBNET_SELECTION_FAILED.*failed to select subnet for the client', 3)
 
-        # Check that leases are in the backend.
-        srv_msg.check_leases([lease])
+    elif reselect == 'reselect':
+        # There is a subnet that can hold the reserved address. Reselect is enabled, so regardless
+        # of giaddr and the initially selected subnet, the reserved address is given to the client.
+        leases.append(radius.get_address(mac='08:00:27:b0:50:50',
+                                         giaddr=giaddr_value,
+                                         expected_lease='192.168.50.123'))
+
+        # Reserved RADIUS address out of any subnet. Reselect is enabled, so the packet gets
+        # assigned to SUBNET_ID_UNUSED. Expect no response.
+        radius.send_message_and_expect_no_more_leases(mac='08:00:27:b0:77:77',
+                                                      giaddr=giaddr_value)
+
+        # There is a subnet that can hold the reserved address. Reselect is enabled, so regardless
+        # of giaddr and the initially selected subnet, the reserved address is given to the client.
+        leases.append(radius.get_address(mac='08:00:27:b0:99:99',
+                                         giaddr=giaddr_value,
+                                         expected_lease='192.168.99.123'))
+
+    elif giaddr == 'in-subnet':
+        # giaddr 'in-subnet', reserved RADIUS address also in the same subnet.
+        # The client should get the lease configured in RADIUS.
+        leases.append(radius.get_address(mac='08:00:27:b0:50:50',
+                                         giaddr=giaddr_value,
+                                         expected_lease='192.168.50.123'))
+
+        if giaddr == 'network':
+            # giaddr 'in-subnet', reserved RADIUS address out of any subnet.
+            # The client should get a lease from the dynamic pool.
+            leases.append(radius.get_address(mac='08:00:27:b0:77:77',
+                                             giaddr=giaddr_value,
+                                             expected_lease='192.168.50.5'))
+        elif giaddr == 'subnet':
+            # giaddr 'in-subnet', reserved RADIUS address out of any subnet.
+            # Not in a shared network, so it doesn't benefit from normal reselection caused by the
+            # global address reservation, so it blindly gets the reserved address.
+            leases.append(radius.get_address(mac='08:00:27:b0:77:77',
+                                             giaddr=giaddr_value,
+                                             expected_lease='192.168.77.123'))
+
+        if giaddr == 'network':
+            # giaddr 'in-subnet', reserved RADIUS in another subnet.
+            # The client should get a lease from the dynamic pool.
+            leases.append(radius.get_address(mac='08:00:27:b0:99:99',
+                                             giaddr=giaddr_value,
+                                             expected_lease='192.168.50.5'))
+        elif giaddr == 'subnet':
+            # giaddr 'in-subnet', reserved RADIUS in another subnet.
+            # Not in a shared network, so it doesn't benefit from normal reselection caused by the
+            # global address reservation, so it blindly gets the reserved address.
+            leases.append(radius.get_address(mac='08:00:27:b0:99:99',
+                                             giaddr=giaddr_value,
+                                             expected_lease='192.168.99.123'))
+
+    elif giaddr == 'in-other-subnet':
+        if giaddr == 'network':
+            # giaddr 'in-other-subnet', reserved RADIUS address in another subnet.
+            # The client should get a lease from the dynamic pool.
+            leases.append(radius.get_address(mac='08:00:27:b0:50:50',
+                                             giaddr=giaddr_value,
+                                             expected_lease='192.168.99.0'))
+        elif giaddr == 'subnet':
+            # giaddr 'in-other-subnet', reserved RADIUS address in another subnet.
+            # Not in a shared network, so it doesn't benefit from normal reselection caused by the
+            # global address reservation, so it blindly gets the reserved address.
+            leases.append(radius.get_address(mac='08:00:27:b0:50:50',
+                                             giaddr=giaddr_value,
+                                             expected_lease='192.168.50.123'))
+
+        if giaddr == 'network':
+            # giaddr 'in-other-subnet', reserved RADIUS address out of any subnet.
+            # The client should get a lease from the dynamic pool.
+            leases.append(radius.get_address(mac='08:00:27:b0:77:77',
+                                             giaddr=giaddr_value,
+                                             expected_lease='192.168.99.1'))
+        elif giaddr == 'subnet':
+            # giaddr 'in-other-subnet', reserved RADIUS address out of any subnet.
+            # Not in a shared network, so it doesn't benefit from normal reselection caused by the
+            # global address reservation, so it blindly gets the reserved address.
+            leases.append(radius.get_address(mac='08:00:27:b0:77:77',
+                                             giaddr=giaddr_value,
+                                             expected_lease='192.168.77.123'))
+
+        # giaddr 'in-other-subnet', reserved RADIUS in the same subnet.
+        # The client should get the lease configured in RADIUS.
+        leases.append(radius.get_address(mac='08:00:27:b0:99:99',
+                                         giaddr=giaddr_value,
+                                         expected_lease='192.168.99.123'))
+
+    # Check that leases are in the backend.
+    srv_msg.check_leases(leases)
