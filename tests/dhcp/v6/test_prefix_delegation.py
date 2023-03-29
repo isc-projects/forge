@@ -499,6 +499,7 @@ def test_prefix_delegation_IA_and_PD_multiple_request_release():
 @pytest.mark.rfc3633
 def test_prefix_delegation_noprefixavail_release():
     # assign 2 prefixes, try third, fail, release one, assign one more time with success.
+    # https://gitlab.isc.org/isc-projects/kea/-/issues/2698
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::3')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 91)

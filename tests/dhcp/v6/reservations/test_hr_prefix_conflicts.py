@@ -163,6 +163,7 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_3():
 @pytest.mark.v6
 @pytest.mark.host_reservation
 def test_v6_host_reservation_conflicts_two_entries_for_one_host_different_subnets_prefix():
+    #https://gitlab.isc.org/isc-projects/kea/-/issues/2745
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
     srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)

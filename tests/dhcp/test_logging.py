@@ -968,6 +968,7 @@ def test_v4_loggers_all_different_levels_same_file():
 
 @pytest.mark.v4
 @pytest.mark.logging
+@pytest.mark.disabled
 def test_v4_loggers_all_different_levels_different_file():
     # https://gitlab.isc.org/isc-projects/kea/issues/592
     # bug: #592
