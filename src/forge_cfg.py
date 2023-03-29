@@ -276,11 +276,23 @@ class ForgeConfiguration:
         return self.data_join('kea-leases%s.csv' % proto[1])
 
 
+def get_test_progress():
+    """
+    Returns a textual representation of the total test progress e.g. '#8/24'.
+    Before running the first test, it's always just '#1'.
+    """
+    result = f'#{world.current_test_index}'
+    if world.test_count != 0:
+        result += f'/{world.test_count}'
+    return result
+
+
 # global object that stores all needed data: configs, etc.
 world = threading.local()
 world.f_cfg = ForgeConfiguration()
 world.current_test_index = 1
 world.test_count = 0
+world.get_test_progress = get_test_progress
 
 
 def _conv_arg_to_txt(arg):

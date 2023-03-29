@@ -34,21 +34,18 @@ def pytest_runtest_teardown(item, nextitem):
 
 
 def pytest_runtest_logstart(nodeid, location):
-    index = f'#{world.current_test_index}'
-    if world.test_count != 0:
-        index += f'/{world.test_count}'
-    banner = f'\n\n************ START {index}: {nodeid} '
+    banner = f'\n\n************ START {world.get_test_progress()}: {nodeid} '
     banner += '*' * (140 - len(banner))
     banner += '\n'
     banner = '\u001b[36m' + banner + '\u001b[0m'
     print(banner)
-    world.current_test_index += 1
 
 
 def pytest_runtest_logfinish(nodeid, location):
-    banner = f'\n************ END   {nodeid} '
+    banner = f'\n************ END {world.get_test_progress()}: {nodeid} '
     banner += '*' * (140 - len(banner))
     banner = '\u001b[36;1m' + banner + '\u001b[0m'
+    world.current_test_index += 1
     print(banner)
 
 
@@ -56,7 +53,7 @@ def pytest_runtest_logreport(report):
     if report.when == 'call':
         outcome = report.outcome.upper()
         node_id = report.nodeid
-        banner = f'\n************ RESULT {outcome}   {node_id} '
+        banner = f'\n************ RESULT {outcome} {world.get_test_progress()}: {node_id} '
         banner += '*' * (140 - len(banner))
         if report.outcome == 'passed':
             banner = '\u001b[32;1m' + banner + '\u001b[0m'
