@@ -40,7 +40,7 @@ def _create_mysql_dump():
     # tables, it's designed for kea 1.6.3; if you are using later, using more commands
     # is probably required
     srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_PATH)/my_db_v6.sql')
-    world.f_cfg.multi_threading_enabled = False
+    world.f_cfg.auto_multi_threading_configuration = False
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_cb_cmds.so')

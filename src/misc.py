@@ -31,7 +31,7 @@ def set_world():
     world.dhcp["option_cnt"] = 0
     world.dhcp["subnet_cnt"] = 0
     world.dhcp["option_usr_cnt"] = 0
-    world.f_cfg.multi_threading_enabled = True
+    world.f_cfg.auto_multi_threading_configuration = True
 
     # clear all config files
     world.ddns_cfg = {}

@@ -157,7 +157,7 @@ def test_status_get_multi_threading_default_setting(dhcp_version):
     Test also checks if certain arguments are omitted in status when multi-threading is disabled.
     """
     misc.test_setup()
-    world.f_cfg.multi_threading_enabled = False
+    world.f_cfg.auto_multi_threading_configuration = False
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     srv_control.build_and_send_config_files()
@@ -204,7 +204,7 @@ def test_status_get_multi_threading_queue(channel, dhcp_version):
     """ Tests if server with enabled multi-threading reports changes in packet-queue-statistics.
     """
     misc.test_setup()
-    world.f_cfg.multi_threading_enabled = True
+    world.f_cfg.auto_multi_threading_configuration = True
     if world.proto == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     else:

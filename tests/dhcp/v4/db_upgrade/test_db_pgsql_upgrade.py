@@ -28,7 +28,7 @@ def _create_pgsql_dump():
     # but we will still use kea 1.6.3 to generate this. In future we will have to create new dump with
     # config backend data
     srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_PATH)/pg_db_v4.sql')
-    world.f_cfg.multi_threading_enabled = False
+    world.f_cfg.auto_multi_threading_configuration = False
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.add_hooks('libdhcp_host_cmds.so')

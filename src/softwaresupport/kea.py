@@ -1190,13 +1190,18 @@ def configure_multi_threading(enable_mt, pool=0, queue=0):
     world.dhcp_cfg.update({"multi-threading": {"enable-multi-threading": enable_mt,
                                                "thread-pool-size": pool,
                                                "packet-queue-size": queue}})
-    world.f_cfg.multi_threading_enabled = False  # MT configured, automated process is not needed
+    world.f_cfg.auto_multi_threading_configuration = False  # MT configured, automated process is not needed
 
 
 def disable_mt_if_required(cfg):
-    # let's change behaviour, now let's disable mt in all places we have to do it.
-    # hooks that are not MT compatible (ever or at this moment)
-    # world.f_cfg.multi_threading_enabled will still define need in automated MT configuration
+    # core MT is enabled by default, HA MT as well. So we need to cover couple cases:
+    # * if auto_multi_threading_configuration is false than do nothing
+    # * if we detect hooks that are not MT compatible we have to disable MT in core, and in HA
+    # * radius + HA tests are weird, first server is configured with radius and than reconfigured with HA
+
+    if world.f_cfg.auto_multi_threading_configuration is False:
+        return cfg
+
     list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_radius.so", "libdhcp_user_chk.so"]
 
     # all configured hooks
@@ -1209,13 +1214,22 @@ def disable_mt_if_required(cfg):
         if 'multi-threading' not in cfg[f'Dhcp{world.proto[1]}']:
             log.debug("Disable MT")
             cfg[f"Dhcp{world.proto[1]}"].update({"multi-threading": {"enable-multi-threading": False}})
+            # ha will be enabled by default, so let's turn that off
+            if "libdhcp_ha.so" in list_of_used_hooks:
+                ha_mt = {"multi-threading": {"enable-multi-threading": False}}
+                for hook in cfg[f"Dhcp{world.proto[1]}"]["hooks-libraries"]:
+                    if "libdhcp_ha.so" in hook["library"]:
+                        hook["parameters"]["high-availability"][0].update(ha_mt)
+                        # let's make sure that HA has correct port number
+                        for peer in hook["parameters"]["high-availability"][0]["peers"]:
+                            peer["url"] = ":".join(peer["url"].split(":")[:2]) + ":8000/"
 
-    # if non of forbidden hooks were found and ha is detected, enable MT mode in HA
-    elif "libdhcp_ha.so" in list_of_used_hooks and world.f_cfg.multi_threading_enabled:
+    # if non of forbidden hooks were found and ha is detected, enable MT mode in HA and change
+    elif "libdhcp_ha.so" in list_of_used_hooks:
         ha_mt = {"multi-threading": {"enable-multi-threading": True,
                                      "http-dedicated-listener": True,
-                                     "http-listener-threads": 2,
-                                     "http-client-threads": 2}}
+                                     "http-listener-threads": 0,
+                                     "http-client-threads": 0}}
 
         # HA needs to enable it's own MT connectivity
         for hook in cfg[f"Dhcp{world.proto[1]}"]["hooks-libraries"]:

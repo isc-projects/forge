@@ -32,7 +32,7 @@ def _create_pgsql_dump():
     # but we will still use kea 1.6.3 to generate this. In future we will have to create new dump with
     # config backend data
     srv_msg.remove_file_from_server('$(SOFTWARE_INSTALL_PATH)/pg_db_v6.sql')
-    world.f_cfg.multi_threading_enabled = False
+    world.f_cfg.auto_multi_threading_configuration = False
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::10-2001:db8:1::10')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 96)
@@ -94,7 +94,7 @@ def _create_pgsql_dump():
 @pytest.mark.v6
 def test_v6_upgrade_pgsql_db():
     # new db parameters
-    world.f_cfg.multi_threading_enabled = False
+    world.f_cfg.auto_multi_threading_configuration = False
     tmp_db_name = "kea_tmp_db"
     tmp_user_name = "kea_tmp_user"
     # create new db without schema
