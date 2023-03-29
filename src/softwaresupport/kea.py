@@ -15,6 +15,7 @@
 # pylint: disable=unspecified-encoding
 # pylint: disable=unused-argument
 # pylint: disable=unused-variable
+# pylint: disable=too-many-nested-blocks
 
 import datetime
 import re
