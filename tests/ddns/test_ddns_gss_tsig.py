@@ -199,6 +199,9 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
 
 @pytest.fixture(autouse=True)
 def run_around_each_test(request):
+    if world.server_system == 'alpine':
+        pytest.skip("Alpine do not support kerberos tests yet.")
+
     krb.krb_destroy()
 
     def unset():
