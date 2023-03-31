@@ -92,7 +92,7 @@ def test_ha_tls_with_ca(dhcp_version, backend):
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
-                                          "max-response-delay": 1500,
+                                          "max-response-delay": 2500,
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server1",
                                           "trust-anchor": certificate.ca_cert,
@@ -133,7 +133,7 @@ def test_ha_tls_with_ca(dhcp_version, backend):
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
-                                          "max-response-delay": 1500,
+                                          "max-response-delay": 2500,
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server2",
                                           "trust-anchor": certificate.ca_cert,
