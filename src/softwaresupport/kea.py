@@ -1803,7 +1803,7 @@ def insert_message_in_server_logs(message: str):
 
     :param message: the message to be logged
     """
-    if world.install_method != 'make':
+    if world.f_cfg.install_method != 'make':
         return
     # Get only the hosts that are configured in forge.
     hosts = [host for host in [world.f_cfg.mgmt_address, world.f_cfg.mgmt_address_2] if len(host)]
