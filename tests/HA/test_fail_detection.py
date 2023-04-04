@@ -55,7 +55,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
-                                          "max-response-delay": 2500,
+                                          "max-response-delay": 1500,
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server1"})
 
@@ -86,7 +86,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
-                                          "max-response-delay": 2500,
+                                          "max-response-delay": 1500,
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server2"})
 
@@ -167,7 +167,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
-                                          "max-response-delay": 2500,
+                                          "max-response-delay": 1500,
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server1"})
 
@@ -210,7 +210,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
-                                          "max-response-delay": 2500,
+                                          "max-response-delay": 1500,
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server2"})
     world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
@@ -413,7 +413,7 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
-                                          "max-response-delay": 2500,
+                                          "max-response-delay": 1500,
                                           "max-unacked-clients": 2,
                                           "this-server-name": "server1"})
 
@@ -448,7 +448,7 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
-                                          "max-response-delay": 2500,
+                                          "max-response-delay": 1500,
                                           "max-unacked-clients": 2,
                                           "this-server-name": "server2"})
     world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
