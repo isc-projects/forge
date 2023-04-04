@@ -7,7 +7,6 @@
 """DHCPv4 vendor specific information"""
 
 # pylint: disable=invalid-name
-# pylint: disable=line-too-long
 
 import pytest
 
@@ -150,7 +149,9 @@ def test_v4_options_vivso_suboptions_mitel():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
     srv_msg.response_check_include_option(125)
-    srv_msg.response_check_option_content(125, 'value', 'HEX:000004033F823D69643A697070686F6E652E6D6974656C2E636F6D3B73775F746674703D31312E31312E31312E31313B63616C6C5F7372763D31302E31302E31302E3130')
+    srv_msg.response_check_option_content(125, 'value', 'HEX:000004033F823D69643A697070686F6E652E'
+                                                        '6D6974656C2E636F6D3B73775F746674703D3131'
+                                                        '2E31312E31312E31313B63616C6C5F7372763D31302E31302E31302E3130')
 
 
 @pytest.mark.v4
@@ -182,7 +183,9 @@ def test_v4_options_vendor_encapsulated_mitel():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
     srv_msg.response_check_include_option(43)
-    srv_msg.response_check_option_content(43, 'value', 'HEX:69643A697070686F6E652E6D6974656C2E636F6D3B73775F746674703D31312E31312E31312E31313B63616C6C5F7372763D31302E31302E31302E3130')
+    srv_msg.response_check_option_content(43, 'value', 'HEX:69643A697070686F6E652E6D6974656C2E636'
+                                                       'F6D3B73775F746674703D31312E31312E31312E31'
+                                                       '313B63616C6C5F7372763D31302E31302E31302E3130')
 
 
 @pytest.mark.v4
@@ -294,7 +297,8 @@ def test_v4_options_vendor_encapsulated_siemens():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
     srv_msg.response_check_include_option(43)
-    srv_msg.response_check_option_content(43, 'value', 'HEX:02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
+    srv_msg.response_check_option_content(43, 'value',
+                                          'HEX:02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
 
 
 @pytest.mark.v4
@@ -336,33 +340,46 @@ def test_v4_options_vivso_suboptions_siemens():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
     srv_msg.response_check_include_option(125)
-    srv_msg.response_check_option_content(125, 'value', 'HEX:000001531F02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
+    srv_msg.response_check_option_content(125, 'value', 'HEX:000001531F02040000007B031773646C703A2'
+                                                        'F2F3139322E302E322E31313A3138343433')
 
 
 @pytest.mark.v4
 @pytest.mark.options
 @pytest.mark.vendor
-def test_v4_options_vivso_suboptions_siemens_defined_in_class():
-    # kea gitlab #1683
+def test_v4_options_vivso_suboptions_siemens_multiple_suboptions():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
 
     option = [{"name": "vlanid", "code": 2, "array": False,
                "encapsulate": "", "record-types": "",
                "space": "vendor-339", "type": "uint32"},
+              {"name": "vlanid", "code": 2, "array": False,
+               "encapsulate": "", "record-types": "",
+               "space": "vendor-400", "type": "string"},
               {"name": "dls", "code": 3, "array": False,
                "encapsulate": "", "record-types": "",
-               "space": "vendor-339", "type": "string"}]
+               "space": "vendor-339", "type": "string"},
+              {"name": "dls", "code": 3, "array": False,
+               "encapsulate": "", "record-types": "",
+               "space": "vendor-400", "type": "uint32"}]
 
     my_class = [{"name": "VENDOR_CLASS_339",
-                 "option-def": option,
                  "option-data": [
                      {"name": "vivso-suboptions", "data": "339"},
                      {"always-send": True, "data": "123",
                       "name": "vlanid", "space": "vendor-339"},
                      {"always-send": True, "data": "sdlp://192.0.2.11:18443",
-                      "name": "dls", "space": "vendor-339"}]}]
+                      "name": "dls", "space": "vendor-339"}]},
+                {"name": "VENDOR_CLASS_400",
+                 "option-data": [
+                     {"name": "vivso-suboptions", "data": "400"},
+                     {"always-send": True, "data": "some_text",
+                      "name": "vlanid", "space": "vendor-400"},
+                     {"always-send": True, "data": "321",
+                      "name": "dls", "space": "vendor-400"}]}]
 
+    world.dhcp_cfg["option-def"] = option
     world.dhcp_cfg["client-classes"] = my_class
 
     srv_control.build_and_send_config_files()
@@ -379,49 +396,21 @@ def test_v4_options_vivso_suboptions_siemens_defined_in_class():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
     srv_msg.response_check_include_option(125)
-    srv_msg.response_check_option_content(125, 'value', 'HEX:000001531F02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
-
-
-@pytest.mark.v4
-@pytest.mark.options
-@pytest.mark.vendor
-def test_v4_options_vendor_encapsulated_siemens_defined_in_class():
-    # kea gitlab #1683
-    misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
-
-    option = [{"name": "vlanid", "code": 2, "array": False,
-               "encapsulate": "", "record-types": "",
-               "space": "339", "type": "uint32"},
-              {"name": "dls", "code": 3, "array": False,
-               "encapsulate": "", "record-types": "",
-               "space": "339", "type": "string"}]
-
-    my_class = [{"name": "VENDOR_CLASS_339",
-                 "option-def": [{"name": "vendor-encapsulated-options", "code": 43,
-                                 "type": "empty", "encapsulate": "339"}] + option,
-                 "option-data": [{"name": "vendor-encapsulated-options"},
-                                 {"always-send": True, "data": "123",
-                                  "name": "vlanid", "space": "339"},
-                                 {"always-send": True, "data": "sdlp://192.0.2.11:18443",
-                                  "name": "dls", "space": "339"}]}]
-
-    world.dhcp_cfg["client-classes"] = my_class
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
+    srv_msg.response_check_option_content(125, 'value', 'HEX:000001531F02040000007B031773646C70'
+                                                        '3A2F2F3139322E302E322E31313A3138343433')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_requests_option(43)
-    srv_msg.client_does_include_with_value('vendor_class_id', '339')
+    srv_msg.client_requests_option(125)
+    srv_msg.client_does_include_with_value('vendor_class_id', '400')
     srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:11:22')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
-    srv_msg.response_check_include_option(43)
-    srv_msg.response_check_option_content(43, 'value', 'HEX:02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
+    srv_msg.response_check_include_option(125)
+    srv_msg.response_check_option_content(125, 'value', 'HEX:00000190110209736F6D655F74657874030400000141')
 
 
 @pytest.mark.v4
@@ -465,7 +454,8 @@ def test_v4_options_vendor_encapsulated_options_space_siemens():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
     srv_msg.response_check_include_option(43)
-    srv_msg.response_check_option_content(43, 'value', 'HEX:02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
+    srv_msg.response_check_option_content(43, 'value', 'HEX:02040000007B031773646C703A2F2F'
+                                                       '3139322E302E322E31313A3138343433')
 
 
 @pytest.mark.v4
@@ -504,7 +494,8 @@ def test_v4_options_vendor_encapsulated_options_space_global_level():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
     srv_msg.response_check_include_option(43)
-    srv_msg.response_check_option_content(43, 'value', 'HEX:02040000007B031773646C703A2F2F3139322E302E322E31313A3138343433')
+    srv_msg.response_check_option_content(43, 'value', 'HEX:02040000007B031773646C703A2F2F'
+                                                       '3139322E302E322E31313A3138343433')
 
 
 @pytest.mark.disabled
