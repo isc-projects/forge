@@ -1798,7 +1798,7 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
 
 def insert_message_in_server_logs(message: str):
     """
-    If kea is installed from sourced than insert a message in all the server logs, for debugging purposes.
+    If kea is installed from the source, then insert a message in all the server logs for debugging purposes.
     The messages are formatted in similar fashion to Kea's log messages.
 
     :param message: the message to be logged
