@@ -222,16 +222,19 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
     else:
         if log_file is None or log_file == 'kea.log_ddns':
             if log_file == 'kea.log_ddns':
-                if world.server_system == 'redhat':
+                if world.server_system in ['redhat', 'alpine']:
                     service_name = 'kea-dhcp-ddns'
                 else:
                     service_name = 'isc-kea-dhcp-ddns-server'
             else:
-                if world.server_system == 'redhat':
+                if world.server_system in ['redhat', 'alpine']:
                     service_name = f'kea-dhcp{world.proto[1]}'
                 else:
                     service_name = f'isc-kea-dhcp{world.proto[1]}-server'
-            cmd = f'journalctl -u {service_name} |'  # get logs of kea service
+            if world.server_system == 'alpine':
+                cmd = f'cat /var/log/kea/{service_name}.log |'
+            else:
+                cmd = f'journalctl -u {service_name} |'  # get logs of kea service
             cmd += ' grep "$(cat <<EOF\n'
             cmd += f'{line}\n'
             cmd += 'EOF\n'

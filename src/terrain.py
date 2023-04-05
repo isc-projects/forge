@@ -349,7 +349,7 @@ def _clear_remainings():
         for remote_server in world.f_cfg.multiple_tested_servers:
             for sut in world.f_cfg.software_under_test:
                 functions = importlib.import_module("src.softwaresupport.%s.functions" % sut)
-                # every software have something else to clear. Put in clear_all() whatever you need
+                # every software have something else to clear. Put in clear_all() whatever you need wri
                 functions.clear_all(destination_address=remote_server)
 
 

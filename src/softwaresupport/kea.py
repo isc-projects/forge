@@ -488,7 +488,9 @@ def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_n
         logging_file_path = world.f_cfg.log_join(logging_file)
     else:
         if logging_file is None or logging_file == 'stdout':
-            logging_file_path = 'stdout'
+            logging_file_path = 'syslog'
+            if world.server_system == 'alpine':
+                logging_file_path = f'/var/log/kea/kea-dhcp{world.proto[1]}.log'
         else:
             logging_file_path = world.f_cfg.log_join(logging_file)
 
@@ -1090,6 +1092,9 @@ def agent_control_channel(host_address, host_port, socket_name='control_socket')
         logging_file_path = world.f_cfg.log_join(logging_file)
     else:
         logging_file_path = 'stdout'
+        if world.server_system == 'alpine':
+            logging_file_path = '/var/log/kea/kea.log-CA'
+
 
     world.ctrl_enable = True
     server_socket_type = f'dhcp{world.proto[1]}'
@@ -1375,6 +1380,9 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
 def clear_logs(destination_address=world.f_cfg.mgmt_address):
     fabric_remove_file_command(world.f_cfg.log_join('kea.log*'),
                                destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+    if world.server_system == 'alpine':
+        fabric_remove_file_command('/var/log/kea/*',
+                                   destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
 
 def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
@@ -1449,10 +1457,14 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
 
     # clear kea logs in journald (actually all logs)
     if world.f_cfg.install_method != 'make':
-        cmd = 'journalctl --rotate'
-        fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
-        cmd = 'journalctl --vacuum-time=1s'
-        fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+        if world.server_system == 'alpine':
+            cmd = 'truncate /var/log/messages -s0'
+            fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+        else:
+            cmd = 'journalctl --rotate'
+            fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+            cmd = 'journalctl --vacuum-time=1s'
+            fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
 
 def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
@@ -1507,6 +1519,26 @@ def _restart_kea_with_systemctl(destination_address):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
+def _restart_kea_with_openrc(destination_address):
+    cmd_tpl = 'rc-service {service} restart &&'  # reload service
+    cmd_tpl += ' SECONDS=0; while (( SECONDS < 4 )); do'  # watch logs for max 4 seconds
+    cmd_tpl += ' rc-status -f ini | grep "{service} =  started" 2>/dev/null;'
+    cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
+
+    service_name = f'kea-dhcp{world.proto[1]}'
+    cmd = cmd_tpl.format(service=service_name)
+    fabric_sudo_command(cmd, destination_host=destination_address)
+
+    if world.ctrl_enable:
+        service_name = 'kea-ctrl-agent'
+        cmd = cmd_tpl.format(service=service_name)
+        fabric_sudo_command(cmd, destination_host=destination_address)
+
+    if world.ddns_enable:
+        service_name = 'kea-dhcp-ddns'
+        cmd = cmd_tpl.format(service=service_name)
+        fabric_sudo_command(cmd, destination_host=destination_address)
+
 def _reload_kea_with_systemctl(destination_address):
     cmd_tpl = 'systemctl reload {service} &&'  # reload service
     cmd_tpl += ' ts=`systemctl show -p ExecReload {service}.service | sed -E -n \'s/.*stop_time=\\[(.*)\\].*/\\1/p\'`;'  # get time of log beginning
@@ -1541,6 +1573,29 @@ def _reload_kea_with_systemctl(destination_address):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
+def _reload_kea_with_openrc(destination_address):
+    # SIGHUP to reload
+    cmd_tpl = ' kill -s HUP {pid} &&'
+    cmd_tpl += ' SECONDS=0; while (( SECONDS < 4 )); do'  # watch logs for max 4 seconds
+    cmd_tpl += ' rc-status -f ini | grep "{service} =  started" 2>/dev/null;'
+    cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
+
+    service_name = f'kea-dhcp{world.proto[1]}'
+    pid = fabric_sudo_command(f'pidof {service_name}', destination_host=destination_address)
+    cmd = cmd_tpl.format(service=service_name, pid=pid)
+    fabric_sudo_command(cmd, destination_host=destination_address)
+
+    if world.ctrl_enable:
+        pid = fabric_sudo_command(f'pidof {service_name}', destination_host=destination_address)
+        cmd = cmd_tpl.format(service=service_name, pid=pid)
+        fabric_sudo_command(cmd, destination_host=destination_address)
+
+    if world.ddns_enable:
+        pid = fabric_sudo_command(f'pidof {service_name}', destination_host=destination_address)
+        cmd = cmd_tpl.format(service=service_name, pid=pid)
+        fabric_sudo_command(cmd, destination_host=destination_address)
+
+
 def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_address, process=""):
     """
     Start kea with generated config
@@ -1560,7 +1615,10 @@ def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_
         result = _start_kea_with_keactrl(destination_address, specific_process=process)
         _check_kea_process_result(should_succeed, result, 'start')
     else:
-        _restart_kea_with_systemctl(destination_address)
+        if world.server_system == 'alpine':
+            _restart_kea_with_openrc(destination_address)
+        else:
+            _restart_kea_with_systemctl(destination_address)
 
 
 def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
@@ -1570,13 +1628,19 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
                             ignore_errors=True, destination_host=destination_address, hide_all=value)
 
     else:
-        if world.server_system == 'redhat':
+        if world.server_system in ['redhat', 'alpine']:
             service_names = 'kea-dhcp4 kea-dhcp6 kea-ctrl-agent kea-dhcp-ddns'
         else:
             service_names = 'isc-kea-dhcp4-server isc-kea-dhcp6-server isc-kea-ctrl-agent isc-kea-dhcp-ddns-server'
 
-        cmd = 'systemctl stop %s' % service_names
-        fabric_sudo_command(cmd, destination_host=destination_address)
+        if world.server_system == 'alpine':
+            service_names = service_names.split()
+            for name in service_names:
+                cmd = 'rc-service %s stop' % name
+                fabric_sudo_command(cmd, destination_host=destination_address)
+        else:
+            cmd = 'systemctl stop %s' % service_names
+            fabric_sudo_command(cmd, destination_host=destination_address)
 
 
 def _check_kea_process_result(succeed: bool, result: str, action: str):
@@ -1651,7 +1715,10 @@ def reconfigure_srv(should_succeed: bool = True,
         result = _reload_kea_with_keactrl(destination_address)
         _check_kea_process_result(should_succeed, result, 'reconfigure')
     else:
-        _reload_kea_with_systemctl(destination_address)
+        if world.server_system == 'alpine':
+            _reload_kea_with_openrc(destination_address)
+        else:
+            _reload_kea_with_systemctl(destination_address)
     wait_for_message_in_log('dynamic server reconfiguration succeeded with file')
 
 
@@ -1668,7 +1735,10 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
 
         result = _start_kea_with_keactrl(destination_address)
     else:
-        _restart_kea_with_systemctl(destination_address)
+        if world.server_system == 'alpine':
+            _restart_kea_with_openrc(destination_address)
+        else:
+            _restart_kea_with_systemctl(destination_address)
 
 
 def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
@@ -1676,7 +1746,15 @@ def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
         # TODO
         pass
     else:
-        fabric_download_file(world.f_cfg.get_leases_path(),
+        if world.server_system == 'alpine':
+            lease_file = '/tmp/leases.csv'
+            cmd = f'cat {world.f_cfg.get_leases_path()} > {lease_file}'
+            fabric_sudo_command(cmd, destination_host=destination_address,
+                                ignore_errors=True)
+        else:
+            lease_file = world.f_cfg.get_leases_path()
+
+        fabric_download_file(lease_file,
                              check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                    'leases.csv',
                                                                    destination_address),
@@ -1689,12 +1767,16 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
         # download all logs, ie. kea.log, kea.log1, etc.
         log_path = world.f_cfg.log_join('kea.log*')
     else:
-        if world.server_system == 'redhat':
+        if world.server_system in ['redhat', 'alpine']:
             service_name = f'kea-dhcp{world.proto[1]}'
         else:
             service_name = f'isc-kea-dhcp{world.proto[1]}-server'
-        cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
-        cmd += ' /tmp/kea.log'
+        if world.server_system == 'alpine':
+            cmd = 'cat /var/log/kea/%s.log > ' % service_name  # get logs of kea service
+            cmd += ' /tmp/kea.log'
+        else:
+            cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
+            cmd += ' /tmp/kea.log'
         result = fabric_sudo_command(cmd,
                                      destination_host=destination_address,
                                      ignore_errors=True)
@@ -1725,6 +1807,27 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                          destination_host=destination_address, ignore_errors=True,
                          hide_all=not world.f_cfg.forge_verbose)
 
+    if world.ctrl_enable:
+        if world.server_system in ['redhat', 'alpine']:
+            service_name = f'kea-ctrl-agent'
+        else:
+            service_name = f'isc-kea-ctrl-agent'
+        if world.server_system == 'alpine':
+            cmd = 'cat /var/log/kea/kea.log-CA > '   # get logs of kea service
+            cmd += ' /tmp/kea.log-CA'
+        else:
+            cmd = 'journalctl -u %s > ' % service_name # get logs of kea service
+            cmd += ' /tmp/kea.log-CA'
+        result = fabric_sudo_command(cmd,
+                                     destination_host=destination_address,
+                                     ignore_errors=True)
+        log_path = '/tmp/kea.log-CA'
+        fabric_download_file(log_path,
+                             local_dest_dir,
+                             destination_host=destination_address, ignore_errors=True,
+                             hide_all=not world.f_cfg.forge_verbose)
+
+
 
 def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
              db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
@@ -1735,6 +1838,8 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     if world.f_cfg.install_method != 'make':
         if world.server_system == 'redhat':
             fabric_run_command("rpm -qa '*kea*'", destination_host=dest)
+        elif world.server_system == 'alpine':
+            fabric_run_command("apk list '*kea*' | grep 'installed'", destination_host=dest)
         else:
             fabric_run_command("dpkg -l '*kea*'", destination_host=dest)
 

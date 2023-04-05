@@ -116,9 +116,9 @@ def fabric_remove_file_command(remote_path,
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
             if hide_all:
                 with hide('running', 'stdout', 'stderr'):
-                    result = sudo("rm -f " + remote_path)
+                    result = sudo("rm -rf " + remote_path)
             else:
-                result = sudo("rm -f " + remote_path)
+                result = sudo("rm -rf " + remote_path)
     return result
 
 
