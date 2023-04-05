@@ -504,13 +504,15 @@ def _terminate_instances(args):
     else:
         for i in ("2016", "2019"):
             if os.path.exists(f'aws-win-ad-dns-vm{i}.txt'):
+                termination = False
                 with open(f'aws-win-ad-dns-vm{i}.txt', 'r') as f:
                     for line in f.readlines():
                         if line.startswith('instance-id='):
                             vm_id = line[12:].strip()
                             instance = ec2.Instance(vm_id)
-                            if _terminate_single_vm(instance):
-                                os.rename(f'aws-win-ad-dns-vm{i}.txt', f'aws-win-ad-dns-vm{i}_terminated.txt')
+                            termination = _terminate_single_vm(instance)
+                if termination:
+                    os.rename(f'aws-win-ad-dns-vm{i}.txt', f'aws-win-ad-dns-vm{i}_terminated.txt')
             else:
                 log.info(f'aws-win-ad-dns-vm{i}.txt not found, looks like systems were not started!')
 
