@@ -96,7 +96,7 @@ def fabric_download_file(remote_path, local_path,
                 with hide('running', 'stdout', 'stderr'):
                     result = get(remote_path, local_path)
             else:
-                result = get(remote_path, local_path)
+                result = get(remote_path, local_path, use_sudo=True)
             fabric.state.output.warnings = True
     return result
 

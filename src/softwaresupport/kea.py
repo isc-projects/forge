@@ -490,7 +490,7 @@ def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_n
         if logging_file is None or logging_file == 'stdout':
             logging_file_path = 'syslog'
             if world.server_system == 'alpine':
-                logging_file_path = f'/var/log/kea/kea-dhcp{world.proto[1]}.log'
+                logging_file_path = 'stdout'
         else:
             logging_file_path = world.f_cfg.log_join(logging_file)
 
@@ -1092,9 +1092,6 @@ def agent_control_channel(host_address, host_port, socket_name='control_socket')
         logging_file_path = world.f_cfg.log_join(logging_file)
     else:
         logging_file_path = 'stdout'
-        if world.server_system == 'alpine':
-            logging_file_path = '/var/log/kea/kea.log-CA'
-
 
     world.ctrl_enable = True
     server_socket_type = f'dhcp{world.proto[1]}'
@@ -1809,14 +1806,14 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
 
     if world.ctrl_enable:
         if world.server_system in ['redhat', 'alpine']:
-            service_name = f'kea-ctrl-agent'
+            service_name = 'kea-ctrl-agent'
         else:
-            service_name = f'isc-kea-ctrl-agent'
+            service_name = 'isc-kea-ctrl-agent'
         if world.server_system == 'alpine':
-            cmd = 'cat /var/log/kea/kea.log-CA > '   # get logs of kea service
+            cmd = 'cat /var/log/kea/kea-ctrl-agent.log > '   # get logs of kea service
             cmd += ' /tmp/kea.log-CA'
         else:
-            cmd = 'journalctl -u %s > ' % service_name # get logs of kea service
+            cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
             cmd += ' /tmp/kea.log-CA'
         result = fabric_sudo_command(cmd,
                                      destination_host=destination_address,
