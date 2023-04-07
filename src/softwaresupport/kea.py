@@ -1536,6 +1536,7 @@ def _restart_kea_with_openrc(destination_address):
         cmd = cmd_tpl.format(service=service_name)
         fabric_sudo_command(cmd, destination_host=destination_address)
 
+
 def _reload_kea_with_systemctl(destination_address):
     cmd_tpl = 'systemctl reload {service} &&'  # reload service
     cmd_tpl += ' ts=`systemctl show -p ExecReload {service}.service | sed -E -n \'s/.*stop_time=\\[(.*)\\].*/\\1/p\'`;'  # get time of log beginning
@@ -1823,7 +1824,6 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                              local_dest_dir,
                              destination_host=destination_address, ignore_errors=True,
                              hide_all=not world.f_cfg.forge_verbose)
-
 
 
 def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,

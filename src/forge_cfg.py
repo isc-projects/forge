@@ -250,6 +250,8 @@ class ForgeConfiguration:
         else:
             if world.server_system == 'redhat':
                 return os.path.join('/usr/lib64/kea/hooks', sub_path)
+            if world.server_system == 'alpine':
+                return os.path.join('/usr/lib/kea/hooks', sub_path)
             else:
                 return os.path.join('/usr/lib/x86_64-linux-gnu/kea/hooks', sub_path)
 

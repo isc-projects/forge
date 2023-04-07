@@ -87,6 +87,9 @@ def fabric_download_file(remote_path, local_path,
                          user_loc=world.f_cfg.mgmt_username,
                          password_loc=world.f_cfg.mgmt_password,
                          ignore_errors=False, hide_all=False):
+    if '*' in remote_path:  # fabric get needs o+rx permissions on parent directory to properly list files when using *
+        permissions = fabric_sudo_command(f'stat -c %a {remote_path.rsplit("/", 1)[0]}', ignore_errors=True, hide_all=True)
+        fabric_sudo_command(f'chmod o+rx {remote_path.rsplit("/", 1)[0]}', hide_all=True)
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=ignore_errors):
@@ -94,10 +97,12 @@ def fabric_download_file(remote_path, local_path,
                 fabric.state.output.warnings = False
             if hide_all:
                 with hide('running', 'stdout', 'stderr'):
-                    result = get(remote_path, local_path)
+                    result = get(remote_path, local_path, use_sudo=True)
             else:
                 result = get(remote_path, local_path, use_sudo=True)
             fabric.state.output.warnings = True
+    if '*' in remote_path:  # return permisions to original state
+        fabric_sudo_command(f'chmod {permissions} {remote_path.rsplit("/", 1)[0]}', hide_all=True)
     return result
 
 
