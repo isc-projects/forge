@@ -490,7 +490,7 @@ def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_n
         if logging_file is None or logging_file == 'stdout':
             logging_file_path = 'syslog'
             if world.server_system == 'alpine':
-                logging_file_path = 'stdout'
+                logging_file_path = f'/var/log/kea/kea-dhcp{world.proto[1]}.log'
         else:
             logging_file_path = world.f_cfg.log_join(logging_file)
 
@@ -1091,7 +1091,10 @@ def agent_control_channel(host_address, host_port, socket_name='control_socket')
         logging_file = 'kea.log-CA'
         logging_file_path = world.f_cfg.log_join(logging_file)
     else:
-        logging_file_path = 'stdout'
+        if world.server_system == 'alpine':
+            logging_file_path = f'/var/log/kea/kea-ctrl-agent.log'
+        else:
+            logging_file_path = 'stdout'
 
     world.ctrl_enable = True
     server_socket_type = f'dhcp{world.proto[1]}'
