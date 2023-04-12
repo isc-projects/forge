@@ -1660,7 +1660,7 @@ def _check_kea_process_result(succeed: bool, result: str, action: str):
     if not succeed:
         if not any(error_message in result for error_message in errors):
             assert False, 'Server operation: ' + action + ' NOT failed!'
-sing an f-string that
+
 
 def _start_kea_with_keactrl(destination_host, specific_process=""):
     # Start kea services and check if they started ok.
