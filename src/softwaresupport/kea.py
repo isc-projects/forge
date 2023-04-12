@@ -1828,6 +1828,26 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                              destination_host=destination_address, ignore_errors=True,
                              hide_all=not world.f_cfg.forge_verbose)
 
+    if world.ddns_enable:
+        if world.server_system in ['redhat', 'alpine']:
+            service_name = 'kea-dhcp-ddns'
+        else:
+            service_name = 'isc-kea-dhcp-ddns'
+        if world.server_system == 'alpine':
+            cmd = 'cat /var/log/kea/kea-dhcp-ddns.log > '   # get logs of kea service
+            cmd += ' /tmp/kea.log-ddns'
+        else:
+            cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
+            cmd += ' /tmp/kea.log-ddns'
+        result = fabric_sudo_command(cmd,
+                                     destination_host=destination_address,
+                                     ignore_errors=True)
+        log_path = '/tmp/kea.log-ddns'
+        fabric_download_file(log_path,
+                             local_dest_dir,
+                             destination_host=destination_address, ignore_errors=True,
+                             hide_all=not world.f_cfg.forge_verbose)
+
 
 def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
              db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
