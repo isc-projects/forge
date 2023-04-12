@@ -90,7 +90,7 @@ def fabric_download_file(remote_path, local_path,
     if '*' in remote_path:  # fabric get needs o+rx permissions on parent directory to properly list files when using *
         try:
             permissions = int(fabric_sudo_command(f'stat -c %a {remote_path.rsplit("/", 1)[0]}',
-                                          ignore_errors=True, hide_all=True))
+                                                  ignore_errors=True, hide_all=True))
         except ValueError:
             permissions = -1
         else:
