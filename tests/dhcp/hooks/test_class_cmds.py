@@ -251,7 +251,7 @@ def test_negative_missing_class_data_2(class_cmd, dhcp_version):  # pylint: disa
 def test_negative_wrong_args_1(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, wrong_arg={"client-classes": [{"name": "ipxe"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = "Error during command processing: Received command contains unsupported parameter 'wrong_arg'"
+    expected = "Error during command processing: invalid command: unsupported parameter 'wrong_arg'"
     assert response['text'] == expected
 
 
@@ -287,7 +287,7 @@ def test_negative_wrong_args_3b(class_cmd, dhcp_version):  # pylint: disable=unu
 def test_negative_wrong_args_4(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments=["client-classes"])
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert response['text'] == f"arguments specified for the '{class_cmd}' command are not a map"
+    assert response['text'] == f"invalid command '{class_cmd}': expected 'arguments' to be a map, got list instead"
 
 
 @pytest.mark.parametrize("class_cmd", ['class-add', 'class-update'])
@@ -318,7 +318,7 @@ def test_negative_wrong_args_6b(class_cmd, dhcp_version):  # pylint: disable=unu
 def test_negative_wrong_args_6c(class_cmd, dhcp_version):  # pylint: disable=unused-argument
     cmd = dict(command=class_cmd, arguments={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert response['text'] == f"arguments must not be empty for the '{class_cmd}' command"
+    assert response['text'] == f"invalid command '{class_cmd}': 'arguments' is empty"
 
 
 def test_negative_redundant_args_in_list(dhcp_version):  # pylint: disable=unused-argument
@@ -326,7 +326,7 @@ def test_negative_redundant_args_in_list(dhcp_version):  # pylint: disable=unuse
     # bug: #432, FIXED
     cmd = dict(command='class-list', extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
+    expected = "Error during command processing: invalid command: unsupported parameter 'extra_arg'"
     assert response['text'] == expected
 
 
@@ -335,7 +335,7 @@ def test_negative_redundant_args_in_add(dhcp_version):  # pylint: disable=unused
     # bug: #432, FIXED
     cmd = dict(command='class-add', arguments={"client-classes": [{"name": "ipxe"}]}, extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
+    expected = "Error during command processing: invalid command: unsupported parameter 'extra_arg'"
     assert response['text'] == expected
 
 
@@ -344,7 +344,7 @@ def test_negative_redundant_args_in_update(dhcp_version):  # pylint: disable=unu
     # bug: #432, FIXED
     cmd = dict(command='class-update', arguments={"client-classes": [{"name": "voip"}]}, extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
+    expected = "Error during command processing: invalid command: unsupported parameter 'extra_arg'"
     assert response['text'] == expected
 
 
@@ -354,7 +354,7 @@ def test_negative_redundant_args_in_other(class_cmd, dhcp_version):  # pylint: d
     # bug: #432, FIXED
     cmd = dict(command=class_cmd, arguments=dict(name='voip'), extra_arg={})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = "Error during command processing: Received command contains unsupported parameter 'extra_arg'"
+    expected = "Error during command processing: invalid command: unsupported parameter 'extra_arg'"
     assert response['text'] == expected
 
 
@@ -362,7 +362,7 @@ def test_negative_wrong_command_1(dhcp_version):  # pylint: disable=unused-argum
     # bug: #432, FIXED
     cmd = dict(wrong_command='class-add', arguments={"client-classes": [{"name": "ipxe"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = ("Error during command processing: Invalid answer specified, "
+    expected = ("Error during command processing: invalid answer: "
                 "does not contain mandatory 'command'")
     assert response['text'] == expected
 
