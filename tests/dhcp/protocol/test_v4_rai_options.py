@@ -13,6 +13,7 @@ from src import srv_control
 from src import srv_msg
 
 from src.protosupport.multi_protocol_functions import convert_address_to_hex, increase_address
+from src.forge_cfg import world
 
 
 @pytest.mark.v4
@@ -63,3 +64,123 @@ def test_v4_rai_option11_server_identifier_override():
     # srv_msg.response_check_option_content(54, 'value', address)
     srv_msg.response_check_include_option(82)
     srv_msg.response_check_option_content(82, 'value', "0b04c0a832fd")
+
+
+@pytest.mark.v4
+@pytest.mark.options
+def test_v4_rai_option5_link_selection():
+    misc.test_setup()
+    srv_control.config_srv_subnet(
+        '192.168.50.0/24', '192.168.50.50-192.168.50.51')
+    # world.dhcp_cfg.update({"compatibility": {"ignore-rai-link-selection": True}})
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Usual scenario
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('server_id', '$(SRV4_ADDR)')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+
+    # let's do the magic to play relay, we should get NAK
+    # because giaddr is NOT suitable for configured subnet
+    misc.test_procedure()
+    srv_msg.network_variable("source_port", 67)
+    srv_msg.network_variable("source_address", world.f_cfg.ciaddr)
+    srv_msg.network_variable("destination_address", world.f_cfg.dns4_addr)
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:55')
+    srv_msg.client_sets_value('Client', 'giaddr', '10.0.0.1')
+    srv_msg.client_sets_value('Client', 'hops', 1)
+    srv_msg.client_does_include_with_value('server_id', '$(SRV4_ADDR)')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'NAK')
+
+    # now let's do the same but add RAI option that will override link selection
+    # which is basically giaddr
+
+    misc.test_procedure()
+    srv_msg.network_variable("source_port", 67)
+    srv_msg.network_variable("source_address", world.f_cfg.ciaddr)
+    srv_msg.network_variable("destination_address", world.f_cfg.dns4_addr)
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:55')
+    srv_msg.client_sets_value('Client', 'giaddr', '10.0.0.1')
+    srv_msg.client_sets_value('Client', 'hops', 1)
+    srv_msg.client_does_include_with_value('server_id', '$(SRV4_ADDR)')
+
+    # rai that fits subnet
+    rai_content = '0504' + convert_address_to_hex("192.168.50.1")
+    srv_msg.client_does_include_with_value(
+        'relay_agent_information', rai_content)
+
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.51')
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+
+
+@pytest.mark.v4
+@pytest.mark.options
+def test_v4_rai_option5_link_selection_ignore():
+    misc.test_setup()
+    srv_control.config_srv_subnet(
+        '192.168.50.0/24', '192.168.50.50-192.168.50.51')
+    world.dhcp_cfg.update({"compatibility": {"ignore-rai-link-selection": True}})
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Usual scenario
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('server_id', '$(SRV4_ADDR)')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+
+    # let's do the magic to play relay, we should get NAK
+    # because giaddr is NOT suitable for configured subnet
+    misc.test_procedure()
+    srv_msg.network_variable("source_port", 67)
+    srv_msg.network_variable("source_address", world.f_cfg.ciaddr)
+    srv_msg.network_variable("destination_address", world.f_cfg.dns4_addr)
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:55')
+    srv_msg.client_sets_value('Client', 'giaddr', '10.0.0.1')
+    srv_msg.client_sets_value('Client', 'hops', 1)
+    srv_msg.client_does_include_with_value('server_id', '$(SRV4_ADDR)')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'NAK')
+
+    # now let's do the same but add RAI option that will override link selection
+    # which is basically giaddr, but with rai disabled we should still get a NAK
+    misc.test_procedure()
+    srv_msg.network_variable("source_port", 67)
+    srv_msg.network_variable("source_address", world.f_cfg.ciaddr)
+    srv_msg.network_variable("destination_address", world.f_cfg.dns4_addr)
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:55')
+    srv_msg.client_sets_value('Client', 'giaddr', '10.0.0.1')
+    srv_msg.client_sets_value('Client', 'hops', 1)
+    srv_msg.client_does_include_with_value('server_id', '$(SRV4_ADDR)')
+
+    # rai that fits subnet
+    rai_content = '0504' + convert_address_to_hex("192.168.50.1")
+    srv_msg.client_does_include_with_value(
+        'relay_agent_information', rai_content)
+
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'NAK')
