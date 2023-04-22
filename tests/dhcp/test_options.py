@@ -704,3 +704,624 @@ def test_v4_options_always_send_all_levels():
     srv_msg.response_check_option_content(2, 'value', 50)
     srv_msg.response_check_include_option(14)
     srv_msg.response_check_option_content(14, 'value', 'some-string')
+
+
+@pytest.mark.v4
+@pytest.mark.options
+def test_v4_never_send_various_combinations():
+    # it's a simple feature with number of possibilities, let's do them all in one test
+
+    # global level, no inheritance
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
+    srv_control.config_srv_opt('name-servers', '199.199.199.1,100.100.100.1', never_send=True)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # global level, no inheritance, always-send to True, still shouldn't be send
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
+    srv_control.config_srv_opt('name-servers', '199.199.199.1,100.100.100.1', never_send=True, always_send=True)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # two different pools, one has never send to true
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
+    srv_control.new_pool('192.168.50.20-192.168.50.20', 0)
+    srv_control.add_option_to_pool('name-servers', '199.199.199.1,100.100.100.1', never_send=True,
+                                   subnet=0, pool=0)
+    srv_control.add_option_to_pool('name-servers', '199.199.199.1,100.100.100.1', never_send=False,
+                                   subnet=0, pool=1)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:33')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(5)
+    srv_msg.response_check_option_content(5, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(5, 'value', '100.100.100.1')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:33')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.20')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(5)
+    srv_msg.response_check_option_content(5, 'value', '199.199.199.1')
+    srv_msg.response_check_option_content(5, 'value', '100.100.100.1')
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # check inheritance, option configured in pool, never send is global
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
+    srv_control.config_srv_opt('name-servers', '199.199.199.1,100.100.100.1', never_send=True)
+    srv_control.add_option_to_pool('name-servers', '199.199.199.1,100.100.100.1', subnet=0, pool=0)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # check inheritance, option configured in pool, never send is subnet
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
+    srv_control.config_srv('name-servers', 0, '199.199.199.1,100.100.100.1', never_send=True)
+    srv_control.add_option_to_pool('name-servers', '199.199.199.1,100.100.100.1', subnet=0, pool=0)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # check inheritance, option configured in pool, never send is shared-network
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
+    srv_control.add_option_to_pool('name-servers', '199.199.199.1,100.100.100.1', subnet=0, pool=0)
+    srv_control.shared_subnet('192.168.50.0/24', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
+
+    srv_control.option_in_shared_network('name-servers', '199.199.199.1,100.100.100.1',
+                                         shared_network=0, never_send=True)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # check inheritance, option configured in reservation, never send is global
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
+    srv_control.config_srv_opt('name-servers', '199.199.199.1,100.100.100.1', never_send=True)
+    srv_control.host_reservation_in_subnet('ip-address',
+                                           '192.168.50.100',
+                                           0,
+                                           'hw-address',
+                                           'ff:01:02:03:ff:04')
+    opt = {
+        "code": 5,
+        "csv-format": True,
+        "data": "199.199.199.1,100.100.100.1",
+        "name": "name-servers",
+        "space": "dhcp4",
+        "never-send": False
+    }
+    world.dhcp_cfg["subnet4"][0]["reservations"][0].update({"option-data": [opt]})
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.100')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # check inheritance, option configured in class, never send is global
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.52.0/24', '192.168.52.10-192.168.52.10')
+    srv_control.config_srv_opt('name-servers', '199.199.199.1,100.100.100.1', never_send=True)
+    srv_control.create_new_class('Management')
+    srv_control.add_test_to_class(1, 'test', "option[61].hex == pkt4.mac")
+    srv_control.config_client_classification(0, 'Management')
+
+    opt = {
+        "code": 5,
+        "csv-format": True,
+        "data": "199.199.199.1,100.100.100.1",
+        "name": "name-servers",
+        "space": "dhcp4",
+        "never-send": False
+    }
+    world.dhcp_cfg["client-classes"][0].update({"option-data": [opt]})
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.52.10')
+    srv_msg.client_requests_option(5)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(5, expect_include=False)
+
+
+@pytest.mark.v6
+@pytest.mark.options
+def test_v6_never_send_various_combinations():
+    # it's a simple feature with number of possibilities, let's do them all in one test
+
+    # global level, no inheritance
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ff')
+    srv_control.config_srv_opt('preference', '123', never_send=True)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # global level, no inheritance, always-send to True, still shouldn't be send
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:2::/64', '2001:db8:2::1-2001:db8:2::ff')
+    srv_control.config_srv_opt('preference', '123', never_send=True, always_send=True)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # two different pools, one has never send to true
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:3::/64', '2001:db8:3::1-2001:db8:3::1')
+    srv_control.new_pool('2001:db8:3::100-2001:db8:3::100', 0)
+    srv_control.add_option_to_pool('preference', '123', never_send=True,
+                                   subnet=0, pool=0)
+    srv_control.add_option_to_pool('preference', '123', never_send=False,
+                                   subnet=0, pool=1)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(7)
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(7)
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:2')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(7)
+    srv_msg.response_check_option_content(7, 'value', 123)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7)
+    srv_msg.response_check_option_content(7, 'value', 123)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # check inheritance, option configured in pool, never send is global
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:4::/64', '2001:db8:4::1-2001:db8:4::ff')
+    srv_control.config_srv_opt('preference', '123', never_send=True)
+    srv_control.add_option_to_pool('preference', '123', subnet=0, pool=0)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(7)
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # check inheritance, option configured in pool, never send is subnet
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:5::/64', '2001:db8:5::1-2001:db8:5::ff')
+    srv_control.config_srv('preference', 0, '123', never_send=True)
+    srv_control.add_option_to_pool('preference', '123', subnet=0, pool=0)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(7)
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # check inheritance, option configured in pool, never send is shared-network
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:6::/64', '2001:db8:6::1-2001:db8:6::ff')
+    srv_control.add_option_to_pool('preference', '123', subnet=0, pool=0)
+    srv_control.shared_subnet('2001:db8:6::/64', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
+
+    srv_control.option_in_shared_network('preference', '123',
+                                         shared_network=0, never_send=True)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(7)
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # check inheritance, option configured in reservation, never send is global
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::fff-2001:db8:1::fff')
+    srv_control.config_srv_opt('preference', '123', never_send=True)
+    srv_control.host_reservation_in_subnet('ip-address',
+                                           '2001:db8:1::fff',
+                                           0,
+                                           'duid',
+                                           '00:03:00:01:f6:f5:f4:f3:f2:01')
+    opt = {
+        "code": 7,
+        "csv-format": True,
+        "data": '234',
+        "name": "preference",
+        "space": "dhcp6",
+        "always-send": False
+    }
+    world.dhcp_cfg["subnet6"][0]["reservations"][0].update({"option-data": [opt]})
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(7)
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    # check inheritance, option configured in class, never send is global
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::afff-2001:db8:1::afff')
+    srv_control.config_srv_opt('preference', '123', never_send=True)
+    srv_control.create_new_class('Management')
+    srv_control.add_test_to_class(1, 'test', 'option[1].hex == 0x00030001f6f5f4f3f201')
+    srv_control.config_client_classification(0, 'Management')
+
+    opt = {
+        "code": 7,
+        "csv-format": True,
+        "data": '234',
+        "name": "preference",
+        "space": "dhcp6",
+        "always-send": False
+    }
+    world.dhcp_cfg["client-classes"][0].update({"option-data": [opt]})
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(7)
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(7, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(7, expect_include=False)

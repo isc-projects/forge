@@ -669,8 +669,8 @@ def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
     add_interface(interface + "/" + address)
 
 
-def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space, always_send=None):
-    prepare_cfg_add_option(opt_name, opt_value, space, opt_code, 'user', always_send=always_send)
+def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space, **kwargs):
+    prepare_cfg_add_option(opt_name, opt_value, space, opt_code, 'user', **kwargs)
 
     if "option-def" not in world.dhcp_cfg.keys():
         world.dhcp_cfg["option-def"] = []
@@ -753,7 +753,7 @@ def _check_empty_value(val):
 
 
 def prepare_cfg_add_option(option_name, option_value, space,
-                           option_code=None, opt_type='default', always_send=None):
+                           option_code=None, opt_type='default', **kwargs):
     """
     Add option data to global kea configuration
     :param option_name: string option name
@@ -761,7 +761,6 @@ def prepare_cfg_add_option(option_name, option_value, space,
     :param space: string, option space
     :param option_code: int, option code
     :param opt_type: string, option type
-    :param always_send: boolean, value of a always_send parameter
     """
 
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
@@ -779,19 +778,19 @@ def prepare_cfg_add_option(option_name, option_value, space,
               "name": option_name,
               "space": space}
 
-    if always_send:
-        my_opt.update({"always-send": True})
+    for x, y in kwargs.items():
+        if y is not None:
+            my_opt.update({x.replace("_", "-"): y})
 
     world.dhcp_cfg["option-data"].append(my_opt)
 
 
-def prepare_cfg_add_option_subnet(option_name: str, subnet: int, option_value: str, always_send: bool = None):
+def prepare_cfg_add_option_subnet(option_name: str, subnet: int, option_value: str, **kwargs):
     """
     Add option data to subnet
     :param option_name: string, option name
     :param subnet: int, index of a subnet that will be updated
     :param option_value: string, option value
-    :param always_send: boolean, value of parameter always_send
     """
     space = world.cfg["space"]
     subnet = int(subnet)
@@ -808,8 +807,9 @@ def prepare_cfg_add_option_subnet(option_name: str, subnet: int, option_value: s
               "name": option_name,
               "space": space}
 
-    if always_send:
-        my_opt.update({"always-send": True})
+    for x, y in kwargs.items():
+        if y is not None:
+            my_opt.update({x.replace("_", "-"): y})
 
     sub = f'subnet{world.proto[1]}'
     if "option-data" not in world.dhcp_cfg[sub][subnet]:
@@ -818,14 +818,13 @@ def prepare_cfg_add_option_subnet(option_name: str, subnet: int, option_value: s
 
 
 def prepare_cfg_add_option_pool(option_name: str, option_value: str, subnet: int = 0,
-                                pool: int = 0, always_send: bool = None):
+                                pool: int = 0, **kwargs):
     """
     Add option data to a pool
     :param option_name: string, option name
     :param option_value: string, option value
     :param subnet: int, index of subnet in the list of subnets
     :param pool: int, index of pool to be updated on the list of pools
-    :param always_send: bool, value of parameter always_send added only if different than None
     """
     space = world.cfg["space"]
     subnet = int(subnet)
@@ -843,8 +842,9 @@ def prepare_cfg_add_option_pool(option_name: str, option_value: str, subnet: int
               "name": option_name,
               "space": space}
 
-    if always_send:
-        my_opt.update({"always-send": True})
+    for x, y in kwargs.items():
+        if y is not None:
+            my_opt.update({x.replace("_", "-"): y})
 
     sub = f'subnet{world.proto[1]}'
     if "option-data" not in world.dhcp_cfg[sub][subnet]["pools"][pool]:
@@ -853,13 +853,12 @@ def prepare_cfg_add_option_pool(option_name: str, option_value: str, subnet: int
 
 
 def prepare_cfg_add_option_shared_network(option_name: str, option_value: str,
-                                          shared_network: int = 0, always_send: bool = None):
+                                          shared_network: int = 0, **kwargs):
     """
     Add option data to shared-network
     :param option_name: string, option name
     :param option_value: string, option value
     :param shared_network: int, index of shared network to be updated in the list of shared networks
-    :param always_send: bool, value of always_send parameter, added only if changed.
     """
     space = world.cfg["space"]
     shared_network = int(shared_network)
@@ -873,8 +872,9 @@ def prepare_cfg_add_option_shared_network(option_name: str, option_value: str,
               "name": option_name,
               "space": space}
 
-    if always_send:
-        my_opt.update({"always-send": True})
+    for x, y in kwargs.items():
+        if y is not None:
+            my_opt.update({x.replace("_", "-"): y})
 
     if "option-data" not in world.dhcp_cfg["shared-networks"][shared_network]:
         world.dhcp_cfg["shared-networks"][shared_network]["option-data"] = []
