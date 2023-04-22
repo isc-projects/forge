@@ -336,6 +336,8 @@ def test_v6_multiple_networks(backend):
                              remote_id="0a0027000001", relay_id='00:03:00:01:ff:ff:ff:ff:ff:01',
                              leases_count=clients_per_subnet, pd_count=2, addr_count=2)
 
+    srv_msg.check_leases(all_leases, backend=backend)
+
     # let's check all leases using remote id (lq query type 5):
     _send_leasequery(5, remote_id='0a0027000001')
     srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 16 - 1, leasequery_done=1)
@@ -399,6 +401,7 @@ def test_v6_multiple_networks(backend):
     new_leases = _get_lease(mac="01:02:0c:03:0a:00", link_addr="2001:db8:b::1000",
                             remote_id="0a0027000001", relay_id='00:03:00:01:ff:ff:ff:ff:ff:01',
                             leases_count=clients_per_subnet, pd_count=2, addr_count=2)
+    srv_msg.check_leases(new_leases, backend=backend)
     # and repeat checking subnets "2001:db8:a::" and "2001:db8:b::" to make sure clients are returned in proper subnets
     # so subnet "2001:db8:a::" should be the same
     _send_leasequery(4, lq_address="2001:db8:a::")
@@ -507,6 +510,7 @@ def test_v6_assign_and_reply_simultaneously(backend):
     # let's get quite a lot of leases
     first_set_of_leases = _get_lease(mac="01:02:0c:44:0a:00", remote_id="0a0027000001",
                                      leases_count=10, pd_count=4, addr_count=4)
+    srv_msg.check_leases(first_set_of_leases, backend=backend)
     # we will have 81 messages via TCP
     _send_leasequery(5, remote_id='0a0027000001')
     srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=79, leasequery_done=1)
@@ -855,6 +859,7 @@ def test_v6_junk_over_tcp(backend):
     all_leases = _get_lease(mac="01:02:0c:03:0a:00", link_addr="2001:db8:1::1000",
                             remote_id="0a0027000001", relay_id='00:03:00:01:ff:ff:ff:ff:ff:01',
                             leases_count=1, pd_count=2, addr_count=2)
+    srv_msg.check_leases(all_leases, backend=backend)
     _send_leasequery(5, remote_id='0a0027000001')
     srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=3, leasequery_done=1)
 
@@ -913,10 +918,12 @@ def test_v6_multiple_relays(backend):
     leases_relay_1 = _get_lease(mac="01:02:0c:03:0a:00", link_addr="2001:db8:a::1000",
                                 remote_id="0a0027000001", relay_id='00:03:00:01:ff:ff:ff:ff:ff:01',
                                 leases_count=5, pd_count=0, addr_count=2)
+    srv_msg.check_leases(leases_relay_1, backend=backend)
 
     leases_relay_2 = _get_lease(mac="01:02:0d:03:0a:00", link_addr="2001:db8:a::1000",
                                 remote_id="0a0027111111", relay_id='00:03:00:01:ff:00:00:00:00:01',
                                 leases_count=5, pd_count=0, addr_count=2)
+    srv_msg.check_leases(leases_relay_2, backend=backend)
 
     # let's check all leases using remote id (lq query type 5):
     _send_leasequery(5, remote_id="0a0027000001")
@@ -1152,7 +1159,7 @@ def test_v4_check_messages_correctness(backend):
 
 @pytest.mark.v4
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v4_multiple_networks(backend):
     """
     Configure 4 different subnets and assign multiple leases from each. Than send multiple
@@ -1207,8 +1214,11 @@ def test_v4_multiple_networks(backend):
 
     start_time = time()
     leases_with_no_relay_info = _get_lease(leases_count=5, v4=True, mac="01:05:0f:07:0d:03")
+    srv_msg.check_leases(leases_with_no_relay_info, backend=backend)
     leases_with_relay_id = _get_lease(leases_count=10, v4=True, mac="02:05:0f:07:0d:03", relay_id='0c0601020c330a11')
+    srv_msg.check_leases(leases_with_relay_id, backend=backend)
     leases_with_remote_id = _get_lease(leases_count=10, v4=True, mac="03:05:0f:07:0d:03", remote_id='020601020c030a22')
+    srv_msg.check_leases(leases_with_remote_id, backend=backend)
 
     # should get back leases_with_remote_id, spread between 2 subnets
     _send_leasequery_v4(remote_id="020601020c030a22")
@@ -1240,6 +1250,7 @@ def test_v4_multiple_networks(backend):
 
     leases_with_relay_and_remote_id = _get_lease(leases_count=5, v4=True, mac="04:05:0f:07:0d:03",
                                                  remote_id='020601020c030a22', relay_id='0c0601020c330a11')
+    srv_msg.check_leases(leases_with_relay_and_remote_id, backend=backend)
 
     # should get back leases_with_remote_id + leases_with_relay_and_remote_id, spread between 3 subnets
     _send_leasequery_v4(remote_id="020601020c030a22")
@@ -1414,7 +1425,9 @@ def test_v4_junk_over_tcp(backend):
 
     # let's check if kea still works
     leases_with_relay_id = _get_lease(leases_count=5, v4=True, mac="02:05:0f:07:0d:03", relay_id='0c0601020c330a11')
+    srv_msg.check_leases(leases_with_relay_id, backend=backend)
     leases_with_remote_id = _get_lease(leases_count=5, v4=True, mac="03:05:0f:07:0d:03", remote_id='020601020c030a22')
+    srv_msg.check_leases(leases_with_remote_id, backend=backend)
 
     # check if all addresses assigned are returned correctly:
     # should get back leases_with_remote_id, spread between 2 subnets
@@ -1434,7 +1447,7 @@ def test_v4_junk_over_tcp(backend):
 
 @pytest.mark.v4
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v4_assign_and_reply_simultaneously(backend):
     """
     Let's trigger BLQ over TCP while assigning leases
@@ -1480,6 +1493,7 @@ def test_v4_assign_and_reply_simultaneously(backend):
     start_time = time()
     # let's get quite a lot of leases
     leases_set_no1 = _get_lease(v4=True, leases_count=40, mac="02:05:0f:07:0d:03", relay_id='0c0601020c330a11')
+    srv_msg.check_leases(leases_set_no1, backend=backend)
 
     _send_leasequery_v4(relay_id='0c0601020c330a11')
     srv_msg.tcp_messages_include(leaseactive=40, leasequery_done=1)

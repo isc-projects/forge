@@ -1022,5 +1022,3 @@ def test_v6_sanity_check_shared_subnet_id():
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
-
-    srv_msg.forge_sleep(10, 'seconds')
