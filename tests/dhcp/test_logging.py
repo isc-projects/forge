@@ -1121,12 +1121,12 @@ def test_ddns4_logging_all_types_debug():
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
-    log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', 'kea.log_ddns')
-    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', 'kea.log_ddns')
-    # log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', 'kea.log_ddns')  # TODO: it is not present in the log
-    log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', 'kea.log_ddns')
-    log_contains(r'ERROR \[kea-dhcp-ddns.d2-to-dns', 'kea.log_ddns')
-    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', 'kea.log_ddns')
+    log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', 'kea-dhcp-ddns.log')
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', 'kea-dhcp-ddns.log')
+    # log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', 'kea-dhcp-ddns.log')  # TODO: it is not present in the log
+    log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', 'kea-dhcp-ddns.log')
+    log_contains(r'ERROR \[kea-dhcp-ddns.d2-to-dns', 'kea-dhcp-ddns.log')
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', 'kea-dhcp-ddns.log')
 
 
 @pytest.mark.v6
@@ -1935,8 +1935,8 @@ def test_ddns6_logging_all_types_debug():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_include_option(2)
 
-    log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', log_file='kea.log_ddns')
-    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', log_file='kea.log_ddns')
-    # log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', log_file='kea.log_ddns')  # TODO: it is not present in the log
-    log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', log_file='kea.log_ddns')
-    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', log_file='kea.log_ddns')
+    log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', log_file='kea-dhcp-ddns.log')
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', log_file='kea-dhcp-ddns.log')
+    # log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', log_file='kea-dhcp-ddns.log')  # TODO: it is not present in the log
+    log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', log_file='kea-dhcp-ddns.log')
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', log_file='kea-dhcp-ddns.log')

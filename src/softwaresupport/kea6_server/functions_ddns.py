@@ -19,14 +19,11 @@ def add_ddns_server(address, port):
     if port == "default":
         port = 53001
 
-    if world.f_cfg.install_method == 'make':
-        logging_file = 'kea.log_ddns'
+    if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
+        logging_file = 'kea-dhcp-ddns.log'
         logging_file_path = world.f_cfg.log_join(logging_file)
     else:
-        if world.server_system == 'alpine':
-            logging_file_path = '/var/log/kea/kea-dhcp-ddns.log'
-        else:
-            logging_file_path = 'stdout'
+        logging_file_path = 'stdout'
 
     world.ddns_cfg = {"ip-address": address,
                       "port": int(port),  # this value is passed as string

@@ -220,8 +220,8 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
         log_file = world.f_cfg.log_join(log_file)
         result = get_line_count_in_file(line, log_file, destination)
     else:
-        if log_file is None or log_file == 'kea.log_ddns':
-            if log_file == 'kea.log_ddns':
+        if log_file is None or log_file == 'kea-dhcp-ddns.log':
+            if log_file == 'kea-dhcp-ddns.log':
                 if world.server_system in ['redhat', 'alpine']:
                     service_name = 'kea-dhcp-ddns'
                 else:
