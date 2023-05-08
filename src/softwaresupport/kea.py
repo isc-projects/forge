@@ -490,7 +490,8 @@ def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_n
         if logging_file is None or logging_file == 'stdout':
             logging_file_path = 'syslog'
             if world.server_system == 'alpine':
-                logging_file_path = f'/var/log/kea/kea-dhcp{world.proto[1]}.log'
+                logging_file = f'kea-dhcp{world.proto[1]}.log'
+                logging_file_path = world.f_cfg.log_join(logging_file)
         else:
             logging_file_path = world.f_cfg.log_join(logging_file)
 
@@ -1087,14 +1088,11 @@ def update_expired_leases_processing(param):
 
 # Start kea-ctrl-agent.
 def agent_control_channel(host_address, host_port, socket_name='control_socket'):
-    if world.f_cfg.install_method == 'make':
-        logging_file = 'kea.log-CA'
+    if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
+        logging_file = 'kea-ctrl-agent.log'
         logging_file_path = world.f_cfg.log_join(logging_file)
     else:
-        if world.server_system == 'alpine':
-            logging_file_path = '/var/log/kea/kea-ctrl-agent.log'
-        else:
-            logging_file_path = 'stdout'
+        logging_file_path = 'stdout'
 
     world.ctrl_enable = True
     server_socket_type = f'dhcp{world.proto[1]}'
@@ -1378,11 +1376,8 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
 
 
 def clear_logs(destination_address=world.f_cfg.mgmt_address):
-    fabric_remove_file_command(world.f_cfg.log_join('kea.log*'),
+    fabric_remove_file_command(world.f_cfg.log_join('kea*'),
                                destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
-    if world.server_system == 'alpine':
-        fabric_remove_file_command('/var/log/kea/*',
-                                   destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
 
 def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
@@ -1766,6 +1761,7 @@ def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
 def save_logs(destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method == 'make':
         # download all logs, ie. kea.log, kea.log1, etc.
+        # download all logs, ie. kea.log, kea.log1, etc.
         log_path = world.f_cfg.log_join('kea.log*')
     else:
         if world.server_system in ['redhat', 'alpine']:
@@ -1773,7 +1769,8 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
         else:
             service_name = f'isc-kea-dhcp{world.proto[1]}-server'
         if world.server_system == 'alpine':
-            cmd = 'cat /var/log/kea/%s.log > ' % service_name  # get logs of kea service
+            logging_file_path = world.f_cfg.log_join(f'{service_name}.log')
+            cmd = f'cat {logging_file_path} > '  # get logs of kea service
             cmd += ' /tmp/kea.log'
         else:
             cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
@@ -1814,15 +1811,16 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
         else:
             service_name = 'isc-kea-ctrl-agent'
         if world.server_system == 'alpine':
-            cmd = 'cat /var/log/kea/kea-ctrl-agent.log > '   # get logs of kea service
-            cmd += ' /tmp/kea.log-CA'
+            logging_file_path = world.f_cfg.log_join('kea-ctrl-agent.log')
+            cmd = f'cat {logging_file_path} > '   # get logs of kea service
+            cmd += ' /tmp/kea-ctrl-agent.log'
         else:
             cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
-            cmd += ' /tmp/kea.log-CA'
+            cmd += ' /tmp/kea-ctrl-agent.log'
         result = fabric_sudo_command(cmd,
                                      destination_host=destination_address,
                                      ignore_errors=True)
-        log_path = '/tmp/kea.log-CA'
+        log_path = '/tmp/kea-ctrl-agent.log'
         fabric_download_file(log_path,
                              local_dest_dir,
                              destination_host=destination_address, ignore_errors=True,
@@ -1834,7 +1832,8 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
         else:
             service_name = 'isc-kea-dhcp-ddns'
         if world.server_system == 'alpine':
-            cmd = 'cat /var/log/kea/kea-dhcp-ddns.log > '   # get logs of kea service
+            logging_file_path = world.f_cfg.log_join('kea-dhcp-ddns.log')
+            cmd = f'cat {logging_file_path} > '   # get logs of kea service
             cmd += ' /tmp/kea.log-ddns'
         else:
             cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service

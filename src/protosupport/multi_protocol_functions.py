@@ -232,7 +232,8 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
                 else:
                     service_name = f'isc-kea-dhcp{world.proto[1]}-server'
             if world.server_system == 'alpine':
-                cmd = f'cat /var/log/kea/{service_name}.log |'
+                log_file = world.f_cfg.log_join(f'{service_name}.log')
+                cmd = f'cat {log_file} |'
             else:
                 cmd = f'journalctl -u {service_name} |'  # get logs of kea service
             cmd += ' grep "$(cat <<EOF\n'
