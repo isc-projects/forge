@@ -1761,7 +1761,6 @@ def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
 def save_logs(destination_address=world.f_cfg.mgmt_address):
     if world.f_cfg.install_method == 'make':
         # download all logs, ie. kea.log, kea.log1, etc.
-        # download all logs, ie. kea.log, kea.log1, etc.
         log_path = world.f_cfg.log_join('kea.log*')
     else:
         if world.server_system in ['redhat', 'alpine']:
