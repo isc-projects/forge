@@ -11,6 +11,7 @@ import pytest
 from src import srv_control
 from src import srv_msg
 from src import misc
+from src.forge_cfg import world
 
 
 @pytest.mark.v4
@@ -279,3 +280,22 @@ def test_v4_host_reservation_multiple_address_reservation_empty_pool_2():
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
+
+
+@pytest.mark.v4
+@pytest.mark.host_reservation
+def test_v4_host_reservation_empty():
+    misc.test_setup()
+    # outside of the pool
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+
+    world.dhcp_cfg.update({
+        "reservations": [
+            {
+                "hw-address": "ff:01:02:03:ff:04"
+            }
+        ], "reservation-mode": "global"})
+
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
