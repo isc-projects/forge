@@ -53,7 +53,7 @@ pgsql_reservation = Dispatcher('pgsql_reservation')
 
 # DHCP server configurations
 @step(r'Server is configured with (\S+) subnet with (\S+) pool.')
-def config_srv_subnet(subnet, pool, iface=world.f_cfg.server_iface):
+def config_srv_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
     """Adds server configuration with specified subnet and pool.
 
     Arguments:
@@ -64,7 +64,7 @@ def config_srv_subnet(subnet, pool, iface=world.f_cfg.server_iface):
         (default: SERVER_IFACE)
     """
     subnet, pool, iface = test_define_value(subnet, pool, iface)
-    dhcp.prepare_cfg_subnet(subnet, pool, iface=iface)
+    dhcp.prepare_cfg_subnet(subnet, pool, iface=iface, **kwargs)
 
 
 @step(r'Server is configured on interface (\S+) and address (\S+) with (\S+) subnet with (\S+) pool.')
@@ -137,30 +137,30 @@ def update_subnet_counter():
 
 
 @step(r'Server is configured with another subnet on interface (\S+) with (\S+) subnet and (\S+) pool.')
-def config_srv_another_subnet(interface, subnet, pool):
+def config_srv_another_subnet(interface, subnet, pool, **kwargs):
     """
     Add another subnet with specified subnet/pool/interface.
     """
     subnet, pool, interface = test_define_value(subnet, pool, interface)
-    dhcp.config_srv_another_subnet(subnet, pool, interface)
+    dhcp.config_srv_another_subnet(subnet, pool, interface, **kwargs)
 
 
 @step(r'Server is configured with another subnet: (\S+) with (\S+) pool.')
-def config_srv_another_subnet_no_interface(subnet, pool):
+def config_srv_another_subnet_no_interface(subnet, pool, **kwargs):
     """
     Add another subnet to config file without interface specified.
     """
     subnet, pool = test_define_value(subnet, pool)
-    dhcp.config_srv_another_subnet(subnet, pool)
+    dhcp.config_srv_another_subnet(subnet, pool, **kwargs)
 
 
 @step(r'Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')
-def config_srv_prefix(prefix, subnet, length, delegated_length):
+def config_srv_prefix(prefix, subnet, length, delegated_length, **kwargs):
     """
     Adds server configuration with specified prefix.
     """
     prefix, length, delegated_length, subnet = test_define_value(prefix, length, delegated_length, subnet)
-    dhcp.prepare_cfg_prefix(prefix, length, delegated_length, subnet)
+    dhcp.prepare_cfg_prefix(prefix, length, delegated_length, subnet, **kwargs)
 
 
 @step(r'Server-id configured with type (\S+) value (\S+).')

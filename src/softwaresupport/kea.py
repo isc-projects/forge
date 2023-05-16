@@ -595,7 +595,7 @@ def add_line_in_subnet(subnet_id, additional_line):
     world.dhcp_cfg[sub][subnet_id].update(additional_line)
 
 
-def prepare_cfg_subnet(subnet, pool, iface=world.f_cfg.server_iface):
+def prepare_cfg_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
     """Creates or updates an element under "subnet[46]" element in Kea's JSON
     configuration.
 
@@ -631,8 +631,12 @@ def prepare_cfg_subnet(subnet, pool, iface=world.f_cfg.server_iface):
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]]["pools"].append({"pool": pool})
     add_interface(iface)
 
+    for x, y in kwargs.items():
+        if y is not None:
+            world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]].update({x.replace("_", "-"): y})
 
-def config_srv_another_subnet(subnet, pool, iface=world.f_cfg.server_iface):
+
+def config_srv_another_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
     """Like config_srv_subnet(subnet, pool, iface), but increments the subnet
     counter to guarantee that this subnet will be a new one.
 
@@ -644,7 +648,7 @@ def config_srv_another_subnet(subnet, pool, iface=world.f_cfg.server_iface):
         (default: SERVER_IFACE)
     """
     world.dhcp["subnet_cnt"] += 1
-    prepare_cfg_subnet(subnet, pool, iface)
+    prepare_cfg_subnet(subnet, pool, iface, **kwargs)
 
 
 def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
@@ -1126,14 +1130,20 @@ def config_srv_id(id_type, id_value):
                                        "identifier": id_value[8:]}
 
 
-def prepare_cfg_prefix(prefix, length, delegated_length, subnet):
+def prepare_cfg_prefix(prefix, length, delegated_length, subnet, **kwargs):
     if world.proto == 'v4':
         assert False, "Not available for DHCPv4"
 
     sub = f'subnet{world.proto[1]}'
-    world.dhcp_cfg[sub][int(subnet)].update({"pd-pools": [{"delegated-len": int(delegated_length),
-                                                           "prefix": prefix,
-                                                           "prefix-len": int(length)}]})
+    pd = {"pd-pools": [{"delegated-len": int(delegated_length),
+                        "prefix": prefix,
+                        "prefix-len": int(length)}]}
+
+    for x, y in kwargs.items():
+        if y is not None:
+            pd["pd-pools"][0].update({x.replace("_", "-"): y})
+
+    world.dhcp_cfg[sub][int(subnet)].update(pd)
 
 
 def add_siaddr(addr, subnet_number):

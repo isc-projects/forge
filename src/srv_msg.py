@@ -21,6 +21,8 @@
 import random
 import json
 import importlib
+import ipaddress
+import logging
 
 from scapy.layers.dhcp6 import DUID_LLT, DUID_LL, DUID_EN
 from .protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
@@ -28,6 +30,8 @@ from .forge_cfg import world, step
 from .protosupport import dns, multi_protocol_functions
 from .protosupport.multi_protocol_functions import test_define_value, substitute_vars
 from .softwaresupport.multi_server_functions import start_tcpdump, stop_tcpdump, download_tcpdump_capture
+
+log = logging.getLogger('forge')
 
 
 class Dispatcher(object):
@@ -757,3 +761,19 @@ def tcp_get_message(**kwargs):
 def send_over_tcp(msg, address=None, port=None, parse=False, number_of_connections=1, print_all=True):
     return dhcpmsg.send_over_tcp(msg, address=address, port=port, parse=parse,
                                  number_of_connections=number_of_connections, print_all=print_all)
+
+
+def check_if_address_belongs_to_subnet(subnet: str = None, address: str = None):
+    """
+    Check if address belongs to subnet. Accepts v4 and v6
+    :param subnet: subnet definition e.g. '2001:db8:1::/64'
+    :param address: ip address e.g. '2001:db8:2::1'
+    """
+    if subnet is None:
+        assert False, "You need to specify subnet"
+    if address is None:
+        address = get_all_leases()['address']
+
+    assert ipaddress.ip_address(address) in ipaddress.ip_network(subnet), f"Address {address} " \
+                                                                          f"does NOT belong to subnet {subnet}"
+    log.debug(f"{address} fit into {subnet}")
