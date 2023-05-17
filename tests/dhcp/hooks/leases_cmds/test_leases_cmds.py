@@ -833,23 +833,17 @@ def test_v4_lease_cmds_write(file):
     resp = srv_msg.send_ctrl_cmd(cmd)
     assert resp["text"] == f'IPv4 lease database into \'{write_path}\'.'
 
-    if file == 'delete':
-        # Check if lease file is restored
-        srv_msg.check_leases({"hwaddr": "1a:1b:1c:1d:1e:1f", "address": "192.168.50.5", "valid_lifetime": 7777},
-                             backend='memfile')
-    elif file == 'overwrite':
-        # Check if lease file is restored
-        srv_msg.check_leases({"hwaddr": "1a:1b:1c:1d:1e:1f", "address": "192.168.50.5", "valid_lifetime": 7777},
-                             backend='memfile')
+    # Check if lease file is restored
+    srv_msg.check_leases({"hwaddr": "1a:1b:1c:1d:1e:1f", "address": "192.168.50.5", "valid_lifetime": 7777},
+                         backend='memfile')
+
+    if file == 'overwrite':
         # Check if backup file is created
         cmd = {"command": "status-get", "arguments": {}}
         response = srv_msg.send_ctrl_cmd(cmd)
         pid = response['arguments']['pid']
         file_contains_line(f'{write_path}.bak{pid}', 'Empty_File')
-    else:  # file == new
-        # Verify that lease is still in memfile
-        srv_msg.check_leases({"hwaddr": "1a:1b:1c:1d:1e:1f", "address": "192.168.50.5", "valid_lifetime": 7777},
-                             backend='memfile')
+    elif file == 'new':
         # Verify that new file contains lease
         file_contains_line(write_path, '192.168.50.5,1a:1b:1c:1d:1e:1f,aa:bb:cc:dd:11:22,7777')
 
@@ -2417,29 +2411,19 @@ def test_v6_lease_cmds_write(file):
     resp = srv_msg.send_ctrl_cmd(cmd)
     assert resp["text"] == f'IPv6 lease database into \'{write_path}\'.'
 
-    if file == 'delete':
-        # Check if lease file is restored
-        srv_msg.check_leases({"duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
-                              "address": "2001:db8:1::1",
-                              "iaid": 1234,
-                              "hostname": "urania.example.org"})
-    elif file == 'overwrite':
-        # Check if lease file is restored
-        srv_msg.check_leases({"duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
-                              "address": "2001:db8:1::1",
-                              "iaid": 1234,
-                              "hostname": "urania.example.org"})
+    # Check if lease file is restored
+    srv_msg.check_leases({"duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
+                          "address": "2001:db8:1::1",
+                          "iaid": 1234,
+                          "hostname": "urania.example.org"})
+
+    if file == 'overwrite':
         # Check if backup file is created
         cmd = {"command": "status-get", "arguments": {}}
         response = srv_msg.send_ctrl_cmd(cmd)
         pid = response['arguments']['pid']
         file_contains_line(f'{write_path}.bak{pid}', 'Empty_File')
-    else:  # file == new
-        # Verify that lease is still in memfile
-        srv_msg.check_leases({"duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
-                              "address": "2001:db8:1::1",
-                              "iaid": 1234,
-                              "hostname": "urania.example.org"})
+    elif file == 'new':
         # Verify that new file contains lease
         file_contains_line(write_path, '2001:db8:1::1,1a:1b:1c:1d:1e:1f:20:21:22:23:24,11111')
 
@@ -2461,31 +2445,31 @@ def test_lease_cmds_write_negative(dhcp_version):
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
-    cmd = {"command": f'lease{world.proto[1]}-write'}
+    cmd = {"command": f'lease{dhcp_version[1]}-write'}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "no parameters specified for the command"
 
-    cmd = {"command": f'lease{world.proto[1]}-write',
+    cmd = {"command": f'lease{dhcp_version[1]}-write',
            "arguments": {}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'filename' parameter not specified"
 
-    cmd = {"command": f'lease{world.proto[1]}-write',
+    cmd = {"command": f'lease{dhcp_version[1]}-write',
            "arguments": {"test": 0}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'filename' parameter not specified"
 
-    cmd = {"command": f'lease{world.proto[1]}-write',
+    cmd = {"command": f'lease{dhcp_version[1]}-write',
            "arguments": {"filename": 0}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'filename' parameter must be a string"
 
-    cmd = {"command": f'lease{world.proto[1]}-write',
+    cmd = {"command": f'lease{dhcp_version[1]}-write',
            "arguments": {"filename": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'filename' parameter is empty"
 
-    cmd = {"command": f'lease{world.proto[1]}-write',
+    cmd = {"command": f'lease{dhcp_version[1]}-write',
            "arguments": {"filename": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'filename' parameter is empty"
