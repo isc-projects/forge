@@ -69,7 +69,7 @@ def _get_lease_4(allocator: str, mac: str, giaddr: str, all_leases: list = None,
             assert ipaddress.ip_address(msg.yiaddr) != ipaddress.ip_address(all_leases[-1]["address"]) + 1, \
                 f"Received address {msg.yiaddr} is simple +1 after previously assigned this is incorrect for flq/random"
 
-        log.debug(f'Current %s previous was %s', msg.yiaddr, all_leases[-1]["address"])
+        log.debug('Current %s previous was %s', msg.yiaddr, all_leases[-1]["address"])
     return lease
 
 
@@ -90,7 +90,7 @@ def test_v4_allocators(backend, scope):
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.0/24', allocator='flq')
     srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24', '192.168.52.0/24', allocator='random')
 
-    if scope is "shared_networks":
+    if scope == "shared_networks":
         srv_control.shared_subnet('192.168.50.0/24', 0)
         srv_control.shared_subnet('192.168.51.0/24', 0)
         srv_control.shared_subnet('192.168.52.0/24', 0)
@@ -103,9 +103,9 @@ def test_v4_allocators(backend, scope):
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
-    leases_subnet1 = list()
-    leases_subnet2 = list()
-    leases_subnet3 = list()
+    leases_subnet1 = []
+    leases_subnet2 = []
+    leases_subnet3 = []
     for i in range(10, 20):
         leases_subnet1.append(_get_lease_4('iterative', f'22:00:00:00:00:{i}', '192.168.50.1', leases_subnet1))
         leases_subnet2.append(_get_lease_4('flq', f'33:00:00:00:00:{i}', '192.168.51.1', leases_subnet2))
@@ -127,8 +127,8 @@ def test_v4_allocator_randomness(backend):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    leases_subnet1 = list()
-    leases_subnet2 = list()
+    leases_subnet1 = []
+    leases_subnet2 = []
     for i in range(10, 20):
         leases_subnet1.append(_get_lease_4('random', f'22:00:00:00:00:{i}', '192.167.0.1', leases_subnet1, netmask=16))
         leases_subnet2.append(_get_lease_4('flq', f'33:00:00:00:00:{i}', '192.168.0.1', leases_subnet2, netmask=16))
@@ -144,8 +144,8 @@ def test_v4_allocator_randomness(backend):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    leases_subnet1_2 = list()
-    leases_subnet2_2 = list()
+    leases_subnet1_2 = []
+    leases_subnet2_2 = []
     # let's generate exactly the same traffic, addresses may repeat but chances that we get at least 1 repeated address
     # from pool of /16 should be slim, and that is what we are testing here
     for i in range(10, 20):
@@ -179,7 +179,7 @@ def test_v4_allocator_exhausted_pool(backend, allocator):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    leases_subnet1 = list()
+    leases_subnet1 = []
     for i in range(10, 22):
         leases_subnet1.append(_get_lease_4('random', f'22:00:00:00:00:{i}', '192.167.0.1', [], netmask=16))
 
@@ -206,14 +206,10 @@ def _check_multiple_v6_addresses(all_leases: list, offset: int = 1) -> str:
             return 'iterative'
         return 'random'
 
-    result = list()
+    result = []
     for i, lease in enumerate(all_leases):
         if i + 1 == len(all_leases):  # we don't want to compare last address non existing next address
             return _verdict(result)
-
-        log.debug(f"Checking %s with %s if that is iterative: %s",
-                  lease['address'], all_leases[i+1]['address'],
-                  ipaddress.ip_address(lease['address']) + offset == ipaddress.ip_address(all_leases[i+1]['address']))
 
         if ipaddress.ip_address(lease['address']) + offset == ipaddress.ip_address(all_leases[i+1]['address']):
             result.append(True)
@@ -351,7 +347,7 @@ def test_v6_allocators(backend, scope):
     srv_control.config_srv_prefix('2001:db7:2::', 1, netmask, 125)
     srv_control.config_srv_prefix('2001:db7:3::', 2, netmask, 125)
 
-    if scope is "shared_networks":
+    if scope == "shared_networks":
         srv_control.shared_subnet('2001:db8:1::/64', 0)
         srv_control.shared_subnet('2001:db8:2::/64', 0)
         srv_control.shared_subnet('2001:db8:3::/64', 0)
@@ -366,9 +362,9 @@ def test_v6_allocators(backend, scope):
 
     srv_control.start_srv('DHCP', 'started')
 
-    leases_subnet1 = list()
-    leases_subnet2 = list()
-    leases_subnet3 = list()
+    leases_subnet1 = []
+    leases_subnet2 = []
+    leases_subnet3 = []
 
     for i in range(10, 15):
         leases_subnet1 += _get_lease_6('iterative', iaid=3, iapd=3, relay='2001:db8:1::1',
@@ -424,7 +420,7 @@ def test_v6_allocator_randomness(backend, prefix_allocator):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    before_restart = list()
+    before_restart = []
 
     for i in range(10, 30):
         before_restart += _get_lease_6('random', iaid=3, iapd=3, relay='2001:db8:1::1',
@@ -446,7 +442,7 @@ def test_v6_allocator_randomness(backend, prefix_allocator):
     srv_control.start_srv('DHCP', 'started')
 
     # get the same number of leases with the same duids
-    after_restart = list()
+    after_restart = []
     for i in range(10, 30):
         after_restart += _get_lease_6('random', iaid=3, iapd=3, relay='2001:db8:1::1',
                                       mac=f'11:f5:f4:f3:f2:{i}', all_leases=after_restart)
@@ -486,7 +482,7 @@ def test_v6_allocators_exhausted_pools_address(backend):
 
     srv_control.start_srv('DHCP', 'started')
 
-    leases = list()
+    leases = []
     for i in range(10, 22):
         leases += _get_lease_6(None, iaid=1, iapd=0, relay='2001:db8:1::1',
                                mac=f'11:f5:f4:f3:f2:{i}', all_leases=leases, netmask=64)
@@ -513,7 +509,7 @@ def test_v6_allocators_exhausted_prefix(backend):
 
     srv_control.start_srv('DHCP', 'started')
 
-    leases = list()
+    leases = []
     for i in range(10, 23):
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'DUID', f'00:03:00:01:11:22:33:44:55:{i}')
