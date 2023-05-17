@@ -163,6 +163,14 @@ def config_srv_prefix(prefix, subnet, length, delegated_length, **kwargs):
     dhcp.prepare_cfg_prefix(prefix, length, delegated_length, subnet, **kwargs)
 
 
+def add_prefix_to_subnet(prefix, length, delegated_length, subnet):
+    """
+    Add prefix configuration to existing subnet
+    """
+    prefix, length, delegated_length, subnet = test_define_value(prefix, length, delegated_length, subnet)
+    dhcp.add_prefix_to_subnet(prefix, length, delegated_length, int(subnet))
+
+
 @step(r'Server-id configured with type (\S+) value (\S+).')
 def config_srv_id(id_type, id_value):
     """

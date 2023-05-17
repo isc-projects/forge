@@ -707,6 +707,15 @@ def add_pool_to_subnet(pool, subnet):
     world.dhcp_cfg[sub][subnet]["pools"].append({"pool": pool})
 
 
+def add_prefix_to_subnet(prefix, length, delegated,  subnet):
+    sub = f'subnet{world.proto[1]}'
+    if "pd-pools" not in world.dhcp_cfg[sub][subnet]:
+        world.dhcp_cfg[sub][subnet].update({"pd-pools": []})
+    world.dhcp_cfg[sub][subnet]["pd-pools"].append({"delegated-len": int(delegated),
+                                                    "prefix": prefix,
+                                                    "prefix-len": int(length)})
+
+
 def set_conf_parameter_global(parameter_name, value):
     world.dhcp_cfg[parameter_name] = value
 

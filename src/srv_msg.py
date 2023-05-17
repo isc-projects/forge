@@ -776,4 +776,4 @@ def check_if_address_belongs_to_subnet(subnet: str = None, address: str = None):
 
     assert ipaddress.ip_address(address) in ipaddress.ip_network(subnet), f"Address {address} " \
                                                                           f"does NOT belong to subnet {subnet}"
-    log.debug(f"{address} fit into {subnet}")
+    log.debug("%s fit into %s", address, subnet)
