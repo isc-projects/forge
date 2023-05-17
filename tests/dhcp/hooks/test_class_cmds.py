@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -362,7 +362,7 @@ def test_negative_wrong_command_1(dhcp_version):  # pylint: disable=unused-argum
     # bug: #432, FIXED
     cmd = dict(wrong_command='class-add', arguments={"client-classes": [{"name": "ipxe"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    expected = ("Error during command processing: invalid answer: "
+    expected = ("Error during command processing: invalid command: "
                 "does not contain mandatory 'command'")
     assert response['text'] == expected
 

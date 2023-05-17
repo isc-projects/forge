@@ -1,10 +1,12 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """Kea lease get by client-id/hostname/hw-address"""
+
+# pylint: disable=line-too-long
 
 import pytest
 
@@ -225,26 +227,49 @@ def test_control_channel_lease4_get_by_negative():
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'client-id' parameter not specified"
 
+    # Per RFC2132, section 9.14, client ID has a minimum length of 2.
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Empty DUIDs are not allowed"
-    # TODO change in Kea to "Empty client-id is not allowed" and update here.
+    assert resp["text"] == "identifier is too short (0), at least 2 is required"
+
+    cmd = {"command": "lease4-get-by-client-id",
+           "arguments": {"client-id": "00"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "identifier is too short (1), at least 2 is required"
+
+    cmd = {"command": "lease4-get-by-client-id",
+           "arguments": {"client-id": "0011"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert resp["text"] == "0 IPv4 lease(s) found."
+
+    # RFCs do not enforce an upper length for client ID, but the
+    # byte used to specify the option size byte can only go up to 255.
+
+    # 255 should work.
+    cmd = {
+        "command": "lease4-get-by-client-id",
+        "arguments": {
+            "client-id": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"
+        }
+    }
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert resp["text"] == "0 IPv4 lease(s) found."
+
+    # 256 should result in error.
+    cmd = {
+        "command": "lease4-get-by-client-id",
+        "arguments": {
+            "client-id": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff00"
+        }
+    }
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "identifier is too large (256), at most 255 is required"
 
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "two consecutive separators (' ') specified in a decoded string ' '"
-
-    cmd = {"command": "lease4-get-by-client-id",
-           "arguments": {"client-id": "00"}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "client-id is too short (1), at least 2 is required"
-
-    cmd = {"command": "lease4-get-by-client-id",
-           "arguments": {"client-id": "00"}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "client-id is too short (1), at least 2 is required"
 
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": "xx"}}
@@ -409,10 +434,51 @@ def test_v6_lease_get_by_negative():
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'duid' parameter not specified"
 
+    # Per RFC 8415, section 11.1, DUID should have at least one byte of value.
+    # The first two bytes representing type are mandatory, so that's a total
+    # minimum of 3 bytes.
     cmd = {"command": "lease6-get-by-duid",
            "arguments": {"duid": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Empty DUIDs are not allowed"
+    assert resp["text"] == "identifier is too short (0), at least 3 is required"
+
+    cmd = {"command": "lease6-get-by-duid",
+           "arguments": {"duid": "00"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "identifier is too short (1), at least 3 is required"
+
+    cmd = {"command": "lease6-get-by-duid",
+           "arguments": {"duid": "0011"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "identifier is too short (2), at least 3 is required"
+
+    cmd = {"command": "lease6-get-by-duid",
+           "arguments": {"duid": "001122"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert resp["text"] == "0 IPv6 lease(s) found."
+
+    # The maximum DUID size specified in RFC 8415, section 11.1 is 130:
+    # 2 fixed octets for the type + 128 maximum octets for the value.
+
+    # 130 should work.
+    cmd = {
+        "command": "lease6-get-by-duid",
+        "arguments": {
+            "duid": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182"
+        }
+    }
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert resp["text"] == "0 IPv6 lease(s) found."
+
+    # 131 should result in error.
+    cmd = {
+        "command": "lease6-get-by-duid",
+        "arguments": {
+            "duid": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f80818283"
+        }
+    }
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "identifier is too large (131), at most 130 is required"
 
     cmd = {"command": "lease6-get-by-duid",
            "arguments": {"duid": " "}}
