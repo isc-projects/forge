@@ -547,44 +547,6 @@ def test_stats_sample_age():
 
 
 @pytest.mark.disabled
-def test_X():
-    misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_another_subnet_no_interface('3000:100::/64',
-                                                       '3000:100::5-3000:100::ff')
-    srv_control.config_srv_prefix('3000::', 0, 90, 92)
-    srv_control.open_control_channel('control_socket2')
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'reconfigured')
-
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',
-                                     socket_name='control_socket2')
-
-    misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_prefix('3000::', 0, 90, 92)
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'reconfigured')
-
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}')
-
-    misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_prefix('3000::', 0, 90, 92)
-    srv_control.open_control_channel('control_socket2')
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'reconfigured')
-
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',
-                                     socket_name='control_socket2')
-
-    srv_control.start_srv('DHCP', 'restarted')
-
-    srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',
-                                     socket_name='control_socket2')
-
-
-@pytest.mark.disabled
 def test_stats_6():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
@@ -654,6 +616,7 @@ def test_stats_6():
     srv_msg.send_ctrl_cmd_via_socket('{"command": "statistic-get","arguments": {"name": "pkt6-reply-received"}}')
 
     misc.test_procedure()
+    srv_msg.client_requests_option('preference')
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_send_msg('SOLICIT')
@@ -665,6 +628,7 @@ def test_stats_6():
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('server-id')
     srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_requests_option('preference')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
@@ -690,6 +654,10 @@ def test_stats_6():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option('client-id')
+    srv_msg.response_check_include_option('server-id')
+    srv_msg.response_check_include_option('IA_NA')
+    srv_msg.response_check_option_content('IA_NA', 'sub-option', 'IA_address')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
@@ -699,6 +667,10 @@ def test_stats_6():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option('client-id')
+    srv_msg.response_check_include_option('server-id')
+    srv_msg.response_check_include_option('IA_NA')
+    srv_msg.response_check_option_content('IA_NA', 'sub-option', 'IA_address')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
@@ -738,6 +710,10 @@ def test_stats_6():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option('client-id')
+    srv_msg.response_check_include_option('server-id')
+    srv_msg.response_check_include_option('IA_NA')
+    srv_msg.response_check_option_content('IA_NA', 'sub-option', 'IA_address')
 
     misc.test_procedure()
     srv_msg.client_copy_option('IA_PD')
@@ -806,6 +782,7 @@ def test_stats_6():
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('server-id')
     srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_requests_option('preference')
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
