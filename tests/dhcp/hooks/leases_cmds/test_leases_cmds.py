@@ -15,7 +15,7 @@ from src import misc
 from src import srv_msg
 from src import srv_control
 from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
-from src.softwaresupport.multi_server_functions import  fabric_sudo_command
+from src.softwaresupport.multi_server_functions import fabric_sudo_command
 from src.protosupport.multi_protocol_functions import file_contains_line, sort_container
 from src.forge_cfg import world
 
