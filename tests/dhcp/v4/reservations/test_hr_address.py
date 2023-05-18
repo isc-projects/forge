@@ -12,6 +12,7 @@ from src import srv_control
 from src import srv_msg
 from src import misc
 from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import log_contains
 
 
 @pytest.mark.v4
@@ -285,8 +286,10 @@ def test_v4_host_reservation_multiple_address_reservation_empty_pool_2():
 @pytest.mark.v4
 @pytest.mark.host_reservation
 def test_v4_host_reservation_empty():
+    """
+    Test if empty (only MAC address) reservation can be made.
+    """
     misc.test_setup()
-    # outside of the pool
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
 
     world.dhcp_cfg.update({
@@ -296,6 +299,78 @@ def test_v4_host_reservation_empty():
             }
         ], "reservation-mode": "global"})
 
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+
+    log_contains('client packet has been assigned to the following class(es): KNOWN')
+
+
+@pytest.mark.v4
+@pytest.mark.host_reservation
+def test_v4_host_reservation_example_access_control():
+    """
+    Test check example from ARM 8.3.13 with added Dropping of Unknown class
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
+
+    world.dhcp_cfg.update({
+        "client-classes": [
+            {
+                "name": "blocked",
+                "option-data": [
+                    {
+                        "name": "routers",
+                        "data": "192.168.50.251"
+                    }
+                ]
+            },
+            {
+                "name": "DROP",
+                "test": "member('UNKNOWN')"
+            }
+        ]})
+
+    world.dhcp_cfg.update({
+        "reservations": [
+            {"hw-address": "aa:bb:cc:dd:ee:fe",
+             "client-classes": ["blocked"]},
+            {"hw-address": "11:22:33:44:55:66"}
+        ], "reservation-mode": "global"})
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+
+    # Check blocked MAC
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'aa:bb:cc:dd:ee:fe')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'value', '192.168.50.251')
+
+    # Check other known MAC
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '11:22:33:44:55:66')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(3, expect_include=False)
+
+    # Check unknown MAC
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'dd:ee:ff:11:22:33')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER', expect_response=False)
