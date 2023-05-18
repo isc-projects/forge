@@ -7,7 +7,6 @@
 """Kea leases manipulation commands"""
 
 # pylint: disable=line-too-long
-# pylint: disable=unused-argument
 
 import time
 import pytest
@@ -16,8 +15,8 @@ from src import misc
 from src import srv_msg
 from src import srv_control
 from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
-from src.softwaresupport.multi_server_functions import fabric_remove_file_command, fabric_sudo_command
-from src.protosupport.multi_protocol_functions import file_contains_line
+from src.softwaresupport.multi_server_functions import  fabric_sudo_command
+from src.protosupport.multi_protocol_functions import file_contains_line, file_doesnt_contain_line, sort_container
 from src.forge_cfg import world
 
 
@@ -745,11 +744,11 @@ def test_v4_lease_cmds_lease_get_negative():
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
-@pytest.mark.parametrize('file', ['delete', 'overwrite', 'new'])
+@pytest.mark.parametrize('file', ['overwrite', 'new'])
 def test_v4_lease_cmds_write(file):
     """
     Check if lease4-write makes correct memfile.
-    @param file: Select if memfile should be deleted and rewritten, overwritten, or made as new file.
+    @param file: Select if memfile should be overwritten, or made as new file.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
@@ -759,6 +758,25 @@ def test_v4_lease_cmds_write(file):
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
+
+    # prepare user-context JSON
+    user_context = {
+        "ISC": {
+            "relay-info": [
+                {
+                    "hop": 0,
+                    "link": "2001:db8:2::1000",
+                    "options": "0x00120008706F727431323334",
+                    "peer": "fe80::1"
+                }
+            ]
+        },
+        "version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}],
+        "class": "!@#$%^&*(`)'_+=-?|\"\\\b\f\n\r\t",
+        "tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
+                  "bra,nch3": {"leaf1": 1,
+                               "leaf2": ["vein1", "vein2"]}}
+    }
 
     # make sure that leases file is empty
     misc.test_procedure()
@@ -786,18 +804,12 @@ def test_v4_lease_cmds_write(file):
                          "state": 1,
                          "expire": int(time.time()) + 7000,
                          "hostname": "my.host.some.name",
-                         "client-id": "aa:bb:cc:dd:11:22"}}
+                         "client-id": "aa:bb:cc:dd:11:22",
+                         "user-context": user_context}}
     resp = srv_msg.send_ctrl_cmd(cmd)
     assert resp["text"] == "Lease for address 192.168.50.5, subnet-id 1 added."
 
-    if file == 'delete':
-        # Remove memfile
-        fabric_remove_file_command(world.f_cfg.get_leases_path())
-        # Verify that memfile has no leases
-        srv_msg.check_leases({"hwaddr": "1a:1b:1c:1d:1e:1f", "address": "192.168.50.5", "valid_lifetime": 7777},
-                             backend='memfile', should_succeed=False)
-        write_path = world.f_cfg.get_leases_path()
-    elif file == 'overwrite':
+    if file == 'overwrite':
         # Empty the memfile
         fabric_sudo_command(f'echo "Empty_File" > {world.f_cfg.get_leases_path()}')
         # Verify that memfile has no leases
@@ -816,6 +828,10 @@ def test_v4_lease_cmds_write(file):
     resp = srv_msg.send_ctrl_cmd(cmd)
     resp = resp["arguments"]
     del resp["cltt"]  # this value is dynamic
+
+    # compare sorted JSON prepared on start with sorted returned one
+    assert sort_container(user_context) == sort_container(resp["user-context"])
+    del resp["user-context"]  # already checked
 
     assert resp == {"fqdn-fwd": True,
                     "fqdn-rev": True,
@@ -846,6 +862,125 @@ def test_v4_lease_cmds_write(file):
     elif file == 'new':
         # Verify that new file contains lease
         file_contains_line(write_path, '192.168.50.5,1a:1b:1c:1d:1e:1f,aa:bb:cc:dd:11:22,7777')
+        fabric_sudo_command(f'cp {write_path} {world.f_cfg.get_leases_path()}')
+
+    srv_control.start_srv('DHCP', 'restarted')
+
+    # Verify that lease is in memory
+    cmd = {"command": "lease4-get",
+           "arguments": {"identifier-type": "client-id", "identifier": "aa:bb:cc:dd:11:22", "subnet-id": 1}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    resp = resp["arguments"]  # drop unnecessary info for comparison
+
+    # compare sorted JSON prepared on start with sorted returned one
+    assert sort_container(user_context) == sort_container(resp["user-context"])
+
+
+@pytest.mark.v4
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.lease_cmds
+def test_v4_lease_cmds_write_no_persist():
+    """
+    Check if lease4-write makes correct memfile with persist: false.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    world.dhcp_cfg.update({"lease-database": {"type": "memfile", "persist": False}})
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    # make sure that leases file is empty
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.5')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    cmd = {"command": "lease4-get",
+           "arguments": {"identifier-type": "hw-address", "identifier": "1a:1b:1c:1d:1e:1f", "subnet-id": 1}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    assert resp["text"] == "Lease not found."
+
+    # prepare user-context JSON
+    user_context = {
+        "ISC": {
+            "relay-info": [
+                {
+                    "hop": 0,
+                    "link": "2001:db8:2::1000",
+                    "options": "0x00120008706F727431323334",
+                    "peer": "fe80::1"
+                }
+            ]
+        },
+        "version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}],
+        "class": "!@#$%^&*(`)'_+=-?|\"\\\b\f\n\r\t",
+        "tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
+                  "bra,nch3": {"leaf1": 1,
+                               "leaf2": ["vein1", "vein2"]}}
+    }
+
+    # add lease with all possible values and check
+    cmd = {"command": "lease4-add",
+           "arguments": {"subnet-id": 1,
+                         "ip-address": "192.168.50.5",
+                         "hw-address": "1a:1b:1c:1d:1e:1f",
+                         "fqdn-fwd": True,
+                         "fqdn-rev": True,
+                         "valid-lft": 7777,
+                         "state": 1,
+                         "expire": int(time.time()) + 7000,
+                         "hostname": "my.host.some.name",
+                         "client-id": "aa:bb:cc:dd:11:22",
+                         "user-context": user_context}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    assert resp["text"] == "Lease for address 192.168.50.5, subnet-id 1 added."
+
+    # Verify that lease is in memory
+    cmd = {"command": "lease4-get",
+           "arguments": {"identifier-type": "client-id", "identifier": "aa:bb:cc:dd:11:22", "subnet-id": 1}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    resp = resp["arguments"]
+
+    # Check if lease file is still empty
+    srv_msg.check_leases({"hwaddr": "1a:1b:1c:1d:1e:1f", "address": "192.168.50.5", "valid_lifetime": 7777},
+                         backend='memfile', should_succeed=False)
+
+    # Execute lease4-write
+    cmd = {"command": "lease4-write",
+           "arguments": {"filename": world.f_cfg.get_leases_path()}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    assert resp["text"] == f'IPv4 lease database into \'{world.f_cfg.get_leases_path()}\'.'
+
+    # Check if lease file is restored
+    srv_msg.check_leases({"hwaddr": "1a:1b:1c:1d:1e:1f", "address": "192.168.50.5", "valid_lifetime": 7777},
+                         backend='memfile')
+
+    # Restart with "persist": True
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'restarted')
+
+    # checking if added lease is present after restart
+    cmd = {"command": "lease4-get",
+           "arguments": {"identifier-type": "client-id", "identifier": "aa:bb:cc:dd:11:22", "subnet-id": 1}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    resp = resp["arguments"]  # drop unnecessary info for comparison
+
+    # compare sorted JSON prepared on start with sorted returned one
+    assert sort_container(user_context) == sort_container(resp["user-context"])
 
 
 @pytest.mark.v6
@@ -2340,11 +2475,11 @@ def test_v6_lease_cmds_update_negative():
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
-@pytest.mark.parametrize('file', ['delete', 'overwrite', 'new'])
+@pytest.mark.parametrize('file', ['overwrite', 'new'])
 def test_v6_lease_cmds_write(file):
     """
     Check if lease6-write makes correct memfile.
-    @param file: Select if memfile should be deleted and rewritten, overwritten, or made as new file.
+    @param file: Select if memfile should be overwritten, or made as new file.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -2358,6 +2493,25 @@ def test_v6_lease_cmds_write(file):
     # make sure that leases file is empty
     srv_msg.SA(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11')
 
+    # prepare user-context JSON
+    user_context = {
+        "ISC": {
+            "relay-info": [
+                {
+                    "hop": 0,
+                    "link": "2001:db8:2::1000",
+                    "options": "0x00120008706F727431323334",
+                    "peer": "fe80::1"
+                }
+            ]
+        },
+        "version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}],
+        "class": "!@#$%^&*(`)'_+=-?|\"\\\b\f\n\r\t",
+        "tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
+                  "bra,nch3": {"leaf1": 1,
+                               "leaf2": ["vein1", "vein2"]}}
+    }
+
     # adding lease by lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"subnet-id": 1,
                                                   "ip-address": "2001:db8:1::1",
@@ -2368,7 +2522,8 @@ def test_v6_lease_cmds_write(file):
                                                   "valid-lft": 11111,
                                                   "fqdn-fwd": True,
                                                   "fqdn-rev": True,
-                                                  "hostname": "urania.example.org"}}
+                                                  "hostname": "urania.example.org",
+                                                  "user-context": user_context}}
     srv_msg.send_ctrl_cmd(cmd)
 
     # checking if added lease exists in memfile
@@ -2377,17 +2532,7 @@ def test_v6_lease_cmds_write(file):
                           "iaid": 1234,
                           "hostname": "urania.example.org"})
 
-    if file == 'delete':
-        # Remove memfile
-        fabric_remove_file_command(world.f_cfg.get_leases_path())
-        # Verify that memfile has no leases
-        srv_msg.check_leases({"duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
-                              "address": "2001:db8:1::1",
-                              "iaid": 1234,
-                              "hostname": "urania.example.org"},
-                             should_succeed=False)
-        write_path = world.f_cfg.get_leases_path()
-    elif file == 'overwrite':
+    if file == 'overwrite':
         # Empty the memfile
         fabric_sudo_command(f'echo "Empty_File" > {world.f_cfg.get_leases_path()}')
         # Verify that memfile has no leases
@@ -2405,7 +2550,7 @@ def test_v6_lease_cmds_write(file):
            "arguments": {"ip-address": "2001:db8:1::1", "type": "IA_NA"}}
     srv_msg.send_ctrl_cmd(cmd)
 
-    # Execute lease4-write
+    # Execute lease6-write
     cmd = {"command": "lease6-write",
            "arguments": {"filename": write_path}}
     resp = srv_msg.send_ctrl_cmd(cmd)
@@ -2426,6 +2571,115 @@ def test_v6_lease_cmds_write(file):
     elif file == 'new':
         # Verify that new file contains lease
         file_contains_line(write_path, '2001:db8:1::1,1a:1b:1c:1d:1e:1f:20:21:22:23:24,11111')
+        fabric_sudo_command(f'cp {write_path} {world.f_cfg.get_leases_path()}')
+
+    srv_control.start_srv('DHCP', 'restarted')
+
+    # checking if added lease is present after restart
+    cmd = {"command": "lease6-get",
+           "arguments": {"ip-address": "2001:db8:1::1", "type": "IA_NA"}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    resp = resp["arguments"]  # drop unnecessary info for comparison
+
+    # compare sorted JSON prepared on start with sorted returned one
+    assert sort_container(user_context) == sort_container(resp["user-context"])
+
+
+@pytest.mark.v6
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.lease_cmds
+def test_v6_lease_cmds_write_no_persist():
+    """
+    Check if lease6-write makes correct memfile with persist: false.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    world.dhcp_cfg.update({"lease-database": {"type": "memfile", "persist": False}})
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    # make sure that leases file is empty
+    srv_msg.SA(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11')
+
+    # prepare user-context JSON
+    user_context = {
+        "ISC": {
+            "relay-info": [
+                {
+                    "hop": 0,
+                    "link": "2001:db8:2::1000",
+                    "options": "0x00120008706F727431323334",
+                    "peer": "fe80::1"
+                }
+            ]
+        },
+        "version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}],
+        "class": "!@#$%^&*(`)'_+=-?|\"\\\b\f\n\r\t",
+        "tre,e": {"bra,nch1": {"treehouse": 1}, "bra,nch2": 2,
+                  "bra,nch3": {"leaf1": 1,
+                               "leaf2": ["vein1", "vein2"]}}
+    }
+
+    # adding lease by lease6-add command
+    cmd = {"command": "lease6-add", "arguments": {"subnet-id": 1,
+                                                  "ip-address": "2001:db8:1::1",
+                                                  "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
+                                                  "iaid": 1234,
+                                                  "hw-address": "1a:2b:3c:4d:5e:6f",
+                                                  "preferred-lft": 500,
+                                                  "valid-lft": 11111,
+                                                  "fqdn-fwd": True,
+                                                  "fqdn-rev": True,
+                                                  "hostname": "urania.example.org",
+                                                  "user-context": user_context}}
+    srv_msg.send_ctrl_cmd(cmd)
+
+    # checking if added lease is in memory
+    cmd = {"command": "lease6-get",
+           "arguments": {"ip-address": "2001:db8:1::1", "type": "IA_NA"}}
+    srv_msg.send_ctrl_cmd(cmd)
+
+    # checking if added lease is absent in memfile
+    srv_msg.check_leases({"duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
+                          "address": "2001:db8:1::1",
+                          "iaid": 1234,
+                          "hostname": "urania.example.org"},
+                         should_succeed=False)
+
+    # Execute lease4-write
+    cmd = {"command": "lease6-write",
+           "arguments": {"filename": world.f_cfg.get_leases_path()}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    assert resp["text"] == f'IPv6 lease database into \'{world.f_cfg.get_leases_path()}\'.'
+
+    # Check if lease file is restored
+    srv_msg.check_leases({"duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
+                          "address": "2001:db8:1::1",
+                          "iaid": 1234,
+                          "hostname": "urania.example.org"})
+
+    # Restart with "persist": True
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'restarted')
+
+    # checking if added lease is present after restart
+    cmd = {"command": "lease6-get",
+           "arguments": {"ip-address": "2001:db8:1::1", "type": "IA_NA"}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    resp = resp["arguments"]  # drop unnecessary info for comparison
+
+    # compare sorted JSON prepared on start with sorted returned one
+    assert sort_container(user_context) == sort_container(resp["user-context"])
 
 
 @pytest.mark.v4
