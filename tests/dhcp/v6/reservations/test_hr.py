@@ -339,7 +339,8 @@ def test_v6_host_reservation_empty():
 @pytest.mark.host_reservation
 def test_v6_host_reservation_example_access_control():
     """
-    Test check example from ARM 9.3.12 with added Dropping of Unknown class
+    Test check example from ARM 9.3.12 "Host Reservations as Basic Access Control"
+    with added Dropping of Unknown class
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
