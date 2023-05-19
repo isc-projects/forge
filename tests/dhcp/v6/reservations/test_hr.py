@@ -344,7 +344,7 @@ def test_v6_host_reservation_example_access_control():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.config_srv("dns-servers", 0, "2001:db8::1")
-    # TODO require-client-classes is not working wih host reservation class assignment
+    # TODO require-client-classes is not working correctly - Kea #2863
     world.dhcp_cfg["subnet6"][0]["require-client-classes"] = ["blocked"]
 
     world.dhcp_cfg.update({
@@ -413,4 +413,3 @@ def test_v6_host_reservation_example_access_control():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE', expect_response=False)
-

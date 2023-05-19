@@ -320,7 +320,9 @@ def test_v4_host_reservation_example_access_control():
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
-
+    srv_control.config_srv("routers", 0, "192.168.50.250")
+    # TODO require-client-classes is not working correctly - Kea #2863
+    world.dhcp_cfg["subnet4"][0]["require-client-classes"] = ["blocked"]
     world.dhcp_cfg.update({
         "client-classes": [
             {
@@ -365,7 +367,8 @@ def test_v4_host_reservation_example_access_control():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.response_check_include_option(3, expect_include=False)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'value', '192.168.50.250')
 
     # Check unknown MAC
     misc.test_procedure()
