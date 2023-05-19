@@ -9,7 +9,6 @@
 # pylint: disable=invalid-name
 # pylint: disable=line-too-long
 
-import time
 import pytest
 
 from src import misc
@@ -535,13 +534,15 @@ def test_stats_sample_age():
     assert get_stat('subnet[1].total-addresses') == [10], "Stat subnet[1].total-addresses is not correct"
 
     misc.test_procedure()
-    for _ in range(3):
+    for i in range(3):
         srv_msg.client_requests_option(1)
         srv_msg.client_send_msg('DISCOVER')
 
         misc.pass_criteria()
         srv_msg.send_wait_for_message('MUST', 'OFFER')
 
-    time.sleep(1)
+        # Sleep between packets, so for all iterations except the last.
+        if i < 2:
+            srv_msg.forge_sleep(1, 'second')
 
     assert get_stat('pkt4-received') == [3], "Stat pkt4-received is not correct"

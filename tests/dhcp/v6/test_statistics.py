@@ -9,7 +9,6 @@
 # pylint: disable=invalid-name
 # pylint: disable=line-too-long
 
-import time
 import pytest
 
 from src import misc
@@ -532,7 +531,7 @@ def test_stats_sample_age():
     assert get_stat('subnet[1].total-nas') == [10], "Stat subnet[1].total-nas is not correct"
 
     misc.test_procedure()
-    for _ in range(3):
+    for i in range(3):
         srv_msg.client_does_include('Client', 'client-id')
         srv_msg.client_does_include('Client', 'IA-NA')
         srv_msg.client_sets_value('Client', 'DUID', "00:03:00:01:11:11:11:11:11:11")
@@ -541,7 +540,9 @@ def test_stats_sample_age():
         misc.pass_criteria()
         srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
-    time.sleep(1)
+        # Sleep between packets, so for all iterations except the last.
+        if i < 2:
+            srv_msg.forge_sleep(1, 'second')
 
     assert get_stat('pkt6-received') == [3], "Stat pkt6-received is not correct"
 
