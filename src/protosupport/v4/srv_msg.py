@@ -516,7 +516,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
         ans, unans = srp(world.climsg,
                          iface=world.cfg["iface"],
                          timeout=factor * world.cfg['wait_interval'],
-                         multi=True,
+                         multi=False,
                          verbose=int(world.f_cfg.forge_verbose))
         if world.f_cfg.forge_verbose == 0:
             print(".", end='')
