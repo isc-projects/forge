@@ -138,6 +138,31 @@ def client_does_include(sender_type, opt_type, value=None):
     dhcpmsg.client_does_include(str(sender_type), opt_type, None)
 
 
+def add_scapy_option(option, where='client'):
+    """
+    Add option to next message. Forge does cleaver things to world.cliopts so double check if
+    that function is actually doing in your test what you expect it does.
+    :param option: scapy option, can be just tuple for v4 or scapy.layers.dhcp6 option class
+    :param where: decide where option should be added
+    """
+    if where == 'client':
+        world.cliopts.append(option)
+    elif where == 'relay':
+        world.relayopts.append(option)
+    elif where == 'rsso':
+        world.rsoo.append(option)
+    elif where == 'vendor':
+        world.vendor.append(option)
+    elif where == 'iaad':
+        world.iaad.append(option)
+    elif where == 'iapd':
+        world.iapd.append(option)
+    elif where == 'subopts':
+        world.subopts.append(option)
+    else:
+        assert False, f"where value {where} is not allowed"
+
+
 @step(r'Relay-agent does include (\S+).')
 def relay_agent_does_include(opt_type):
     # add " option." to the end of the step - change all tests!
