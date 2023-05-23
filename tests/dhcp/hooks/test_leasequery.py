@@ -802,3 +802,149 @@ def test_v6_get_leases(backend):
     srv_msg.response_check_suboption_content(5, 45, 'addr', "2001:db8:1::1")
     srv_msg.response_check_option_content(45, 'sub-option', 26, expect_include=False)
     srv_msg.response_check_option_content(45, 'sub-option', 46)
+
+
+def _get_prefix(mac):
+    # let's get a lease with an address and prefix
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', f'00:03:00:01:{mac}')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', f'00:03:00:01:{mac}')
+    srv_msg.client_copy_option('IA_PD')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+
+
+@pytest.mark.v6
+@pytest.mark.hook
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_v6_query_address_get_back_prefix(backend):
+    """
+    If client asks for address and it wasn't assigned directly, but it was included in a prefix that was delegated
+    server should send back this prefix
+    """
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
+    srv_control.config_srv_prefix('2001:db8:3::', 0, 110, 112)
+    world.dhcp_cfg['store-extended-info'] = True
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    # adding hook and required parameters
+    srv_control.add_hooks('libdhcp_lease_query.so')
+    # Set permitted requester to forge machine ip
+    srv_control.add_parameter_to_hook('libdhcp_lease_query.so', {"requesters": [world.f_cfg.cli_link_local]})
+
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+
+    srv_control.start_srv('DHCP', 'started')
+
+    _get_prefix("ff:ff:ff:ff:ff:02")
+    _get_prefix("ff:ff:ff:ff:ff:03")
+    _get_prefix("ff:ff:ff:ff:ff:04")
+
+    # prefixes assigned 2001:db8:3:: 2001:db8:3::1:0 2001:db8:3::2:0
+
+    # leasequery type 1 - request address but we should get prefix that include this address
+    # let's check 2001:db8:3::
+    srv_msg.client_sets_value('Client', 'lq-query-type', 1)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+
+    srv_msg.client_sets_value('Client', 'IA_Address', '2001:db8:3::1')
+    srv_msg.client_does_include('Client', 'IA_Address')  # this will add option to world.iaad
+    # rather to world.cliopts because it not suppose to be used that way
+    # let's change it just for this test
+    world.cliopts.append(world.iaad[-1])
+    world.iaad = []
+
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lease-query message
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 0)
+    # 45 it's Leasequery option - Client data option, and has suboptions
+    srv_msg.response_check_include_option(45)
+    srv_msg.response_check_option_content(45, 'sub-option', 1)
+    srv_msg.response_check_suboption_content(1, 45, 'duid', '00:03:00:01:ff:ff:ff:ff:ff:02')
+    srv_msg.response_check_option_content(45, 'sub-option', 5, expect_include=False)
+    srv_msg.response_check_option_content(45, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 45, 'prefix', "2001:db8:3::")
+    srv_msg.response_check_suboption_content(26, 45, 'plen', 112)
+    srv_msg.response_check_option_content(45, 'sub-option', 46)
+
+    # leasequery type 1 - request address but we should get prefix that include this address
+    # let's check 2001:db8:3::1:0
+    srv_msg.client_sets_value('Client', 'lq-query-type', 1)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+
+    srv_msg.client_sets_value('Client', 'IA_Address', '2001:db8:3::1:1')
+    srv_msg.client_does_include('Client', 'IA_Address')  # this will add option to world.iaad
+    # rather to world.cliopts because it not suppose to be used that way
+    # let's change it just for this test
+    world.cliopts.append(world.iaad[-1])
+    world.iaad = []
+
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lease-query message
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 0)
+    srv_msg.response_check_suboption_content(1, 45, 'duid', '00:03:00:01:ff:ff:ff:ff:ff:03')
+    srv_msg.response_check_option_content(45, 'sub-option', 5, expect_include=False)
+    srv_msg.response_check_option_content(45, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 45, 'prefix', "2001:db8:3::1:0")
+    srv_msg.response_check_suboption_content(26, 45, 'plen', 112)
+    srv_msg.response_check_option_content(45, 'sub-option', 46)
+
+    # leasequery type 1 - request address but we should get prefix that include this address
+    # let's check 2001:db8:3::2:0
+    srv_msg.client_sets_value('Client', 'lq-query-type', 1)
+    srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
+    srv_msg.client_sets_value('Client', 'IA_Address', '2001:db8:3::2:1')
+    srv_msg.client_does_include('Client', 'IA_Address')  # this will add option to world.iaad
+    # rather to world.cliopts because it not suppose to be used that way
+    # let's change it just for this test
+    world.cliopts.append(world.iaad[-1])
+    world.iaad = []
+
+    srv_msg.client_does_include('Client', 'lq-query')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')  # this will be added to lease-query message
+    srv_msg.client_send_msg('LEASEQUERY')
+
+    srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(13)
+    srv_msg.response_check_option_content(13, 'statuscode', 0)
+    srv_msg.response_check_suboption_content(1, 45, 'duid', '00:03:00:01:ff:ff:ff:ff:ff:04')
+    srv_msg.response_check_option_content(45, 'sub-option', 5, expect_include=False)
+    srv_msg.response_check_option_content(45, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 45, 'prefix', "2001:db8:3::2:0")
+    srv_msg.response_check_suboption_content(26, 45, 'plen', 112)
+    srv_msg.response_check_option_content(45, 'sub-option', 46)
