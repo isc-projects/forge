@@ -2095,7 +2095,7 @@ def test_v6_lease_cmds_del_negative():
     cmd = {"command": "lease6-del", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Empty DUIDs are not allowed"
+    assert resp["text"] == "identifier is too short (0), at least 3 is required"
 
     # sending wrong duid identifier to lease6-del command
     cmd = {"command": "lease6-del", "arguments": {"subnet-id": 1, "identifier-type": "duid",
@@ -2248,7 +2248,7 @@ def test_v6_lease_cmds_get_negative():
     cmd = {"command": "lease6-get", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Empty DUIDs are not allowed"
+    assert resp["text"] == "identifier is too short (0), at least 3 is required"
 
     # sending wrong duid identifier to lease6-get command
     cmd = {"command": "lease6-get", "arguments": {"subnet-id": 1, "identifier-type": "duid",
