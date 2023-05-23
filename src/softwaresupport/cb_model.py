@@ -150,7 +150,7 @@ CONFIG_DEFAULTS['v6'] = {
     'calculate-tee-times': True,
     'decline-probation-period': 86400,
     "mac-sources": ["any"],
-    'preferred-lifetime': 3600,
+    'preferred-lifetime': int(0.625 * 7200),  # last changed as of kea#2835 merged in Kea 2.3.8
     'relay-supplied-options': ["65"],
     "reservation-mode": "all",  # deprecated in 1.9.1, replaced by reservations-global, reservations-in-subnet and reservations-out-of-pool
     'reservations-in-subnet': True,
