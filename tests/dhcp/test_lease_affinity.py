@@ -7,28 +7,29 @@
 """Kea lease affinity feature"""
 
 
-import pytest
 import time
+import pytest
+from scapy.layers.dhcp6 import DHCP6OptIA_NA, DHCP6OptIA_PD
 
 from src import misc
 from src import srv_control
 from src import srv_msg
 
 from src.forge_cfg import world
-from scapy.layers.dhcp6 import DHCP6OptIA_NA, DHCP6OptIA_PD
 
 
 def _get_lease(mac: str = "f6:f5:f4:f3:f2:f1", addr: str = None, prefix: str = None,
-               request: bool = False, be: str = None, t1: int = 1, t2: int = 2, preflft: int = 3, validlft: int = 8):
+               request: bool = False, backend: str = None, time1: int = 1, time2: int = 2,
+               preflft: int = 3, validlft: int = 8):
     """
     Get lease with address and/or prefix. Perform detailed check on messages and saved lease
     :param mac: client mac address (used to build duid)
     :param addr: expected address
     :param prefix: expected prefix
     :param request: if address/prefix should request in IA address IA prefix option
-    :param be: lease backend type
-    :param t1: T1 time
-    :param t2: T2 time
+    :param backend: lease backend type
+    :param time1: T1 time
+    :param time2: T2 time
     :param preflft: preferred lifetime
     :param validlft: valid lifetime
     :return: {lease, IA NA option, IA PD option}
@@ -58,8 +59,8 @@ def _get_lease(mac: str = "f6:f5:f4:f3:f2:f1", addr: str = None, prefix: str = N
         srv_msg.response_check_include_option(3)
         srv_msg.response_check_option_content(3, 'sub-option', 5)
         srv_msg.response_check_suboption_content(5, 3, 'addr', addr)
-        srv_msg.response_check_option_content(3, 'T1', t1)
-        srv_msg.response_check_option_content(3, 'T2', t2)
+        srv_msg.response_check_option_content(3, 'T1', time1)
+        srv_msg.response_check_option_content(3, 'T2', time2)
         srv_msg.response_check_suboption_content(5, 3, 'preflft', preflft)
         srv_msg.response_check_suboption_content(5, 3, 'validlft', validlft)
 
@@ -67,8 +68,8 @@ def _get_lease(mac: str = "f6:f5:f4:f3:f2:f1", addr: str = None, prefix: str = N
         srv_msg.response_check_include_option(25)
         srv_msg.response_check_option_content(25, 'sub-option', 26)
         srv_msg.response_check_suboption_content(26, 25, 'prefix', prefix)
-        srv_msg.response_check_option_content(25, 'T1', t1)
-        srv_msg.response_check_option_content(25, 'T2', t2)
+        srv_msg.response_check_option_content(25, 'T1', time1)
+        srv_msg.response_check_option_content(25, 'T2', time2)
         srv_msg.response_check_suboption_content(26, 25, 'preflft', preflft)
         srv_msg.response_check_suboption_content(26, 25, 'validlft', validlft)
         srv_msg.response_check_suboption_content(26, 25, 'plen', 126)
@@ -92,8 +93,8 @@ def _get_lease(mac: str = "f6:f5:f4:f3:f2:f1", addr: str = None, prefix: str = N
         ia_na_option = srv_msg.response_check_include_option(3)
         srv_msg.response_check_option_content(3, 'sub-option', 5)
         srv_msg.response_check_suboption_content(5, 3, 'addr', addr)
-        srv_msg.response_check_option_content(3, 'T1', t1)
-        srv_msg.response_check_option_content(3, 'T2', t2)
+        srv_msg.response_check_option_content(3, 'T1', time1)
+        srv_msg.response_check_option_content(3, 'T2', time2)
         srv_msg.response_check_suboption_content(5, 3, 'preflft', preflft)
         srv_msg.response_check_suboption_content(5, 3, 'validlft', validlft)
 
@@ -101,29 +102,29 @@ def _get_lease(mac: str = "f6:f5:f4:f3:f2:f1", addr: str = None, prefix: str = N
         ia_pd_option = srv_msg.response_check_include_option(25)
         srv_msg.response_check_option_content(25, 'sub-option', 26)
         srv_msg.response_check_suboption_content(26, 25, 'prefix', prefix)
-        srv_msg.response_check_option_content(25, 'T1', t1)
-        srv_msg.response_check_option_content(25, 'T2', t2)
+        srv_msg.response_check_option_content(25, 'T1', time1)
+        srv_msg.response_check_option_content(25, 'T2', time2)
         srv_msg.response_check_suboption_content(26, 25, 'preflft', preflft)
         srv_msg.response_check_suboption_content(26, 25, 'validlft', validlft)
         srv_msg.response_check_suboption_content(26, 25, 'plen', 126)
 
     # check leases
     my_lease = srv_msg.get_all_leases()
-    srv_msg.check_leases(my_lease, backend=be)
+    srv_msg.check_leases(my_lease, backend=backend)
     return {'lease': my_lease, 'ia': ia_na_option, 'pd': ia_pd_option}
 
 
 def _renew_lease(mac: str = "f6:f5:f4:f3:f2:f1",
-                 ia: DHCP6OptIA_NA = None, pd: DHCP6OptIA_PD = None, bk: str = None,
-                 t1: int = 1, t2: int = 2, preflft: int = 3, validlft: int = 8):
+                 ia_na_option: DHCP6OptIA_NA = None, ia_pd_option: DHCP6OptIA_PD = None, backend: str = None,
+                 time1: int = 1, time2: int = 2, preflft: int = 3, validlft: int = 8):
     """
     Renew leases and execute detailed checks on message
     :param mac: client mac address (used to build duid)
-    :param ia: IA NA option
-    :param pd: IA PD option
-    :param bk: lease backend time
-    :param t1: T1 time
-    :param t2: T2 time
+    :param ia_na_option: IA NA option
+    :param ia_pd_option: IA PD option
+    :param backend: lease backend time
+    :param time1: T1 time
+    :param time2: T2 time
     :param preflft: preferred lifetime
     :param validlft: valid lifetime
     """
@@ -132,44 +133,45 @@ def _renew_lease(mac: str = "f6:f5:f4:f3:f2:f1",
     srv_msg.client_does_include('Client', 'server-id')
     srv_msg.client_sets_value('Client', 'DUID', f'00:03:00:01:{mac}')
     srv_msg.client_does_include('Client', 'client-id')
-    if ia:
-        srv_msg.add_scapy_option(ia)
-    if pd:
-        srv_msg.add_scapy_option(pd)
+    if ia_na_option:
+        srv_msg.add_scapy_option(ia_na_option)
+    if ia_pd_option:
+        srv_msg.add_scapy_option(ia_pd_option)
     srv_msg.client_send_msg('RENEW')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_include_option(2)
-    if ia:
+    if ia_na_option:
         srv_msg.response_check_include_option(3)
-        srv_msg.response_check_option_content(3, 'iaid', ia.iaid)
-        srv_msg.response_check_option_content(3, 'T1', t1)
-        srv_msg.response_check_option_content(3, 'T2', t2)
+        srv_msg.response_check_option_content(3, 'iaid', ia_na_option.iaid)
+        srv_msg.response_check_option_content(3, 'T1', time1)
+        srv_msg.response_check_option_content(3, 'T2', time2)
         srv_msg.response_check_option_content(3, 'sub-option', 5)
         srv_msg.response_check_suboption_content(5, 3, 'preflft', preflft)
         srv_msg.response_check_suboption_content(5, 3, 'validlft', validlft)
-    if pd:
+    if ia_pd_option:
         srv_msg.response_check_include_option(25)
-        srv_msg.response_check_option_content(25, 'iaid', pd.iaid)
-        srv_msg.response_check_option_content(25, 'T1', t1)
-        srv_msg.response_check_option_content(25, 'T2', t2)
+        srv_msg.response_check_option_content(25, 'iaid', ia_pd_option.iaid)
+        srv_msg.response_check_option_content(25, 'T1', time1)
+        srv_msg.response_check_option_content(25, 'T2', time2)
         srv_msg.response_check_option_content(25, 'sub-option', 26)
         srv_msg.response_check_suboption_content(26, 25, 'preflft', preflft)
         srv_msg.response_check_suboption_content(26, 25, 'validlft', validlft)
         srv_msg.response_check_suboption_content(26, 25, 'plen', 126)
 
     my_lease = srv_msg.get_all_leases()
-    srv_msg.check_leases(my_lease, backend=bk)
+    srv_msg.check_leases(my_lease, backend=backend)
 
 
-def _release_lease(mac: str = "f6:f5:f4:f3:f2:f1", ia: DHCP6OptIA_NA = None, pd: DHCP6OptIA_PD = None):
+def _release_lease(mac: str = "f6:f5:f4:f3:f2:f1", ia_na_option: DHCP6OptIA_NA = None,
+                   ia_pd_option: DHCP6OptIA_PD = None):
     """
     Release address and/or prefix and detailed checks on the message
     :param mac: client mac address (used to build duid)
-    :param ia: IA NA option
-    :param pd: IA PD option
+    :param ia_na_option: IA NA option
+    :param ia_pd_option: IA PD option
     """
     misc.test_procedure()
 
@@ -177,25 +179,25 @@ def _release_lease(mac: str = "f6:f5:f4:f3:f2:f1", ia: DHCP6OptIA_NA = None, pd:
     srv_msg.client_does_include('Client', 'server-id')
     srv_msg.client_sets_value('Client', 'DUID', f'00:03:00:01:{mac}')
     srv_msg.client_does_include('Client', 'client-id')
-    if ia:
-        srv_msg.add_scapy_option(ia)
-    if pd:
-        srv_msg.add_scapy_option(pd)
+    if ia_na_option:
+        srv_msg.add_scapy_option(ia_na_option)
+    if ia_pd_option:
+        srv_msg.add_scapy_option(ia_pd_option)
     srv_msg.client_send_msg('RELEASE')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    if ia:
+    if ia_na_option:
         srv_msg.response_check_include_option(3)
-        srv_msg.response_check_option_content(3, 'iaid', ia.iaid)
+        srv_msg.response_check_option_content(3, 'iaid', ia_na_option.iaid)
         srv_msg.response_check_option_content(3, 'T1', 0)
         srv_msg.response_check_option_content(3, 'T2', 0)
         srv_msg.response_check_option_content(3, 'sub-option', 13)
         srv_msg.response_check_suboption_content(13, 3, 'statuscode', 0)
 
-    if pd:
+    if ia_pd_option:
         srv_msg.response_check_include_option(25)
-        srv_msg.response_check_option_content(25, 'iaid', pd.iaid)
+        srv_msg.response_check_option_content(25, 'iaid', ia_pd_option.iaid)
         srv_msg.response_check_option_content(25, 'T1', 0)
         srv_msg.response_check_option_content(25, 'T2', 0)
         srv_msg.response_check_option_content(25, 'sub-option', 13)
@@ -251,14 +253,14 @@ def test_v6_lease_affinity(backend):
     # addresses: 2001:db8:1::11, 2001:db8:1::12, 2001:db8:1::13, 2001:db8:1::14
     # prefixes: 2001:db8:2::, 2001:db8:2::4, 2001:db8:2::8, 2001:db8:2::c
 
-    leases.append(_get_lease(mac=f"f6:f5:f4:f3:f2:11", addr='2001:db8:1::11', prefix='2001:db8:2::', be=backend))
-    leases.append(_get_lease(mac=f"f6:f5:f4:f3:f2:22", addr='2001:db8:1::12', prefix='2001:db8:2::4', be=backend))
-    leases.append(_get_lease(mac=f"f6:f5:f4:f3:f2:33", addr='2001:db8:1::13', prefix='2001:db8:2::8', be=backend))
-    leases.append(_get_lease(mac=f"f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c', be=backend))
+    leases.append(_get_lease(mac="f6:f5:f4:f3:f2:11", addr='2001:db8:1::11', prefix='2001:db8:2::', backend=backend))
+    leases.append(_get_lease(mac="f6:f5:f4:f3:f2:22", addr='2001:db8:1::12', prefix='2001:db8:2::4', backend=backend))
+    leases.append(_get_lease(mac="f6:f5:f4:f3:f2:33", addr='2001:db8:1::13', prefix='2001:db8:2::8', backend=backend))
+    leases.append(_get_lease(mac="f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c', backend=backend))
 
     start = time.time()
     # we should be out of addresses and prefixes
-    srv_msg.client_sets_value('Client', 'DUID', f'00:03:00:01:f6:f5:f4:f3:66:99')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:66:99')
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.client_does_include('Client', 'IA-PD')
@@ -291,14 +293,14 @@ def test_v6_lease_affinity(backend):
         assert lease['valid-lft'] == vlt, f"Address has incorrect valid lifetime {lease}"
 
     # all addresses are expired and reclaimed new client should get address and prefix, first in line
-    _get_lease(mac=f"f6:f5:f4:f3:66:99", addr='2001:db8:1::11', prefix='2001:db8:2::', be=backend)
+    _get_lease(mac="f6:f5:f4:f3:66:99", addr='2001:db8:1::11', prefix='2001:db8:2::', backend=backend)
 
     # 4th client should be able to get it's old lease
-    client = _get_lease(mac=f"f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c', be=backend)
+    client = _get_lease(mac="f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c', backend=backend)
     # and make sure it can renew it
-    _renew_lease(mac=f"f6:f5:f4:f3:f2:44", ia=client['ia'], pd=client['pd'], bk=backend)
+    _renew_lease(mac="f6:f5:f4:f3:f2:44", ia_na_option=client['ia'], ia_pd_option=client['pd'], backend=backend)
     # than release it (let's check Kea #2766)
-    _release_lease(mac=f"f6:f5:f4:f3:f2:44", ia=client['ia'], pd=client['pd'])
+    _release_lease(mac="f6:f5:f4:f3:f2:44", ia_na_option=client['ia'], ia_pd_option=client['pd'])
     # get lease and check state
     cmd = {"command": "lease6-get-by-duid",
            "arguments": {"duid": "00:03:00:01:f6:f5:f4:f3:f2:44"}}
@@ -310,7 +312,7 @@ def test_v6_lease_affinity(backend):
         assert lease['valid-lft'] == 0, f"Address has incorrect valid lifetime {lease}"
 
     # and ask for it again
-    _get_lease(mac=f"f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c', be=backend)
+    _get_lease(mac="f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c', backend=backend)
     second_start = time.time()
 
     lease_ccch = srv_msg.send_ctrl_cmd(cmd)  # get leases from command control channel
@@ -346,12 +348,12 @@ def test_v6_lease_affinity(backend):
 
 
 def _get_lease_4(mac: str = "f6:f5:f4:f3:f2:f1", addr: str = None,
-                 be: str = None, renew_time: int = 1, rebind_time: int = 2, valid_lft: int = 7):
+                 backend: str = None, renew_time: int = 1, rebind_time: int = 2, valid_lft: int = 7):
     """
     Get ip v4 address as lease
     :param mac: mac address
     :param addr: IP v4 address we expect to get
-    :param be: lease backend type
+    :param backend: lease backend type
     :param renew_time: renew time
     :param rebind_time: rebind time
     :param valid_lft: valid lifetime
@@ -383,11 +385,11 @@ def _get_lease_4(mac: str = "f6:f5:f4:f3:f2:f1", addr: str = None,
 
     # check leases
     my_lease = srv_msg.get_all_leases()
-    srv_msg.check_leases(my_lease, backend=be)
+    srv_msg.check_leases(my_lease, backend=backend)
     return my_lease
 
 
-def _renew_lease_4(mac: str = "f6:f5:f4:f3:f2:f1", addr = None,
+def _renew_lease_4(mac: str = "f6:f5:f4:f3:f2:f1", addr: str = None,
                    renew_time: int = 1, rebind_time: int = 2, valid_lft: int = 7):
     """
     Renew ip v4 address
@@ -472,10 +474,10 @@ def test_v4_lease_affinity(backend):
     srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
     leases = []
-    leases.append(_get_lease_4(mac=f"f6:f5:f4:f3:f2:11", addr='192.168.50.11', be=backend, valid_lft=vlt))
-    leases.append(_get_lease_4(mac=f"f6:f5:f4:f3:f2:22", addr='192.168.50.12', be=backend, valid_lft=vlt))
-    leases.append(_get_lease_4(mac=f"f6:f5:f4:f3:f2:33", addr='192.168.50.13', be=backend, valid_lft=vlt))
-    leases.append(_get_lease_4(mac=f"f6:f5:f4:f3:f2:44", addr='192.168.50.14', be=backend, valid_lft=vlt))
+    leases.append(_get_lease_4(mac="f6:f5:f4:f3:f2:11", addr='192.168.50.11', backend=backend, valid_lft=vlt))
+    leases.append(_get_lease_4(mac="f6:f5:f4:f3:f2:22", addr='192.168.50.12', backend=backend, valid_lft=vlt))
+    leases.append(_get_lease_4(mac="f6:f5:f4:f3:f2:33", addr='192.168.50.13', backend=backend, valid_lft=vlt))
+    leases.append(_get_lease_4(mac="f6:f5:f4:f3:f2:44", addr='192.168.50.14', backend=backend, valid_lft=vlt))
 
     start = time.time()
 
@@ -505,13 +507,13 @@ def test_v4_lease_affinity(backend):
         assert lease['valid-lft'] == vlt, f"Address has incorrect valid lifetime {lease}"
 
     # all addresses are expired and reclaimed new client should get address, first in line
-    _get_lease_4(mac=f"f6:f5:f4:f3:66:99", addr='192.168.50.11', be=backend, valid_lft=vlt)
+    _get_lease_4(mac="f6:f5:f4:f3:66:99", addr='192.168.50.11', backend=backend, valid_lft=vlt)
     # 4th client should be able to get it's old lease
-    _get_lease_4(mac=f"f6:f5:f4:f3:f2:44", addr='192.168.50.14', be=backend, valid_lft=vlt)
+    _get_lease_4(mac="f6:f5:f4:f3:f2:44", addr='192.168.50.14', backend=backend, valid_lft=vlt)
     # and make sure it can renew it
-    _renew_lease_4(mac=f"f6:f5:f4:f3:f2:44", addr='192.168.50.14', valid_lft=vlt)
+    _renew_lease_4(mac="f6:f5:f4:f3:f2:44", addr='192.168.50.14', valid_lft=vlt)
     # than release it (let's check Kea #2766)
-    _release_lease_4(mac=f"f6:f5:f4:f3:f2:44", addr='192.168.50.14')
+    _release_lease_4(mac="f6:f5:f4:f3:f2:44", addr='192.168.50.14')
 
     # get lease and check state
     cmd = {"command": "lease4-get-by-hw-address",
@@ -523,7 +525,7 @@ def test_v4_lease_affinity(backend):
         assert lease['valid-lft'] == 0, f"Address has incorrect valid lifetime {lease}"
 
     # and ask for it again
-    _get_lease_4(mac=f"f6:f5:f4:f3:f2:44", addr='192.168.50.14', be=backend, valid_lft=vlt)
+    _get_lease_4(mac="f6:f5:f4:f3:f2:44", addr='192.168.50.14', backend=backend, valid_lft=vlt)
     second_start = time.time()
 
     lease_ccch = srv_msg.send_ctrl_cmd(cmd)  # get leases from command control channel
