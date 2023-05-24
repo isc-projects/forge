@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1775,6 +1775,7 @@ def test_prefix_delegation_multiple_PD_and_IA_advertise_fail():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+
     srv_msg.client_copy_option('server-id')
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_does_include('Client', 'client-id')
@@ -1795,3 +1796,306 @@ def test_prefix_delegation_multiple_PD_and_IA_advertise_fail():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
+
+
+@pytest.mark.v6
+@pytest.mark.PD
+@pytest.mark.rfc3633
+def test_prefix_length_hints_baseline_sarr():
+    """
+    Doesn't test anything extraordinary. Rather servers as a baseline for the other
+    test_prefix_length_hints_* tests to make sure that in absence of prefix hints, the configuration
+    works correctly.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8:0:0:1::/80')
+    srv_control.config_srv_prefix('2001:db8:0:0:2::', 0, 80, 88)
+    srv_control.config_srv_prefix('2001:db8:0:0:3::', 0, 80, 96)
+    srv_control.config_srv_prefix('2001:db8:0:0:4::', 0, 80, 104)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
+
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:2::', 88)
+
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:2::', 88)
+
+
+@pytest.mark.v6
+@pytest.mark.PD
+@pytest.mark.rfc3633
+def test_prefix_length_hints_sarr_with_exact_hint():
+    """
+    Client requests a prefix that is specifically configured as a delegated prefix in Kea.
+    Kea provides the requested lease.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8:0:0:1::/80')
+    srv_control.config_srv_prefix('2001:db8:0:0:2::', 0, 80, 88)
+    srv_control.config_srv_prefix('2001:db8:0:0:3::', 0, 80, 96)
+    srv_control.config_srv_prefix('2001:db8:0:0:4::', 0, 80, 104)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:3::')
+    srv_msg.client_sets_value('Client', 'plen', 96)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
+
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:3::', 96)
+
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:3::')
+    srv_msg.client_sets_value('Client', 'plen', 96)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:3::', 96)
+
+
+@pytest.mark.v6
+@pytest.mark.PD
+@pytest.mark.rfc3633
+def test_prefix_length_hints_sarr_with_exact_length_but_different_prefix():
+    """
+    Client requests a prefix that is NOT specifically configured as a delegated prefix in Kea.
+    The prefix address and prefix length are part of the configuration, but in different pools.
+    Kea prioritizes keeping the prefix length the same.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8:0:0:1::/80')
+    srv_control.config_srv_prefix('2001:db8:0:0:2::', 0, 80, 88)
+    srv_control.config_srv_prefix('2001:db8:0:0:3::', 0, 80, 96)
+    srv_control.config_srv_prefix('2001:db8:0:0:4::', 0, 80, 104)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:2::')
+    srv_msg.client_sets_value('Client', 'plen', 96)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
+
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:3::', 96)
+
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:2::')
+    srv_msg.client_sets_value('Client', 'plen', 96)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    # Stubborn clients that request a different lease than advertised, get another increment in the
+    # prefix from the allocation engine. Alternatively, we could have done srv_msg.client_copy_option('IA_PD')
+    # in the request and have the same lease as advertised in the reply.
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8::3:1:0:0', 96)
+
+
+@pytest.mark.v6
+@pytest.mark.PD
+@pytest.mark.rfc3633
+def test_prefix_length_hints_sarr_with_lowest_hint():
+    """
+    Client requests the prefix that has the largest address space (lowest prefix length) configured as
+    a delegated prefix in Kea. Kea provides the requested lease.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8:0:0:1::/80')
+    srv_control.config_srv_prefix('2001:db8:0:0:2::', 0, 80, 88)
+    srv_control.config_srv_prefix('2001:db8:0:0:3::', 0, 80, 96)
+    srv_control.config_srv_prefix('2001:db8:0:0:4::', 0, 80, 104)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:2::')
+    srv_msg.client_sets_value('Client', 'plen', 88)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
+
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:2::', 88)
+
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:2::')
+    srv_msg.client_sets_value('Client', 'plen', 88)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:2::', 88)
+
+
+@pytest.mark.v6
+@pytest.mark.PD
+@pytest.mark.rfc3633
+def test_prefix_length_hints_sarr_with_lower_hint():
+    """
+    Client requests the prefix with a prefix length that is in between the prefix lengths of
+    configured pools. Kea provides the lease with the larger address space (lower prefix length).
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8:0:0:1::/80')
+    srv_control.config_srv_prefix('2001:db8:0:0:2::', 0, 80, 88)
+    srv_control.config_srv_prefix('2001:db8:0:0:3::', 0, 80, 96)
+    srv_control.config_srv_prefix('2001:db8:0:0:4::', 0, 80, 104)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:3::')
+    srv_msg.client_sets_value('Client', 'plen', 92)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
+
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:2::', 88)
+
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:3::')
+    srv_msg.client_sets_value('Client', 'plen', 92)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    # Stubborn clients that request a different lease than advertised, get another increment in the
+    # prefix from the allocation engine. Alternatively, we could have done srv_msg.client_copy_option('IA_PD')
+    # in the request and have the same lease as advertised in the reply.
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8::2:100:0:0', 88)
+
+
+@pytest.mark.v6
+@pytest.mark.PD
+@pytest.mark.rfc3633
+def test_prefix_length_hints_sarr_with_higher_hint():
+    """
+    Client requests the prefix with a prefix length that is in between the prefix lengths of
+    configured pools. Kea provides the lease with the larger address space (lower prefix length).
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8:0:0:1::/80')
+    srv_control.config_srv_prefix('2001:db8:0:0:2::', 0, 80, 88)
+    srv_control.config_srv_prefix('2001:db8:0:0:3::', 0, 80, 96)
+    srv_control.config_srv_prefix('2001:db8:0:0:4::', 0, 80, 104)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:3::')
+    srv_msg.client_sets_value('Client', 'plen', 100)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
+
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:3::', 96)
+
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:3::')
+    srv_msg.client_sets_value('Client', 'plen', 100)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:3::', 96)
+
+
+@pytest.mark.v6
+@pytest.mark.PD
+@pytest.mark.rfc3633
+def test_prefix_length_hints_sarr_with_highest_hint():
+    """
+    Client requests the prefix that has the smallest address space (highest prefix length) configured as
+    a delegated prefix in Kea. Kea provides the requested lease.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8:0:0:1::/80')
+    srv_control.config_srv_prefix('2001:db8:0:0:2::', 0, 80, 88)
+    srv_control.config_srv_prefix('2001:db8:0:0:3::', 0, 80, 96)
+    srv_control.config_srv_prefix('2001:db8:0:0:4::', 0, 80, 104)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:4::')
+    srv_msg.client_sets_value('Client', 'plen', 104)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_send_msg('SOLICIT')
+
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:4::', 104)
+
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:4::')
+    srv_msg.client_sets_value('Client', 'plen', 104)
+    srv_msg.client_does_include('Client', 'IA_Prefix')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.check_IA_NA('2001:db8:0:0:1::')
+    srv_msg.check_IA_PD('2001:db8:0:0:4::', 104)
