@@ -306,22 +306,44 @@ def test_v6_host_reservation_classes_2():
 
 @pytest.mark.v6
 @pytest.mark.host_reservation
-def test_v6_host_reservation_empty():
+@pytest.mark.parametrize('backend', ['configfile', 'MySQL', 'PostgreSQL'])
+def test_v6_host_reservation_empty(backend):
     """
     Test if empty (only MAC address) reservation can be made.
+    # kea#2878 - `reservation-add` requires `subnet-id` to be provided, which contradicts empty reservations
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
-
-    world.dhcp_cfg.update({
-        "reservations": [
-            {
-                "duid": "00:03:00:01:f6:f5:f4:f3:f2:22"
-            }
-        ], "reservation-mode": "global"})
+    if backend == 'configfile':
+        world.dhcp_cfg.update({
+            "reservations": [
+                {
+                    "duid": "00:03:00:01:f6:f5:f4:f3:f2:22"
+                }
+            ], "reservation-mode": "global"})
+    else:
+        srv_control.add_hooks('libdhcp_host_cmds.so')
+        world.dhcp_cfg.update({"reservation-mode": "global"})
+        srv_control.enable_db_backend_reservation(backend)
+        srv_control.open_control_channel()
+        srv_control.agent_control_channel()
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+
+    if backend != 'configfile':
+        response = srv_msg.send_ctrl_cmd({
+            "arguments": {
+                "reservation": {
+                    "duid": "00:03:00:01:f6:f5:f4:f3:f2:22",
+                }
+            },
+            "command": "reservation-add"
+        })
+        assert response == {
+            "result": 0,
+            "text": "Host added."
+        }
 
     # Send KNOWN DUID
     misc.test_procedure()

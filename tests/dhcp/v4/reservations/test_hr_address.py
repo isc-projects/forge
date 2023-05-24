@@ -285,22 +285,45 @@ def test_v4_host_reservation_multiple_address_reservation_empty_pool_2():
 
 @pytest.mark.v4
 @pytest.mark.host_reservation
-def test_v4_host_reservation_empty():
+@pytest.mark.parametrize('backend', ['configfile', 'MySQL', 'PostgreSQL'])
+def test_v4_host_reservation_empty(backend):
     """
     Test if empty (only MAC address) reservation can be made.
+    # kea#2878 - `reservation-add` requires `subnet-id` to be provided, which contradicts empty reservations
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
 
-    world.dhcp_cfg.update({
-        "reservations": [
-            {
-                "hw-address": "ff:01:02:03:ff:04"
-            }
-        ], "reservation-mode": "global"})
+    if backend == 'configfile':
+        world.dhcp_cfg.update({
+            "reservations": [
+                {
+                    "hw-address": "ff:01:02:03:ff:04"
+                }
+            ], "reservation-mode": "global"})
+    else:
+        srv_control.add_hooks('libdhcp_host_cmds.so')
+        world.dhcp_cfg.update({"reservation-mode": "global"})
+        srv_control.enable_db_backend_reservation(backend)
+        srv_control.open_control_channel()
+        srv_control.agent_control_channel()
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+
+    if backend != 'configfile':
+        response = srv_msg.send_ctrl_cmd({
+            "arguments": {
+                "reservation": {
+                    "hw-address": "ff:01:02:03:ff:04",
+                }
+            },
+            "command": "reservation-add"
+        })
+        assert response == {
+            "result": 0,
+            "text": "Host added."
+        }
 
     # Send KNOWN MAC as first transaction
     misc.test_procedure()
