@@ -387,6 +387,30 @@ CLASS_v6_CONFIG = [
     }
 ]
 
+EMPTY_RESERVATIONS_V4_CONFIG = [
+    {
+        "boot-file-name": "",
+        "client-classes": [],
+        "hostname": "",
+        "hw-address": "ff:01:02:03:ff:04",
+        "next-server": "0.0.0.0",
+        "option-data": [],
+        "server-hostname": ""
+    }
+]
+
+EMPTY_RESERVATIONS_V6_CONFIG = [
+    {
+        "client-classes": [],
+        "duid": "00:03:00:01:f6:f5:f4:f3:f2:22",
+        "hostname": "",
+        "ip-addresses": [],
+        "option-data": [],
+        "prefixes": []
+
+    }
+]
+
 
 @pytest.mark.v4
 @pytest.mark.v6
@@ -427,6 +451,10 @@ def test_config_commands_usercontext(scope, dhcp_version):
     # Sort config for easier comparison
     config_set = sort_container(config_set)
 
+    # Test modified config on server
+    cmd = {"command": "config-test", "arguments": config_set}
+    srv_msg.send_ctrl_cmd(cmd, 'http')
+
     # Send modified config to server
     cmd = {"command": "config-set", "arguments": config_set}
     srv_msg.send_ctrl_cmd(cmd, 'http')
@@ -436,6 +464,79 @@ def test_config_commands_usercontext(scope, dhcp_version):
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
     config_get = response['arguments']
     config_get = sort_container(config_get)
+
+    # Compare what we send and what Kea returned.
+    assert config_set == config_get, "Send and received configurations are different"
+
+    # Write config to file and download it
+    remote_path = world.f_cfg.data_join('config-export.json')
+    remove_file_from_server(remote_path)
+    cmd = {"command": "config-write", "arguments": {"filename": remote_path}}
+    srv_msg.send_ctrl_cmd(cmd, 'http')
+    local_path = copy_file_from_server(remote_path, 'config-export.json')
+
+    # Open downloaded file and sort it for easier comparison
+    with open(local_path, 'r', encoding="utf-8") as config_file:
+        config_write = json.load(config_file)
+    config_write = sort_container(config_write)
+
+    # Compare downloaded file with send config.
+    assert config_set == config_write, "Send and downloaded file configurations are different"
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.ca
+@pytest.mark.controlchannel
+def test_config_commands_empty_reservations(dhcp_version):
+    """
+    Test check if user-context is properly handled by config commands.
+    Global, subnet, shared networks and client class containers are tested by parametrization.
+    Config snippets are added to result of "config-get" and sent to server by "config-set"
+    Forge uses "config-get" and "config-write" to check if changes were applied.
+    """
+
+    misc.test_setup()
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Get current config
+    cmd = {"command": "config-get", "arguments": {}}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    config_set = response['arguments']
+
+    # Add reservation to configuration
+    if dhcp_version == 'v4':
+        config_set[f"Dhcp{dhcp_version[1]}"]['reservations'] = [{"hw-address": "ff:01:02:03:ff:04"}]
+    else:
+        config_set[f"Dhcp{dhcp_version[1]}"]['reservations'] = [{"duid": "00:03:00:01:f6:f5:f4:f3:f2:22"}]
+
+    # Sort config for easier comparison
+    config_set = sort_container(config_set)
+
+    # Test modified config on server
+    cmd = {"command": "config-test", "arguments": config_set}
+    srv_msg.send_ctrl_cmd(cmd, 'http')
+
+    # Send modified config to server
+    cmd = {"command": "config-set", "arguments": config_set}
+    srv_msg.send_ctrl_cmd(cmd, 'http')
+    # Get new config from server
+    cmd = {"command": "config-get", "arguments": {}}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    config_get = response['arguments']
+    config_get = sort_container(config_get)
+
+    # update local config with expected values
+    if dhcp_version == 'v4':
+        config_set[f"Dhcp{dhcp_version[1]}"]['reservations'] = EMPTY_RESERVATIONS_V4_CONFIG
+    else:
+        config_set[f"Dhcp{dhcp_version[1]}"]['reservations'] = EMPTY_RESERVATIONS_V6_CONFIG
+
+    # Sort config for easier comparison
+    config_set = sort_container(config_set)
 
     # Compare what we send and what Kea returned.
     assert config_set == config_get, "Send and received configurations are different"
