@@ -12,7 +12,7 @@ from src import srv_control
 from src import srv_msg
 from src import misc
 from src.forge_cfg import world
-from src.protosupport.multi_protocol_functions import log_contains
+from src.protosupport.multi_protocol_functions import get_line_count_in_log
 
 
 @pytest.mark.v6
@@ -311,7 +311,7 @@ def test_v6_host_reservation_empty():
     Test if empty (only MAC address) reservation can be made.
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
 
     world.dhcp_cfg.update({
         "reservations": [
@@ -323,6 +323,7 @@ def test_v6_host_reservation_empty():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Send KNOWN DUID
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
     srv_msg.client_does_include('Client', 'client-id')
@@ -332,7 +333,61 @@ def test_v6_host_reservation_empty():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
-    log_contains('client packet has been assigned to the following class(es): KNOWN')
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+
+    # first transaction id
+    first_xid = hex(world.cfg["values"]["tr_id"])
+    # reset transaction id
+    world.cfg["values"]["tr_id"] = None
+
+    # Send UNKNOWN DUID
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:33')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:33')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+
+    # second transaction id
+    second_xid = hex(world.cfg["values"]["tr_id"])
+
+    # Check for 2 received KNOWN and 0 UNKNOWN packets for first transaction
+    first_known = get_line_count_in_log(f'tid={first_xid}:'
+                                        ' client packet has been assigned to the following class(es): KNOWN')
+    first_unknown = get_line_count_in_log(f'tid={first_xid}:'
+                                          ' client packet has been assigned to the following class(es): UNKNOWN')
+    assert first_known == 2, 'Wrong number od KNOWN assignments for KNOWN packet'
+    assert first_unknown == 0, 'Wrong number od UNKNOWN assignments for KNOWN packet'
+
+    # Check for 0 received KNOWN and 2 UNKNOWN packets for first transaction
+    second_known = get_line_count_in_log(f'tid={second_xid}:'
+                                         ' client packet has been assigned to the following class(es): KNOWN')
+    second_unknown = get_line_count_in_log(f'tid={second_xid}:'
+                                           ' client packet has been assigned to the following class(es): UNKNOWN')
+    assert second_known == 0, 'Wrong number od KNOWN assignments for UNKNOWN packet'
+    assert second_unknown == 2, 'Wrong number od UNKNOWN assignments for UNKNOWN packet'
 
 
 @pytest.mark.v6
@@ -375,6 +430,18 @@ def test_v6_host_reservation_example_access_control():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Check unknown MAC
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:33')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(7)
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE', expect_response=False)
+
     # Check blocked MAC
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:11')
@@ -402,15 +469,3 @@ def test_v6_host_reservation_example_access_control():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(23)
     srv_msg.response_check_option_content(23, 'value', '2001:db8::1')
-
-    # Check unknown MAC
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:33')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_requests_option(7)
-    srv_msg.client_requests_option(23)
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE', expect_response=False)

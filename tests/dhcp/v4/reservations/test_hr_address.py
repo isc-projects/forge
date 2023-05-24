@@ -12,7 +12,7 @@ from src import srv_control
 from src import srv_msg
 from src import misc
 from src.forge_cfg import world
-from src.protosupport.multi_protocol_functions import log_contains
+from src.protosupport.multi_protocol_functions import get_line_count_in_log
 
 
 @pytest.mark.v4
@@ -302,14 +302,67 @@ def test_v4_host_reservation_empty():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Send KNOWN MAC as first transaction
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
-    log_contains('client packet has been assigned to the following class(es): KNOWN')
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+
+    # first transaction id
+    first_xid = hex(world.cfg["values"]["tr_id"])
+    # reset transaction id
+    world.cfg["values"]["tr_id"] = None
+
+    # Send UNKNOWN MAC as second transaction
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:08')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:08')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+
+    # second transaction id
+    second_xid = hex(world.cfg["values"]["tr_id"])
+
+    # Check for 2 received KNOWN and 0 UNKNOWN packets for first transaction
+    first_known = get_line_count_in_log(f'tid={first_xid}:'
+                                        ' client packet has been assigned to the following class(es): KNOWN')
+    first_unknown = get_line_count_in_log(f'tid={first_xid}:'
+                                          ' client packet has been assigned to the following class(es): UNKNOWN')
+    assert first_known == 2, 'Wrong number od KNOWN assignments for KNOWN packet'
+    assert first_unknown == 0, 'Wrong number od UNKNOWN assignments for KNOWN packet'
+
+    # Check for 0 received KNOWN and 2 UNKNOWN packets for first transaction
+    second_known = get_line_count_in_log(f'tid={second_xid}:'
+                                         ' client packet has been assigned to the following class(es): KNOWN')
+    second_unknown = get_line_count_in_log(f'tid={second_xid}:'
+                                           ' client packet has been assigned to the following class(es): UNKNOWN')
+    assert second_known == 0, 'Wrong number od KNOWN assignments for UNKNOWN packet'
+    assert second_unknown == 2, 'Wrong number od UNKNOWN assignments for UNKNOWN packet'
 
 
 @pytest.mark.v4
@@ -351,6 +404,14 @@ def test_v4_host_reservation_example_access_control():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Check unknown MAC
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'dd:ee:ff:11:22:33')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER', expect_response=False)
+
     # Check blocked MAC
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'aa:bb:cc:dd:ee:fe')
@@ -370,11 +431,3 @@ def test_v4_host_reservation_example_access_control():
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'value', '192.168.50.250')
-
-    # Check unknown MAC
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'dd:ee:ff:11:22:33')
-    srv_msg.client_send_msg('DISCOVER')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER', expect_response=False)
