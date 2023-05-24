@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2012-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1481,13 +1481,15 @@ def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success'], expect=True
         response_check_suboption_content('IA_address', 'IA_NA', expect, 'addr', address)
 
 
-def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
+def check_IA_PD(prefix, prefix_length=None, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
     """
     Check that the latest received response has an IA_PD option containing
     an IA_Prefix suboption with the given address and containing the given
     status code.
 
-    :param prefix: the expected prefix as value of the IA_Prefix suboption
+    :param prefix: the expected prefix value inside the IA Prefix suboption
+    :param prefix_length: the expected prefix length value inside the IA Prefix suboption.
+                          If None, it is not checked.
     :param status_code: the expected status code (default: Success)
     :param expect: True if the prefix is expected to be found,
                    False if it is expected to be missing
@@ -1505,6 +1507,8 @@ def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success'], expect=True)
 
     if status_code == DHCPv6_STATUS_CODES['Success']:
         response_check_suboption_content('IA-Prefix', 'IA_PD', expect, 'prefix', prefix)
+        if prefix_length is not None:
+            response_check_suboption_content('IA-Prefix', 'IA_PD', expect, 'plen', prefix_length)
 
 
 def SARR(address=None, delegated_prefix=None, relay_information=False,
@@ -1664,7 +1668,7 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
         if address is not None:
             check_IA_NA(address, status_code)
         if delegated_prefix is not None:
-            check_IA_PD(delegated_prefix, status_code)
+            check_IA_PD(delegated_prefix, status_code=status_code)
     else:
         # Expect an advertise.
         misc.pass_criteria()
@@ -1674,4 +1678,4 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
         if address is not None:
             check_IA_NA(address, status_code)
         if delegated_prefix is not None:
-            check_IA_PD(delegated_prefix, status_code)
+            check_IA_PD(delegated_prefix, status_code=status_code)

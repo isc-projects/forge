@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -666,8 +666,8 @@ def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success'], expect=True
     return dhcpmsg.check_IA_NA(address, status_code, expect)
 
 
-def check_IA_PD(prefix, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
-    return dhcpmsg.check_IA_PD(prefix, status_code, expect)
+def check_IA_PD(prefix, prefix_length=None, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
+    return dhcpmsg.check_IA_PD(prefix, prefix_length, status_code, expect)
 
 
 def SA(address=None, delegated_prefix=None, relay_information=False,
