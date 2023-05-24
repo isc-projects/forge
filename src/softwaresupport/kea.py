@@ -905,7 +905,7 @@ def host_reservation(reservation_type, reserved_value, unique_host_value_type, u
         "circuit-id", "client-id", "duid", "flex-id", "hw-address"
     unique_host_value -- the value for the reservation's identifier
     subnet -- the ordinal number of the subnet under which the reservation will
-        be made. Careful, this is not the subnet ID.
+        be made. Careful, this is not the subnet ID. Subnet 0 is the first subnet.
     """
     sub = f'subnet{world.proto[1]}'
     if "reservations" not in world.dhcp_cfg[sub][subnet]:
@@ -1140,19 +1140,34 @@ def config_srv_id(id_type, id_value):
 
 
 def prepare_cfg_prefix(prefix, length, delegated_length, subnet, **kwargs):
+    """
+    Adds a new prefix delegation pool to the given subnet configuration.
+    :param prefix: the IPv6 prefix to delegate prefixes from
+    :param length: the length of the IPv6 prefix to delegate prefixes from
+    :param delegated_length: the IPv6 prefix to delegate prefixes from
+    :param subnet: the ordinal number of the subnet under which the reservation will be made.
+                   Careful, this is not the subnet ID. Subnet 0 is the first subnet.
+    :param kwargs: additional entries in the pool
+    """
     if world.proto == 'v4':
         assert False, "Not available for DHCPv4"
 
     sub = f'subnet{world.proto[1]}'
-    pd = {"pd-pools": [{"delegated-len": int(delegated_length),
-                        "prefix": prefix,
-                        "prefix-len": int(length)}]}
+
+    if 'pd-pools' not in world.dhcp_cfg[sub][int(subnet)]:
+        world.dhcp_cfg[sub][int(subnet)]['pd-pools'] = []
+
+    pd = {
+        "delegated-len": int(delegated_length),
+        "prefix": prefix,
+        "prefix-len": int(length)
+    }
 
     for x, y in kwargs.items():
         if y is not None:
-            pd["pd-pools"][0].update({x.replace("_", "-"): y})
+            pd.update({x.replace("_", "-"): y})
 
-    world.dhcp_cfg[sub][int(subnet)].update(pd)
+    world.dhcp_cfg[sub][int(subnet)]['pd-pools'].append(pd)
 
 
 def add_siaddr(addr, subnet_number):
