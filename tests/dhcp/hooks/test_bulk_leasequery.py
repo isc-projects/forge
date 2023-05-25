@@ -17,7 +17,7 @@ from src import srv_control
 from src import misc
 from src import srv_msg
 from src.forge_cfg import world
-
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from tests.HA.steps import increase_mac
 # pylint: disable=invalid-name
 # pylint: disable=cell-var-from-loop
@@ -680,6 +680,9 @@ def test_v6_negative(backend):
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
+
+    wait_for_message_in_log("MT_TCP_LISTENER_MGR_STARTED MtTcpListenerMgr started")
+
     # incorrect query id
     srv_msg.client_sets_value('Client', 'lq-query-type', 17)
     srv_msg.client_sets_value('Client', 'lq-query-address', "0::0")
@@ -835,6 +838,7 @@ def test_v6_junk_over_tcp(backend):
 
     srv_control.start_srv('DHCP', 'started')
 
+    wait_for_message_in_log("MT_TCP_LISTENER_MGR_STARTED MtTcpListenerMgr started")
     junk = b''
     characters_to_send = random.choices(string.printable, k=5000)
     # if that test at one point will fail, we have to know what was sent (no matter of logging level):
@@ -1294,7 +1298,7 @@ def test_v4_negative(backend):
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
-
+    wait_for_message_in_log("MT_TCP_LISTENER_MGR_STARTED MtTcpListenerMgr started")
     # let's check empty replies
     _send_leasequery_v4(remote_id="020601020c030a22", msg='LEASEQUERY_DONE')
     srv_msg.tcp_messages_include(leasequery_done=1)
@@ -1393,6 +1397,7 @@ def test_v4_junk_over_tcp(backend):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    wait_for_message_in_log("MT_TCP_LISTENER_MGR_STARTED MtTcpListenerMgr started")
     junk = b''
     characters_to_send = random.choices(string.printable, k=5000)
     # if that test at one point will fail, we have to know what was sent (no matter of logging level):
