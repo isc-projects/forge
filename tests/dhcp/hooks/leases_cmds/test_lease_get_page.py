@@ -71,6 +71,7 @@ def test_control_channel_lease4_get_page_positive(backend):
                                          "hostname": "",
                                          "hw-address": "1a:1b:1c:1d:1e:" + f'{lease_nbr + 5:02}',
                                          "ip-address": "192.168.50." + str(lease_nbr + 5),
+                                         "pool-id": 0,
                                          "state": 0,
                                          "subnet-id": 1,
                                          "valid-lft": 4000
@@ -99,6 +100,7 @@ def test_control_channel_lease4_get_page_positive(backend):
                                          "hostname": "",
                                          "hw-address": "2a:2b:2c:2d:2e:" + f'{lease_nbr + 5:02}',
                                          "ip-address": "192.168.60." + str(lease_nbr + 5),
+                                         "pool-id": 0,
                                          "state": 0,
                                          "subnet-id": 2,
                                          "valid-lft": 4000
@@ -120,6 +122,7 @@ def test_control_channel_lease4_get_page_positive(backend):
                                              "hostname": "",
                                              "hw-address": "1a:1b:1c:1d:1e:" + f'{lease_nbr + 5:02}',
                                              "ip-address": "192.168.50." + str(lease_nbr + 5),
+                                             "pool-id": 0,
                                              "state": 0,
                                              "subnet-id": 1,
                                              "valid-lft": 4000
@@ -130,6 +133,7 @@ def test_control_channel_lease4_get_page_positive(backend):
                                              "hostname": "",
                                              "hw-address": "2a:2b:2c:2d:2e:" + f'{lease_nbr - 5:02}',
                                              "ip-address": "192.168.60." + str(lease_nbr - 5),
+                                             "pool-id": 0,
                                              "state": 0,
                                              "subnet-id": 2,
                                              "valid-lft": 4000
@@ -152,6 +156,7 @@ def test_control_channel_lease4_get_page_positive(backend):
                                              "hostname": "",
                                              "hw-address": "1a:1b:1c:1d:1e:" + f'{lease_nbr + 5:02}',
                                              "ip-address": "192.168.50." + str(lease_nbr + 5),
+                                             "pool-id": 0,
                                              "state": 0,
                                              "subnet-id": 1,
                                              "valid-lft": 4000
@@ -162,6 +167,7 @@ def test_control_channel_lease4_get_page_positive(backend):
                                              "hostname": "",
                                              "hw-address": "2a:2b:2c:2d:2e:" + f'{lease_nbr - 5:02}',
                                              "ip-address": "192.168.60." + str(lease_nbr - 5),
+                                             "pool-id": 0,
                                              "state": 0,
                                              "subnet-id": 2,
                                              "valid-lft": 4000
@@ -211,6 +217,7 @@ def test_control_channel_lease4_get_page_positive(backend):
                                             "hw-address": "1a:1b:1c:1d:1e:" + f'{lease_nbr + 5:02}',
                                             "ip-address": "192.168.50." + str(
                                                 lease_nbr + 5),
+                                            "pool-id": 0,
                                             "state": 0,
                                             "subnet-id": 1,
                                             "valid-lft": 4000
@@ -221,6 +228,7 @@ def test_control_channel_lease4_get_page_positive(backend):
                                             "hostname": "",
                                             "hw-address": "2a:2b:2c:2d:2e:" + f'{lease_nbr - 5:02}',
                                             "ip-address": "192.168.60." + str(lease_nbr - 5),
+                                            "pool-id": 0,
                                             "state": 0,
                                             "subnet-id": 2,
                                             "valid-lft": 4000
@@ -391,6 +399,7 @@ def test_v6_lease_get_page_positive(backend):
                                          "hostname": "",
                                          "iaid": 1230 + lease_nbr,
                                          "ip-address": "2001:db8:1::" + str(lease_nbr+10),
+                                         "pool-id": 0,
                                          "preferred-lft": 4000,
                                          "state": 0,
                                          "subnet-id": 1,
@@ -422,6 +431,7 @@ def test_v6_lease_get_page_positive(backend):
                                          "hostname": "",
                                          "iaid": 2340 + lease_nbr,
                                          "ip-address": "2001:db8:2::" + str(lease_nbr + 10),
+                                         "pool-id": 0,
                                          "preferred-lft": 4000,
                                          "state": 0,
                                          "subnet-id": 2,
@@ -444,6 +454,7 @@ def test_v6_lease_get_page_positive(backend):
                                              "hostname": "",
                                              "iaid": 1230 + lease_nbr,
                                              "ip-address": "2001:db8:1::" + str(lease_nbr+10),
+                                             "pool-id": 0,
                                              "preferred-lft": 4000,
                                              "state": 0,
                                              "subnet-id": 1,
@@ -457,6 +468,7 @@ def test_v6_lease_get_page_positive(backend):
                                              "hostname": "",
                                              "iaid": 2340 + lease_nbr - 10,
                                              "ip-address": "2001:db8:2::" + str(lease_nbr),
+                                             "pool-id": 0,
                                              "preferred-lft": 4000,
                                              "state": 0,
                                              "subnet-id": 2,
@@ -480,6 +492,7 @@ def test_v6_lease_get_page_positive(backend):
                                              "hostname": "",
                                              "iaid": 1230 + lease_nbr,
                                              "ip-address": "2001:db8:1::" + str(lease_nbr+10),
+                                             "pool-id": 0,
                                              "preferred-lft": 4000,
                                              "state": 0,
                                              "subnet-id": 1,
@@ -494,6 +507,7 @@ def test_v6_lease_get_page_positive(backend):
                                              "iaid": 2340 + lease_nbr - 10,
                                              "ip-address": "2001:db8:2::"
                                                            + str(lease_nbr),
+                                             "pool-id": 0,
                                              "preferred-lft": 4000,
                                              "state": 0,
                                              "subnet-id": 2,
@@ -545,6 +559,7 @@ def test_v6_lease_get_page_positive(backend):
                                             "iaid": 1230 + lease_nbr,
                                             "ip-address": "2001:db8:1::"
                                                           + str(lease_nbr + 10),
+                                            "pool-id": 0,
                                             "preferred-lft": 4000,
                                             "state": 0,
                                             "subnet-id": 1,
@@ -559,6 +574,7 @@ def test_v6_lease_get_page_positive(backend):
                                             "iaid": 2340 + lease_nbr - 10,
                                             "ip-address": "2001:db8:2::"
                                                           + str(lease_nbr),
+                                            "pool-id": 0,
                                             "preferred-lft": 4000,
                                             "state": 0,
                                             "subnet-id": 2,

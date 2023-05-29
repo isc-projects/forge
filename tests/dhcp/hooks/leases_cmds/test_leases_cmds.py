@@ -132,6 +132,7 @@ def test_v4_lease_cmds_update(backend):
                     "hostname": "",
                     "hw-address": "ff:01:02:03:ff:04",
                     "ip-address": "192.168.50.1",
+                    "pool-id": 0,
                     "state": 0,
                     "subnet-id": 1,
                     "valid-lft": 4000}
@@ -159,6 +160,7 @@ def test_v4_lease_cmds_update(backend):
                     "hostname": "newhostname.example.org",
                     "hw-address": "1a:1b:1c:1d:1e:1f",
                     "ip-address": "192.168.50.1",
+                    "pool-id": 0,
                     "state": 0,
                     "subnet-id": 1,
                     "valid-lft": 7000}
@@ -210,6 +212,7 @@ def test_v4_lease_cmds_get():
                     "hostname": "",
                     "hw-address": "ff:01:02:03:ff:04",
                     "ip-address": "192.168.50.1",
+                    "pool-id": 0,
                     "state": 0,
                     "subnet-id": 1,
                     "valid-lft": 4000}
@@ -227,6 +230,7 @@ def test_v4_lease_cmds_get():
                     "hostname": "",
                     "hw-address": "ff:01:02:03:ff:04",
                     "ip-address": "192.168.50.1",
+                    "pool-id": 0,
                     "state": 0,
                     "subnet-id": 1,
                     "valid-lft": 4000}
@@ -295,6 +299,7 @@ def test_v4_lease_cmds_add(backend):
                     "hostname": "",
                     "hw-address": "ff:01:02:03:ff:04",
                     "ip-address": "192.168.50.5",
+                    "pool-id": 0,
                     "state": 0,
                     "subnet-id": 1,
                     "valid-lft": 999}
@@ -319,6 +324,7 @@ def test_v4_lease_cmds_add(backend):
                     "hostname": "",
                     "hw-address": "ff:01:02:03:ff:04",
                     "ip-address": "192.168.150.50",
+                    "pool-id": 0,
                     "state": 0,
                     "subnet-id": 2,
                     "valid-lft": 2222}
@@ -335,6 +341,7 @@ def test_v4_lease_cmds_add(backend):
                     "hostname": "",
                     "hw-address": "ff:01:02:03:ff:04",
                     "ip-address": "192.168.50.5",
+                    "pool-id": 0,
                     "state": 0,
                     "subnet-id": 1,
                     "valid-lft": 999}
@@ -357,6 +364,7 @@ def test_v4_lease_cmds_add(backend):
                     "hostname": "",
                     "hw-address": "ff:01:02:03:04:05",
                     "ip-address": "192.168.50.150",
+                    "pool-id": 0,
                     "state": 0,
                     "subnet-id": 1,
                     "valid-lft": 1111}
@@ -412,6 +420,7 @@ def test_v4_lease_cmds_add_with_additional_values(backend):
                          "fqdn-fwd": True,
                          "fqdn-rev": True,
                          "valid-lft": 7777,
+                         "pool-id": 0,
                          "state": 1,
                          "expire": int(time.time()) + 7000,
                          "hostname": "my.host.some.name",
@@ -431,6 +440,7 @@ def test_v4_lease_cmds_add_with_additional_values(backend):
                     "hostname": "my.host.some.name",
                     "hw-address": "1a:1b:1c:1d:1e:1f",
                     "ip-address": "192.168.50.5",
+                    "pool-id": 0,
                     "state": 1,
                     "subnet-id": 1,
                     "valid-lft": 7777}
@@ -839,6 +849,7 @@ def test_v4_lease_cmds_write(file):
                     "hostname": "my.host.some.name",
                     "hw-address": "1a:1b:1c:1d:1e:1f",
                     "ip-address": "192.168.50.5",
+                    "pool-id": 0,
                     "state": 1,
                     "subnet-id": 1,
                     "valid-lft": 7777}
@@ -1314,6 +1325,7 @@ def test_v6_lease_cmds_get_using_address(backend):
                                  "hw-address": "66:55:44:33:22:11",
                                  "iaid": 1234,
                                  "ip-address": "2001:db8:1::1",
+                                 "pool-id": 0,
                                  "preferred-lft": 3000,
                                  "state": 0,
                                  "subnet-id": 1,
@@ -1368,6 +1380,7 @@ def test_v6_lease_cmds_get_using_duid(backend):
                                  "hw-address": "66:55:44:33:22:11",
                                  "iaid": 1234,
                                  "ip-address": "2001:db8:1::1",
+                                 "pool-id": 0,
                                  "preferred-lft": 3000,
                                  "state": 0,
                                  "subnet-id": 1,

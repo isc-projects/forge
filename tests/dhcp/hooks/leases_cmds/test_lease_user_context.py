@@ -77,6 +77,7 @@ def test_v4_lease_user_context(backend, channel):
                     "hostname": "",
                     "hw-address": "ff:01:02:03:ff:04",
                     "ip-address": "192.168.50.5",
+                    "pool-id": 0,
                     "state": 0,
                     "subnet-id": 1,
                     "valid-lft": 4000}
@@ -179,6 +180,7 @@ def test_v4_lease_extended_info(backend):
                                  "hostname": "",
                                  "hw-address": "ff:01:02:03:ff:04",
                                  "ip-address": "192.168.50.1",
+                                 "pool-id": 0,
                                  "state": 0,
                                  "subnet-id": 1,
                                  "user-context": {
@@ -254,6 +256,7 @@ def test_v6_lease_user_context(backend, channel):
                     "hostname": "",
                     "iaid": 1234,
                     "ip-address": "2001:db8:1::1",
+                    "pool-id": 0,
                     "preferred-lft": 4000,
                     "state": 0,
                     "subnet-id": 1,
@@ -393,6 +396,7 @@ def test_v6_lease_extended_info(backend):
                                  "hw-address": "f6:f5:f4:f3:f2:01",
                                  "iaid": 1234,
                                  "ip-address": "2001:db8:1::1",
+                                 "pool-id": 0,
                                  "preferred-lft": 3000,
                                  "state": 0,
                                  "subnet-id": 1,
