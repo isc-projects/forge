@@ -54,6 +54,12 @@ class StatsState6:
             'subnet[1].total-pds': 0,
             'subnet[1].v6-ia-na-lease-reuses': 0,
             'subnet[1].v6-ia-pd-lease-reuses': 0,
+            'subnet[1].pool[0].assigned-nas': 0,
+            'subnet[1].pool[0].cumulative-assigned-nas': 0,
+            'subnet[1].pool[0].declined-addresses': 0,
+            'subnet[1].pool[0].reclaimed-declined-addresses': 0,
+            'subnet[1].pool[0].reclaimed-leases': 0,
+            'subnet[1].pool[0].total-nas': 0,
             'v6-allocation-fail': 0,
             'v6-allocation-fail-classes': 0,
             'v6-allocation-fail-no-pools': 0,
@@ -79,7 +85,7 @@ class StatsState6:
                 statistics_not_found.append(key)
         assert len(statistics_not_found) == 0, f'The following statistics were received, but not expected: {statistics_not_found}'
 
-        assert len(statistics_from_kea) == 42, 'Number of all statistics is incorrect.'
+        assert len(statistics_from_kea) == 48, 'Number of all statistics is incorrect.'
 
         for key, expected in self.s.items():
             received = statistics_from_kea[key][0][0]
@@ -106,6 +112,7 @@ def test_stats_basic():
 
     stats = StatsState6()
     stats.s['subnet[1].total-nas'] = 10
+    stats.s['subnet[1].pool[0].total-nas'] = 10
     stats.compare()
 
     misc.test_procedure()
@@ -162,6 +169,8 @@ def test_stats_basic():
     stats.s['pkt6-request-received'] += 1
     stats.s['subnet[1].assigned-nas'] += 1
     stats.s['subnet[1].cumulative-assigned-nas'] += 1
+    stats.s['subnet[1].pool[0].assigned-nas'] += 1
+    stats.s['subnet[1].pool[0].cumulative-assigned-nas'] += 1
     stats.compare()
 
     misc.test_procedure()
@@ -178,6 +187,7 @@ def test_stats_basic():
     stats.s['pkt6-reply-sent'] += 1
     stats.s['pkt6-sent'] += 1
     stats.s['subnet[1].assigned-nas'] -= 1
+    stats.s['subnet[1].pool[0].assigned-nas'] -= 1
     stats.compare()
 
     misc.test_procedure()
@@ -212,6 +222,8 @@ def test_stats_basic():
     stats.s['pkt6-request-received'] += 1
     stats.s['subnet[1].assigned-nas'] += 1
     stats.s['subnet[1].cumulative-assigned-nas'] += 1
+    stats.s['subnet[1].pool[0].assigned-nas'] += 1
+    stats.s['subnet[1].pool[0].cumulative-assigned-nas'] += 1
     stats.compare()
 
     misc.test_procedure()
@@ -228,6 +240,7 @@ def test_stats_basic():
     stats.s['pkt6-reply-sent'] += 1
     stats.s['pkt6-sent'] += 1
     stats.s['subnet[1].assigned-nas'] -= 1
+    stats.s['subnet[1].pool[0].assigned-nas'] -= 1
     stats.compare()
 
     misc.test_procedure()
@@ -262,6 +275,8 @@ def test_stats_basic():
     stats.s['pkt6-request-received'] += 1
     stats.s['subnet[1].assigned-nas'] += 1
     stats.s['subnet[1].cumulative-assigned-nas'] += 1
+    stats.s['subnet[1].pool[0].assigned-nas'] += 1
+    stats.s['subnet[1].pool[0].cumulative-assigned-nas'] += 1
     stats.compare()
 
     new_hr = {
@@ -323,6 +338,7 @@ def test_stats_basic():
     stats.s['pkt6-reply-sent'] += 1
     stats.s['pkt6-sent'] += 1
     stats.s['subnet[1].declined-addresses'] += 1
+    # we decline address from subnet but not from pool! subnet[1].pool[0].declined-addresses won't be updated
     stats.s['declined-addresses'] += 1
     stats.compare()
 
@@ -361,10 +377,12 @@ def test_stats_basic():
     assert get_stat("reclaimed-declined-addresses") == [0], "Stat reclaimed-declined-addresses is not correct"
     assert get_stat("reclaimed-leases") == [0], "Stat reclaimed-leases is not correct"
     assert get_stat("subnet[1].assigned-nas") == [1, 0, 1, 0, 1, 0], "Stat subnet[1].assigned-nas is not correct"
+    assert get_stat("subnet[1].pool[0].assigned-nas") == [1, 0, 1, 0, 1, 0], "Stat subnet[1].assigned-nas is not correct"
     assert get_stat("subnet[1].declined-addresses") == [1, 0], "Stat subnet[1].declined-addresses is not correct"
     assert get_stat("subnet[1].reclaimed-declined-addresses") == [0], "Stat subnet[1].reclaimed-declined-addresses is not correct"
     assert get_stat("subnet[1].reclaimed-leases") == [0], "Stat subnet[1].reclaimed-leases is not correct"
     assert get_stat("subnet[1].total-nas") == [10], "Stat subnet[1].total-nas is not correct"
+    assert get_stat("subnet[1].pool[0].total-nas") == [10], "Stat subnet[1].total-nas is not correct"
 
 
 @pytest.mark.v6

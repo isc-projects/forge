@@ -991,7 +991,7 @@ def test_v4_check_messages_correctness(backend):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    start_time = time()
+    start_time = time() - 1  # that's bit of a hack, but I prefer to subtract 1 than put sleep into the test
 
     # first client
     misc.test_procedure()
@@ -1410,7 +1410,7 @@ def test_v4_junk_over_tcp(backend):
     # sent generated junk but multiplied
     srv_msg.send_over_tcp(junk * 10, number_of_connections=7, print_all=False)
 
-    start_time = time()
+    start_time = time() - 1  # that's bit of a hack, but I prefer to subtract 1 than put sleep into the test
 
     # let's check if kea still works
     leases_with_relay_id = _get_lease(leases_count=5, v4=True, mac="02:05:0f:07:0d:03", relay_id='0c0601020c330a11')

@@ -1594,6 +1594,7 @@ def test_v6_lease_cmds_update(backend):
                                  "preferred-lft": 3000,
                                  "state": 0,
                                  "subnet-id": 1,
+                                 "pool-id": 0,
                                  "type": "IA_NA",
                                  "valid-lft": 4000}
 
@@ -1632,6 +1633,7 @@ def test_v6_lease_cmds_update(backend):
                                  "ip-address": "2001:db8:1::1",
                                  "preferred-lft": 500,
                                  "state": 0,
+                                 "pool-id": 0,
                                  "subnet-id": 1,
                                  "type": "IA_NA",
                                  "valid-lft": 1000}

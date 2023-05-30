@@ -47,6 +47,12 @@ class StatsState4:
             'subnet[1].total-addresses': 0,
             'subnet[1].v4-lease-reuses': 0,
             'subnet[1].v4-reservation-conflicts': 0,
+            'subnet[1].pool[0].assigned-addresses': 0,
+            'subnet[1].pool[0].cumulative-assigned-addresses': 0,
+            'subnet[1].pool[0].declined-addresses': 0,
+            'subnet[1].pool[0].reclaimed-declined-addresses': 0,
+            'subnet[1].pool[0].reclaimed-leases': 0,
+            'subnet[1].pool[0].total-addresses': 0,
             'v4-allocation-fail': 0,
             'v4-allocation-fail-classes': 0,
             'v4-allocation-fail-no-pools': 0,
@@ -72,7 +78,7 @@ class StatsState4:
                 statistics_not_found.append(key)
         assert len(statistics_not_found) == 0, f'The following statistics were received, but not expected: {statistics_not_found}'
 
-        assert len(statistics_from_kea) == 35, 'Number of all statistics is incorrect.'
+        assert len(statistics_from_kea) == 41, 'Number of all statistics is incorrect.'
 
         for key, expected in self.s.items():
             received = statistics_from_kea[key][0][0]
@@ -99,6 +105,7 @@ def test_stats_basic():
 
     stats = StatsState4()
     stats.s['subnet[1].total-addresses'] = 10
+    stats.s['subnet[1].pool[0].total-addresses'] = 10
     stats.compare()
 
     misc.test_procedure()
@@ -156,6 +163,8 @@ def test_stats_basic():
     stats.s['pkt4-request-received'] += 1
     stats.s['subnet[1].assigned-addresses'] += 1
     stats.s['subnet[1].cumulative-assigned-addresses'] += 1
+    stats.s['subnet[1].pool[0].assigned-addresses'] += 1
+    stats.s['subnet[1].pool[0].cumulative-assigned-addresses'] += 1
     stats.compare()
 
     misc.test_procedure()
@@ -169,6 +178,7 @@ def test_stats_basic():
     stats.s['pkt4-release-received'] += 1
     stats.s['pkt4-received'] += 1
     stats.s['subnet[1].assigned-addresses'] -= 1
+    stats.s['subnet[1].pool[0].assigned-addresses'] -= 1
     stats.compare()
 
     misc.test_procedure()
@@ -205,6 +215,8 @@ def test_stats_basic():
     stats.s['pkt4-request-received'] += 1
     stats.s['subnet[1].assigned-addresses'] += 1
     stats.s['subnet[1].cumulative-assigned-addresses'] += 1
+    stats.s['subnet[1].pool[0].assigned-addresses'] += 1
+    stats.s['subnet[1].pool[0].cumulative-assigned-addresses'] += 1
     stats.compare()
 
     misc.test_procedure()
@@ -218,6 +230,7 @@ def test_stats_basic():
     stats.s['pkt4-release-received'] += 1
     stats.s['pkt4-received'] += 1
     stats.s['subnet[1].assigned-addresses'] -= 1
+    stats.s['subnet[1].pool[0].assigned-addresses'] -= 1
     stats.compare()
 
     misc.test_procedure()
@@ -249,6 +262,8 @@ def test_stats_basic():
     stats.s['pkt4-request-received'] += 1
     stats.s['subnet[1].assigned-addresses'] += 1
     stats.s['subnet[1].cumulative-assigned-addresses'] += 1
+    stats.s['subnet[1].pool[0].assigned-addresses'] += 1
+    stats.s['subnet[1].pool[0].cumulative-assigned-addresses'] += 1
     stats.compare()
 
     new_hr = {
@@ -276,6 +291,8 @@ def test_stats_basic():
     stats.s['pkt4-sent'] += 1
     stats.s['pkt4-received'] += 1
     stats.s['pkt4-discover-received'] += 1
+    stats.s['v4-reservation-conflicts'] += 1
+    stats.s['subnet[1].v4-reservation-conflicts'] += 1
     stats.compare()
 
     misc.test_procedure()
@@ -294,15 +311,17 @@ def test_stats_basic():
     stats.s['pkt4-request-received'] += 1
     stats.s['subnet[1].assigned-addresses'] += 1
     stats.s['subnet[1].cumulative-assigned-addresses'] += 1
+    stats.s['subnet[1].pool[0].assigned-addresses'] += 1
+    stats.s['subnet[1].pool[0].cumulative-assigned-addresses'] += 1
     stats.compare()
 
-    stats.s['pkt4-offer-sent'] += 1
-    stats.s['pkt4-sent'] += 1
-    stats.s['pkt4-received'] += 1
-    stats.s['pkt4-discover-received'] += 1
-    stats.s['subnet[1].v4-reservation-conflicts'] += 1
-    stats.s['v4-reservation-conflicts'] += 1
-    stats.compare()
+    # stats.s['pkt4-offer-sent'] += 1
+    # stats.s['pkt4-sent'] += 1
+    # stats.s['pkt4-received'] += 1
+    # stats.s['pkt4-discover-received'] += 1
+    # stats.s['subnet[1].v4-reservation-conflicts'] += 1
+    # stats.s['v4-reservation-conflicts'] += 1
+    # stats.compare()
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', "ff:01:02:03:ff:04")
@@ -316,6 +335,7 @@ def test_stats_basic():
     stats.s['pkt4-decline-received'] += 1
     stats.s['pkt4-received'] += 1
     stats.s['subnet[1].declined-addresses'] += 1
+    stats.s['subnet[1].pool[0].declined-addresses'] += 1
     stats.s['declined-addresses'] += 1
     stats.compare()
 
@@ -348,7 +368,7 @@ def test_stats_basic():
 
     assert get_stat("declined-addresses") == [1, 0], "Stat declined-addresses is not correct"
     assert get_stat("pkt4-ack-received") == [0], "Stat pkt4-ack-received is not correct"
-    assert get_stat("pkt4-ack-sent") == [4, 3, 2, 1, 0], "Stat pkt4-ack-sent is not correct"
+    assert get_stat("pkt4-ack-sent") == [5, 4, 3, 2, 1, 0], "Stat pkt4-ack-sent is not correct"
     assert get_stat("pkt4-decline-received") == [1, 0], "Stat pkt4-decline-received is not correct"
     assert get_stat("pkt4-discover-received") == [5, 4, 3, 2, 1, 0], "Stat pkt4-discover-received is not correct"
     assert get_stat("pkt4-inform-received") == [1, 0], "Stat pkt4-inform-received is not correct"
@@ -358,14 +378,15 @@ def test_stats_basic():
     assert get_stat("pkt4-offer-sent") == [4, 3, 2, 1, 0], "Stat pkt4-offer-sent is not correct"
     assert get_stat("pkt4-parse-failed") == [0], "Stat pkt4-parse-failed is not correct"
     assert get_stat("pkt4-receive-drop") == [1, 0], "Stat pkt4-receive-drop is not correct"
-    assert get_stat("pkt4-received") == [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], "Stat pkt4-received is not correct"
-    assert get_stat("pkt4-request-received") == [3, 2, 1, 0], "Stat pkt4-request-received is not correct"
+    assert get_stat("pkt4-received") == [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], "Stat pkt4-received is not correct"
+    assert get_stat("pkt4-request-received") == [4, 3, 2, 1, 0], "Stat pkt4-request-received is not correct"
     assert get_stat("pkt4-release-received") == [2, 1, 0], "Stat pkt4-release-received is not correct"
-    assert get_stat("pkt4-sent") == [8, 7, 6, 5, 4, 3, 2, 1, 0], "Stat pkt4-sent is not correct"
+    assert get_stat("pkt4-sent") == [9, 8, 7, 6, 5, 4, 3, 2, 1, 0], "Stat pkt4-sent is not correct"
     assert get_stat("pkt4-unknown-received") == [0], "Stat pkt4-unknown-received is not correct"
     assert get_stat("reclaimed-declined-addresses") == [0], "Stat reclaimed-declined-addresses is not correct"
     assert get_stat("reclaimed-leases") == [0], "Stat reclaimed-leases is not correct"
-    assert get_stat("subnet[1].assigned-addresses") == [1, 0, 1, 0, 1, 0], "Stat subnet[1].assigned-addresses is not correct"
+    assert get_stat("subnet[1].assigned-addresses") == [2, 1, 0, 1, 0, 1, 0], "Stat subnet[1].assigned-addresses is not correct"
+    assert get_stat("subnet[1].pool[0].assigned-addresses") == [2, 1, 0, 1, 0, 1, 0], "Stat subnet[1].assigned-addresses is not correct"
     assert get_stat("subnet[1].declined-addresses") == [1, 0], "Stat subnet[1].declined-addresses is not correct"
     assert get_stat("subnet[1].reclaimed-declined-addresses") == [0], "Stat subnet[1].reclaimed-declined-addresses is not correct"
     assert get_stat("subnet[1].reclaimed-leases") == [0], "Stat subnet[1].reclaimed-leases is not correct"
