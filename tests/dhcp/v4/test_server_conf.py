@@ -194,6 +194,22 @@ def test_v4_ignore_server_id():
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
 
+    # missing server id should still result in dropping message
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:55')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:55')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.3')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', None, expect_response=False)
+
     # get lease with different server id
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:44')
@@ -211,19 +227,3 @@ def test_v4_ignore_server_id():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', '192.168.50.2')
-
-    # missing server id should still result in dropping message
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:55')
-    srv_msg.client_send_msg('DISCOVER')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER')
-
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:55')
-    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.3')
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', None, expect_response=False)

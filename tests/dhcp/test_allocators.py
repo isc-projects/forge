@@ -19,7 +19,7 @@ from src import srv_msg
 log = logging.getLogger('forge')
 
 
-def _get_lease_4(allocator: str, mac: str, giaddr: str, all_leases: list = None, netmask: int = 24):
+def _get_lease_4(allocator: str, mac: str, giaddr: str, all_leases: list = None, netmask: int = 16):
     """
     Get v4 lease from kea. Check if address is correct by checking previously assigned address.
     :param allocator: type of allocator
@@ -86,14 +86,14 @@ def test_v4_allocators(backend, scope):
     - allocator configured per subnet
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.0/24', allocator='iterative')
-    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.0/24', allocator='flq')
-    srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24', '192.168.52.0/24', allocator='random')
+    srv_control.config_srv_subnet('192.167.0.0/24', '192.167.0.0/24', allocator='iterative')
+    srv_control.config_srv_another_subnet_no_interface('192.168.0.0/24', '192.168.0.0/24', allocator='flq')
+    srv_control.config_srv_another_subnet_no_interface('192.169.0.0/24', '192.169.0.0/24', allocator='random')
 
     if scope == "shared_networks":
-        srv_control.shared_subnet('192.168.50.0/24', 0)
-        srv_control.shared_subnet('192.168.51.0/24', 0)
-        srv_control.shared_subnet('192.168.52.0/24', 0)
+        srv_control.shared_subnet('192.167.0.0/24', 0)
+        srv_control.shared_subnet('192.168.0.0/24', 0)
+        srv_control.shared_subnet('192.169.0.0/24', 0)
 
         srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
         srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
@@ -107,9 +107,9 @@ def test_v4_allocators(backend, scope):
     leases_subnet2 = []
     leases_subnet3 = []
     for i in range(10, 20):
-        leases_subnet1.append(_get_lease_4('iterative', f'22:00:00:00:00:{i}', '192.168.50.1', leases_subnet1))
-        leases_subnet2.append(_get_lease_4('flq', f'33:00:00:00:00:{i}', '192.168.51.1', leases_subnet2))
-        leases_subnet3.append(_get_lease_4('random', f'44:00:00:00:00:{i}', '192.168.52.1', leases_subnet3))
+        leases_subnet1.append(_get_lease_4('iterative', f'22:00:00:00:00:{i}', '192.167.0.1', leases_subnet1))
+        leases_subnet2.append(_get_lease_4('flq', f'33:00:00:00:00:{i}', '192.168.0.1', leases_subnet2))
+        leases_subnet3.append(_get_lease_4('random', f'44:00:00:00:00:{i}', '192.169.0.1', leases_subnet3))
     srv_msg.check_leases(leases_subnet1 + leases_subnet2 + leases_subnet3, backend=backend)
 
 
@@ -130,8 +130,8 @@ def test_v4_allocator_randomness(backend):
     leases_subnet1 = []
     leases_subnet2 = []
     for i in range(10, 20):
-        leases_subnet1.append(_get_lease_4('random', f'22:00:00:00:00:{i}', '192.167.0.1', leases_subnet1, netmask=16))
-        leases_subnet2.append(_get_lease_4('flq', f'33:00:00:00:00:{i}', '192.168.0.1', leases_subnet2, netmask=16))
+        leases_subnet1.append(_get_lease_4('random', f'22:00:00:00:00:{i}', '192.167.0.1', leases_subnet1))
+        leases_subnet2.append(_get_lease_4('flq', f'33:00:00:00:00:{i}', '192.168.0.1', leases_subnet2))
     srv_msg.check_leases(leases_subnet1 + leases_subnet2, backend=backend)
 
     srv_control.start_srv('DHCP', 'stopped')
@@ -149,10 +149,8 @@ def test_v4_allocator_randomness(backend):
     # let's generate exactly the same traffic, addresses may repeat but chances that we get at least 1 repeated address
     # from pool of /16 should be slim, and that is what we are testing here
     for i in range(10, 20):
-        leases_subnet1_2.append(_get_lease_4('random', f'22:00:00:00:00:{i}', '192.167.0.1',
-                                             leases_subnet1, netmask=16))
-        leases_subnet2_2.append(_get_lease_4('flq', f'33:00:00:00:00:{i}', '192.168.0.1',
-                                             leases_subnet2, netmask=16))
+        leases_subnet1_2.append(_get_lease_4('random', f'22:00:00:00:00:{i}', '192.167.0.1', leases_subnet1))
+        leases_subnet2_2.append(_get_lease_4('flq', f'33:00:00:00:00:{i}', '192.168.0.1', leases_subnet2))
     srv_msg.check_leases(leases_subnet1_2 + leases_subnet2_2, backend=backend)
 
     before_restart = leases_subnet1 + leases_subnet2
@@ -181,7 +179,7 @@ def test_v4_allocator_exhausted_pool(backend, allocator):
 
     leases_subnet1 = []
     for i in range(10, 22):
-        leases_subnet1.append(_get_lease_4('random', f'22:00:00:00:00:{i}', '192.167.0.1', [], netmask=16))
+        leases_subnet1.append(_get_lease_4('random', f'22:00:00:00:00:{i}', '192.167.0.1', []))
 
     srv_msg.check_leases(leases_subnet1, backend=backend)
 
