@@ -1541,7 +1541,8 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         linkaddr: sets Link Address in Relayed message
         ifaceid: sets Interface ID in option 18 in Relayed message
     """
-
+    # TODO where should be a way to make sure that IA_PD/IA_NA option is not included
+    # and same with any other option
     if exchange == 'full':
         # Build and send Solicit and await Advertisement
         SA(address, delegated_prefix, relay_information, status_code, duid, iaid, linkaddr, ifaceid)

@@ -356,14 +356,16 @@ def define_temporary_lease_db_backend_credentials(db_type, tmp_db_user, tmp_db_p
 
 # START Reservation backend section
 @step(r'Use (\S+) reservation system.')
-def enable_db_backend_reservation(db_type):
+def enable_db_backend_reservation(db_type, clear=True):
     # for now we are not implementing new configuration system for this one host reservation in databases
     if db_type == 'MySQL':
         mysql_reservation.enable_db_backend_reservation()
-        mysql_reservation.clear_all_reservations()
+        if clear:
+            mysql_reservation.clear_all_reservations()
     elif db_type == 'PostgreSQL':
         pgsql_reservation.enable_db_backend_reservation()
-        pgsql_reservation.clear_all_reservations()
+        if clear:
+            pgsql_reservation.clear_all_reservations()
     elif db_type == "memfile":
         pass
     else:
