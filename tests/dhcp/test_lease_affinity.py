@@ -219,8 +219,8 @@ def test_v6_lease_affinity(backend):
     - check if leases were removed on time
     It's making detailed checks on all messages
     """
-    vlt = 8
-    affinity = 8
+    vlt = 10
+    affinity = 10
     misc.test_setup()
     srv_control.set_time('renew-timer', 1)
     srv_control.set_time('rebind-timer', 2)
@@ -249,14 +249,13 @@ def test_v6_lease_affinity(backend):
     cmd = {"command": "lease6-get-all"}
     srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
-    leases = []
     # addresses: 2001:db8:1::11, 2001:db8:1::12, 2001:db8:1::13, 2001:db8:1::14
     # prefixes: 2001:db8:2::, 2001:db8:2::4, 2001:db8:2::8, 2001:db8:2::c
 
-    leases.append(_get_lease(mac="f6:f5:f4:f3:f2:11", addr='2001:db8:1::11', prefix='2001:db8:2::', backend=backend))
-    leases.append(_get_lease(mac="f6:f5:f4:f3:f2:22", addr='2001:db8:1::12', prefix='2001:db8:2::4', backend=backend))
-    leases.append(_get_lease(mac="f6:f5:f4:f3:f2:33", addr='2001:db8:1::13', prefix='2001:db8:2::8', backend=backend))
-    leases.append(_get_lease(mac="f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c', backend=backend))
+    _get_lease(mac="f6:f5:f4:f3:f2:11", addr='2001:db8:1::11', prefix='2001:db8:2::', backend=backend, validlft=vlt)
+    _get_lease(mac="f6:f5:f4:f3:f2:22", addr='2001:db8:1::12', prefix='2001:db8:2::4', backend=backend, validlft=vlt)
+    _get_lease(mac="f6:f5:f4:f3:f2:33", addr='2001:db8:1::13', prefix='2001:db8:2::8', backend=backend, validlft=vlt)
+    _get_lease(mac="f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c', backend=backend, validlft=vlt)
 
     start = time.time()
     # we should be out of addresses and prefixes
@@ -293,12 +292,14 @@ def test_v6_lease_affinity(backend):
         assert lease['valid-lft'] == vlt, f"Address has incorrect valid lifetime {lease}"
 
     # all addresses are expired and reclaimed new client should get address and prefix, first in line
-    _get_lease(mac="f6:f5:f4:f3:66:99", addr='2001:db8:1::11', prefix='2001:db8:2::', backend=backend)
+    _get_lease(mac="f6:f5:f4:f3:66:99", addr='2001:db8:1::11', prefix='2001:db8:2::', backend=backend, validlft=vlt)
 
     # 4th client should be able to get it's old lease
-    client = _get_lease(mac="f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c', backend=backend)
+    client = _get_lease(mac="f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c',
+                        backend=backend, validlft=vlt)
     # and make sure it can renew it
-    _renew_lease(mac="f6:f5:f4:f3:f2:44", ia_na_option=client['ia'], ia_pd_option=client['pd'], backend=backend)
+    _renew_lease(mac="f6:f5:f4:f3:f2:44", ia_na_option=client['ia'], ia_pd_option=client['pd'],
+                 backend=backend, validlft=vlt)
     # than release it (let's check Kea #2766)
     _release_lease(mac="f6:f5:f4:f3:f2:44", ia_na_option=client['ia'], ia_pd_option=client['pd'])
     # get lease and check state
@@ -312,7 +313,7 @@ def test_v6_lease_affinity(backend):
         assert lease['valid-lft'] == 0, f"Address has incorrect valid lifetime {lease}"
 
     # and ask for it again
-    _get_lease(mac="f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c', backend=backend)
+    _get_lease(mac="f6:f5:f4:f3:f2:44", addr='2001:db8:1::14', prefix='2001:db8:2::c', backend=backend, validlft=vlt)
     second_start = time.time()
 
     lease_ccch = srv_msg.send_ctrl_cmd(cmd)  # get leases from command control channel
@@ -446,8 +447,8 @@ def test_v4_lease_affinity(backend):
     - check if leases were removed on time
     It's making detailed checks on all messages
     """
-    vlt = 7
-    affinity = 8
+    vlt = 10
+    affinity = 10
     misc.test_setup()
     srv_control.set_time('renew-timer', 1)
     srv_control.set_time('rebind-timer', 2)
@@ -473,11 +474,10 @@ def test_v4_lease_affinity(backend):
     cmd = {"command": "lease4-get-all"}
     srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
-    leases = []
-    leases.append(_get_lease_4(mac="f6:f5:f4:f3:f2:11", addr='192.168.50.11', backend=backend, valid_lft=vlt))
-    leases.append(_get_lease_4(mac="f6:f5:f4:f3:f2:22", addr='192.168.50.12', backend=backend, valid_lft=vlt))
-    leases.append(_get_lease_4(mac="f6:f5:f4:f3:f2:33", addr='192.168.50.13', backend=backend, valid_lft=vlt))
-    leases.append(_get_lease_4(mac="f6:f5:f4:f3:f2:44", addr='192.168.50.14', backend=backend, valid_lft=vlt))
+    _get_lease_4(mac="f6:f5:f4:f3:f2:11", addr='192.168.50.11', backend=backend, valid_lft=vlt)
+    _get_lease_4(mac="f6:f5:f4:f3:f2:22", addr='192.168.50.12', backend=backend, valid_lft=vlt)
+    _get_lease_4(mac="f6:f5:f4:f3:f2:33", addr='192.168.50.13', backend=backend, valid_lft=vlt)
+    _get_lease_4(mac="f6:f5:f4:f3:f2:44", addr='192.168.50.14', backend=backend, valid_lft=vlt)
 
     start = time.time()
 
