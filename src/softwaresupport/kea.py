@@ -1792,9 +1792,13 @@ def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
                              hide_all=not world.f_cfg.forge_verbose)
 
 
-def save_logs(destination_address=world.f_cfg.mgmt_address):
+def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.mgmt_address):
+    """
+    Download logs from kea-dhcp4 or kea-dhcp6
+    :param local_dest_dir: results directory
+    :param destination_address: ip address of a remote system
+    """
     if world.f_cfg.install_method == 'make':
-        # download all logs, ie. kea.log, kea.log1, etc.
         log_path = world.f_cfg.log_join('kea.log*')
     else:
         if world.server_system in ['redhat', 'alpine']:
@@ -1808,14 +1812,8 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
         else:
             cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
             cmd += ' /tmp/kea.log'
-        result = fabric_sudo_command(cmd,
-                                     destination_host=destination_address,
-                                     ignore_errors=True)
+        fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
         log_path = '/tmp/kea.log'
-
-    local_dest_dir = check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
-                                                           '.',
-                                                           destination_address)
 
     # If there are already saved logs then the next ones save in separate folder.
     # For subsequent logs create folder kea-logs-1. If it exists then kea-logs-2,
@@ -1833,52 +1831,79 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
         if not found:
             raise Exception('cannot store log, there is already 100 files stored')
 
-    fabric_download_file(log_path,
-                         local_dest_dir,
+    fabric_download_file(log_path, local_dest_dir,
                          destination_host=destination_address, ignore_errors=True,
                          hide_all=not world.f_cfg.forge_verbose)
 
-    if world.ctrl_enable:
-        if world.f_cfg.install_method == 'make':
-            log_path = world.f_cfg.log_join('kea-ctrl-agent.log')
+
+def save_ddns_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address):
+    """
+    Download logs from kea-dhcp-ddns
+    :param local_dest_dir: results directory
+    :param destination_address: ip address of a remote system
+    """
+    if world.f_cfg.install_method == 'make':
+        log_path = world.f_cfg.log_join('kea-dhcp-ddns.log')
+    else:
+        if world.server_system in ['redhat', 'alpine']:
+            service_name = 'kea-dhcp-ddns'
         else:
-            if world.server_system in ['redhat', 'alpine']:
-                service_name = 'kea-ctrl-agent'
-            else:
-                service_name = 'isc-kea-ctrl-agent'
-            if world.server_system == 'alpine':
-                logging_file_path = world.f_cfg.log_join('kea-ctrl-agent.log')
-                cmd = f'cat {logging_file_path} > '   # get logs of kea service
-                cmd += ' /tmp/kea-ctrl-agent.log'
-            else:
-                cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
-                cmd += ' /tmp/kea-ctrl-agent.log'
-            fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
-            log_path = '/tmp/kea-ctrl-agent.log'
-        fabric_download_file(log_path, local_dest_dir,
-                             destination_host=destination_address, ignore_errors=True,
-                             hide_all=not world.f_cfg.forge_verbose)
+            service_name = 'isc-kea-dhcp-ddns'
+        if world.server_system == 'alpine':
+            logging_file_path = world.f_cfg.log_join('kea-dhcp-ddns.log')
+            cmd = f'cat {logging_file_path} > '  # get logs of kea service
+            cmd += ' /tmp/kea-dhcp-ddns.log'
+        else:
+            cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
+            cmd += ' /tmp/kea-dhcp-ddns.log'
+        fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
+        log_path = '/tmp/kea-dhcp-ddns.log'
+    fabric_download_file(log_path, local_dest_dir,
+                         destination_host=destination_address, ignore_errors=True,
+                         hide_all=not world.f_cfg.forge_verbose)
+
+
+def save_ctrl_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address):
+    """
+    Download logs from kea-ctrl-agent
+    :param local_dest_dir: results directory
+    :param destination_address: ip address of a remote system
+    """
+    if world.f_cfg.install_method == 'make':
+        log_path = world.f_cfg.log_join('kea-ctrl-agent.log')
+    else:
+        if world.server_system in ['redhat', 'alpine']:
+            service_name = 'kea-ctrl-agent'
+        else:
+            service_name = 'isc-kea-ctrl-agent'
+        if world.server_system == 'alpine':
+            logging_file_path = world.f_cfg.log_join('kea-ctrl-agent.log')
+            cmd = f'cat {logging_file_path} > '  # get logs of kea service
+            cmd += ' /tmp/kea-ctrl-agent.log'
+        else:
+            cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
+            cmd += ' /tmp/kea-ctrl-agent.log'
+        fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
+        log_path = '/tmp/kea-ctrl-agent.log'
+    fabric_download_file(log_path, local_dest_dir,
+                         destination_host=destination_address, ignore_errors=True,
+                         hide_all=not world.f_cfg.forge_verbose)
+
+
+def save_logs(destination_address: str = world.f_cfg.mgmt_address):
+    """
+    Save all types of log files to results file
+    :param destination_address: ip address of remote system
+    """
+    local_dest_dir = check_local_path_for_downloaded_files(world.cfg["test_result_dir"], '.', destination_address)
+
+    save_dhcp_logs(local_dest_dir, destination_address)
+
+    if world.ctrl_enable:
+        save_ctrl_logs(local_dest_dir, destination_address)
 
     if world.ddns_enable:
-        if world.f_cfg.install_method == 'make':
-            log_path = world.f_cfg.log_join('kea-dhcp-ddns.log')
-        else:
-            if world.server_system in ['redhat', 'alpine']:
-                service_name = 'kea-dhcp-ddns'
-            else:
-                service_name = 'isc-kea-dhcp-ddns'
-            if world.server_system == 'alpine':
-                logging_file_path = world.f_cfg.log_join('kea-dhcp-ddns.log')
-                cmd = f'cat {logging_file_path} > '   # get logs of kea service
-                cmd += ' /tmp/kea-dhcp-ddns.log'
-            else:
-                cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
-                cmd += ' /tmp/kea-dhcp-ddns.log'
-            fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
-            log_path = '/tmp/kea-dhcp-ddns.log'
-        fabric_download_file(log_path, local_dest_dir,
-                             destination_host=destination_address, ignore_errors=True,
-                             hide_all=not world.f_cfg.forge_verbose)
+        save_ddns_logs(local_dest_dir, destination_address)
 
 
 def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,

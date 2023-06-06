@@ -1121,6 +1121,7 @@ def test_ddns4_logging_all_types_debug():
 
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
+    srv_msg.forge_sleep(1)
     log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', 'kea-dhcp-ddns.log')
     log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', 'kea-dhcp-ddns.log')
     # log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', 'kea-dhcp-ddns.log')  # TODO: it is not present in the log
