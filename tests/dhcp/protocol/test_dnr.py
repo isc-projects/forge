@@ -15,7 +15,7 @@ from src import misc
 
 @pytest.mark.v4
 @pytest.mark.options
-def test_v4_DNR():
+def test_v4_dnr():
     """
     Check if Kea return option Discovery of Network-designated Resolvers (162, DNR) as configured.
     Using example from documentation.
@@ -62,7 +62,7 @@ def test_v4_DNR():
 
 @pytest.mark.v6
 @pytest.mark.options
-def test_v6_DNR():
+def test_v6_dnr():
     """
     Check if Kea return option Discovery of Network-designated Resolvers (144, DNR) as configured.
     Using example from documentation.

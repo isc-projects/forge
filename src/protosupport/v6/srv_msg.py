@@ -37,7 +37,6 @@ import os
 import logging
 import select
 import socket
-import string
 from time import time
 
 import scapy
