@@ -1174,7 +1174,7 @@ def test_v4_reservation_update_negative(channel, host_database):
     update = {"subnet-id": 1, "hw-address": "010203"}  # minimum length is 4
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
 
-    update = {"subnet-id": 1, "hw-address": "".join(random.choices(string.printable, k=300))}
+    update = {"subnet-id": 1, "hw-address": "".join(random.choices(string.hexdigits, k=300))}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
 
     update = {"subnet-id": 1, "hw-address": 1}
@@ -1183,7 +1183,7 @@ def test_v4_reservation_update_negative(channel, host_database):
     update = {"subnet-id": 1, "hw-address": True}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
 
-    update = {"subnet-id": 1, "hw-address": random.choices(string.printable, k=300)}
+    update = {"subnet-id": 1, "hw-address": random.choices(string.hexdigits, k=300)}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
 
     # non existing hw-address
@@ -1196,10 +1196,10 @@ def test_v4_reservation_update_negative(channel, host_database):
 
     # incorrect subnet id
     update = {"hw-address": "f6:f5:f4:f3:f2:01",
-              "subnet-id": random.choices(string.printable, k=300)}
+              "subnet-id": random.choices(string.hexdigits, k=300)}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
     update = {"hw-address": "f6:f5:f4:f3:f2:01",
-              "subnet-id": "".join(random.choices(string.printable, k=300))}
+              "subnet-id": "".join(random.choices(string.hexdigits, k=300))}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
     update = {"hw-address": "f6:f5:f4:f3:f2:01",
               "subnet-id": True}
@@ -1211,15 +1211,15 @@ def test_v4_reservation_update_negative(channel, host_database):
     # correctly identified reservation but with incorrect data
     update = {"hw-address": "f6:f5:f4:f3:f2:01",
               "subnet-id": 1,
-              "ip-addresses": ["".join(random.choices(string.printable, k=300))]}
+              "ip-addresses": ["".join(random.choices(string.hexdigits, k=300))]}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
     update = {"hw-address": "f6:f5:f4:f3:f2:01",
               "subnet-id": 1,
-              "prefixes": ["".join(random.choices(string.printable, k=300))]}
+              "prefixes": ["".join(random.choices(string.hexdigits, k=300))]}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
     update = {"hw-address": "f6:f5:f4:f3:f2:01",
               "subnet-id": 1,
-              "option-data": [{"abc": "".join(random.choices(string.printable, k=300))}]}
+              "option-data": [{"abc": "".join(random.choices(string.hexdigits, k=300))}]}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
 
     # and now let's check reservation that we actually added
@@ -3876,7 +3876,7 @@ def test_v6_reservation_update_negative(channel, host_database):
     update = {"subnet-id": 1, "duid": "010203"}  # minimum length is 4
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
 
-    update = {"subnet-id": 1, "duid": "".join(random.choices(string.printable, k=300))}
+    update = {"subnet-id": 1, "duid": "".join(random.choices(string.hexdigits, k=300))}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
 
     update = {"subnet-id": 1, "duid": 1}
@@ -3885,7 +3885,7 @@ def test_v6_reservation_update_negative(channel, host_database):
     update = {"subnet-id": 1, "duid": True}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
 
-    update = {"subnet-id": 1, "duid": random.choices(string.printable, k=300)}
+    update = {"subnet-id": 1, "duid": random.choices(string.hexdigits, k=300)}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
 
     # non existing duid
@@ -3898,10 +3898,10 @@ def test_v6_reservation_update_negative(channel, host_database):
 
     # incorrect subnet id
     update = {"duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
-              "subnet-id": random.choices(string.printable, k=300)}
+              "subnet-id": random.choices(string.hexdigits, k=300)}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
     update = {"duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
-              "subnet-id": "".join(random.choices(string.printable, k=300))}
+              "subnet-id": "".join(random.choices(string.hexdigits, k=300))}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
     update = {"duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
               "subnet-id": True}
@@ -3913,15 +3913,15 @@ def test_v6_reservation_update_negative(channel, host_database):
     # correctly identified reservation but with incorrect data
     update = {"duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
               "subnet-id": 1,
-              "ip-addresses": ["".join(random.choices(string.printable, k=300))]}
+              "ip-addresses": ["".join(random.choices(string.hexdigits, k=300))]}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
     update = {"duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
               "subnet-id": 1,
-              "prefixes": ["".join(random.choices(string.printable, k=300))]}
+              "prefixes": ["".join(random.choices(string.hexdigits, k=300))]}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
     update = {"duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
               "subnet-id": 1,
-              "option-data": [{"abc": "".join(random.choices(string.printable, k=300))}]}
+              "option-data": [{"abc": "".join(random.choices(string.hexdigits, k=300))}]}
     _reservation_update(update, target=_get_target(host_database), exp_result=1)
 
     # and now let's check reservation that we actually added
