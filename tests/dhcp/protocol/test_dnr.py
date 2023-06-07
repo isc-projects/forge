@@ -72,6 +72,7 @@ def test_v6_dnr():
     srv_control.config_srv_opt('v6-dnr', '3234, 23, example.some.host.org., 00 20 20 01 0d b8 00 01 00 00 00 00 00 00 '
                                          'de ad be ef ff 02 00 00 00 00 00 00 00 00 00 00 fa ce b0 0c 6b 65 79 31 3d '
                                          '76 61 6c 31 20 6b 65 79 32 3d 76 61 6c 32')
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -84,10 +85,11 @@ def test_v6_dnr():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(144)
-    srv_msg.response_check_option_content(144, 'dnr',
-                                          b'\x00\x90\x00P\x0c\xa2\x00\x17\x07example\x04some\x04host\x03org\x00\x00  '
-                                          b'\x01\r\xb8\x00\x01\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef\xff\x02\x00\x00'
-                                          b'\x00\x00\x00\x00\x00\x00\x00\x00\xfa\xce\xb0\x0ckey1=val1 key2=val2')
+    srv_msg.response_check_option_content(144, 'servicepriority', 3234)
+    srv_msg.response_check_option_content(144, 'adnlen', 23)
+    srv_msg.response_check_option_content(144, 'adn', 'example.some.host.org.')
+    srv_msg.response_check_option_content(144, 'address', '2001:db8:1::dead:beef,ff02::face:b00c')
+    srv_msg.response_check_option_content(144, 'svcparams', 'key1=val1 key2=val2')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -99,7 +101,9 @@ def test_v6_dnr():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(144)
-    srv_msg.response_check_option_content(144, 'dnr',
-                                          b'\x00\x90\x00P\x0c\xa2\x00\x17\x07example\x04some\x04host\x03org\x00\x00  '
-                                          b'\x01\r\xb8\x00\x01\x00\x00\x00\x00\x00\x00\xde\xad\xbe\xef\xff\x02\x00\x00'
-                                          b'\x00\x00\x00\x00\x00\x00\x00\x00\xfa\xce\xb0\x0ckey1=val1 key2=val2')
+    srv_msg.response_check_include_option(144)
+    srv_msg.response_check_option_content(144, 'servicepriority', 3234)
+    srv_msg.response_check_option_content(144, 'adnlen', 23)
+    srv_msg.response_check_option_content(144, 'adn', 'example.some.host.org.')
+    srv_msg.response_check_option_content(144, 'address', '2001:db8:1::dead:beef,ff02::face:b00c')
+    srv_msg.response_check_option_content(144, 'svcparams', 'key1=val1 key2=val2')

@@ -1175,8 +1175,6 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
         if data_type == "duid":
             expected_value = expected_value.replace(":", "")
             received.append(extract_duid(x.duid))
-        elif data_type == "dnr":
-            received.append(str(x))
         else:
             for each in x:
                 tmp_field = each.fields.get(data_type)
