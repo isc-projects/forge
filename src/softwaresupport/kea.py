@@ -172,8 +172,8 @@ world.kea_options4 = {
     "classless-static-route": 121,  # internal
     "vivco-suboptions": 124,  # binary
     "vivso-suboptions": 125,  # binary
+    "v4-dnr": 162,
     "end": 255,
-    "v4-dnr": 162
 }
 
 
