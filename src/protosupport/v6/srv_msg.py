@@ -961,7 +961,7 @@ def response_check_include_option(must_include, opt_code):
 
     opt_descr = _get_opt_descr(opt_code)
     if must_include:
-        assert opt, "Expected option {opt_descr} not present in the message.".format(**locals()) + \
+        assert opt, "Expected option {opt_descr}, but it is not present in the message.".format(**locals()) + \
                     "\nPacket:" + str(world.srvmsg[0].show(dump=True))
     else:
         assert len(opt) == 0, "Unexpected option {opt_descr} found in the message.".format(**locals()) + \
@@ -1057,7 +1057,7 @@ def response_check_include_suboption(opt_code, expect, expected_value):
     opt_descr = _get_opt_descr(opt_code)
     subopt_descr = _get_opt_descr(expected_value)
     if expect:
-        assert len(x) > 0, "Expected sub-option {subopt_descr} not present in the option {opt_descr}".format(**locals())
+        assert len(x) > 0, "Expected sub-option {subopt_descr}, but it is not present in the option {opt_descr}".format(**locals())
     else:
         assert len(x) == 0, "NOT expected sub-option {subopt_descr} is present in the option {opt_descr}".format(**locals())
     return x
@@ -1151,7 +1151,7 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
 
     opt_descr = _get_opt_descr(opt_code)
 
-    assert x, "Expected option {opt_descr} not present in the message.".format(**locals())
+    assert x, "Expected option {opt_descr}, but it is not present in the message.".format(**locals())
     # test all collected options,:
     # couple tweaks to make checking smoother
 

@@ -158,7 +158,7 @@ def _get_lease_v6(address, duid, vendor=None, ia_na=None, ia_pd=None):
             srv_msg.response_check_option_content(25, 'sub-option', 26)
             successes += 1
         except AssertionError as e:
-            if e.args[0] == 'Expected sub-option DHCP6OptIAPrefix[26] not present in the option DHCP6OptIA_PD[25]':
+            if e.args[0] == 'Expected sub-option DHCP6OptIAPrefix[26], but it is not present in the option DHCP6OptIA_PD[25]':
                 ia_pd = None
             else:
                 raise AssertionError(e) from e
