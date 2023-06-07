@@ -37,6 +37,7 @@ import os
 import logging
 import select
 import socket
+import string
 from time import time
 
 import scapy
@@ -90,7 +91,8 @@ OPTIONS = {"client-id": 1,
            "lq-client-data": 45,
            "client-arch-type": 61,
            "erp-local-domain-name": 65,
-           "client-link-layer-addr": 79}
+           "client-link-layer-addr": 79,
+           "v6-dnr": 144}
 
 
 def get_option_code(opt_code) -> int:
@@ -1174,6 +1176,8 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
         if data_type == "duid":
             expected_value = expected_value.replace(":", "")
             received.append(extract_duid(x.duid))
+        elif data_type == "dnr":
+            received.append(str(x))
         else:
             for each in x:
                 tmp_field = each.fields.get(data_type)

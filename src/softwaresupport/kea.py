@@ -84,7 +84,8 @@ world.kea_options6 = {
     "lq-client-link": 48,
     "bootfile-url": 59,
     "bootfile-param": 60,
-    "erp-local-domain-name": 65
+    "erp-local-domain-name": 65,
+    "v6-dnr": 144
 }
 
 world.kea_options4 = {
@@ -171,7 +172,8 @@ world.kea_options4 = {
     "classless-static-route": 121,  # internal
     "vivco-suboptions": 124,  # binary
     "vivso-suboptions": 125,  # binary
-    "end": 255
+    "end": 255,
+    "v4-dnr": 162
 }
 
 
