@@ -213,8 +213,8 @@ def test_ha_configuration():
     srv_msg.response_check_content('yiaddr', msg.yiaddr)
     _check_times_in_message(vlt)
 
-    _check_lease("00:11:22:33:44:55", "192.168.50.1", offer_lifetime)
-    _check_lease("00:11:22:33:44:55", "192.168.50.1", offer_lifetime, dest=world.f_cfg.mgmt_address_2)
+    _check_lease("00:11:22:33:44:55", "192.168.50.1", vlt)
+    _check_lease("00:11:22:33:44:55", "192.168.50.1", vlt, dest=world.f_cfg.mgmt_address_2)
 
     # check leases
     my_lease = srv_msg.get_all_leases()
