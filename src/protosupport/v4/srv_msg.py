@@ -201,10 +201,10 @@ def client_does_include(sender_type, opt_type, value):
         # flags, RCODE1, RCODE2, domain name
         # RCODE1 and RCODE2 are deprecated but we need to add them.
         if 'E' not in world.cfg["values"]["FQDN_flags"]:
-            fqdn = (flags + '\x00\x00' + world.cfg["values"]["FQDN_domain_name"])
+            fqdn = flags + '\x00\x00' + world.cfg["values"]["FQDN_domain_name"]
         else:
             domain = "".join(map(lambda z: chr(len(z))+z, world.cfg["values"]["FQDN_domain_name"].split('.')))
-            fqdn = (flags + '\x00\x00' + domain)
+            fqdn = flags + '\x00\x00' + domain
         world.cliopts += [('client_FQDN', fqdn)]
     elif opt_type == 'pxe_client_architecture':
         # code - 93
