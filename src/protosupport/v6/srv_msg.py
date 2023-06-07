@@ -115,13 +115,16 @@ def client_requests_option(opt_type):
     """
     Add RequestOption to message.
     """
+    # Ensure the option code is an integer.
+    opt_type = get_option_code(opt_type)
+
     if not hasattr(world, 'oro'):
         # There was no ORO at all, create new one
         world.oro = dhcp6.DHCP6OptOptReq()
         # Scapy creates ORO with 23, 24 options request. Let's get rid of them
         world.oro.reqopts = []  # don't request anything by default
 
-    world.oro.reqopts.append(int(opt_type))
+    world.oro.reqopts.append(opt_type)
 
 
 def client_send_msg(msgname, iface=None, addr=None):

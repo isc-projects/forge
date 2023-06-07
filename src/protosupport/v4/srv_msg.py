@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -69,9 +69,12 @@ def get_option_code(opt_code) -> int:
 
 
 def client_requests_option(opt_type):
+    # Ensure the option code is an integer.
+    opt_type = get_option_code(opt_type)
+
     if not hasattr(world, 'prl'):
         world.prl = ""  # don't request anything by default
-    world.prl += chr(int(opt_type))  # put a single byte there
+    world.prl += chr(opt_type)  # put a single byte there
 
 
 def build_raw(msg, append):
