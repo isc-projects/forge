@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,6 +7,11 @@
 """DHCPv4 vendor specific information"""
 
 # pylint: disable=invalid-name
+
+import binascii
+import random
+import socket
+import string
 
 import pytest
 
@@ -864,3 +869,180 @@ def test_v4_option_125_encapsulated():
     srv_msg.response_check_option_content(43, 'value', 'HEX:7D06314142434445')
 
     srv_msg.check_leases({'address': '192.168.50.50'})
+
+
+def _dorara(vendor_id: int, address : str, vivso_suboptions : str):
+    """
+    Do a DORA exchange plus another RA exchange to test the renew case.
+    Expect the given IPv4 address in the yiaddr field and the given vivso suboption content.
+    :param vendor_id: the vendor ID included in the client's discover
+    :param address: the expected IPv4 address value for the yiaddr field
+    :param vivso_suboptions: the expected content for option 125. If None, it is expected that the option is not received.
+    """
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', ''.join(random.choices(string.hexdigits, k=12)).lower())
+    srv_msg.client_requests_option('vivso-suboptions')
+    srv_msg.client_does_include_with_value('vendor_class_id', vendor_id)
+    srv_msg.client_does_include_with_value('client_id', ''.join(random.choices(string.hexdigits, k=16)).lower())
+    srv_msg.client_send_msg('DISCOVER')
+
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', address)
+    srv_msg.response_check_include_option('subnet-mask')
+    srv_msg.response_check_option_content('subnet-mask', 'value', '255.255.255.0')
+    if vivso_suboptions is None:
+        srv_msg.response_check_include_option('vivso-suboptions', False)
+    else:
+        srv_msg.response_check_include_option('vivso-suboptions')
+        srv_msg.response_check_option_content('vivso-suboptions', 'value', vivso_suboptions)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', address)
+    srv_msg.client_requests_option('vivso-suboptions')
+    srv_msg.client_does_include_with_value('vendor_class_id', vendor_id)
+    srv_msg.client_send_msg('REQUEST')
+
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', address)
+    srv_msg.response_check_include_option('subnet-mask')
+    srv_msg.response_check_option_content('subnet-mask', 'value', '255.255.255.0')
+    if vivso_suboptions is None:
+        srv_msg.response_check_include_option('vivso-suboptions', False)
+    else:
+        srv_msg.response_check_include_option('vivso-suboptions')
+        srv_msg.response_check_option_content('vivso-suboptions', 'value', vivso_suboptions)
+
+    # Renew
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', address)
+    srv_msg.client_requests_option('vivso-suboptions')
+    srv_msg.client_does_include_with_value('vendor_class_id', vendor_id)
+    srv_msg.client_send_msg('REQUEST')
+
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', address)
+    srv_msg.response_check_include_option('subnet-mask')
+    srv_msg.response_check_option_content('subnet-mask', 'value', '255.255.255.0')
+    if vivso_suboptions is None:
+        srv_msg.response_check_include_option('vivso-suboptions', False)
+    else:
+        srv_msg.response_check_include_option('vivso-suboptions')
+        srv_msg.response_check_option_content('vivso-suboptions', 'value', vivso_suboptions)
+
+
+def _vivso_content(vendor_id: int, suboptions):
+    """
+    Create the hexstring content of a vivso option 125 for the given vendor ID and given suboptions.
+    :param vendor_id: the vendor ID in the client's message
+    :param suboptions: tuple of tuples of (suboption_code, suboption_content)
+    """
+    # Add all suboptions.
+    hex_suboptions = ''
+    for code, content in suboptions:
+        length = int(len(content)/2)
+        hex_suboptions += f'{code:0{2}x}{length:0{2}x}{content}'
+
+    # Add vendor ID, length of all suboptions, suboptions.
+    length = int(len(hex_suboptions)/2)
+    result = f'{vendor_id:0{8}x}{length:0{2}x}{hex_suboptions}'
+
+    return 'HEX:' + result.upper()
+
+
+@pytest.mark.v4
+@pytest.mark.options
+@pytest.mark.vendor
+def test_multiple_v4_options_vivso_suboptions():
+    """
+    Check that multiple vendors can get multiple custom options.
+    Harden the test so that options from different vendors have the same codes.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.0.2.0/24', '192.0.2.10-192.0.2.250')
+    world.dhcp_cfg['option-def'] = [
+        {
+            'code': 123,
+            'name': 'my-123-option',
+            'space': 'vendor-1234',
+            'type': 'boolean'
+        },
+        {
+            'code': 124,
+            'name': 'my-124-option',
+            'space': 'vendor-1234',
+            'type': 'int32'
+        },
+        {
+            'code': 123,
+            'name': 'your-123-option',
+            'space': 'vendor-5678',
+            'type': 'ipv4-address'
+        },
+        {
+            'code': 124,
+            'name': 'your-124-option',
+            'space': 'vendor-5678',
+            'type': 'string'
+        }
+    ]
+    world.dhcp_cfg['client-classes'] = [
+        {
+            'name': 'VENDOR_CLASS_1234',
+            'option-data': [
+                {
+                    'data': '1234',
+                    'name': 'vivso-suboptions'
+                },
+                {
+                    'always-send': True,
+                    'code': 123,
+                    'data': '1',
+                    'space': 'vendor-1234'
+                },
+                {
+                    'always-send': True,
+                    'code': 124,
+                    'data': '512',
+                    'space': 'vendor-1234'
+                }
+            ]
+        },
+        {
+            'name': 'VENDOR_CLASS_5678',
+            'option-data': [
+                {
+                    'data': '5678',
+                    'name': 'vivso-suboptions'
+                },
+                {
+                    'always-send': True,
+                    'code': 123,
+                    'data': '192.0.2.2',
+                    'space': 'vendor-5678'
+                },
+                {
+                    'always-send': True,
+                    'code': 124,
+                    'data': 'text',
+                    'space': 'vendor-5678'
+                }
+            ]
+        }
+    ]
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    _dorara(1234, '192.0.2.10', _vivso_content(1234, ((123, '01'), (124, f'{512:0{8}x}'))))
+    _dorara(5678, '192.0.2.11', _vivso_content(5678,
+        ((123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()),
+         (124, 'text'.encode('utf-8').hex()))))
+    _dorara(9999, '192.0.2.12', None)
+
+    # Again for good measure.
+    _dorara(1234, '192.0.2.13', _vivso_content(1234, ((123, '01'), (124, f'{512:0{8}x}'))))
+    _dorara(5678, '192.0.2.14', _vivso_content(5678,
+        ((123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()),
+         (124, 'text'.encode('utf-8').hex()))))
+    _dorara(9999, '192.0.2.15', None)
