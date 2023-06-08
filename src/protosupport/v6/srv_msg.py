@@ -22,6 +22,7 @@
 # pylint: disable=possibly-unused-variable
 # pylint: disable=redefined-outer-name
 # pylint: disable=too-many-branches
+# pylint: disable=too-many-nested-blocks
 # pylint: disable=too-many-function-args
 # pylint: disable=undefined-variable
 # pylint: disable=unknown-option-value
@@ -1066,7 +1067,9 @@ def response_check_include_suboption(opt_code, expect, expected_value):
     return x
 
 
-values_equivalent = {7: "prefval", 13: "statuscode", 21: "sipdomains", 22: "sipservers", 23: "dnsservers",
+values_equivalent = {7: "prefval", 13: "statuscode",
+                     17: "vso",
+                     21: "sipdomains", 22: "sipservers", 23: "dnsservers",
                      24: "dnsdomains", 27: "nisservers", 28: "nispservers", 29: "nisdomain", 30: "nispdomain",
                      31: "sntpservers", 32: "reftime"}
 
@@ -1173,7 +1176,13 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
                     data_type = values_equivalent.get(opt_code)
                     tmp_field = each.fields.get(data_type)
                 if type(tmp_field) is list:
-                    received.append(",".join(tmp_field))
+                    if len(tmp_field):
+                        if isinstance(tmp_field[0], str):
+                            # The join only works on str.
+                            received.append(",".join(tmp_field))
+                        else:
+                            # Otherwise, get a full representation of the object.
+                            received.append(",".join([repr(i) for i in tmp_field]))
                 else:
                     if isinstance(tmp_field, bytes):
                         received.append(tmp_field.decode('utf-8'))
