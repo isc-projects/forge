@@ -47,8 +47,13 @@ def _dorara(vendor_id: int, address: str, vivso_suboptions: str):
     if vivso_suboptions is None:
         srv_msg.response_check_include_option('vivso-suboptions', False)
     else:
-        srv_msg.response_check_include_option('vivso-suboptions')
-        srv_msg.response_check_option_content('vivso-suboptions', 'value', vivso_suboptions)
+        first = True
+        for suboption in vivso_suboptions:
+            if first:
+                srv_msg.response_check_option_content('vivso-suboptions', 'value', suboption)
+            else:
+                srv_msg.response_check_option_content_more('vivso-suboptions', 'value', suboption)
+            first = False
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
@@ -64,8 +69,13 @@ def _dorara(vendor_id: int, address: str, vivso_suboptions: str):
     if vivso_suboptions is None:
         srv_msg.response_check_include_option('vivso-suboptions', False)
     else:
-        srv_msg.response_check_include_option('vivso-suboptions')
-        srv_msg.response_check_option_content('vivso-suboptions', 'value', vivso_suboptions)
+        first = True
+        for suboption in vivso_suboptions:
+            if first:
+                srv_msg.response_check_option_content('vivso-suboptions', 'value', suboption)
+            else:
+                srv_msg.response_check_option_content_more('vivso-suboptions', 'value', suboption)
+            first = False
 
     # Renew
     misc.test_procedure()
@@ -83,7 +93,13 @@ def _dorara(vendor_id: int, address: str, vivso_suboptions: str):
         srv_msg.response_check_include_option('vivso-suboptions', False)
     else:
         srv_msg.response_check_include_option('vivso-suboptions')
-        srv_msg.response_check_option_content('vivso-suboptions', 'value', vivso_suboptions)
+        first = True
+        for suboption in vivso_suboptions:
+            if first:
+                srv_msg.response_check_option_content('vivso-suboptions', 'value', suboption)
+            else:
+                srv_msg.response_check_option_content_more('vivso-suboptions', 'value', suboption)
+            first = False
 
 
 def _sarrrr(vendor_id: int, address: str, vendor_option: str):
@@ -167,23 +183,26 @@ def _sarrrr(vendor_id: int, address: str, vendor_option: str):
         srv_msg.response_check_option_content('vendor-specific-info', 'value', vendor_option)
 
 
-def _vivso_content(vendor_id: int, suboptions):
+def _vivso_content(vivsos):
     """
     Create the hexstring content of a vivso option 125 for the given vendor ID and given suboptions.
-    :param vendor_id: the vendor ID in the client's message
-    :param suboptions: tuple of tuples of (suboption_code, suboption_content)
+    :param vivsos: lists of vivso options, each being a list of [vendor ID, suboptions],
+                   each suboption being a list of [suboption_code, suboption_content]
     """
-    # Add all suboptions.
-    hex_suboptions = ''
-    for code, content in suboptions:
-        length = int(len(content)/2)
-        hex_suboptions += f'{code:0{2}x}{length:0{2}x}{content}'
+    all_results = []
+    for vendor_id, suboptions in vivsos:
+        result = ''
+        # Add all suboptions.
+        hex_suboptions = ''
+        for code, content in suboptions:
+            length = int(len(content)/2)  # because byte length is half the hex length
+            hex_suboptions += f'{code:0{2}x}{length:0{2}x}{content}'
 
-    # Add vendor ID, length of all suboptions, suboptions.
-    length = int(len(hex_suboptions)/2)
-    result = f'{vendor_id:0{8}x}{length:0{2}x}{hex_suboptions}'
-
-    return 'HEX:' + result.upper()
+        # Add vendor ID, length of all suboptions, suboptions.
+        length = int(len(hex_suboptions)/2)  # because byte length is half the hex length
+        result += f'{vendor_id:0{8}x}{length:0{2}x}{hex_suboptions}'
+        all_results.append('HEX:' + result.upper())
+    return all_results
 
 
 @pytest.mark.v4
@@ -1037,7 +1056,7 @@ def test_v4_option_125_encapsulated():
 @pytest.mark.v4
 @pytest.mark.options
 @pytest.mark.vendor
-def test_multiple_v4_options_vivso_suboptions():
+def test_v4_two_vendors_two_options_each():
     """
     Check that multiple vendors can get multiple custom options.
     Harden the test so that options from different vendors have the same codes.
@@ -1117,17 +1136,157 @@ def test_multiple_v4_options_vivso_suboptions():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dorara(1234, '192.0.2.10', _vivso_content(1234, ((123, '01'), (124, f'{512:0{8}x}'))))
-    _dorara(5678, '192.0.2.11', _vivso_content(5678,
-                                               ((123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()),
-                                                (124, 'text'.encode('utf-8').hex()))))
+    _dorara(1234, '192.0.2.10', _vivso_content([[1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara(5678, '192.0.2.11', _vivso_content([[5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                        [124, 'text'.encode('utf-8').hex()]]]]))
     _dorara(9999, '192.0.2.12', None)
 
     # Again for good measure.
-    _dorara(1234, '192.0.2.13', _vivso_content(1234, ((123, '01'), (124, f'{512:0{8}x}'))))
-    _dorara(5678, '192.0.2.14', _vivso_content(5678,
-                                               ((123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()),
-                                                (124, 'text'.encode('utf-8').hex()))))
+    _dorara(1234, '192.0.2.13', _vivso_content([[1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara(5678, '192.0.2.14', _vivso_content([[5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                        [124, 'text'.encode('utf-8').hex()]]]]))
+    _dorara(9999, '192.0.2.15', None)
+
+
+
+@pytest.mark.v4
+@pytest.mark.options
+@pytest.mark.vendor
+def test_v4_options_from_other_vendor():
+    """
+    Check that multiple vendors can get multiple custom options.
+    Harden the test so that options from different vendors have the same codes.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.0.2.0/24', '192.0.2.10-192.0.2.250')
+    world.dhcp_cfg['option-def'] = [
+        {
+            'code': 123,
+            'name': 'my-123-option',
+            'space': 'vendor-1234',
+            'type': 'boolean'
+        },
+        {
+            'code': 124,
+            'name': 'my-124-option',
+            'space': 'vendor-1234',
+            'type': 'int32'
+        },
+        {
+            'code': 123,
+            'name': 'your-123-option',
+            'space': 'vendor-5678',
+            'type': 'ipv4-address'
+        },
+        {
+            'code': 124,
+            'name': 'your-124-option',
+            'space': 'vendor-5678',
+            'type': 'string'
+        },
+        {
+            'code': 123,
+            'name': 'their-123-option',
+            'space': 'vendor-8888',
+            'type': 'string'
+        },
+        {
+            'code': 124,
+            'name': 'their-124-option',
+            'space': 'vendor-8888',
+            'type': 'string'
+        }
+    ]
+    option_data = [
+        {
+            'always-send': True,
+            'data': '1234',
+            'name': 'vivso-suboptions'
+        },
+        {
+            'always-send': True,
+            'data': '5678',
+            'name': 'vivso-suboptions'
+        },
+        {
+            'always-send': True,
+            'data': '8888',
+            'name': 'vivso-suboptions'
+        },
+        {
+            'always-send': True,
+            'code': 123,
+            'data': '1',
+            'space': 'vendor-1234'
+        },
+        {
+            'always-send': True,
+            'code': 124,
+            'data': '512',
+            'space': 'vendor-1234'
+        },
+        {
+            'always-send': True,
+            'code': 123,
+            'data': '192.0.2.2',
+            'space': 'vendor-5678'
+        },
+        {
+            'always-send': True,
+            'code': 124,
+            'data': 'text',
+            'space': 'vendor-5678'
+        },
+        {
+            'always-send': True,
+            'code': 123,
+            'data': 'aa',
+            'space': 'vendor-8888'
+        },
+        {
+            'always-send': True,
+            'code': 124,
+            'data': 'bb',
+            'space': 'vendor-8888'
+        }
+    ]
+    # Same option data for both vendors.
+    world.dhcp_cfg['client-classes'] = [
+        {
+            'name': 'VENDOR_CLASS_1234',
+            'option-data': option_data
+        },
+        {
+            'name': 'VENDOR_CLASS_5678',
+            'option-data': option_data
+        }
+    ]
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    _dorara(1234, '192.0.2.10', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
+                                                 [5678,
+                                                  [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                   [124, 'text'.encode('utf-8').hex()]]],
+                                                 [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara(5678, '192.0.2.11', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
+                                                 [5678,
+                                                  [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                   [124, 'text'.encode('utf-8').hex()]]],
+                                                 [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara(9999, '192.0.2.12', None)
+
+    # Again for good measure.
+    _dorara(1234, '192.0.2.13', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
+                                                 [5678,
+                                                  [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                   [124, 'text'.encode('utf-8').hex()]]],
+                                                 [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara(5678, '192.0.2.14', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
+                                                 [5678,
+                                                  [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                   [124, 'text'.encode('utf-8').hex()]]],
+                                                 [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
     _dorara(9999, '192.0.2.15', None)
 
 
