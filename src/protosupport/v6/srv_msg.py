@@ -1182,7 +1182,13 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
                             received.append(",".join(tmp_field))
                         else:
                             # Otherwise, get a full representation of the object.
-                            received.append(",".join([repr(i) for i in tmp_field]))
+                            printables = []
+                            for i in tmp_field:
+                                # Just repr() would have also been fine, but let's convert non-printables to hex.
+                                if not all(chr(c).isprintable() for c in i.optdata):
+                                    i.optdata = ''.join([f'{c:0{2}x}' for c in i.optdata])
+                                printables.append(repr(i))
+                            received.append(",".join(printables))
                 else:
                     if isinstance(tmp_field, bytes):
                         received.append(tmp_field.decode('utf-8'))

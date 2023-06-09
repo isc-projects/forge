@@ -1134,7 +1134,7 @@ def test_multiple_v4_options_vivso_suboptions():
 @pytest.mark.v6
 @pytest.mark.options
 @pytest.mark.vendor
-def test_multiple_v6_vendor_options():
+def test_v6_two_vendors_two_options_each():
     """
     Check that multiple vendors can get multiple custom options.
     Harden the test so that options from different vendors have the same codes.
@@ -1196,15 +1196,15 @@ def test_multiple_v6_vendor_options():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarrrr(1234, '2001:db8::', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='\\x01' |>,"
-                                "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='\\x00\\x00\\x02\\x00' |>")
-    _sarrrr(5678, '2001:db8::1', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata=' \\x01\\r\\\\xb8\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\r\\\\xb8 \\x01' |>,"
+    _sarrrr(1234, '2001:db8::', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>")
+    _sarrrr(5678, '2001:db8::1', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
                                  "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>")
     _sarrrr(9999, '2001:db8::2', None)
 
     # Again for good measure.
-    _sarrrr(1234, '2001:db8::3', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='\\x01' |>,"
-                                 "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='\\x00\\x00\\x02\\x00' |>")
-    _sarrrr(5678, '2001:db8::4', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata=' \\x01\\r\\\\xb8\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\r\\\\xb8 \\x01' |>,"
+    _sarrrr(1234, '2001:db8::3', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                 "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>")
+    _sarrrr(5678, '2001:db8::4', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
                                  "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>")
     _sarrrr(9999, '2001:db8::5', None)
