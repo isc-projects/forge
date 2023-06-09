@@ -24,7 +24,7 @@ from src import misc
 from src.forge_cfg import world
 
 
-def _dorara(vendor_id: int, address : str, vivso_suboptions : str):
+def _dorara(vendor_id: int, address: str, vivso_suboptions: str):
     """
     Do a DORA exchange plus another RA exchange to test the renew case.
     Expect the given IPv4 address in the yiaddr field and the given vivso suboption content.
@@ -86,7 +86,7 @@ def _dorara(vendor_id: int, address : str, vivso_suboptions : str):
         srv_msg.response_check_option_content('vivso-suboptions', 'value', vivso_suboptions)
 
 
-def _sarrrr(vendor_id: int, address : str, vendor_option : str):
+def _sarrrr(vendor_id: int, address: str, vendor_option: str):
     """
     Do a SARR exchange plus another renew-reply exchange.
     Expect the given IPv4 address in the yiaddr field and the given vendor option content.
@@ -100,7 +100,7 @@ def _sarrrr(vendor_id: int, address : str, vendor_option : str):
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
-    srv_msg.client_sets_value('Client', 'ia_id', random.randrange(1,1000000))
+    srv_msg.client_sets_value('Client', 'ia_id', random.randrange(1, 1000000))
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_does_include('Client', 'IA_Address')
     srv_msg.client_does_include('Client', 'IA-NA')
@@ -1119,15 +1119,15 @@ def test_multiple_v4_options_vivso_suboptions():
 
     _dorara(1234, '192.0.2.10', _vivso_content(1234, ((123, '01'), (124, f'{512:0{8}x}'))))
     _dorara(5678, '192.0.2.11', _vivso_content(5678,
-        ((123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()),
-         (124, 'text'.encode('utf-8').hex()))))
+                                               ((123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()),
+                                                (124, 'text'.encode('utf-8').hex()))))
     _dorara(9999, '192.0.2.12', None)
 
     # Again for good measure.
     _dorara(1234, '192.0.2.13', _vivso_content(1234, ((123, '01'), (124, f'{512:0{8}x}'))))
     _dorara(5678, '192.0.2.14', _vivso_content(5678,
-        ((123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()),
-         (124, 'text'.encode('utf-8').hex()))))
+                                               ((123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()),
+                                                (124, 'text'.encode('utf-8').hex()))))
     _dorara(9999, '192.0.2.15', None)
 
 
@@ -1199,12 +1199,12 @@ def test_multiple_v6_vendor_options():
     _sarrrr(1234, '2001:db8::', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='\\x01' |>,"
                                 "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='\\x00\\x00\\x02\\x00' |>")
     _sarrrr(5678, '2001:db8::1', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata=' \\x01\\r\\\\xb8\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\r\\\\xb8 \\x01' |>,"
-                                "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>")
+                                 "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>")
     _sarrrr(9999, '2001:db8::2', None)
 
     # Again for good measure.
     _sarrrr(1234, '2001:db8::3', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='\\x01' |>,"
-                                "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='\\x00\\x00\\x02\\x00' |>")
+                                 "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='\\x00\\x00\\x02\\x00' |>")
     _sarrrr(5678, '2001:db8::4', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata=' \\x01\\r\\\\xb8\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\r\\\\xb8 \\x01' |>,"
-                                "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>")
+                                 "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>")
     _sarrrr(9999, '2001:db8::5', None)
