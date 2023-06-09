@@ -279,6 +279,14 @@ def response_check_option_content(opt_code, data_type, expected_value, expect_in
     return dhcpmsg.response_check_option_content(opt_code, expect_include, data_type, expected_value)
 
 
+def response_check_option_content_more(opt_code, data_type, expected_value, expect_include=True):
+    """
+    Check subsequent options. Only to be called after the first option was checked with response_check_option_content.
+    """
+    data_type, expected_value = test_define_value(data_type, expected_value)
+    return dhcpmsg.response_check_option_content_more(opt_code, expect_include, data_type, expected_value)
+
+
 @step(r'(Response|Relayed Message) sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_suboption_content(subopt_code, opt_code, data_type, value, expect_include=True):
     """

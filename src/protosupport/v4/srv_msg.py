@@ -586,12 +586,15 @@ def get_option(msg, opt_code):
     else:
         x = msg.getlayer(1)  # if tcp connection is used, than BOOTP is layer 0 and DHCP options is 1
     # BOOTP messages may be optionless, so check first
+    returned_option = None
     if x is not None:
         for opt in x.options:
             if opt[0] is opt_name:
                 world.opts.append(opt)
-                return opt
-    return None
+                # Only return the first option.
+                if returned_option is None:
+                    returned_option = opt
+    return returned_option
 
 
 def byte_to_hex(byte_str):
@@ -689,6 +692,25 @@ def response_check_option_content(opt_code, expect, data_type, expected):
     outcome, received = test_option(opt_code, received, expected)
 
     opt_descr = _get_opt_descr(opt_code)
+
+    if expect:
+        assert outcome, "Invalid {opt_descr} option received: {received} but expected {expected}".format(**locals()) + \
+                        "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+    else:
+        assert not outcome, "Invalid {opt_descr} option received: {received}" \
+                            " that value has been excluded from correct values".format(**locals()) + \
+                            "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+
+
+def response_check_option_content_more(opt_code, expect, data_type, expected):
+    opt_descr = _get_opt_descr(opt_code)
+    assert len(world.opts), "Not even the initial option {opt_descr} is there." + \
+                            "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+    world.opts.pop(0)
+    assert len(world.opts), "No more {opt_descr} options." + \
+                            "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+
+    outcome, received = test_option(opt_code, world.opts[0], expected)
 
     if expect:
         assert outcome, "Invalid {opt_descr} option received: {received} but expected {expected}".format(**locals()) + \

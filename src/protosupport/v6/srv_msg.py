@@ -1203,6 +1203,10 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
     return received
 
 
+def response_check_option_content_more(opt_code, expect, data_type, expected):
+    pass
+
+
 def save_value_from_option(value_name, option_name):
 
     assert world.srvmsg
