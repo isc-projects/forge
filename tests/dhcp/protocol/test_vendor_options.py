@@ -1148,7 +1148,6 @@ def test_v4_two_vendors_two_options_each():
     _dorara(9999, '192.0.2.15', None)
 
 
-
 @pytest.mark.v4
 @pytest.mark.options
 @pytest.mark.vendor
@@ -1265,27 +1264,23 @@ def test_v4_options_from_other_vendor():
     srv_control.start_srv('DHCP', 'started')
 
     _dorara(1234, '192.0.2.10', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                 [5678,
-                                                  [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                   [124, 'text'.encode('utf-8').hex()]]],
+                                                 [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                         [124, 'text'.encode('utf-8').hex()]]],
                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
     _dorara(5678, '192.0.2.11', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                 [5678,
-                                                  [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                   [124, 'text'.encode('utf-8').hex()]]],
+                                                 [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                         [124, 'text'.encode('utf-8').hex()]]],
                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
     _dorara(9999, '192.0.2.12', None)
 
     # Again for good measure.
     _dorara(1234, '192.0.2.13', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                 [5678,
-                                                  [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                   [124, 'text'.encode('utf-8').hex()]]],
+                                                 [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                         [124, 'text'.encode('utf-8').hex()]]],
                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
     _dorara(5678, '192.0.2.14', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                 [5678,
-                                                  [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                   [124, 'text'.encode('utf-8').hex()]]],
+                                                 [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                         [124, 'text'.encode('utf-8').hex()]]],
                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
     _dorara(9999, '192.0.2.15', None)
 
