@@ -24,11 +24,11 @@ from src import misc
 from src.forge_cfg import world
 
 
-def _dorara(vendor_id: int, address: str, vivso_suboptions: str):
+def _dorara(vendor_ids: int, address: str, vivso_suboptions: str):
     """
     Do a DORA exchange plus another RA exchange to test the renew case.
     Expect the given IPv4 address in the yiaddr field and the given vivso suboption content.
-    :param vendor_id: the vendor ID included in the client's discover
+    :param vendor_id: list of vendor IDs included in the client's messages
     :param address: the expected IPv4 address value for the yiaddr field
     :param vivso_suboptions: the expected content for option 125.
                              If None, it is expected that the option is not received.
@@ -36,7 +36,8 @@ def _dorara(vendor_id: int, address: str, vivso_suboptions: str):
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', ''.join(random.choices(string.hexdigits, k=12)).lower())
     srv_msg.client_requests_option('vivso-suboptions')
-    srv_msg.client_does_include_with_value('vendor_class_id', vendor_id)
+    for vendor_id in vendor_ids:
+        srv_msg.client_does_include_with_value('vendor_class_id', vendor_id)
     srv_msg.client_does_include_with_value('client_id', ''.join(random.choices(string.hexdigits, k=16)).lower())
     srv_msg.client_send_msg('DISCOVER')
 
@@ -54,12 +55,15 @@ def _dorara(vendor_id: int, address: str, vivso_suboptions: str):
             else:
                 srv_msg.response_check_option_content_more('vivso-suboptions', 'value', suboption)
             first = False
+        # Check that there are no more than is expeted.
+        srv_msg.response_check_option_content_more('vivso-suboptions', 'value', None)
 
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', address)
     srv_msg.client_requests_option('vivso-suboptions')
-    srv_msg.client_does_include_with_value('vendor_class_id', vendor_id)
+    for vendor_id in vendor_ids:
+        srv_msg.client_does_include_with_value('vendor_class_id', vendor_id)
     srv_msg.client_send_msg('REQUEST')
 
     srv_msg.send_wait_for_message('MUST', 'ACK')
@@ -76,13 +80,16 @@ def _dorara(vendor_id: int, address: str, vivso_suboptions: str):
             else:
                 srv_msg.response_check_option_content_more('vivso-suboptions', 'value', suboption)
             first = False
+        # Check that there are no more than is expeted.
+        srv_msg.response_check_option_content_more('vivso-suboptions', 'value', None)
 
     # Renew
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', address)
     srv_msg.client_requests_option('vivso-suboptions')
-    srv_msg.client_does_include_with_value('vendor_class_id', vendor_id)
+    for vendor_id in vendor_ids:
+        srv_msg.client_does_include_with_value('vendor_class_id', vendor_id)
     srv_msg.client_send_msg('REQUEST')
 
     srv_msg.send_wait_for_message('MUST', 'ACK')
@@ -100,16 +107,18 @@ def _dorara(vendor_id: int, address: str, vivso_suboptions: str):
             else:
                 srv_msg.response_check_option_content_more('vivso-suboptions', 'value', suboption)
             first = False
+        # Check that there are no more than is expeted.
+        srv_msg.response_check_option_content_more('vivso-suboptions', 'value', None)
 
 
-def _sarrrr(vendor_id: int, address: str, vendor_option: str):
+def _sarrrr(vendor_ids: int, address: str, vendor_suboptions: str):
     """
     Do a SARR exchange plus another renew-reply exchange.
     Expect the given IPv4 address in the yiaddr field and the given vendor option content.
-    :param vendor_id: the vendor ID included in the client's discover
+    :param vendor_ids: list of vendor IDs included in the client's messages
     :param address: the expected IPv4 address value for the yiaddr field
-    :param vendor_option: the expected content for option 17.
-                          If None, it is expected that the option is not received.
+    :param vendor_suboptions: the expected content for option 17.
+                              If None, it is expected that the option is not received.
     """
     duid = random.choices(string.hexdigits, k=12)
     duid = '00:03:00:01:' + ':'.join(''.join(duid[i:i+2]) for i in range(0, len(duid), 2))
@@ -120,8 +129,9 @@ def _sarrrr(vendor_id: int, address: str, vendor_option: str):
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_does_include('Client', 'IA_Address')
     srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_sets_value('Client', 'enterprisenum', vendor_id)
-    srv_msg.client_does_include('Client', 'vendor-class')
+    for vendor_id in vendor_ids:
+        srv_msg.client_sets_value('Client', 'enterprisenum', vendor_id)
+        srv_msg.client_does_include('Client', 'vendor-class')
     srv_msg.add_vendor_suboption('Client', 1, 123)
     srv_msg.add_vendor_suboption('Client', 1, 124)
     srv_msg.client_does_include('Client', 'vendor-specific-info')
@@ -129,11 +139,19 @@ def _sarrrr(vendor_id: int, address: str, vendor_option: str):
 
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.check_IA_NA(address)
-    if vendor_option is None:
+    if vendor_suboptions is None:
         srv_msg.response_check_include_option('vendor-specific-info', False)
     else:
         srv_msg.response_check_include_option('vendor-specific-info')
-        srv_msg.response_check_option_content('vendor-specific-info', 'value', vendor_option)
+        first = True
+        for suboption in vendor_suboptions:
+            if first:
+                srv_msg.response_check_option_content('vendor-specific-info', 'value', suboption)
+            else:
+                srv_msg.response_check_option_content_more('vendor-specific-info', 'value', suboption)
+            first = False
+        # Check that there are no more than is expeted.
+        srv_msg.response_check_option_content_more('vendor-specific-info', 'value', None)
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -141,8 +159,9 @@ def _sarrrr(vendor_id: int, address: str, vendor_option: str):
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_sets_value('Client', 'IA_Address', address)
-    srv_msg.client_sets_value('Client', 'enterprisenum', vendor_id)
-    srv_msg.client_does_include('Client', 'vendor-class')
+    for vendor_id in vendor_ids:
+        srv_msg.client_sets_value('Client', 'enterprisenum', vendor_id)
+        srv_msg.client_does_include('Client', 'vendor-class')
     srv_msg.add_vendor_suboption('Client', 1, 123)
     srv_msg.add_vendor_suboption('Client', 1, 124)
     srv_msg.client_does_include('Client', 'vendor-specific-info')
@@ -151,11 +170,19 @@ def _sarrrr(vendor_id: int, address: str, vendor_option: str):
     # Expect a reply.
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.check_IA_NA(address)
-    if vendor_option is None:
+    if vendor_suboptions is None:
         srv_msg.response_check_include_option('vendor-specific-info', False)
     else:
         srv_msg.response_check_include_option('vendor-specific-info')
-        srv_msg.response_check_option_content('vendor-specific-info', 'value', vendor_option)
+        first = True
+        for suboption in vendor_suboptions:
+            if first:
+                srv_msg.response_check_option_content('vendor-specific-info', 'value', suboption)
+            else:
+                srv_msg.response_check_option_content_more('vendor-specific-info', 'value', suboption)
+            first = False
+        # Check that there are no more than is expeted.
+        srv_msg.response_check_option_content_more('vendor-specific-info', 'value', None)
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -163,8 +190,9 @@ def _sarrrr(vendor_id: int, address: str, vendor_option: str):
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_sets_value('Client', 'IA_Address', address)
-    srv_msg.client_sets_value('Client', 'enterprisenum', vendor_id)
-    srv_msg.client_does_include('Client', 'vendor-class')
+    for vendor_id in vendor_ids:
+        srv_msg.client_sets_value('Client', 'enterprisenum', vendor_id)
+        srv_msg.client_does_include('Client', 'vendor-class')
     srv_msg.add_vendor_suboption('Client', 1, 123)
     srv_msg.add_vendor_suboption('Client', 1, 124)
     srv_msg.client_does_include('Client', 'vendor-specific-info')
@@ -176,11 +204,19 @@ def _sarrrr(vendor_id: int, address: str, vendor_option: str):
 
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.check_IA_NA(address)
-    if vendor_option is None:
+    if vendor_suboptions is None:
         srv_msg.response_check_include_option('vendor-specific-info', False)
     else:
         srv_msg.response_check_include_option('vendor-specific-info')
-        srv_msg.response_check_option_content('vendor-specific-info', 'value', vendor_option)
+        first = True
+        for suboption in vendor_suboptions:
+            if first:
+                srv_msg.response_check_option_content('vendor-specific-info', 'value', suboption)
+            else:
+                srv_msg.response_check_option_content_more('vendor-specific-info', 'value', suboption)
+            first = False
+        # Check that there are no more than is expeted.
+        srv_msg.response_check_option_content_more('vendor-specific-info', 'value', None)
 
 
 def _vivso_content(vivsos):
@@ -1136,22 +1172,22 @@ def test_v4_two_vendors_two_options_each():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dorara(1234, '192.0.2.10', _vivso_content([[1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
-    _dorara(5678, '192.0.2.11', _vivso_content([[5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                        [124, 'text'.encode('utf-8').hex()]]]]))
-    _dorara(9999, '192.0.2.12', None)
+    _dorara([1234], '192.0.2.10', _vivso_content([[1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara([5678], '192.0.2.11', _vivso_content([[5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                          [124, 'text'.encode('utf-8').hex()]]]]))
+    _dorara([9999], '192.0.2.12', None)
 
     # Again for good measure.
-    _dorara(1234, '192.0.2.13', _vivso_content([[1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
-    _dorara(5678, '192.0.2.14', _vivso_content([[5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                        [124, 'text'.encode('utf-8').hex()]]]]))
-    _dorara(9999, '192.0.2.15', None)
+    _dorara([1234], '192.0.2.13', _vivso_content([[1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara([5678], '192.0.2.14', _vivso_content([[5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                          [124, 'text'.encode('utf-8').hex()]]]]))
+    _dorara([9999], '192.0.2.15', None)
 
 
 @pytest.mark.v4
 @pytest.mark.options
 @pytest.mark.vendor
-def test_v4_options_from_other_vendor():
+def test_v4_options_from_other_vendors():
     """
     Check that multiple vendors can get multiple custom options.
     Harden the test so that options from different vendors have the same codes.
@@ -1263,26 +1299,26 @@ def test_v4_options_from_other_vendor():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dorara(1234, '192.0.2.10', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                 [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                         [124, 'text'.encode('utf-8').hex()]]],
-                                                 [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
-    _dorara(5678, '192.0.2.11', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                 [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                         [124, 'text'.encode('utf-8').hex()]]],
-                                                 [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
-    _dorara(9999, '192.0.2.12', None)
+    _dorara([1234], '192.0.2.10', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
+                                                  [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                          [124, 'text'.encode('utf-8').hex()]]],
+                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara([5678], '192.0.2.11', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
+                                                  [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                          [124, 'text'.encode('utf-8').hex()]]],
+                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara([9999], '192.0.2.12', None)
 
     # Again for good measure.
-    _dorara(1234, '192.0.2.13', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                 [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                         [124, 'text'.encode('utf-8').hex()]]],
-                                                 [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
-    _dorara(5678, '192.0.2.14', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                 [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                         [124, 'text'.encode('utf-8').hex()]]],
-                                                 [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
-    _dorara(9999, '192.0.2.15', None)
+    _dorara([1234], '192.0.2.13', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
+                                                  [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                          [124, 'text'.encode('utf-8').hex()]]],
+                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara([5678], '192.0.2.14', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
+                                                  [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                                          [124, 'text'.encode('utf-8').hex()]]],
+                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara([9999], '192.0.2.15', None)
 
 
 @pytest.mark.v6
@@ -1350,15 +1386,154 @@ def test_v6_two_vendors_two_options_each():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarrrr(1234, '2001:db8::', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
-                                "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>")
-    _sarrrr(5678, '2001:db8::1', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
-                                 "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>")
-    _sarrrr(9999, '2001:db8::2', None)
+    _sarrrr([1234], '2001:db8::', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                   "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678], '2001:db8::1', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
+                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
+    _sarrrr([9999], '2001:db8::2', None)
 
     # Again for good measure.
-    _sarrrr(1234, '2001:db8::3', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
-                                 "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>")
-    _sarrrr(5678, '2001:db8::4', "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
-                                 "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>")
-    _sarrrr(9999, '2001:db8::5', None)
+    _sarrrr([1234], '2001:db8::3', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678], '2001:db8::4', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
+                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
+    _sarrrr([9999], '2001:db8::5', None)
+
+
+@pytest.mark.v6
+@pytest.mark.options
+@pytest.mark.vendor
+def test_v6_options_from_other_vendors():
+    """
+    Check that multiple vendors can get multiple custom options.
+    Harden the test so that options from different vendors have the same codes.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::/64')
+    world.dhcp_cfg['option-def'] = [
+        {
+            'code': 123,
+            'name': 'my-123-option',
+            'space': 'vendor-1234',
+            'type': 'boolean'
+        },
+        {
+            'code': 124,
+            'name': 'my-124-option',
+            'space': 'vendor-1234',
+            'type': 'int32'
+        },
+        {
+            'code': 123,
+            'name': 'your-123-option',
+            'space': 'vendor-5678',
+            'type': 'ipv6-address'
+        },
+        {
+            'code': 124,
+            'name': 'your-124-option',
+            'space': 'vendor-5678',
+            'type': 'string'
+        },
+        {
+            'code': 123,
+            'name': 'their-123-option',
+            'space': 'vendor-8888',
+            'type': 'string'
+        },
+        {
+            'code': 124,
+            'name': 'their-124-option',
+            'space': 'vendor-8888',
+            'type': 'string'
+        }
+    ]
+    world.dhcp_cfg['option-data'] = [
+        {
+            'always-send': True,
+            'data': '1234, 0003666f6f',  # foo
+            'name': 'vendor-class'
+        },
+        {
+            'always-send': True,
+            'data': '5678, 0003626172',  # bar
+            'name': 'vendor-class'
+        },
+        {
+            'always-send': True,
+            'data': '8888, 0003636172',  # car
+            'name': 'vendor-class'
+        },
+        {
+            'always-send': True,
+            'code': 123,
+            'data': '1',
+            'space': 'vendor-1234'
+        },
+        {
+            'always-send': True,
+            'code': 124,
+            'data': '512',
+            'space': 'vendor-1234'
+        },
+        {
+            'always-send': True,
+            'code': 123,
+            'data': '2001:db8::db8:2001',
+            'space': 'vendor-5678'
+        },
+        {
+            'always-send': True,
+            'code': 124,
+            'data': 'text',
+            'space': 'vendor-5678'
+        },
+        {
+            'always-send': True,
+            'code': 123,
+            'data': 'aa',
+            'space': 'vendor-8888'
+        },
+        {
+            'always-send': True,
+            'code': 124,
+            'data': 'bb',
+            'space': 'vendor-8888'
+        }
+    ]
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Single ID first.
+    _sarrrr([1234], '2001:db8::', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                   "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678], '2001:db8::1', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
+                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
+    _sarrrr([9999], '2001:db8::2', None)
+
+    # Again for good measure.
+    _sarrrr([1234], '2001:db8::3', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678], '2001:db8::4', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
+                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
+    _sarrrr([9999], '2001:db8::5', None)
+
+    # Two IDs.
+    _sarrrr([1234, 5678], '2001:db8::6', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
+                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                          "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678, 9999], '2001:db8::7', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
+                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
+    _sarrrr([9999, 1234], '2001:db8::8', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+
+    # Again for good measure.
+    _sarrrr([1234, 5678], '2001:db8::9', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
+                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                          "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678, 9999], '2001:db8::a', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
+                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
+    _sarrrr([9999, 1234], '2001:db8::b', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])

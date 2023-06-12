@@ -702,23 +702,28 @@ def response_check_option_content(opt_code, expect, data_type, expected):
                             "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
 
-def response_check_option_content_more(opt_code, expect, data_type, expected):
+def response_check_option_content_more(opt_code, data_type, expected):
     opt_descr = _get_opt_descr(opt_code)
-    assert len(world.opts), "Not even the initial option {opt_descr} is there." + \
+
+    assert len(world.opts), f"Not even the initial option {opt_descr} is there. " + \
+                            "This is most likely a test issue. Have you called " + \
+                            "response_check_option_content() first?" + \
                             "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+
     world.opts.pop(0)
-    assert len(world.opts), "No more {opt_descr} options." + \
+
+    if expected is None:
+        assert len(world.opts) == 0, f"Option {opt_descr} is found, although not expected." + \
+                                     "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+        return
+
+    assert len(world.opts), f"No more {opt_descr} options." + \
                             "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
     outcome, received = test_option(opt_code, world.opts[0], expected)
 
-    if expect:
-        assert outcome, "Invalid {opt_descr} option received: {received} but expected {expected}".format(**locals()) + \
-                        "\nPacket:" + str(world.srvmsg[0].show(dump=True))
-    else:
-        assert not outcome, "Invalid {opt_descr} option received: {received}" \
-                            " that value has been excluded from correct values".format(**locals()) + \
-                            "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+    assert outcome, f"Invalid {opt_descr} option received: {received} but expected {expected}" + \
+                    "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
 
 def get_all_leases(decode_duid=True):
