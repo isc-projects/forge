@@ -800,7 +800,7 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
                 del lease['server_id']
             cmd = "cat %s " % world.f_cfg.get_leases_path()
             if "client_id" in lease:
-                lease['client_id'] = ':'.join(lease['client_id'][i:i + 2] for i in range(0, 14, 2))
+                lease['client_id'] = ':'.join(lease['client_id'][i:i + 2] for i in range(0, len(lease['client_id']), 2))
             for attribute in lease:
                 cmd += "| grep %s " % lease[attribute]
             cmd += "| grep -c ^"
