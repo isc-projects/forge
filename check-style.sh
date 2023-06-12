@@ -31,6 +31,12 @@ fi
 
 printf 'Checking %s files...\n' "$(printf '%s\n' "${PY_FILES}" | wc -w)"
 printf '======== pylint ========\n'
-pylint -j "$(nproc || gnproc || echo 1)" --rcfile=pylint.rc ${PY_FILES}
+pylint -j "$(nproc || gnproc || echo 1)" --rcfile=pylint.rc ${PY_FILES} || pylint_failed=true
 printf '===== pycodestyle ======\n'
 pycodestyle --max-line-length=3000 ${PY_FILES}
+
+# This trick is so that both linters are run, while the script still exits
+# with non-zero code if one of them fails.
+if test -n "${pylint_failed+x}"; then
+  exit 1
+fi
