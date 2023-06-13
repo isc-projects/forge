@@ -28,11 +28,12 @@ def _option_def():
     """
     Returns option-def configuraton.
     In the tests that use this function:
-    - 1234 and 5678 are vendors that have both option-def and otpion-data configured.
+    - 1234 and 5678 are vendors that have both option-def and option-data configured.
     - 2222 is a vendor that has option-def, but no option-data.
     - There is no point in having option-data without option-def. That is a Kea startup error.
     - 4444 has neither option-def nor option-data configured, but is declared in the vivso-suboptions option.
     - 8888 has nothing defined in configuration, but it is used in tests.
+    Options are defined with the same code in different vendors to harden the tests.
     """
     return [
         {
@@ -78,11 +79,12 @@ def _option_data():
     """
     Returns option-data configuraton.
     In the tests that use this function:
-    - 1234 and 5678 are vendors that have both option-def and otpion-data configured.
+    - 1234 and 5678 are vendors that have both option-def and option-data configured.
     - 2222 is a vendor that has option-def, but no option-data.
     - There is no point in having option-data without option-def. That is a Kea startup error.
     - 4444 has neither option-def nor option-data configured, but is declared in the vivso-suboptions option.
-    - 8888 has nothing defined in configuration, but it is used in tests.s
+    - 8888 has nothing defined in configuration, but it is used in tests.
+    Options are defined with the same code in different vendors to harden the tests.
     """
     v4_only = [
         {
@@ -326,7 +328,7 @@ def _sarrrr(vendor_ids: int, address: str, vendor_suboptions: str):
 
 def _vivso_content(vivsos):
     """
-    Create the hexstring content of a vivso option 125 for the given vendor ID and given suboptions.
+    Create the hexstring content of a vivso option 125 for the given vendor IDs and given suboptions.
     :param vivsos: lists of vivso options, each being a list of [vendor ID, suboptions],
                    each suboption being a list of [suboption_code, suboption_content]
     """
@@ -1418,7 +1420,7 @@ def test_v4_options_from_other_vendors_using_vendor_class_option_data():
 def test_v6_two_vendors_two_options_using_vendor_class_option_data():
     """
     Check that multiple vendors can get their respective options using always-send in the automated
-    VENDOR_CLASS_ classes. This is likely the most common Kea configuration.
+    VENDOR_CLASS_ classes. This is an unlikely Kea configuration since it doesn't work as in v4.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::10 - 2001:db8::250')

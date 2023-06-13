@@ -592,7 +592,8 @@ def get_option(msg, opt_code):
         for opt in x.options:
             if opt[0] is opt_name:
                 world.opts.append(opt)
-                # Only return the first option.
+                # Put all options in world.opts, but only return the first option, since, most of
+                # the time, there is a single option of a given code in v4.
                 if returned_option is None:
                     returned_option = opt
     return returned_option
