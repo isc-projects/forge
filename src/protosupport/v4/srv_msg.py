@@ -50,6 +50,7 @@ log = logging.getLogger('forge')
 OPTIONS = {
     'subnet-mask': 1,
     'server-id': 54,
+    'vendor-class-identifier': 60,
     'vivso-suboptions': 125,
 }
 

@@ -24,6 +24,109 @@ from src import misc
 from src.forge_cfg import world
 
 
+def _option_def():
+    """
+    Returns option-def configuraton.
+    In the tests that use this function:
+    - 1234 and 5678 are vendors that have both option-def and otpion-data configured.
+    - 2222 is a vendor that has option-def, but no option-data.
+    - There is no point in having option-data without option-def. That is a Kea startup error.
+    - 4444 has neither option-def nor option-data configured, but is declared in the vivso-suboptions option.
+    - 8888 has nothing defined in configuration, but it is used in tests.
+    """
+    return [
+        {
+            'code': 123,
+            'name': 'my-123-option',
+            'space': 'vendor-1234',
+            'type': 'boolean'
+        },
+        {
+            'code': 124,
+            'name': 'my-124-option',
+            'space': 'vendor-1234',
+            'type': 'int32'
+        },
+        {
+            'code': 123,
+            'name': 'your-123-option',
+            'space': 'vendor-5678',
+            'type': f'ip{world.proto}-address'
+        },
+        {
+            'code': 124,
+            'name': 'your-124-option',
+            'space': 'vendor-5678',
+            'type': 'string'
+        },
+        {
+            'code': 123,
+            'name': 'their-123-option',
+            'space': 'vendor-2222',
+            'type': 'string'
+        },
+        {
+            'code': 124,
+            'name': 'their-124-option',
+            'space': 'vendor-2222',
+            'type': 'string'
+        }
+    ]
+
+
+def _option_data():
+    """
+    Returns option-data configuraton.
+    In the tests that use this function:
+    - 1234 and 5678 are vendors that have both option-def and otpion-data configured.
+    - 2222 is a vendor that has option-def, but no option-data.
+    - There is no point in having option-data without option-def. That is a Kea startup error.
+    - 4444 has neither option-def nor option-data configured, but is declared in the vivso-suboptions option.
+    - 8888 has nothing defined in configuration, but it is used in tests.s
+    """
+    v4_only = [
+        {
+            'data': '1234',
+            'name': 'vivso-suboptions'
+        },
+        {
+            'data': '5678',
+            'name': 'vivso-suboptions'
+        },
+        {
+            'data': '4444',
+            'name': 'vivso-suboptions'
+        },
+    ]
+    common = [
+        {
+            'always-send': True,
+            'code': 123,
+            'data': '1',
+            'space': 'vendor-1234'
+        },
+        {
+            'always-send': True,
+            'code': 124,
+            'data': '512',
+            'space': 'vendor-1234'
+        },
+        {
+            'always-send': True,
+            'code': 123,
+            'data': '192.0.2.2' if world.proto == 'v4' else '2001:db8::2:2',
+            'space': 'vendor-5678'
+        },
+        {
+            'always-send': True,
+            'code': 124,
+            'data': 'text',
+            'space': 'vendor-5678'
+        }
+    ]
+    return v4_only + common if world.proto == 'v4' else common
+
+
 def _dorara(vendor_ids: int, address: str, vivso_suboptions: str):
     """
     Do a DORA exchange plus another RA exchange to test the renew case.
@@ -48,6 +151,7 @@ def _dorara(vendor_ids: int, address: str, vivso_suboptions: str):
     if vivso_suboptions is None:
         srv_msg.response_check_include_option('vivso-suboptions', False)
     else:
+        srv_msg.response_check_include_option('vivso-suboptions')
         first = True
         for suboption in vivso_suboptions:
             if first:
@@ -73,6 +177,7 @@ def _dorara(vendor_ids: int, address: str, vivso_suboptions: str):
     if vivso_suboptions is None:
         srv_msg.response_check_include_option('vivso-suboptions', False)
     else:
+        srv_msg.response_check_include_option('vivso-suboptions')
         first = True
         for suboption in vivso_suboptions:
             if first:
@@ -1092,39 +1197,14 @@ def test_v4_option_125_encapsulated():
 @pytest.mark.v4
 @pytest.mark.options
 @pytest.mark.vendor
-def test_v4_two_vendors_two_options_each():
+def test_v4_two_vendors_two_options_using_vendor_class_option_data():
     """
-    Check that multiple vendors can get multiple custom options.
-    Harden the test so that options from different vendors have the same codes.
+    Check that multiple vendors can get their respective options using always-send in the automated
+    VENDOR_CLASS_ classes. This is likely the most common Kea configuration.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.0.2.0/24', '192.0.2.10-192.0.2.250')
-    world.dhcp_cfg['option-def'] = [
-        {
-            'code': 123,
-            'name': 'my-123-option',
-            'space': 'vendor-1234',
-            'type': 'boolean'
-        },
-        {
-            'code': 124,
-            'name': 'my-124-option',
-            'space': 'vendor-1234',
-            'type': 'int32'
-        },
-        {
-            'code': 123,
-            'name': 'your-123-option',
-            'space': 'vendor-5678',
-            'type': 'ipv4-address'
-        },
-        {
-            'code': 124,
-            'name': 'your-124-option',
-            'space': 'vendor-5678',
-            'type': 'string'
-        }
-    ]
+    world.dhcp_cfg['option-def'] = _option_def()
     world.dhcp_cfg['client-classes'] = [
         {
             'name': 'VENDOR_CLASS_1234',
@@ -1172,368 +1252,388 @@ def test_v4_two_vendors_two_options_each():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    # Client advertises itself as a single vendor.
     _dorara([1234], '192.0.2.10', _vivso_content([[1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
     _dorara([5678], '192.0.2.11', _vivso_content([[5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
                                                           [124, 'text'.encode('utf-8').hex()]]]]))
-    _dorara([9999], '192.0.2.12', None)
+    _dorara([2222], '192.0.2.12', None)
+    _dorara([4444], '192.0.2.13', None)
+    _dorara([8888], '192.0.2.14', None)
 
     # Again for good measure.
-    _dorara([1234], '192.0.2.13', _vivso_content([[1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
-    _dorara([5678], '192.0.2.14', _vivso_content([[5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+    _dorara([1234], '192.0.2.15', _vivso_content([[1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
+    _dorara([5678], '192.0.2.16', _vivso_content([[5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
                                                           [124, 'text'.encode('utf-8').hex()]]]]))
-    _dorara([9999], '192.0.2.15', None)
+    _dorara([2222], '192.0.2.17', None)
+    _dorara([4444], '192.0.2.18', None)
+    _dorara([8888], '192.0.2.19', None)
+
+    # Client sends two vendor IDs.
+    # scapy concatenates both values into a single option 60. This is different than v6,
+    # but is correct per RFC2132 section 9.13. Kea logs the option as:
+    # type=060, len=008: 31:32:33:34:35:36:37:38 as opposed to in other cases:
+    # type=060, len=004: "1234" (string). Kea assigns a lease, but does not classify the client to a
+    # VENDOR_CLASS_, nor does it send any vivso suboptions in the responses.
+    _dorara([1234, 5678], '192.0.2.20', None)
+    _dorara([5678, 1234], '192.0.2.21', None)
+    _dorara([1234, 2222], '192.0.2.22', None)
+    _dorara([1234, 4444], '192.0.2.23', None)
+    _dorara([1234, 8888], '192.0.2.24', None)
+    _dorara([4444, 5678], '192.0.2.25', None)
+    _dorara([4444, 8888], '192.0.2.26', None)
+
+    # Again for good measure.
+    _dorara([1234, 5678], '192.0.2.27', None)
+    _dorara([5678, 1234], '192.0.2.28', None)
+    _dorara([1234, 2222], '192.0.2.29', None)
+    _dorara([1234, 4444], '192.0.2.30', None)
+    _dorara([1234, 8888], '192.0.2.31', None)
+    _dorara([4444, 5678], '192.0.2.32', None)
+    _dorara([4444, 8888], '192.0.2.33', None)
 
 
 @pytest.mark.v4
 @pytest.mark.options
 @pytest.mark.vendor
-def test_v4_options_from_other_vendors():
+def test_v4_multiple_vendors_multiple_options_using_global_option_data():
     """
-    Check that multiple vendors can get multiple custom options.
-    Harden the test so that options from different vendors have the same codes.
+    Check that multiple vendors can get multiple custom options from different vendors using
+    always-send in global option-data. This is not a very useful Kea confgiuration since all clients
+    get every option, but let's test it anyway.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.0.2.0/24', '192.0.2.10-192.0.2.250')
-    world.dhcp_cfg['option-def'] = [
-        {
-            'code': 123,
-            'name': 'my-123-option',
-            'space': 'vendor-1234',
-            'type': 'boolean'
-        },
-        {
-            'code': 124,
-            'name': 'my-124-option',
-            'space': 'vendor-1234',
-            'type': 'int32'
-        },
-        {
-            'code': 123,
-            'name': 'your-123-option',
-            'space': 'vendor-5678',
-            'type': 'ipv4-address'
-        },
-        {
-            'code': 124,
-            'name': 'your-124-option',
-            'space': 'vendor-5678',
-            'type': 'string'
-        },
-        {
-            'code': 123,
-            'name': 'their-123-option',
-            'space': 'vendor-8888',
-            'type': 'string'
-        },
-        {
-            'code': 124,
-            'name': 'their-124-option',
-            'space': 'vendor-8888',
-            'type': 'string'
-        }
-    ]
-    option_data = [
-        {
-            'always-send': True,
-            'data': '1234',
-            'name': 'vivso-suboptions'
-        },
-        {
-            'always-send': True,
-            'data': '5678',
-            'name': 'vivso-suboptions'
-        },
-        {
-            'always-send': True,
-            'data': '8888',
-            'name': 'vivso-suboptions'
-        },
-        {
-            'always-send': True,
-            'code': 123,
-            'data': '1',
-            'space': 'vendor-1234'
-        },
-        {
-            'always-send': True,
-            'code': 124,
-            'data': '512',
-            'space': 'vendor-1234'
-        },
-        {
-            'always-send': True,
-            'code': 123,
-            'data': '192.0.2.2',
-            'space': 'vendor-5678'
-        },
-        {
-            'always-send': True,
-            'code': 124,
-            'data': 'text',
-            'space': 'vendor-5678'
-        },
-        {
-            'always-send': True,
-            'code': 123,
-            'data': 'aa',
-            'space': 'vendor-8888'
-        },
-        {
-            'always-send': True,
-            'code': 124,
-            'data': 'bb',
-            'space': 'vendor-8888'
-        }
-    ]
+    world.dhcp_cfg['option-def'] = _option_def()
+    world.dhcp_cfg['option-data'] = _option_data()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Client advertises itself as a single vendor. All options are received in reverse order of
+    # vivso-suboptions option declarations.
+    all_options = _vivso_content([[4444, []],
+                                  [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                          [124, 'text'.encode('utf-8').hex()]]],
+                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]])
+    _dorara([1234], '192.0.2.10', all_options)
+    _dorara([5678], '192.0.2.11', all_options)
+    _dorara([2222], '192.0.2.12', all_options)
+    _dorara([4444], '192.0.2.13', all_options)
+    _dorara([8888], '192.0.2.14', all_options)
+
+    # Again for good measure.
+    _dorara([1234], '192.0.2.15', all_options)
+    _dorara([5678], '192.0.2.16', all_options)
+    _dorara([2222], '192.0.2.17', all_options)
+    _dorara([4444], '192.0.2.18', all_options)
+    _dorara([8888], '192.0.2.19', all_options)
+
+    # Client sends two vendor IDs. Even though the vendor IDs are concatenated and the resulting
+    # vendor ID is not recognized by Kea, all options are still received.
+    _dorara([1234, 5678], '192.0.2.20', all_options)
+    _dorara([5678, 1234], '192.0.2.21', all_options)
+    _dorara([1234, 2222], '192.0.2.22', all_options)
+    _dorara([1234, 4444], '192.0.2.23', all_options)
+    _dorara([1234, 8888], '192.0.2.24', all_options)
+    _dorara([4444, 5678], '192.0.2.25', all_options)
+    _dorara([4444, 8888], '192.0.2.26', all_options)
+
+    # Again for good measure.
+    _dorara([1234, 5678], '192.0.2.27', all_options)
+    _dorara([5678, 1234], '192.0.2.28', all_options)
+    _dorara([1234, 2222], '192.0.2.29', all_options)
+    _dorara([1234, 4444], '192.0.2.30', all_options)
+    _dorara([1234, 8888], '192.0.2.31', all_options)
+    _dorara([4444, 5678], '192.0.2.32', all_options)
+    _dorara([4444, 8888], '192.0.2.33', all_options)
+
+
+@pytest.mark.v4
+@pytest.mark.options
+@pytest.mark.vendor
+def test_v4_options_from_other_vendors_using_vendor_class_option_data():
+    """
+    Check that multiple vendors can get multiple options from other vendors through the automated
+    VENDOR_CLASS_ class. It's a combination of the other two tests above.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.0.2.0/24', '192.0.2.10-192.0.2.250')
+    world.dhcp_cfg['option-def'] = _option_def()
+
     # Same option data for both vendors.
     world.dhcp_cfg['client-classes'] = [
         {
             'name': 'VENDOR_CLASS_1234',
-            'option-data': option_data
+            'option-data': _option_data()
         },
         {
             'name': 'VENDOR_CLASS_5678',
-            'option-data': option_data
+            'option-data': _option_data()
         }
     ]
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _dorara([1234], '192.0.2.10', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                  [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                          [124, 'text'.encode('utf-8').hex()]]],
-                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
-    _dorara([5678], '192.0.2.11', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                  [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                          [124, 'text'.encode('utf-8').hex()]]],
-                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
-    _dorara([9999], '192.0.2.12', None)
+    # Client advertises itself as a single vendor. All options are received in reverse order of
+    # vivso-suboptions option declarations, but only if there is a VENDOR_CLASS_ defined for the
+    # vendor.
+    all_options = _vivso_content([[4444, []],
+                                  [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
+                                          [124, 'text'.encode('utf-8').hex()]]],
+                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]])
+    _dorara([1234], '192.0.2.10', all_options)
+    _dorara([5678], '192.0.2.11', all_options)
+    _dorara([2222], '192.0.2.12', None)
+    _dorara([4444], '192.0.2.13', None)
+    _dorara([8888], '192.0.2.14', None)
 
     # Again for good measure.
-    _dorara([1234], '192.0.2.13', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                  [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                          [124, 'text'.encode('utf-8').hex()]]],
-                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
-    _dorara([5678], '192.0.2.14', _vivso_content([[8888, [[123, 'aa'.encode('utf-8').hex()], [124, 'bb'.encode('utf-8').hex()]]],
-                                                  [5678, [[123, binascii.hexlify(socket.inet_aton('192.0.2.2')).decode().upper()],
-                                                          [124, 'text'.encode('utf-8').hex()]]],
-                                                  [1234, [[123, '01'], [124, f'{512:0{8}x}']]]]))
-    _dorara([9999], '192.0.2.15', None)
+    _dorara([1234], '192.0.2.15', all_options)
+    _dorara([5678], '192.0.2.16', all_options)
+    _dorara([2222], '192.0.2.17', None)
+    _dorara([4444], '192.0.2.18', None)
+    _dorara([8888], '192.0.2.19', None)
+
+    # Client sends two vendor IDs. Resulting vendor ID is not recognized. No vendor options.
+    _dorara([1234, 5678], '192.0.2.20', None)
+    _dorara([5678, 1234], '192.0.2.21', None)
+    _dorara([1234, 2222], '192.0.2.22', None)
+    _dorara([1234, 4444], '192.0.2.23', None)
+    _dorara([1234, 8888], '192.0.2.24', None)
+    _dorara([4444, 5678], '192.0.2.25', None)
+    _dorara([4444, 8888], '192.0.2.26', None)
+
+    # Again for good measure.
+    _dorara([1234, 5678], '192.0.2.27', None)
+    _dorara([5678, 1234], '192.0.2.28', None)
+    _dorara([1234, 2222], '192.0.2.29', None)
+    _dorara([1234, 4444], '192.0.2.30', None)
+    _dorara([1234, 8888], '192.0.2.31', None)
+    _dorara([4444, 5678], '192.0.2.32', None)
+    _dorara([4444, 8888], '192.0.2.33', None)
 
 
 @pytest.mark.v6
 @pytest.mark.options
 @pytest.mark.vendor
-def test_v6_two_vendors_two_options_each():
+def test_v6_two_vendors_two_options_using_vendor_class_option_data():
     """
-    Check that multiple vendors can get multiple custom options.
-    Harden the test so that options from different vendors have the same codes.
+    Check that multiple vendors can get their respective options using always-send in the automated
+    VENDOR_CLASS_ classes. This is likely the most common Kea configuration.
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::/64')
-    world.dhcp_cfg['option-def'] = [
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::10 - 2001:db8::250')
+    world.dhcp_cfg['option-def'] = _option_def()
+    world.dhcp_cfg['client-classes'] = [
         {
-            'code': 123,
-            'name': 'my-123-option',
-            'space': 'vendor-1234',
-            'type': 'boolean'
+            'name': 'VENDOR_CLASS_1234',
+            'option-data': [
+                {
+                    'data': '1234, 0003666f6f',  # foo
+                    'name': 'vendor-class'
+                },
+                {
+                    'always-send': True,
+                    'code': 123,
+                    'data': '1',
+                    'space': 'vendor-1234'
+                },
+                {
+                    'always-send': True,
+                    'code': 124,
+                    'data': '512',
+                    'space': 'vendor-1234'
+                }
+            ]
         },
         {
-            'code': 124,
-            'name': 'my-124-option',
-            'space': 'vendor-1234',
-            'type': 'int32'
-        },
-        {
-            'code': 123,
-            'name': 'your-123-option',
-            'space': 'vendor-5678',
-            'type': 'ipv6-address'
-        },
-        {
-            'code': 124,
-            'name': 'your-124-option',
-            'space': 'vendor-5678',
-            'type': 'string'
-        }
-    ]
-    world.dhcp_cfg['option-data'] = [
-        {
-            'always-send': True,
-            'code': 123,
-            'data': '1',
-            'space': 'vendor-1234'
-        },
-        {
-            'always-send': True,
-            'code': 124,
-            'data': '512',
-            'space': 'vendor-1234'
-        },
-        {
-            'always-send': True,
-            'code': 123,
-            'data': '2001:db8::db8:2001',
-            'space': 'vendor-5678'
-        },
-        {
-            'always-send': True,
-            'code': 124,
-            'data': 'text',
-            'space': 'vendor-5678'
+            'name': 'VENDOR_CLASS_5678',
+            'option-data': [
+                {
+                    'data': '5678, 0003626172',  # bar
+                    'name': 'vendor-class'
+                },
+                {
+                    'always-send': True,
+                    'code': 123,
+                    'data': '2001:db8::db8:2001',
+                    'space': 'vendor-5678'
+                },
+                {
+                    'always-send': True,
+                    'code': 124,
+                    'data': 'text',
+                    'space': 'vendor-5678'
+                }
+            ]
         }
     ]
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    _sarrrr([1234], '2001:db8::', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
-                                   "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
-    _sarrrr([5678], '2001:db8::1', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
-                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
-    _sarrrr([9999], '2001:db8::2', None)
+    # Client advertises itself as a single vendor.
+    # Vendor classification does not seem to work the same way as for v4. Kea does not assign any
+    # VENDOR_CLASS_ whatsoever. Hence no vendor options.
+    _sarrrr([1234], '2001:db8::10', None)
+    _sarrrr([5678], '2001:db8::11', None)
+    _sarrrr([2222], '2001:db8::12', None)
+    _sarrrr([4444], '2001:db8::13', None)
+    _sarrrr([8888], '2001:db8::14', None)
 
     # Again for good measure.
-    _sarrrr([1234], '2001:db8::3', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
-                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
-    _sarrrr([5678], '2001:db8::4', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
-                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
-    _sarrrr([9999], '2001:db8::5', None)
+    _sarrrr([1234], '2001:db8::15', None)
+    _sarrrr([5678], '2001:db8::16', None)
+    _sarrrr([2222], '2001:db8::17', None)
+    _sarrrr([4444], '2001:db8::18', None)
+    _sarrrr([8888], '2001:db8::19', None)
+
+    # Client sends two vendor IDs.
+    _sarrrr([1234, 5678], '2001:db8::1a', None)
+    _sarrrr([5678, 1234], '2001:db8::1b', None)
+    _sarrrr([1234, 2222], '2001:db8::1c', None)
+    _sarrrr([1234, 4444], '2001:db8::1d', None)
+    _sarrrr([1234, 8888], '2001:db8::1e', None)
+    _sarrrr([4444, 5678], '2001:db8::1f', None)
+    _sarrrr([4444, 8888], '2001:db8::20', None)
+
+    # Again for good measure.
+    _sarrrr([1234, 5678], '2001:db8::21', None)
+    _sarrrr([5678, 1234], '2001:db8::22', None)
+    _sarrrr([1234, 2222], '2001:db8::23', None)
+    _sarrrr([1234, 4444], '2001:db8::24', None)
+    _sarrrr([1234, 8888], '2001:db8::25', None)
+    _sarrrr([4444, 5678], '2001:db8::26', None)
+    _sarrrr([4444, 8888], '2001:db8::27', None)
 
 
 @pytest.mark.v6
 @pytest.mark.options
 @pytest.mark.vendor
-def test_v6_options_from_other_vendors():
+def test_v6_multiple_vendors_multiple_options_using_global_option_data():
     """
-    Check that multiple vendors can get multiple custom options.
-    Harden the test so that options from different vendors have the same codes.
+    Check that multiple vendors can get multiple custom options using global option data. This is
+    likely the most common Kea configuration in v6.
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::/64')
-    world.dhcp_cfg['option-def'] = [
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::10 - 2001:db8::250')
+    world.dhcp_cfg['option-def'] = _option_def()
+    world.dhcp_cfg['option-data'] = _option_data()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Client advertises itself as a single vendor. Client gets exactly what it requests regardless
+    # of the global scope of option data.
+    _sarrrr([1234], '2001:db8::10', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678], '2001:db8::11', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
+    _sarrrr([2222], '2001:db8::12', None)
+    _sarrrr([4444], '2001:db8::13', None)
+    _sarrrr([8888], '2001:db8::14', None)
+
+    # Again for good measure.
+    _sarrrr([1234], '2001:db8::15', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678], '2001:db8::16', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
+    _sarrrr([2222], '2001:db8::17', None)
+    _sarrrr([4444], '2001:db8::18', None)
+    _sarrrr([8888], '2001:db8::19', None)
+
+    # Client sends two vendor IDs. Each client gets the vendor options specific to their vendor ID.
+    _sarrrr([1234, 5678], '2001:db8::1a', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678, 1234], '2001:db8::1b', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 2222], '2001:db8::1c', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 4444], '2001:db8::1d', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 8888], '2001:db8::1e', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([4444, 5678], '2001:db8::1f', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
+    _sarrrr([4444, 8888], '2001:db8::20', None)
+
+    # Again for good measure.
+    _sarrrr([1234, 5678], '2001:db8::21', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678, 1234], '2001:db8::22', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 2222], '2001:db8::23', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 4444], '2001:db8::24', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 8888], '2001:db8::25', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([4444, 5678], '2001:db8::26', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
+    _sarrrr([4444, 8888], '2001:db8::27', None)
+
+
+@pytest.mark.v6
+@pytest.mark.options
+@pytest.mark.vendor
+def test_v6_options_from_other_vendors_using_vendor_class_option_data():
+    """
+    Check that multiple vendors can get multiple custom options. It's a combination of the other two
+    tests above.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::10 - 2001:db8::250')
+    world.dhcp_cfg['option-def'] = _option_def()
+
+    # Same option data for both vendors.
+    world.dhcp_cfg['client-classes'] = [
         {
-            'code': 123,
-            'name': 'my-123-option',
-            'space': 'vendor-1234',
-            'type': 'boolean'
+            'name': 'VENDOR_CLASS_1234',
+            'option-data': _option_data()
         },
         {
-            'code': 124,
-            'name': 'my-124-option',
-            'space': 'vendor-1234',
-            'type': 'int32'
-        },
-        {
-            'code': 123,
-            'name': 'your-123-option',
-            'space': 'vendor-5678',
-            'type': 'ipv6-address'
-        },
-        {
-            'code': 124,
-            'name': 'your-124-option',
-            'space': 'vendor-5678',
-            'type': 'string'
-        },
-        {
-            'code': 123,
-            'name': 'their-123-option',
-            'space': 'vendor-8888',
-            'type': 'string'
-        },
-        {
-            'code': 124,
-            'name': 'their-124-option',
-            'space': 'vendor-8888',
-            'type': 'string'
-        }
-    ]
-    world.dhcp_cfg['option-data'] = [
-        {
-            'always-send': True,
-            'data': '1234, 0003666f6f',  # foo
-            'name': 'vendor-class'
-        },
-        {
-            'always-send': True,
-            'data': '5678, 0003626172',  # bar
-            'name': 'vendor-class'
-        },
-        {
-            'always-send': True,
-            'data': '8888, 0003636172',  # car
-            'name': 'vendor-class'
-        },
-        {
-            'always-send': True,
-            'code': 123,
-            'data': '1',
-            'space': 'vendor-1234'
-        },
-        {
-            'always-send': True,
-            'code': 124,
-            'data': '512',
-            'space': 'vendor-1234'
-        },
-        {
-            'always-send': True,
-            'code': 123,
-            'data': '2001:db8::db8:2001',
-            'space': 'vendor-5678'
-        },
-        {
-            'always-send': True,
-            'code': 124,
-            'data': 'text',
-            'space': 'vendor-5678'
-        },
-        {
-            'always-send': True,
-            'code': 123,
-            'data': 'aa',
-            'space': 'vendor-8888'
-        },
-        {
-            'always-send': True,
-            'code': 124,
-            'data': 'bb',
-            'space': 'vendor-8888'
+            'name': 'VENDOR_CLASS_5678',
+            'option-data': _option_data()
         }
     ]
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # Single ID first.
-    _sarrrr([1234], '2001:db8::', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
-                                   "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
-    _sarrrr([5678], '2001:db8::1', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
-                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
-    _sarrrr([9999], '2001:db8::2', None)
+    # Client advertises itself as a single vendor.
+    # Vendor classification does not seem to work the same way as for v4. Kea does not assign any
+    # VENDOR_CLASS_ whatsoever. Hence no vendor options.
+    _sarrrr([1234], '2001:db8::10', None)
+    _sarrrr([5678], '2001:db8::11', None)
+    _sarrrr([2222], '2001:db8::12', None)
+    _sarrrr([4444], '2001:db8::13', None)
+    _sarrrr([8888], '2001:db8::14', None)
 
     # Again for good measure.
-    _sarrrr([1234], '2001:db8::3', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
-                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
-    _sarrrr([5678], '2001:db8::4', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
-                                    "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
-    _sarrrr([9999], '2001:db8::5', None)
+    _sarrrr([1234], '2001:db8::15', None)
+    _sarrrr([5678], '2001:db8::16', None)
+    _sarrrr([2222], '2001:db8::17', None)
+    _sarrrr([4444], '2001:db8::18', None)
+    _sarrrr([8888], '2001:db8::19', None)
 
-    # Two IDs.
-    _sarrrr([1234, 5678], '2001:db8::6', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
-                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
-                                          "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
-                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
-    _sarrrr([5678, 9999], '2001:db8::7', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
-                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
-    _sarrrr([9999, 1234], '2001:db8::8', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
-                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    # Client sends two vendor IDs.
+    _sarrrr([1234, 5678], '2001:db8::1a', None)
+    _sarrrr([5678, 1234], '2001:db8::1b', None)
+    _sarrrr([1234, 2222], '2001:db8::1c', None)
+    _sarrrr([1234, 4444], '2001:db8::1d', None)
+    _sarrrr([1234, 8888], '2001:db8::1e', None)
+    _sarrrr([4444, 5678], '2001:db8::1f', None)
+    _sarrrr([4444, 8888], '2001:db8::20', None)
 
     # Again for good measure.
-    _sarrrr([1234, 5678], '2001:db8::9', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
-                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
-                                          "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
-                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
-    _sarrrr([5678, 9999], '2001:db8::a', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db800000000000000000db82001' |>,"
-                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
-    _sarrrr([9999, 1234], '2001:db8::b', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
-                                          "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 5678], '2001:db8::21', None)
+    _sarrrr([5678, 1234], '2001:db8::22', None)
+    _sarrrr([1234, 2222], '2001:db8::23', None)
+    _sarrrr([1234, 4444], '2001:db8::24', None)
+    _sarrrr([1234, 8888], '2001:db8::25', None)
+    _sarrrr([4444, 5678], '2001:db8::26', None)
+    _sarrrr([4444, 8888], '2001:db8::27', None)
