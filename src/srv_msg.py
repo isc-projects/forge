@@ -797,7 +797,11 @@ def check_if_address_belongs_to_subnet(subnet: str = None, address: str = None):
     if subnet is None:
         assert False, "You need to specify subnet"
     if address is None:
-        address = get_all_leases()['address']
+        lease = get_all_leases()
+        if isinstance(lease, list):
+            lease = lease[0]
+
+        address = lease['address']
 
     assert ipaddress.ip_address(address) in ipaddress.ip_network(subnet), f"Address {address} " \
                                                                           f"does NOT belong to subnet {subnet}"
