@@ -158,7 +158,6 @@ def test_ddns_ttl_different_levels(dhcp_version, level, ttl):
         elif level == 'shared_networks':
             world.dhcp_cfg.update({"ddns-ttl-percent": 0.5})  # let's check if globals are overwritten
             world.dhcp_cfg['shared-networks'][0].update(cfg)
-            pass
         elif level == 'subnet':
             world.dhcp_cfg.update({"ddns-ttl-percent": 0.5})  # let's check if globals are overwritten
             world.dhcp_cfg['shared-networks'][0].update({"ddns-ttl-percent": 0.5})  # and network
@@ -176,4 +175,3 @@ def test_ddns_ttl_different_levels(dhcp_version, level, ttl):
     # if ddns-ttl-percent was configured calculate it based on valid lifetime and ttl percentage value,
     # if not it will be 1/3 - it's kea default
     _check_dns_record(dhcp_version, ttl=int(vlt * ttl) if ttl else int(vlt * 1/3))
-
