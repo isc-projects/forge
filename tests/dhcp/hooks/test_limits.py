@@ -1376,7 +1376,7 @@ def test_rate_limits_in_template_class(dhcp_version, backend, unit):
 
     # define test duration in seconds
     duration = 1 if unit == 'second' else 60
-    limit = 3 if unit == 'second' else 200
+    limit = 3 if unit == 'second' else 40
 
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
@@ -1410,10 +1410,11 @@ def test_rate_limits_in_template_class(dhcp_version, backend, unit):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    success_no1 = 0
-    success_no2 = 0
-    packets_no1 = 0
-    packets_no2 = 0
+    packets_no1 = 0  # packets sent SPAWN_mac_vendor_ff:01:02
+    success_no1 = 0  # responses to packets SPAWN_mac_vendor_ff:01:02
+
+    packets_no2 = 0  # packets send SPAWN_mac_vendor_11:22:33
+    success_no2 = 0  # responses to packets SPAWN_mac_vendor_11:22:33
 
     # Wait time for response for v4 and v6
     world.cfg['wait_interval'] = 0.1
@@ -1421,7 +1422,6 @@ def test_rate_limits_in_template_class(dhcp_version, backend, unit):
         world.cfg['wait_interval'] = 0.1
 
     start = time.time()
-    elapsed = 0
     if dhcp_version == 'v4':
         while time.time() - start < duration:  # Send packets for the duration of the test, and count them.
             # fist SPAWN class
@@ -1442,6 +1442,7 @@ def test_rate_limits_in_template_class(dhcp_version, backend, unit):
             success_no2 += _get_address_v6(duid='00:03:00:01:11:22:33:ff:ff:ff')
             # Add 1 to send packets counter
             packets_no2 += 1
+    elapsed = time.time() - start
 
     print(f"Runtime of the program is {elapsed} seconds")
     print(f"Packets received {success_no1} from {packets_no1} sent in SPAWN class ff:01:02")
@@ -1573,8 +1574,6 @@ def test_lease_limits_template_class(dhcp_version, backend):
 
         for i in range(to_send + 1, 2 * to_send + 1):  # Try to acquire more leases than the limit.
             success_no1 += _get_lease_v4(f'192.168.1.{i}', f'aa:bb:cc:03:06:{i:02}', vendor=None)
-            # if res > 0:
-            #     success_no1 += res
             success_no2 += _get_lease_v4(f'192.168.2.{i}', f'11:22:33:03:07:{i:02}', vendor=None)
             exchanges += 1
 
@@ -1639,6 +1638,7 @@ def test_lease_limits_template_class(dhcp_version, backend):
             exchanges += 1
 
         for lease in leases:
+            # TODO command based on address should be used
             # cmd = {"command": "lease6-del", "arguments": {"ip-address": lease['address']}}
             cmd = {"command": "lease6-del",
                    "arguments": {"subnet-id": 1 if '2002:db8:2' in lease['address'] else 2,
