@@ -129,11 +129,11 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
         for each in self.ipv6_reservations:
             if len(each) == 1:
                 self.configuration_script += "\nINSERT INTO ipv6_reservations(address, type, host_id)"
-                self.configuration_script += "\nVALUES ('{ipv6_address_reservation}'," \
+                self.configuration_script += "\nVALUES (inet6_aton('{ipv6_address_reservation}')," \
                                              " 0, @inserted_host_id);".format(**each)
             if len(each) == 2:
                 self.configuration_script += "\nSET @ipv6_prefix_reservation = " \
-                                             "'{ipv6_prefix_reservation}';".format(**each)
+                                             "inet6_aton('{ipv6_prefix_reservation}');".format(**each)
                 if each["ipv6_prefix_len_reservation"] != "":
                     self.configuration_script += "\nSET @ipv6_prefix_len_reservation = '" \
                                                  + str(each["ipv6_prefix_len_reservation"]) + "';"

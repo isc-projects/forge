@@ -793,53 +793,28 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
         leases_list = [leases_list]
     leases_list_copy = copy.deepcopy(leases_list)
     # TODO: make check_leases() work with the output of leaseX-get-all
+    lease_file = world.f_cfg.get_leases_path()
+    # if we are checking database, first lest dump leases as memfile and proceed with different path
+    if backend.lower() in ['mysql', 'postgresql', 'pgsql']:
+        lease_dump(backend, destination_address=destination)
+        lease_file = '/tmp/lease_dump.csv'
 
-    if backend == 'memfile':
-        for lease in leases_list_copy:
-            if 'server_id' in lease:
-                del lease['server_id']
-            cmd = "cat %s " % world.f_cfg.get_leases_path()
-            if "client_id" in lease:
-                lease['client_id'] = ':'.join(lease['client_id'][i:i + 2] for i in range(0, len(lease['client_id']), 2))
-            for attribute in lease:
-                cmd += "| grep %s " % lease[attribute]
-            cmd += "| grep -c ^"
+    for lease in leases_list_copy:
+        if 'server_id' in lease:
+            del lease['server_id']
+        cmd = f"cat {lease_file} "
+        if "client_id" in lease:
+            lease['client_id'] = ':'.join(lease['client_id'][i:i + 2] for i in range(0, 14, 2))
+        for attribute in lease:
+            cmd += f"| grep {lease[attribute]} "
+        cmd += "| grep -c ^"
 
-            result = fabric_sudo_command(cmd, ignore_errors=True, destination_host=destination)
-            if should_succeed:
-                assert result.succeeded, "Expected lease, but it does not exist: %s" % json.dumps(lease)
-            else:
-                assert result.failed, "Expected lease to not exist, but it does: %s" % json.dumps(lease)
-            # TODO write check if there is more than one entry of the same type
-
-    elif backend.lower() in ['mysql', 'postgresql', 'pgsql']:
-        for lease in leases_list_copy:
-            if 'server_id' in lease:
-                del lease['server_id']
-            if world.f_cfg.proto == 'v4':
-                table = 'lease4'
-                cmd = "cat /tmp/db_out "
-                if "hwaddr" in lease:
-                    lease["hwaddr"] = lease["hwaddr"].replace(":", "")
-                if "address" in lease:
-                    lease["address"] = convert_address_to_hex(lease["address"])
-                for attribute in lease:
-                    cmd += "| grep -i %s " % lease[attribute]
-                cmd += "| grep -c ^"
-            elif world.f_cfg.proto == 'v6':
-                table = 'lease6'
-                cmd = "cat /tmp/db_out "
-                if "duid" in lease:
-                    lease["duid"] = lease["duid"].replace(":", "")
-                for attribute in lease:
-                    cmd += "| grep -i %s " % lease[attribute]
-                cmd += "| grep -c ^"
-
-            else:
-                assert False, "There is something bad, you should never see this :)"
-            db_table_contains_line(table, backend, grep_cmd=cmd,
-                                   destination=destination, lease=lease,
-                                   expect=should_succeed)
+        result = fabric_sudo_command(cmd, ignore_errors=True, destination_host=destination)
+        if should_succeed:
+            assert result.succeeded, "Expected lease, but it does not exist: %s" % json.dumps(lease)
+        else:
+            assert result.failed, "Expected lease to not exist, but it does: %s" % json.dumps(lease)
+        # TODO write check if there is more than one entry of the same type
 
 
 def convert_address_to_hex(address):
