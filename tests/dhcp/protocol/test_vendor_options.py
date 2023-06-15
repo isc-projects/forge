@@ -161,7 +161,7 @@ def _dorara(vendor_ids: int, address: str, vivso_suboptions: str):
             else:
                 srv_msg.response_check_option_content_more('vivso-suboptions', 'value', suboption)
             first = False
-        # Check that there are no more than is expeted.
+        # Check that there are no more than is expected.
         srv_msg.response_check_option_content_more('vivso-suboptions', 'value', None)
 
     misc.test_procedure()
@@ -187,7 +187,7 @@ def _dorara(vendor_ids: int, address: str, vivso_suboptions: str):
             else:
                 srv_msg.response_check_option_content_more('vivso-suboptions', 'value', suboption)
             first = False
-        # Check that there are no more than is expeted.
+        # Check that there are no more than is expected.
         srv_msg.response_check_option_content_more('vivso-suboptions', 'value', None)
 
     # Renew
@@ -214,7 +214,7 @@ def _dorara(vendor_ids: int, address: str, vivso_suboptions: str):
             else:
                 srv_msg.response_check_option_content_more('vivso-suboptions', 'value', suboption)
             first = False
-        # Check that there are no more than is expeted.
+        # Check that there are no more than is expected.
         srv_msg.response_check_option_content_more('vivso-suboptions', 'value', None)
 
 
@@ -257,7 +257,7 @@ def _sarrrr(vendor_ids: int, address: str, vendor_suboptions: str):
             else:
                 srv_msg.response_check_option_content_more('vendor-specific-info', 'value', suboption)
             first = False
-        # Check that there are no more than is expeted.
+        # Check that there are no more than is expected.
         srv_msg.response_check_option_content_more('vendor-specific-info', 'value', None)
 
     misc.test_procedure()
@@ -288,7 +288,7 @@ def _sarrrr(vendor_ids: int, address: str, vendor_suboptions: str):
             else:
                 srv_msg.response_check_option_content_more('vendor-specific-info', 'value', suboption)
             first = False
-        # Check that there are no more than is expeted.
+        # Check that there are no more than is expected.
         srv_msg.response_check_option_content_more('vendor-specific-info', 'value', None)
 
     misc.test_procedure()
@@ -322,7 +322,7 @@ def _sarrrr(vendor_ids: int, address: str, vendor_suboptions: str):
             else:
                 srv_msg.response_check_option_content_more('vendor-specific-info', 'value', suboption)
             first = False
-        # Check that there are no more than is expeted.
+        # Check that there are no more than is expected.
         srv_msg.response_check_option_content_more('vendor-specific-info', 'value', None)
 
 
@@ -1271,8 +1271,9 @@ def test_v4_two_vendors_two_options_using_vendor_class_option_data():
     _dorara([8888], '192.0.2.19', None)
 
     # Client sends two vendor IDs.
-    # scapy concatenates both values into a single option 60. This is different than v6,
-    # but is correct per RFC2132 section 9.13. Kea logs the option as:
+    # scapy sends two different code 60 options, but Kea concatenates both values into a single
+    # option. This is different than v6, but can be considered correct per RFC2132 section 9.13
+    # which states that option 60 has variable length. Kea logs the option as:
     # type=060, len=008: 31:32:33:34:35:36:37:38 as opposed to in other cases:
     # type=060, len=004: "1234" (string). Kea assigns a lease, but does not classify the client to a
     # VENDOR_CLASS_, nor does it send any vivso suboptions in the responses.
