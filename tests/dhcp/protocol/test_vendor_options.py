@@ -237,7 +237,11 @@ def _sarrrr(vendor_ids: int, address: str, vendor_suboptions: str):
     srv_msg.client_does_include('Client', 'IA_Address')
     srv_msg.client_does_include('Client', 'IA-NA')
     for vendor_id in vendor_ids:
+        # kea-dhcp6 considers enterprisenum when assigning vendor options, but considers
+        # vendor_class_data when classifying as VENDOR_CLASS_. Let's have them slightly different
+        # and add a '_DATA' suffix to vendor_class_data to be able to differentiate them in tests.
         srv_msg.client_sets_value('Client', 'enterprisenum', vendor_id)
+        srv_msg.client_sets_value('Client', 'vendor_class_data', str(vendor_id) + '_DATA')
         srv_msg.client_does_include('Client', 'vendor-class')
     srv_msg.add_vendor_suboption('Client', 1, 123)
     srv_msg.add_vendor_suboption('Client', 1, 124)
@@ -268,6 +272,7 @@ def _sarrrr(vendor_ids: int, address: str, vendor_suboptions: str):
     srv_msg.client_sets_value('Client', 'IA_Address', address)
     for vendor_id in vendor_ids:
         srv_msg.client_sets_value('Client', 'enterprisenum', vendor_id)
+        srv_msg.client_sets_value('Client', 'vendor_class_data', str(vendor_id) + '_DATA')
         srv_msg.client_does_include('Client', 'vendor-class')
     srv_msg.add_vendor_suboption('Client', 1, 123)
     srv_msg.add_vendor_suboption('Client', 1, 124)
@@ -299,6 +304,7 @@ def _sarrrr(vendor_ids: int, address: str, vendor_suboptions: str):
     srv_msg.client_sets_value('Client', 'IA_Address', address)
     for vendor_id in vendor_ids:
         srv_msg.client_sets_value('Client', 'enterprisenum', vendor_id)
+        srv_msg.client_sets_value('Client', 'vendor_class_data', str(vendor_id) + '_DATA')
         srv_msg.client_does_include('Client', 'vendor-class')
     srv_msg.add_vendor_suboption('Client', 1, 123)
     srv_msg.add_vendor_suboption('Client', 1, 124)
@@ -1277,6 +1283,8 @@ def test_v4_two_vendors_two_options_using_vendor_class_option_data():
     # type=060, len=008: 31:32:33:34:35:36:37:38 as opposed to in other cases:
     # type=060, len=004: "1234" (string). Kea assigns a lease, but does not classify the client to a
     # VENDOR_CLASS_, nor does it send any vivso suboptions in the responses.
+    # Gitlab kea#2917 is for this, but until it's confirmed a bug, test for the current behavior.
+    # The test will fail and it will notify QA anyway, if the behavior changes.
     _dorara([1234, 5678], '192.0.2.20', None)
     _dorara([5678, 1234], '192.0.2.21', None)
     _dorara([1234, 2222], '192.0.2.22', None)
@@ -1428,7 +1436,7 @@ def test_v6_two_vendors_two_options_using_vendor_class_option_data():
     world.dhcp_cfg['option-def'] = _option_def()
     world.dhcp_cfg['client-classes'] = [
         {
-            'name': 'VENDOR_CLASS_1234',
+            'name': 'VENDOR_CLASS_1234_DATA',
             'option-data': [
                 {
                     'data': '1234, 0003666f6f',  # foo
@@ -1449,7 +1457,7 @@ def test_v6_two_vendors_two_options_using_vendor_class_option_data():
             ]
         },
         {
-            'name': 'VENDOR_CLASS_5678',
+            'name': 'VENDOR_CLASS_5678_DATA',
             'option-data': [
                 {
                     'data': '5678, 0003626172',  # bar
@@ -1458,7 +1466,7 @@ def test_v6_two_vendors_two_options_using_vendor_class_option_data():
                 {
                     'always-send': True,
                     'code': 123,
-                    'data': '2001:db8::db8:2001',
+                    'data': '2001:db8::2:2',
                     'space': 'vendor-5678'
                 },
                 {
@@ -1473,38 +1481,61 @@ def test_v6_two_vendors_two_options_using_vendor_class_option_data():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # Client advertises itself as a single vendor.
-    # Vendor classification does not seem to work the same way as for v4. Kea does not assign any
-    # VENDOR_CLASS_ whatsoever. Hence no vendor options.
-    _sarrrr([1234], '2001:db8::10', None)
-    _sarrrr([5678], '2001:db8::11', None)
+    # Client advertises itself as a single vendor. Client gets exactly what it requests regardless
+    # of the global scope of option data.
+    _sarrrr([1234], '2001:db8::10', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678], '2001:db8::11', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
     _sarrrr([2222], '2001:db8::12', None)
     _sarrrr([4444], '2001:db8::13', None)
     _sarrrr([8888], '2001:db8::14', None)
 
     # Again for good measure.
-    _sarrrr([1234], '2001:db8::15', None)
-    _sarrrr([5678], '2001:db8::16', None)
+    _sarrrr([1234], '2001:db8::15', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678], '2001:db8::16', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
     _sarrrr([2222], '2001:db8::17', None)
     _sarrrr([4444], '2001:db8::18', None)
     _sarrrr([8888], '2001:db8::19', None)
 
-    # Client sends two vendor IDs.
-    _sarrrr([1234, 5678], '2001:db8::1a', None)
-    _sarrrr([5678, 1234], '2001:db8::1b', None)
-    _sarrrr([1234, 2222], '2001:db8::1c', None)
-    _sarrrr([1234, 4444], '2001:db8::1d', None)
-    _sarrrr([1234, 8888], '2001:db8::1e', None)
-    _sarrrr([4444, 5678], '2001:db8::1f', None)
+    # Client sends two vendor IDs. Each client gets the vendor options specific to their vendor ID.
+    _sarrrr([1234, 5678], '2001:db8::1a', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678, 1234], '2001:db8::1b', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 2222], '2001:db8::1c', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 4444], '2001:db8::1d', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 8888], '2001:db8::1e', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([4444, 5678], '2001:db8::1f', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
     _sarrrr([4444, 8888], '2001:db8::20', None)
 
     # Again for good measure.
-    _sarrrr([1234, 5678], '2001:db8::21', None)
-    _sarrrr([5678, 1234], '2001:db8::22', None)
-    _sarrrr([1234, 2222], '2001:db8::23', None)
-    _sarrrr([1234, 4444], '2001:db8::24', None)
-    _sarrrr([1234, 8888], '2001:db8::25', None)
-    _sarrrr([4444, 5678], '2001:db8::26', None)
+    _sarrrr([1234, 5678], '2001:db8::21', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678, 1234], '2001:db8::22', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 2222], '2001:db8::23', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 4444], '2001:db8::24', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 8888], '2001:db8::25', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([4444, 5678], '2001:db8::26', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
     _sarrrr([4444, 8888], '2001:db8::27', None)
 
 
@@ -1596,47 +1627,70 @@ def test_v6_options_from_other_vendors_using_vendor_class_option_data():
     # Same option data for both vendors.
     world.dhcp_cfg['client-classes'] = [
         {
-            'name': 'VENDOR_CLASS_1234',
+            'name': 'VENDOR_CLASS_1234_DATA',
             'option-data': _option_data()
         },
         {
-            'name': 'VENDOR_CLASS_5678',
+            'name': 'VENDOR_CLASS_5678_DATA',
             'option-data': _option_data()
         }
     ]
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # Client advertises itself as a single vendor.
-    # Vendor classification does not seem to work the same way as for v4. Kea does not assign any
-    # VENDOR_CLASS_ whatsoever. Hence no vendor options.
-    _sarrrr([1234], '2001:db8::10', None)
-    _sarrrr([5678], '2001:db8::11', None)
+    # Client advertises itself as a single vendor. Client gets exactly what it requests regardless
+    # of the global scope of option data.
+    _sarrrr([1234], '2001:db8::10', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678], '2001:db8::11', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
     _sarrrr([2222], '2001:db8::12', None)
     _sarrrr([4444], '2001:db8::13', None)
     _sarrrr([8888], '2001:db8::14', None)
 
     # Again for good measure.
-    _sarrrr([1234], '2001:db8::15', None)
-    _sarrrr([5678], '2001:db8::16', None)
+    _sarrrr([1234], '2001:db8::15', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678], '2001:db8::16', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                     "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
     _sarrrr([2222], '2001:db8::17', None)
     _sarrrr([4444], '2001:db8::18', None)
     _sarrrr([8888], '2001:db8::19', None)
 
-    # Client sends two vendor IDs.
-    _sarrrr([1234, 5678], '2001:db8::1a', None)
-    _sarrrr([5678, 1234], '2001:db8::1b', None)
-    _sarrrr([1234, 2222], '2001:db8::1c', None)
-    _sarrrr([1234, 4444], '2001:db8::1d', None)
-    _sarrrr([1234, 8888], '2001:db8::1e', None)
-    _sarrrr([4444, 5678], '2001:db8::1f', None)
+    # Client sends two vendor IDs. Each client gets the vendor options specific to their vendor ID.
+    _sarrrr([1234, 5678], '2001:db8::1a', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678, 1234], '2001:db8::1b', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 2222], '2001:db8::1c', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 4444], '2001:db8::1d', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 8888], '2001:db8::1e', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([4444, 5678], '2001:db8::1f', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
     _sarrrr([4444, 8888], '2001:db8::20', None)
 
     # Again for good measure.
-    _sarrrr([1234, 5678], '2001:db8::21', None)
-    _sarrrr([5678, 1234], '2001:db8::22', None)
-    _sarrrr([1234, 2222], '2001:db8::23', None)
-    _sarrrr([1234, 4444], '2001:db8::24', None)
-    _sarrrr([1234, 8888], '2001:db8::25', None)
-    _sarrrr([4444, 5678], '2001:db8::26', None)
+    _sarrrr([1234, 5678], '2001:db8::21', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([5678, 1234], '2001:db8::22', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>",
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 2222], '2001:db8::23', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 4444], '2001:db8::24', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([1234, 8888], '2001:db8::25', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=1 optdata='01' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='00000200' |>"])
+    _sarrrr([4444, 5678], '2001:db8::26', ["<VENDOR_SPECIFIC_OPTION  optcode=123 optlen=16 optdata='20010db8000000000000000000020002' |>,"
+                                           "<VENDOR_SPECIFIC_OPTION  optcode=124 optlen=4 optdata='text' |>"])
     _sarrrr([4444, 8888], '2001:db8::27', None)
