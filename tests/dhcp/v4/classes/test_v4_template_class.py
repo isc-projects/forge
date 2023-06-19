@@ -183,7 +183,7 @@ def test_v4_spawn_class_as_subnet_guard():
 
     srv_control.start_srv('DHCP', 'started')
 
-    # should get 192.168.50.1 and option routers
+    # should get 192.168.50.10 and option routers
     _get_lease("AA:BB:CC:11:22:33", addr="192.168.50.10")
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'value', "172.17.0.1")
@@ -191,7 +191,7 @@ def test_v4_spawn_class_as_subnet_guard():
     # should get dropped
     _get_lease("11:22:33:AA:BB:CC", drop=True)
 
-    # should get 192.168.51.1 and no option
+    # should get 192.168.51.10 and no option
     _get_lease("11:BB:CC:11:22:33", addr="192.168.51.10")
     srv_msg.response_check_include_option(3, expect_include=False)
 

@@ -1549,7 +1549,6 @@ def test_lease_limits_template_class(dhcp_version, backend):
         for i in range(1, to_send + 1):  # Try to acquire more leases than the limit.
             # Try exchanging DORA and add 1 to success counter if Forge got ACK.
             res = _get_lease_v4(f'192.168.1.{i}', f'aa:bb:cc:03:04:{i:02}', vendor=None)
-            print("RES: ", res)
             if res > 0:
                 # we need a bit magic here, lease is needed to easily remove leases
                 # but calling srv_msg.get_all_leases() when there is no response will trigger an error
@@ -1557,7 +1556,6 @@ def test_lease_limits_template_class(dhcp_version, backend):
                 success_no1 += res
                 leases.append(srv_msg.get_all_leases())
             res = _get_lease_v4(f'192.168.2.{i}', f'11:22:33:03:05:{i:02}', vendor=None)
-            print("RES: ", res)
             if res > 0:
                 success_no2 += res
                 leases.append(srv_msg.get_all_leases())
@@ -1582,12 +1580,10 @@ def test_lease_limits_template_class(dhcp_version, backend):
         for i in range(1, to_send + 1):  # Try to acquire more IA_NA leases than the limit.
             # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
             res = _get_lease_v6(f'2001:db8:1::{hex(i)[2:]}', f'00:03:00:01:aa:bb:cc:11:ff:{i:02}', ia_na=True)
-            print("RES: ", res)
             if res > 0:
                 success_na_no1 += res
                 leases += srv_msg.get_all_leases()
             res = _get_lease_v6(f'2001:db8:3::{hex(i)[2:]}', f'00:03:00:01:11:22:33:22:ff:{i:02}', ia_na=True)
-            print("RES: ", res)
             if res > 0:
                 success_na_no2 += res
                 leases += srv_msg.get_all_leases()
