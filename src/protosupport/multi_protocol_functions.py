@@ -97,11 +97,11 @@ def send_file_to_server(local_path, remote_path):
     fabric_send_file(local_path, remote_path)
 
 
-def remove_file_from_server(remote_path):
+def remove_file_from_server(remote_path, dest=world.f_cfg.mgmt_address):
     """
     Remove file from remote server.
     """
-    fabric_remove_file_command(remote_path)
+    fabric_remove_file_command(remote_path, destination_host=dest)
 
 
 ################################################################################
@@ -432,7 +432,7 @@ def lease_dump(backend, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user
 
     backend = 'pgsql' if backend == "postgresql" else backend
 
-    remove_file_from_server(out)
+    remove_file_from_server(out, dest=destination_address)
     execute_shell_cmd(f"{path} lease-dump {backend} -u {db_user} -p {db_passwd} "
                       f"-n {db_name} -{world.f_cfg.proto[1]} -o {out}", dest=destination_address)
     return out

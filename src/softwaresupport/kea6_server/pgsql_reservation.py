@@ -123,11 +123,11 @@ SELECT LASTVAL() INTO lastval;"""
         for each in self.ipv6_reservations:
             if len(each) == 1:
                 self.configuration_script += "\nINSERT INTO ipv6_reservations(address, type, host_id)"
-                self.configuration_script += "\nVALUES ('{ipv6_address_reservation}'," \
+                self.configuration_script += "\nVALUES (cast('{ipv6_address_reservation}' as inet)," \
                                              " 0, (SELECT lastval FROM lastval));".format(**each)
             if len(each) == 2:
                 self.configuration_script += "\n\\set ipv6_prefix_reservation " \
-                                             "'{ipv6_prefix_reservation}'".format(**each)
+                                             "cast('{ipv6_address_reservation}' as inet)".format(**each)
                 if each["ipv6_prefix_len_reservation"] != "":
                     self.configuration_script += "\n\\set ipv6_prefix_len_reservation '" \
                                                  + str(each["ipv6_prefix_len_reservation"]) + "'"
