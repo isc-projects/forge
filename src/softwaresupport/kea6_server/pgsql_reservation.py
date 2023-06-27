@@ -126,14 +126,10 @@ SELECT LASTVAL() INTO lastval;"""
                 self.configuration_script += "\nVALUES (cast('{ipv6_address_reservation}' as inet)," \
                                              " 0, (SELECT lastval FROM lastval));".format(**each)
             if len(each) == 2:
-                self.configuration_script += "\n\\set ipv6_prefix_reservation " \
-                                             "cast('{ipv6_address_reservation}' as inet)".format(**each)
                 if each["ipv6_prefix_len_reservation"] != "":
-                    self.configuration_script += "\n\\set ipv6_prefix_len_reservation '" \
-                                                 + str(each["ipv6_prefix_len_reservation"]) + "'"
                     self.configuration_script += "\nINSERT INTO ipv6_reservations(address, prefix_len, type, host_id)\
-                            \nVALUES (:'ipv6_prefix_reservation'," \
-                                                 ":'ipv6_prefix_len_reservation', 2, (SELECT lastval FROM lastval));"
+                            \nVALUES (cast('{ipv6_prefix_reservation}' as inet), " \
+                                                 "{ipv6_prefix_len_reservation}, 2, (SELECT lastval FROM lastval));".format(**each)
             else:
                 pass
 

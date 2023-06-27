@@ -117,7 +117,7 @@ def test_control_channel_lease6_get_by():
                                                  "hostname": "six.hostname.com.",
                                                  "duid": "00:03:00:01:08:08:08:08:08:08",
                                                  "ip-address": "2001:db8:a::5",
-                                                 "pool-id": 0,
+                                                 # "pool-id": 0, if id is 0 it's no longer returned
                                                  "iaid": 5,
                                                  "preferred-lft": 3000,
                                                  "type": "IA_NA",
@@ -133,7 +133,7 @@ def test_control_channel_lease6_get_by():
                                                    "hostname": "six.hostname.com.",
                                                    "duid": "00:03:00:01:08:08:08:08:08:08",
                                                    "ip-address": "2001:db8:a::5",
-                                                   "pool-id": 0,
+                                                   # "pool-id": 0, if id is 0 it's no longer returned
                                                    "iaid": 5,
                                                    "preferred-lft": 3000,
                                                    "type": "IA_NA",
@@ -151,7 +151,7 @@ def test_control_channel_lease6_get_by():
                              "fqdn-rev": False,
                              "duid": "00:03:00:01:09:09:09:09:09:09",
                              "ip-address": "2001:db8:a::6",
-                             "pool-id": 0,
+                             # "pool-id": 0, if id is 0 it's no longer returned
                              "hostname": "",
                              "hw-address": "09:09:09:09:09:09",
                              "state": 0,
@@ -169,7 +169,7 @@ def test_control_channel_lease6_get_by():
                              "hw-address": "09:09:09:09:09:09",
                              "iaid": 1,
                              "ip-address": "2000::",
-                             "pool-id": 0,
+                             # "pool-id": 0, if id is 0 it's no longer returned
                              "preferred-lft": 3000,
                              "prefix-len": 96,
                              "state": 0,
@@ -185,7 +185,7 @@ def test_control_channel_lease6_get_by():
                                                  "hostname": "xyz.com.",
                                                  "duid": "00:03:00:01:11:11:11:11:11:11",
                                                  "ip-address": "2001:db8:b::11",
-                                                 "pool-id": 0,
+                                                 # "pool-id": 0, if id is 0 it's no longer returned
                                                  "iaid": 11,
                                                  "preferred-lft": 3000,
                                                  "type": "IA_NA",

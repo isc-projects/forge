@@ -512,6 +512,8 @@ def test_ddns6_control_channel_usercontext():
     cmd = dict(command='config-get', arguments={})
     response = _send_through_ddns_socket(cmd)
     config_set = response['arguments']
+    hash1 = config_set['hash']
+    del config_set['hash']
 
     # Modify configuration
     config_set['DhcpDdns']['user-context'] = {"version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}]}
@@ -544,10 +546,15 @@ def test_ddns6_control_channel_usercontext():
     cmd = dict(command='config-get', arguments={})
     response = _send_through_ddns_socket(cmd)
     config_get = response['arguments']
+    hash2 = config_get['hash']
+    del config_get['hash']
     config_get = sort_container(config_get)
 
     # Compare what we send and what Kea returned.
     assert config_set == config_get, "Send and received configurations are different"
+
+    # After changes in config two hashes from config get should be different
+    assert hash1 != hash2, "After changes hash is the same!"
 
     # Write config to file and download it
     remote_path = world.f_cfg.data_join('config-export.json')

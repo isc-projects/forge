@@ -77,7 +77,7 @@ def test_v4_lease_dump(backend):
                          "fqdn-fwd": True,
                          "fqdn-rev": True,
                          "valid-lft": valid_lifetime,
-                         "pool-id": 0,
+                         # "pool-id": 0, if id is 0 it's no longer returned
                          "state": 1,
                          "hostname": f"my.host.some.name{lease_nbr + 1}",
                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr + 1:02}",
@@ -141,7 +141,7 @@ def test_v4_lease_dump(backend):
                          "fqdn-fwd": True,
                          "fqdn-rev": True,
                          "valid-lft": valid_lifetime,
-                         "pool-id": 0,
+                         # "pool-id": 0, if id is 0 it's no longer returned
                          "state": 1,
                          "hostname": f"my.host.some.name{lease_nbr + 1}",
                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr + 1:02}",
@@ -227,7 +227,7 @@ def test_v4_lease_upload(backend):
                          "fqdn-fwd": True,
                          "fqdn-rev": True,
                          "valid-lft": valid_lifetime,
-                         "pool-id": 0,
+                         # "pool-id": 0, if id is 0 it's no longer returned
                          "state": 1,
                          "hostname": f"my.host.some.name{lease_nbr + 1}",
                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr + 1:02}",
@@ -294,7 +294,7 @@ def test_v4_lease_upload_duplicate(backend):
                              "fqdn-fwd": True,
                              "fqdn-rev": True,
                              "valid-lft": valid_lifetime,
-                             "pool-id": 0,
+                             # "pool-id": 0, if id is 0 it's no longer returned
                              "state": 1,
                              "expire": expire,
                              "hostname": f"my.host.some.name{i + 1}",
@@ -338,7 +338,7 @@ def test_v4_lease_upload_duplicate(backend):
                          "fqdn-fwd": True,
                          "fqdn-rev": True,
                          "valid-lft": valid_lifetime,
-                         "pool-id": 0,
+                         # "pool-id": 0, if id is 0 it's no longer returned
                          "state": 1,
                          "hostname": f"my.host.some.name{lease_nbr + 1}",
                          "client-id": f"aa:bb:cc:dd:11:{lease_nbr + 1:02}",
@@ -410,7 +410,7 @@ def test_v6_lease_dump(backend):
                          "iaid": 1230 + lease_nbr,
                          "ip-address": f"2001:db8:1::{lease_nbr + 1}",
                          "preferred-lft": 7777,
-                         "pool-id": 0,
+                         # "pool-id": 0, if id is 0 it's no longer returned
                          "state": 0,
                          "subnet-id": 1,
                          "type": "IA_NA",
@@ -483,7 +483,7 @@ def test_v6_lease_dump(backend):
                                  "iaid": 5678,
                                  "ip-address": "2001:db8:2::1",
                                  "preferred-lft": 3000,
-                                 "pool-id": 0,
+                                 # "pool-id": 0, if id is 0 it's no longer returned
                                  "state": 0,
                                  "subnet-id": 2,
                                  "type": "IA_NA",
@@ -580,7 +580,7 @@ def test_v6_lease_dump(backend):
                          "iaid": 1230 + lease_nbr,
                          "ip-address": f"2001:db8:1::{lease_nbr + 1}",
                          "preferred-lft": 7777,
-                         "pool-id": 0,
+                         # "pool-id": 0, if id is 0 it's no longer returned
                          "state": 0,
                          "subnet-id": 1,
                          "type": "IA_NA",
@@ -607,7 +607,7 @@ def test_v6_lease_dump(backend):
                                  "hw-address": "f6:f5:f4:f3:f2:01",
                                  "iaid": 5678,
                                  "ip-address": "2001:db8:2::1",
-                                 "pool-id": 0,
+                                 # "pool-id": 0, if id is 0 it's no longer returned
                                  "preferred-lft": 3000,
                                  "state": 0,
                                  "subnet-id": 2,
@@ -755,7 +755,7 @@ def test_v6_lease_upload(backend):
                          "hw-address": f"1a:2b:3c:4d:5e:6f:{lease_nbr + 1:02}",
                          "iaid": 1230 + lease_nbr,
                          "ip-address": f"2001:db8:1::{lease_nbr + 1}",
-                         "pool-id": 0,
+                         # "pool-id": 0, if id is 0 it's no longer returned
                          "preferred-lft": 7777,
                          "state": 0,
                          "subnet-id": 1,
@@ -783,7 +783,7 @@ def test_v6_lease_upload(backend):
                                  "hw-address": "f6:f5:f4:f3:f2:01",
                                  "iaid": 5678,
                                  "ip-address": "2001:db8:2::1",
-                                 "pool-id": 0,
+                                 # "pool-id": 0, if id is 0 it's no longer returned
                                  "preferred-lft": 3000,
                                  "state": 0,
                                  "subnet-id": 2,
@@ -910,7 +910,7 @@ def test_v6_lease_upload_duplicate(backend):
                          "hw-address": f"1a:2b:3c:4d:5e:6f:{lease_nbr + 1:02}",
                          "iaid": 1230 + lease_nbr,
                          "ip-address": f"2001:db8:1::{lease_nbr + 1}",
-                         "pool-id": 0,
+                         # "pool-id": 0, if id is 0 it's no longer returned
                          "preferred-lft": 7777,
                          "state": 0,
                          "subnet-id": 1,

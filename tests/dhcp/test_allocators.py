@@ -86,14 +86,14 @@ def test_v4_allocators(backend, scope):
     - allocator configured per subnet
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.167.0.0/24', '192.167.0.0/24', allocator='iterative')
-    srv_control.config_srv_another_subnet_no_interface('192.168.0.0/24', '192.168.0.0/24', allocator='flq')
-    srv_control.config_srv_another_subnet_no_interface('192.169.0.0/24', '192.169.0.0/24', allocator='random')
+    srv_control.config_srv_subnet('192.167.0.0/16', '192.167.0.0/16', allocator='iterative')
+    srv_control.config_srv_another_subnet_no_interface('192.168.0.0/16', '192.168.0.0/16', allocator='flq')
+    srv_control.config_srv_another_subnet_no_interface('192.169.0.0/16', '192.169.0.0/16', allocator='random')
 
     if scope == "shared_networks":
-        srv_control.shared_subnet('192.167.0.0/24', 0)
-        srv_control.shared_subnet('192.168.0.0/24', 0)
-        srv_control.shared_subnet('192.169.0.0/24', 0)
+        srv_control.shared_subnet('192.167.0.0/16', 0)
+        srv_control.shared_subnet('192.168.0.0/16', 0)
+        srv_control.shared_subnet('192.169.0.0/16', 0)
 
         srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
         srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)

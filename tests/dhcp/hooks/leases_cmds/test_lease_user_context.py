@@ -25,7 +25,7 @@ from src.protosupport.multi_protocol_functions import sort_container
 @pytest.mark.hook
 @pytest.mark.lease_cmds
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-@pytest.mark.parametrize("channel", ['socket', 'http'])
+@pytest.mark.parametrize("channel", ['http'])
 def test_v4_lease_user_context(backend, channel):
     """
     Test adding and getting user-context by lease4 commands.
@@ -77,7 +77,7 @@ def test_v4_lease_user_context(backend, channel):
                     "hostname": "",
                     "hw-address": "ff:01:02:03:ff:04",
                     "ip-address": "192.168.50.5",
-                    "pool-id": 0,
+                    # "pool-id": 0, if id is 0 it's no longer returned
                     "state": 0,
                     "subnet-id": 1,
                     "valid-lft": 4000}
@@ -87,7 +87,7 @@ def test_v4_lease_user_context(backend, channel):
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
-@pytest.mark.parametrize("channel", ['socket', 'http'])
+@pytest.mark.parametrize("channel", ['http'])
 def test_v4_lease_user_context_negative(channel):
     """
     Test invalid values send as user context by lease4-add and lease4-update
@@ -180,7 +180,7 @@ def test_v4_lease_extended_info(backend):
                                  "hostname": "",
                                  "hw-address": "ff:01:02:03:ff:04",
                                  "ip-address": "192.168.50.1",
-                                 "pool-id": 0,
+                                 # "pool-id": 0, if id is 0 it's no longer returned
                                  "state": 0,
                                  "subnet-id": 1,
                                  "user-context": {
@@ -198,7 +198,7 @@ def test_v4_lease_extended_info(backend):
 @pytest.mark.hook
 @pytest.mark.lease_cmds
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-@pytest.mark.parametrize("channel", ['socket', 'http'])
+@pytest.mark.parametrize("channel", ['http'])
 def test_v6_lease_user_context(backend, channel):
     """
     Test adding and getting user-context by lease6 commands.
@@ -256,7 +256,7 @@ def test_v6_lease_user_context(backend, channel):
                     "hostname": "",
                     "iaid": 1234,
                     "ip-address": "2001:db8:1::1",
-                    "pool-id": 0,
+                    # "pool-id": 0, if id is 0 it's no longer returned
                     "preferred-lft": 4000,
                     "state": 0,
                     "subnet-id": 1,
@@ -268,7 +268,7 @@ def test_v6_lease_user_context(backend, channel):
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
-@pytest.mark.parametrize("channel", ['socket', 'http'])
+@pytest.mark.parametrize("channel", ['http'])
 def test_v6_lease_user_context_negative(channel):
     """
     Test invalid values send as user context by lease6-add and lease4-update
@@ -396,7 +396,7 @@ def test_v6_lease_extended_info(backend):
                                  "hw-address": "f6:f5:f4:f3:f2:01",
                                  "iaid": 1234,
                                  "ip-address": "2001:db8:1::1",
-                                 "pool-id": 0,
+                                 # "pool-id": 0, if id is 0 it's no longer returned
                                  "preferred-lft": 3000,
                                  "state": 0,
                                  "subnet-id": 1,

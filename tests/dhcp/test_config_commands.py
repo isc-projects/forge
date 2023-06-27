@@ -435,6 +435,8 @@ def test_config_commands_usercontext(scope, dhcp_version):
     cmd = {"command": "config-get", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
     config_set = response['arguments']
+    hash1 = config_set['hash']
+    del config_set['hash']
 
     # Add user context to configuration
     if scope == 'global':
@@ -457,16 +459,22 @@ def test_config_commands_usercontext(scope, dhcp_version):
 
     # Send modified config to server
     cmd = {"command": "config-set", "arguments": config_set}
-    srv_msg.send_ctrl_cmd(cmd, 'http')
+    resp = srv_msg.send_ctrl_cmd(cmd, 'http')
+    hash2 = resp['arguments']['hash']
 
     # Get new config from server
     cmd = {"command": "config-get", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
     config_get = response['arguments']
+    hash3 = config_get['hash']
+    del config_get['hash']
     config_get = sort_container(config_get)
 
     # Compare what we send and what Kea returned.
     assert config_set == config_get, "Send and received configurations are different"
+
+    # let's check all 3 hash values:
+    assert hash1 != hash2 == hash3, "First hash should be different than two returned later in the test"
 
     # Write config to file and download it
     remote_path = world.f_cfg.data_join('config-export.json')
@@ -506,6 +514,8 @@ def test_config_commands_empty_reservations(dhcp_version):
     cmd = {"command": "config-get", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
     config_set = response['arguments']
+    hash1 = config_set['hash']
+    del config_set['hash']
 
     # Add reservation to configuration
     if dhcp_version == 'v4':
@@ -522,11 +532,14 @@ def test_config_commands_empty_reservations(dhcp_version):
 
     # Send modified config to server
     cmd = {"command": "config-set", "arguments": config_set}
-    srv_msg.send_ctrl_cmd(cmd, 'http')
+    resp = srv_msg.send_ctrl_cmd(cmd, 'http')
+    hash2 = resp['arguments']['hash']
     # Get new config from server
     cmd = {"command": "config-get", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
     config_get = response['arguments']
+    hash3 = config_get['hash']
+    del config_get['hash']
     config_get = sort_container(config_get)
 
     # update local config with expected values
@@ -540,6 +553,9 @@ def test_config_commands_empty_reservations(dhcp_version):
 
     # Compare what we send and what Kea returned.
     assert config_set == config_get, "Send and received configurations are different"
+
+    # let's check all 3 hash values:
+    assert hash1 != hash2 == hash3, "First hash should be different than two returned later in the test"
 
     # Write config to file and download it
     remote_path = world.f_cfg.data_join('config-export.json')
