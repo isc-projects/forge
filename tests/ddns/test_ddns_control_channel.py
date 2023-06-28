@@ -131,6 +131,7 @@ def test_ddns6_control_channel_config_set():
 
     # let's ignore logging, it's added in Dhcp part and for now common,
     # that will have to be fixed in 1.7
+    del cfg["hash"]
     del cfg["DhcpDdns"]["loggers"]
     del world.ddns_cfg["DhcpDdns"]["loggers"]
     assert cfg == world.ddns_cfg
@@ -162,6 +163,7 @@ def test_ddns6_control_channel_config_set_all_values():
     response = _send_through_ddns_socket(cmd)
 
     cfg = response["arguments"]
+    del cfg['hash']
 
     tmp_cfg = world.ddns_cfg
 
@@ -205,6 +207,7 @@ def test_ddns6_control_channel_config_set_all_values():
     cmd = dict(command='config-get', arguments={})
     response = _send_through_ddns_socket(cmd)
     cfg = response["arguments"]
+    del cfg['hash']
 
     assert cfg == tmp_cfg
 
@@ -228,6 +231,7 @@ def test_ddns6_control_channel_config_test():
     cmd = dict(command='config-get', arguments={})
     response = _send_through_ddns_socket(cmd)
     cfg = response["arguments"]
+    del cfg['hash']
     cmd = dict(command='config-test', arguments=cfg)
     _send_through_ddns_socket(cmd)
 
@@ -250,6 +254,7 @@ def test_ddns6_control_channel_config_test():
     cmd = dict(command='config-get', arguments={})
     response = _send_through_ddns_socket(cmd)
     cfg = response["arguments"]
+    del cfg['hash']
     cmd = dict(command='config-test', arguments=cfg)
     _send_through_ddns_socket(cmd)
 
@@ -362,6 +367,7 @@ def test_ddns6_control_channel_config_reload():
 
     cmd = dict(command='config-get', arguments={})
     cfg = _send_through_ddns_socket(cmd)
+    del cfg['arguments']['hash']
     del cfg["arguments"]["DhcpDdns"]["loggers"]
     del world.ddns_cfg["DhcpDdns"]["loggers"]
     assert cfg["arguments"] == world.ddns_cfg
@@ -383,6 +389,7 @@ def test_ddns6_control_channel_config_reload():
 
     cmd = dict(command='config-get', arguments={})
     cfg = _send_through_ddns_socket(cmd)
+    del cfg['arguments']['hash']
     del cfg["arguments"]["DhcpDdns"]["loggers"]
     del world.ddns_cfg["DhcpDdns"]["loggers"]
     assert cfg["arguments"] == world.ddns_cfg
