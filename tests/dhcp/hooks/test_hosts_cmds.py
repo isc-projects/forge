@@ -24,7 +24,7 @@ def _reservation_add(reservation: dict, target: str = None, channel: str = 'http
     """
     Send reservation add command
     :param reservation: dictionary with reservation
-    :param target: primary for memfile, alternate for database
+    :param target: memory for memfile, database for database
     :param channel: http or socket
     :param exp_result: expected result of a command returned by kea
     :param exp_failed: expectation if command should fail completely
@@ -46,7 +46,7 @@ def _reservation_update(reservation: dict, target: str = None, channel: str = 'h
     """
     Send reservation update command
     :param reservation: dictionary with reservation
-    :param target: primary for memfile, alternate for database
+    :param target: primary for memfile, database for database
     :param channel: http or socket
     :param exp_result: expected result of a command returned by kea
     :param exp_failed: expectation if command should fail completely
@@ -70,7 +70,7 @@ def _reservation_get(cmd: str, args: dict, target: str = None, channel: str = 'h
     Send reservation add command
     :param cmd: command to send
     :param args: argument of a command
-    :param target: primary for memfile, alternate for database
+    :param target: primary for memfile, database for database
     :param channel: http or socket
     :param exp_result: expected result of a command returned by kea
     :param exp_failed: expectation if command should fail completely
@@ -90,7 +90,7 @@ def _reservation_del(args: dict, target: str = None, channel: str = 'http',
     """
     Send reservation-del command
     :param args: dictionary with arguments of command
-    :param target: primary for memfile, alternate for database
+    :param target: primary for memfile, database for database
     :param channel: http or socket
     :param exp_result: expected result of a command returned by kea
     :param exp_failed: expectation if command should fail completely
@@ -125,8 +125,8 @@ def _get_target(database: str):
     :return: operation-target value
     """
     if database == 'memfile':
-        return 'primary'
-    return 'alternate'
+        return 'memory'
+    return 'database'
 
 
 @pytest.mark.v4
@@ -3959,7 +3959,7 @@ def test_v6_memfile_with_(host_database):
     # let's add two different reservations, one to memfile other to database, get it and compare
     # keep in mind:
     #  memfile - target primary
-    #  database - target alternate
+    #  database - target database
 
     # memfile
     res_get = {
@@ -3976,15 +3976,15 @@ def test_v6_memfile_with_(host_database):
     }
 
     # set and check
-    _reservation_add(res_memfile, target='primary')
-    res_returned = _reservation_get("reservation-get", res_get, target='primary')["arguments"]
+    _reservation_add(res_memfile, target='memory')
+    res_returned = _reservation_get("reservation-get", res_get, target='memory')["arguments"]
     res_returned = _clean_up_reservation(res_returned)
     assert res_memfile == res_returned, "Reservation sent and returned are not the same"
 
     # let's check if this one didn't end up in database:
     # for now let's use commands but we should have another way to test it
     # TODO introduce directly checking host reservations entry in db
-    _reservation_get("reservation-get", res_get, target='alternate', exp_result=3)
+    _reservation_get("reservation-get", res_get, target='database', exp_result=3)
 
     # database
     res_get = {
@@ -4001,13 +4001,13 @@ def test_v6_memfile_with_(host_database):
     }
 
     # set and check
-    _reservation_add(res_memfile, target='alternate')
-    res_returned = _reservation_get("reservation-get", res_get, target='alternate')["arguments"]
+    _reservation_add(res_memfile, target='database')
+    res_returned = _reservation_get("reservation-get", res_get, target='database')["arguments"]
     res_returned = _clean_up_reservation(res_returned)
     assert res_memfile == res_returned, "Reservation sent and returned are not the same"
 
     # let's check if this one didn't end up in memory:
-    _reservation_get("reservation-get", res_get, target='primary', exp_result=3)
+    _reservation_get("reservation-get", res_get, target='memory', exp_result=3)
 
     # check if that actually works
     srv_msg.SARR(duid="00:03:00:01:f6:f5:f4:01:01:01", address='2001:db8:1::b')
@@ -4042,7 +4042,7 @@ def test_v4_memfile_with_(host_database):
     # let's add two different reservations, one to memfile other to database, get it and compare
     # keep in mind:
     #  memfile - target primary
-    #  database - target alternate
+    #  database - target database
 
     # memfile
     res_get = {
@@ -4058,15 +4058,15 @@ def test_v4_memfile_with_(host_database):
     }
 
     # set and check
-    _reservation_add(res_memfile, target='primary')
-    res_returned = _reservation_get("reservation-get", res_get, target='primary')["arguments"]
+    _reservation_add(res_memfile, target='memory')
+    res_returned = _reservation_get("reservation-get", res_get, target='memory')["arguments"]
     res_returned = _clean_up_reservation(res_returned)
     assert res_memfile == res_returned, "Reservation sent and returned are not the same"
 
     # let's check if this one didn't end up in database:
     # for now let's use commands but we should have another way to test it
     # TODO introduce directly checking host reservations entry in db
-    _reservation_get("reservation-get", res_get, target='alternate', exp_result=3)
+    _reservation_get("reservation-get", res_get, target='database', exp_result=3)
 
     # database
     res_get = {
@@ -4082,13 +4082,13 @@ def test_v4_memfile_with_(host_database):
     }
 
     # set and check
-    _reservation_add(res_memfile, target='alternate')
-    res_returned = _reservation_get("reservation-get", res_get, target='alternate')["arguments"]
+    _reservation_add(res_memfile, target='database')
+    res_returned = _reservation_get("reservation-get", res_get, target='database')["arguments"]
     res_returned = _clean_up_reservation(res_returned)
     assert res_memfile == res_returned, "Reservation sent and returned are not the same"
 
     # let's check if this one didn't end up in memory:
-    _reservation_get("reservation-get", res_get, target='primary', exp_result=3)
+    _reservation_get("reservation-get", res_get, target='memory', exp_result=3)
 
     # check if that actually works
     srv_msg.DORA(address='192.168.50.150', chaddr="f6:f5:f4:f3:f2:01")
@@ -4146,9 +4146,9 @@ def test_save_reservation_to_the_config_file(dhcp_version):
             "subnet-id": 1,
         }
 
-    _reservation_add(res_memfile, target='primary')
+    _reservation_add(res_memfile, target='memory')
     # check saved reservation
-    res_returned = _reservation_get("reservation-get", res_get, target='primary')["arguments"]
+    res_returned = _reservation_get("reservation-get", res_get, target='memory')["arguments"]
     res_returned = _clean_up_reservation(res_returned)
     assert res_memfile == res_returned, "Reservation sent and returned are not the same"
 
@@ -4159,7 +4159,7 @@ def test_save_reservation_to_the_config_file(dhcp_version):
 
     srv_control.start_srv('DHCP', 'restarted')
     # we shouldn't get any reservation back
-    _reservation_get("reservation-get", res_get, target='primary', exp_result=3)
+    _reservation_get("reservation-get", res_get, target='memory', exp_result=3)
     # let's assign lease, old are still assigned but also out of pool.
 
     if dhcp_version == 'v6':
@@ -4168,9 +4168,9 @@ def test_save_reservation_to_the_config_file(dhcp_version):
         srv_msg.DORA(chaddr="f6:f5:f4:03:02:01", address='192.168.50.50')
 
     # let's add reservation again, and check it
-    _reservation_add(res_memfile, target='primary')
+    _reservation_add(res_memfile, target='memory')
     # check saved reservation
-    res_returned = _reservation_get("reservation-get", res_get, target='primary')["arguments"]
+    res_returned = _reservation_get("reservation-get", res_get, target='memory')["arguments"]
     res_returned = _clean_up_reservation(res_returned)
     assert res_memfile == res_returned, "Reservation sent and returned are not the same"
 
