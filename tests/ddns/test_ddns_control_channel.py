@@ -494,6 +494,8 @@ def test_ddns6_control_channel_version_get():
 
 
 @pytest.mark.v6
+@pytest.mark.ddns
+@pytest.mark.controlchannel
 def test_ddns6_control_channel_usercontext():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -570,3 +572,51 @@ def test_ddns6_control_channel_usercontext():
 
     # Compare downloaded file with send config.
     assert config_set == config_write, "Send and downloaded file configurations are different"
+
+
+@pytest.mark.v6
+@pytest.mark.ddns
+@pytest.mark.controlchannel
+def test_ddns6_config_hash_get():
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.ddns_open_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Get current config
+    cmd = {"command": "config-hash-get", "arguments": {}}
+    hash1 = _send_through_ddns_socket(cmd)["arguments"]["hash"]
+    hash2 = _send_through_ddns_socket(cmd)["arguments"]["hash"]
+    assert hash1 == hash2, "Got two different hashes without config change"
+
+    cmd = {"command": "config-get", "arguments": {}}
+    cfg_get = _send_through_ddns_socket(cmd)["arguments"]
+    hash3 = cfg_get['hash']
+    assert hash2 == hash3, "Got two different hashes without config change"
+    del cfg_get['hash']
+
+    # let's set something different as a config and check if has changed
+    cfg_get["DhcpDdns"]["dns-server-timeout"] = 20000
+
+    cmd = {"command": "config-set", "arguments": cfg_get}
+    cfg_set = _send_through_ddns_socket(cmd)["arguments"]
+    hash4 = cfg_set['hash']
+    assert hash4 != hash1, "Config has changed but hash not!"
+
+    cmd = {"command": "config-hash-get", "arguments": {}}
+    hash5 = _send_through_ddns_socket(cmd)["arguments"]["hash"]
+    assert hash4 == hash5, "hash returned in config-get-hash and config-set are different!"
+
+    # let's set config from the beginning
+    cfg_get["DhcpDdns"]["dns-server-timeout"] = 2000
+
+    cmd = {"command": "config-set", "arguments": cfg_get}
+    cfg_set = _send_through_ddns_socket(cmd)["arguments"]
+    hash6 = cfg_set['hash']
+
+    assert hash1 == hash2 == hash3 == hash6 != hash4, "Kea reconfigured with the same config, hash shouldn't change"
+    cmd = {"command": "config-hash-get", "arguments": {}}
+    hash7 = _send_through_ddns_socket(cmd)["arguments"]["hash"]
+    assert hash6 == hash7, "hash returned in config-get-hash and config-set are different!"

@@ -571,3 +571,66 @@ def test_config_commands_empty_reservations(dhcp_version):
 
     # Compare downloaded file with send config.
     assert config_set == config_write, "Send and downloaded file configurations are different"
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.ca
+@pytest.mark.controlchannel
+def test_config_hash_get(dhcp_version):
+    """
+    Test check if user-context is properly handled by config commands.
+    Global, subnet, shared networks and client class containers are tested by parametrization.
+    Config snippets are added to result of "config-get" and sent to server by "config-set"
+    Forge uses "config-get" and "config-write" to check if changes were applied.
+    """
+
+    misc.test_setup()
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Get current config
+    cmd = {"command": "config-hash-get", "arguments": {}}
+    hash1 = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]["hash"]
+    hash2 = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]["hash"]
+    assert hash1 == hash2, "Got two different hashes without config change"
+
+    cmd = {"command": "config-get", "arguments": {}}
+    cfg_get = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]
+    hash3 = cfg_get['hash']
+    assert hash2 == hash3, "Got two different hashes without config change"
+    del cfg_get['hash']
+
+    # let's set something different as a config and check if has changed
+    cfg_get[f"Dhcp{dhcp_version[1]}"]["option-def"] = [{
+        "array": False,
+        "code": 122,
+        "encapsulate": "opt",
+        "name": "optionX",
+        "record-types": "",
+        "space": f"dhcp{dhcp_version[1]}",
+        "type": "empty"
+    }]
+
+    cmd = {"command": "config-set", "arguments": cfg_get}
+    cfg_set = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]
+    hash4 = cfg_set['hash']
+    assert hash4 != hash1, "Config has changed but hash not!"
+
+    cmd = {"command": "config-hash-get", "arguments": {}}
+    hash5 = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]["hash"]
+    assert hash4 == hash5, "hash returned in config-get-hash and config-set are different!"
+
+    # let's set config from the beginning
+    cfg_get[f"Dhcp{dhcp_version[1]}"]["option-def"] = []
+
+    cmd = {"command": "config-set", "arguments": cfg_get}
+    cfg_set = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]
+    hash6 = cfg_set['hash']
+
+    assert hash1 == hash2 == hash3 == hash6 != hash4, "Kea reconfigured with the same config, hash shouldn't change"
+    cmd = {"command": "config-hash-get", "arguments": {}}
+    hash7 = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]["hash"]
+    assert hash6 == hash7, "hash returned in config-get-hash and config-set are different!"

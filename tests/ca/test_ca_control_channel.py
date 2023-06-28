@@ -350,3 +350,51 @@ def test_ca_version_get():
     response = _send_directly_to_ca(cmd)
     assert response["arguments"]["extended"]
     # TODO maybe version of kea could be held in forge?
+
+
+@pytest.mark.v6
+@pytest.mark.ca
+@pytest.mark.controlchannel
+def test_ca_config_hash_get():
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Get current config
+    cmd = {"command": "config-hash-get", "arguments": {}}
+    hash1 = _send_directly_to_ca(cmd)["arguments"]["hash"]
+    hash2 = _send_directly_to_ca(cmd)["arguments"]["hash"]
+    assert hash1 == hash2, "Got two different hashes without config change"
+
+    cmd = {"command": "config-get", "arguments": {}}
+    cfg_get = _send_directly_to_ca(cmd)["arguments"]
+    hash3 = cfg_get['hash']
+    assert hash2 == hash3, "Got two different hashes without config change"
+    del cfg_get['hash']
+
+    # let's set something different as a config and check if has changed
+    cfg_get["Control-agent"]["loggers"][0]["severity"] = "INFO"
+
+    cmd = {"command": "config-set", "arguments": cfg_get}
+    cfg_set = _send_directly_to_ca(cmd)["arguments"]
+    hash4 = cfg_set['hash']
+    assert hash4 != hash1, "Config has changed but hash not!"
+
+    cmd = {"command": "config-hash-get", "arguments": {}}
+    hash5 = _send_directly_to_ca(cmd)["arguments"]["hash"]
+    assert hash4 == hash5, "hash returned in config-get-hash and config-set are different!"
+
+    # let's set config from the beginning
+    cfg_get["Control-agent"]["loggers"][0]["severity"] = "DEBUG"
+
+    cmd = {"command": "config-set", "arguments": cfg_get}
+    cfg_set = _send_directly_to_ca(cmd)["arguments"]
+    hash6 = cfg_set['hash']
+
+    assert hash1 == hash2 == hash3 == hash6 != hash4, "Kea reconfigured with the same config, hash shouldn't change"
+    cmd = {"command": "config-hash-get", "arguments": {}}
+    hash7 = _send_directly_to_ca(cmd)["arguments"]["hash"]
+    assert hash6 == hash7, "hash returned in config-get-hash and config-set are different!"
