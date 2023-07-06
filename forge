@@ -5,7 +5,28 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 """Forge - testing tool for Kea and ISC DHCP."""
+
+# pylint: disable=anomalous-backslash-in-string
+# pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-sys-exit
+# pylint: disable=consider-using-with
+# pylint: disable=import-outside-toplevel
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
+# pylint: disable=logging-fstring-interpolation
+# pylint: disable=logging-not-lazy
+# pylint: disable=no-else-break
+# pylint: disable=redefined-builtin
+# pylint: disable=redefined-outer-name
+# pylint: disable=reimported
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-locals
+# pylint: disable=unnecessary-pass
+# pylint: disable=unspecified-encoding
+# pylint: disable=wrong-import-order
 
 from __future__ import print_function
 import boto3
@@ -28,7 +49,7 @@ from urllib.parse import urljoin
 from collections import defaultdict
 try:
     import urllib.request
-except:
+except BaseException:
     pass
 
 log = logging.getLogger()
@@ -36,15 +57,16 @@ log = logging.getLogger()
 FORGE_INI = 'forge.ini'
 
 SRV4_ADDR = "192.168.50.252"
+SRV4_ADDR_2 = "192.168.50.253"
 CLNT4_ADDR = "192.168.50.2"
 CLNT4_ADDR_2 = "192.168.51.2"
 SRV_IPV6_ADDR_GLOBAL = "2001:db8:1::1000"
-CLNT6_ADDR = "2001:db8:1::2000"
+CLIENT_IPV6_ADDR_GLOBAL = "2001:db8:1::2000"
 MGMT_ADDRESS = "172.28.0.31"
 MGMT_ADDRESS_2 = "172.28.0.32"
 MGMT_ADDRESS_3 = "172.28.0.33"
 DNS4_ADDR = SRV4_ADDR
-#DNS6_ADDR = "2001:db8:0:f101::1"
+# DNS6_ADDR = "2001:db8:0:f101::1"
 DNS6_ADDR = SRV_IPV6_ADDR_GLOBAL
 IFACE = "enp0s9"
 SERVER_IFACE = "enp0s9"
@@ -64,11 +86,12 @@ WIN_DNS_ADDR_2019 = "{WIN_DNS_ADDR_2019}"
 SOFTWARE_UNDER_TEST = "kea4_server", "bind9_server",
 SOFTWARE_INSTALL_PATH = "/usr/local"
 DB_TYPE = "memfile"
-SHOW_PACKETS_FROM = "both"
+SHOW_PACKETS_FROM = ""
 SRV4_ADDR = "{SRV4_ADDR}"
+SRV4_ADDR_2 = "{SRV4_ADDR_2}"
 REL4_ADDR = "0.0.0.0"
-GIADDR4 = "192.168.50.3"
-CIADDR = "192.168.50.3"
+GIADDR4 = "192.168.50.2"
+CIADDR = "192.168.50.2"
 CLI_LINK_LOCAL = ""
 copylist = []
 removelist = []
@@ -77,10 +100,11 @@ OUTPUT_WAIT_MAX_INTERVALS = 2
 PACKET_WAIT_INTERVAL = 1
 SRV_IPV6_ADDR_GLOBAL = "{SRV_IPV6_ADDR_GLOBAL}"
 SRV_IPV6_ADDR_LINK_LOCAL = "fe80::a00:27ff:fedf:63bc"
-CLNT6_ADDR = "{CLNT6_ADDR}"
+CLIENT_IPV6_ADDR_GLOBAL = "{CLIENT_IPV6_ADDR_GLOBAL}"
 HISTORY = True
-TCPDUMP = False
+TCPDUMP = True
 TCPDUMP_PATH = ""
+TCPDUMP_ON_REMOTE_SYSTEM = False
 SAVE_CONFIG_FILE = True
 AUTO_ARCHIVE = False
 SLEEP_TIME_1 = 1  # wait after starting remote server
@@ -108,6 +132,7 @@ DB_HOST = ""
 FABRIC_PTY = ""
 INSTALL_METHOD = "{INSTALL_METHOD}"
 MULTI_THREADING_ENABLED = True
+FORGE_VERBOSE = False
 """
 
 
@@ -131,14 +156,19 @@ def _save_config(config):
 def update_config(name, value):
     if name not in CONFIG_FIELDS:
         raise Exception('Unknown config field %s' % name)
-    if name == 'kea-dirs':
+    if name == 'ccache-dir' and 'alpine' in value:
+        # we don't have shared ccache for alpine available on ubuntu system (lxc runner)
+        # so let's mitigate this issue
+        value = '/mnt/ccache'
+        log.info("We don't have ccache in alpine, resetting path to %s", value)
+    if name in ['kea-dirs', 'ccache-dir']:
         value = os.path.abspath(value)
         if not os.path.exists(value):
             raise Exception('Folder %s does not exists.' % value)
         if not os.path.isdir(value):
             raise Exception('%s is not a directory.' % value)
 
-    print('Setting %s to %s' % (name, value))
+    log.info('Setting %s to %s', name, value)
     cfg = _load_config()
     cfg.set('Forge', name, value)
     _save_config(cfg)
@@ -152,7 +182,7 @@ def show_config(name):
         print('%s = %s' % (name, cfg['Forge'][name]))
     else:
         for k, v in cfg['Forge'].items():
-            print('%s = %s' % (k , v))
+            print('%s = %s' % (k, v))
 
 
 class ExecutionError(Exception):
@@ -306,7 +336,7 @@ def set_init_all(args):
     path = os.path.abspath('init_all.py')
     with open(path, 'w') as f:
         f.write(txt)
-    print('Generated %s.' % path)
+    log.info('Generated %s.', path)
 
 
 def get_vagrant_dir(args):
@@ -361,12 +391,20 @@ def _get_server_name(args, idx):
         short_sys = 'u1804'
     elif args.system == 'ubuntu-20.04':
         short_sys = 'u2004'
+    elif args.system == 'ubuntu-22.04':
+        short_sys = 'u2204'
     elif args.system == 'fedora-30':
         short_sys = 'f30'
     elif args.system == 'fedora-32':
         short_sys = 'f32'
     elif args.system == 'fedora-34':
         short_sys = 'f34'
+    elif args.system == 'fedora-36':
+        short_sys = 'f36'
+    elif args.system == 'alpine-3.16':
+        short_sys = 'a316'
+    elif args.system == 'alpine-3.17':
+        short_sys = 'a317'
     else:
         raise Exception('unsupported system %s' % args.system)
 
@@ -466,13 +504,15 @@ def _terminate_instances(args):
     else:
         for i in ("2016", "2019"):
             if os.path.exists(f'aws-win-ad-dns-vm{i}.txt'):
+                termination = []
                 with open(f'aws-win-ad-dns-vm{i}.txt', 'r') as f:
                     for line in f.readlines():
                         if line.startswith('instance-id='):
                             vm_id = line[12:].strip()
                             instance = ec2.Instance(vm_id)
-                            if _terminate_single_vm(instance):
-                                os.rename(f'aws-win-ad-dns-vm{i}.txt', f'aws-win-ad-dns-vm{i}_terminated.txt')
+                            termination.append(_terminate_single_vm(instance))
+                if all(termination):
+                    os.rename(f'aws-win-ad-dns-vm{i}.txt', f'aws-win-ad-dns-vm{i}_terminated.txt')
             else:
                 log.info(f'aws-win-ad-dns-vm{i}.txt not found, looks like systems were not started!')
 
@@ -485,7 +525,7 @@ def setup(args):
     win_vm_2019 = None
 
     if args.win_gss_tsig:
-        win_vm_2016 = _setup_win_ad_dns('ami-08065ac07e6a96549', 'win2016ad.aws.isc.org')
+        win_vm_2016 = _setup_win_ad_dns('ami-06774e1cb71fbe789', 'win2016ad.aws.isc.org')
         win_vm_2019 = _setup_win_ad_dns('ami-06602a989923b1eba', 'win2019ad.aws.isc.org')
 
     set_init_all(args)
@@ -495,7 +535,9 @@ def setup(args):
     else:
         vagrant_tpl = 'vagrant/Vagrantfile.in'
 
-    if 'ubuntu' in args.system or 'debian' in args.system:
+    if 'alpine' in args.system:
+        pkg = 'apk'
+    elif 'ubuntu' in args.system or 'debian' in args.system:
         pkg = 'deb'
     else:
         pkg = 'rpm'
@@ -515,6 +557,11 @@ def setup(args):
     parts = SRV_IPV6_ADDR_GLOBAL.rsplit(':', 1)
     srv2_addr6 = '%s:%04d' % (parts[0], int(parts[1]) + 1)
 
+    lxc_version = 1
+    if "ubuntu" in server1_name:
+        lxc_version = 7
+    elif 'alpine-3.16' in args.system:
+        lxc_version = 4
     # generate Vagrantfile
     with open(vagrant_tpl, 'r') as f_in:
         txt = f_in.read()
@@ -529,7 +576,7 @@ def setup(args):
                               CLNT4_ADDR_2=CLNT4_ADDR_2,
                               SRV_IPV6_ADDR_GLOBAL_1=srv1_addr6,
                               SRV_IPV6_ADDR_GLOBAL_2=srv2_addr6,
-                              CLNT6_ADDR=CLNT6_ADDR,
+                              CLIENT_IPV6_ADDR_GLOBAL=CLIENT_IPV6_ADDR_GLOBAL,
                               IFACE=IFACE,
                               SERVER_IFACE=SERVER_IFACE,
                               SERVER2_IFACE=SERVER2_IFACE,
@@ -539,7 +586,8 @@ def setup(args):
                               MGMT_BRG=mgmt_brg,
                               TRAFFIC_BRG=traffic_brg,
                               SERVER_IMAGE=server_image,
-                              PKG=pkg)
+                              PKG=pkg,
+                              LXC_VERSION=lxc_version)
     vagrant_dir = get_vagrant_dir(args)
     if not os.path.exists(vagrant_dir):
         os.makedirs(vagrant_dir)
@@ -739,18 +787,63 @@ def _install_kea_native_on_server(args, server_idx):
     execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     if server_idx == 1:
-        if 'ubuntu' in args.system:
+        if 'alpine' in args.system:
+            # TODO implement this
+            pass
+        elif 'ubuntu' in args.system:
             _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix)
         else:
             _install_krb_on_fedora(server_name, vagrant_dir, log_prefix)
 
     # prepare pkg source repo url
     repository_url = 'https://packages.aws.isc.org'
-    repo_name = 'kea-%s-%s' % ('2.1', args.system)
+    major_minor = '.'.join(args.version.split('.')[0:2])
+    repo_name = f'kea-{major_minor}-{args.system}'
     repo_url = urljoin(repository_url, 'repository')
     repo_url += '/%s-ci/' % repo_name
 
-    if 'ubuntu' in args.system:
+    if 'alpine' in args.system:
+        # nexus repository is RAW not APK, so unfortunately we have to download packages
+        # and then install all from local files
+        distro_version = args.system.split("-")[1]
+
+        version = f'{args.version}.apk'
+        if 'isc' in args.version:
+            version = version.replace('isc', 'r')
+        pkgs = ["isc-kea-dhcp4",
+                "isc-kea-dhcp6",
+                "isc-kea-dhcp-ddns",
+                "isc-kea-hooks",
+                "isc-kea-admin",
+                "isc-kea-ctrl-agent",
+                "isc-kea-common",
+                "isc-kea-premium-cb-cmds",
+                "isc-kea-premium-class-cmds",
+                "isc-kea-premium-ddns-tuning",
+                "isc-kea-premium-flex-id",
+                "isc-kea-premium-forensic-log",
+                # "isc-kea-premium-gss-tsig",
+                "isc-kea-premium-host-cache",
+                "isc-kea-premium-host-cmds",
+                "isc-kea-premium-lease-query",
+                "isc-kea-premium-limits",
+                # "isc-kea-premium-radius",  no radius pkg for alpine
+                "isc-kea-premium-rbac",
+                "isc-kea-premium-subnet-cmds"]
+        pkgs = [f'{x}-{version}' for x in pkgs]
+
+        # let's download all, one by one, if some fail it will be easier to debug
+        for pkg in pkgs:
+            url = f'{repository_url}/repository/kea-{major_minor}-{args.system.split("-")[0]}-{distro_version}-' \
+                  f'ci/{args.version.split("-")[1]}/v{distro_version}/x86_64/{pkg}'
+            cmd = cmd_tpl % f'wget {url}'
+            execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+        # install all downloaded pkgs
+        cmd = cmd_tpl % f'sudo apk add {" ".join(pkgs)} --allow-untrusted'
+        execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
+
+    elif 'ubuntu' in args.system:
         # fix certificate issue
         cmd = cmd_tpl % "sudo apt-get install -y ca-certificates openssl"
         execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
@@ -770,7 +863,9 @@ def _install_kea_native_on_server(args, server_idx):
 
         # prepare packages list with versions
         # rather than remember to add new pkg to the list here, just install all
-        pkgs = f"isc-kea-*={args.version} python3-isc-kea-connector={args.version}"
+        pkgs = f"isc-kea-dhcp4={args.version} isc-kea-dhcp6={args.version} isc-kea-dhcp-ddns={args.version} " \
+               f"isc-kea-hooks={args.version} isc-kea-admin={args.version} isc-kea-ctrl-agent={args.version} " \
+               f"isc-kea-premium-*={args.version} isc-kea-common={args.version}"
 
         # install packages
         cmd = cmd_tpl % 'sudo apt install -y -o Dpkg::Options::="--force-confnew" %s' % pkgs
@@ -800,6 +895,8 @@ def _install_kea_native_on_server(args, server_idx):
             suffix = 'fc32'
         elif args.system == 'fedora-34':
             suffix = 'fc34'
+        elif args.system == 'fedora-36':
+            suffix = 'fc36'
         else:
             raise NotImplementedError("System %s not supported" % args.system)
 
@@ -839,7 +936,7 @@ def _install_kea_make_on_server(args, server_idx):
         raise Exception('Folder %s is not a directory.' % local_kea_path)
 
     remote_path = os.path.join('/kea-dirs', args.path)
-    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -x unittest docs perfdhcp -w mysql,pgsql,radius,gssapi,forge,shell,ccache --ccache-dir /ccache'
+    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -w ccache,forge,gssapi,install,mysql,pgsql,radius,shell -x docs,perfdhcp,unittest --ccache-dir /ccache'
 
     vagrant_dir = get_vagrant_dir(args)
 
@@ -849,7 +946,10 @@ def _install_kea_make_on_server(args, server_idx):
     execute(cmd1, cwd=vagrant_dir, log_prefix=log_prefix)
 
     if server_idx == 1:
-        if 'ubuntu' in args.system:
+        if 'alpine' in args.system:
+            # TODO implement this
+            pass
+        elif 'ubuntu' in args.system:
             _install_krb_on_ubuntu(server_name, vagrant_dir, log_prefix)
         else:
             _install_krb_on_fedora(server_name, vagrant_dir, log_prefix)
@@ -915,7 +1015,7 @@ def _install_dhcpd_on_server(args, server_idx):
     execute(cmd_tpl % cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     # enable logging for isc-dhcp
-    cmd = "sudo sed -i '1s/^/local7.debug\\t\/var\/log\/forge_dhcpd.log\\n/' /etc/rsyslog.conf"
+    cmd = "sudo sed -i '1s/^/local7.debug\\t\\/var\\/log\\/forge_dhcpd.log\\n/' /etc/rsyslog.conf"
     execute(cmd_tpl % cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
     # restart syslog
@@ -940,7 +1040,7 @@ def test(args, params):
     cmd %= subcmd
     try:
         execute(cmd, cwd=vagrant_dir, log_prefix='|%s {ts}| ' % client_name)  # , raise_error=False)
-    except:
+    except BaseException:
         # wait for all traces in executed command
         sys.stdout.flush()
         sys.stderr.flush()
@@ -950,6 +1050,10 @@ def test(args, params):
 
 def clean(args):
     vagrant_dir = get_vagrant_dir(args)
+
+    if not os.path.exists(vagrant_dir):
+        log.info(f'No vagrant_dir to clean at {vagrant_dir}.')
+        return
 
     # destroy VMs
     execute('vagrant destroy -f', cwd=vagrant_dir, raise_error=False)
@@ -967,18 +1071,21 @@ def clean(args):
         if os.path.exists(path):
             os.unlink(path)
             print('Deleted %s.' % path)
-    shutil.rmtree(os.path.join(vagrant_dir, '.vagrant'))
+    dot_vagrant = os.path.join(vagrant_dir, '.vagrant')
+    if os.path.exists(dot_vagrant):
+        shutil.rmtree(dot_vagrant)
 
     # delete bridges
     if args.lxc:
         delete_lxc_bridges(args)
+
 
 def _get_latest_cloud_version(image_tpl):
     url = 'https://app.vagrantup.com/api/v1/box/' + image_tpl
     try:
         with urllib.request.urlopen(url) as response:
             data = response.read()
-    except:
+    except BaseException:
         log.exception('ignored exception')
         return 0
     cloud_meta = json.loads(data)
@@ -995,7 +1102,7 @@ def _get_latest_cloud_version(image_tpl):
         if provider_found:
             try:
                 v = int(ver['number'])
-            except:
+            except BaseException:
                 return ver['number']
             if v > latest_version:
                 latest_version = v
@@ -1069,7 +1176,10 @@ def parse_args():
         "3b) or instead of Kea install ISC-DHCP in one of VMs\n\n"
         "   ./forge install-dhcpd dhcpd-subdir\n\n"
         "4) run indicated tests, parameters are directly passed to pytest\n\n"
-        "   ./forge test -m v4\n"
+        "   ./forge test -m v4\n\n"
+        "Alternatively, after configuring kea-dirs - setup, install Kea, test, "
+        "terminate instances in a single command:\n\n"
+        "   ./forge [--lxc --sid v4 --system fedora-34] run-all kea-subdir -r ap -vv --junitxml kea.xml\n\n"
     ]
     description = "\n".join(description)
     main_parser = argparse.ArgumentParser(description=description,
@@ -1125,6 +1235,17 @@ def parse_args():
     parser = subparsers.add_parser('clean', help="Destroy VMs")
     parser = subparsers.add_parser('box', help="Package LXC box and upload to cloud")
 
+    parser = subparsers.add_parser('run-all',
+                                   help="Wrapper for multiple steps: setup, install Kea, run tests and terminate instances")
+    parser.add_argument('--win-gss-tsig', action='store_true',
+                        help='Enable setup of Windows machine with AD/DNS for testing GSS-TSIG.')
+    parser.add_argument('--version', help='Version of packages.')
+    parser.add_argument('--native', action='store_true', default=False, help='Use native packages for testing')
+    parser.add_argument('--dhcpd', action='store_true', help='Change settings to run tests for isc-dhcp.')
+    parser.add_argument('--id', default=None,
+                        help='Terminate AWS system with id, multiple ids can be passed separated by comma.')
+    parser.add_argument('path', default='', nargs='?', help='Path to the Kea repository.')
+
     args, rest = main_parser.parse_known_args()
     return args, rest, main_parser
 
@@ -1173,6 +1294,21 @@ def main():
         package_box_and_upload(args)
 
     elif args.command == "terminate-instances":
+        _terminate_instances(args)
+
+    elif args.command == 'run-all':
+        # Let the user not have to worry about ccache-dir.
+        # Set it to an arbitrary value if not already set.
+        cfg = _load_config()
+        if 'ccache-dir' not in cfg['Forge']:
+            os.mkdir('/tmp/ccache-dir')
+            cfg.set('Forge', 'ccache-dir', '/tmp/ccache-dir')
+            _save_config(cfg)
+
+        clean(args)
+        setup(args)
+        install_kea(args)
+        test(args, rest)
         _terminate_instances(args)
 
     else:

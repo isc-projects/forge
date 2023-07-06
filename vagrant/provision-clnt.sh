@@ -15,7 +15,7 @@ sudo systemctl disable apt-daily.service apt-daily-upgrade.service
 
 sudo apt update
 ps axf
-sudo DEBIAN_FRONTEND=noninteractive apt install -o Dpkg::Options::="--force-all" -y python3 python3-venv g++ python3-dev libpcap-dev git
+sudo DEBIAN_FRONTEND=noninteractive apt install -o Dpkg::Options::="--force-all" -y python3 python3-venv g++ python3-dev libpcap-dev git tcpdump
 
 rm -rf $HOME/venv
 python3 -m venv $HOME/venv
