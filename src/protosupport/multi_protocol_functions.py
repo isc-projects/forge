@@ -78,12 +78,12 @@ def test_pause():
 # ------------------------------- FILE TRANSFER ------------------------------ #
 
 
-def copy_file_from_server(remote_path, local_filename='downloaded_file'):
+def copy_file_from_server(remote_path, local_filename='downloaded_file', dest=world.f_cfg.mgmt_address):
     """
     Copy file from remote server via ssh. Address/login/password from init_all.py
     Path required.
     """
-    fabric_download_file(remote_path, world.cfg["test_result_dir"] + f'/{local_filename}')
+    fabric_download_file(remote_path, world.cfg["test_result_dir"] + f'/{local_filename}', destination_host=dest)
     return world.cfg["test_result_dir"] + f'/{local_filename}'
 
 

@@ -469,13 +469,13 @@ def test_fail():
 
 
 @step(r'Client download file from server stored in: (\S+).')
-def copy_remote(remote_path, local_filename='downloaded_file'):
+def copy_remote(remote_path, local_filename='downloaded_file', dest=world.f_cfg.mgmt_address):
     """
     Download file from remote server. It is stored in test directory.
     And named "downloaded_file"
     """
     remote_path = test_define_value(remote_path)[0]
-    multi_protocol_functions.copy_file_from_server(remote_path, local_filename)
+    multi_protocol_functions.copy_file_from_server(remote_path, local_filename, dest=dest)
 
 
 @step(r'Client compares downloaded file from server with local file stored in: (\S+).')
@@ -497,12 +497,12 @@ def send_file_to_server(local_path, remote_path):
 
 
 @step(r'Client removes file from server located in: (\S+).')
-def remove_file_from_server(remote_path):
+def remove_file_from_server(remote_path, dest=world.f_cfg.mgmt_address):
     """
     If you need to remove file from a server, please do so.
     """
     remote_path = test_define_value(remote_path)[0]
-    multi_protocol_functions.remove_file_from_server(remote_path)
+    multi_protocol_functions.remove_file_from_server(remote_path, dest=dest)
 
 
 @step(r'Add environment variable named (\S+) to value (.+)')
