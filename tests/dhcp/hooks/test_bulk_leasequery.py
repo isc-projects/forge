@@ -258,7 +258,7 @@ def _check_leaseactive(lease, start_time, renew_time, rebind_time, valid_lifetim
 
 @pytest.mark.v6
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_multiple_networks(backend):
     """
     Configure 4 different subnets and assign multiple leases from each. Than send multiple
@@ -469,7 +469,7 @@ def test_v6_multiple_networks(backend):
 
 @pytest.mark.v6
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_assign_and_reply_simultaneously(backend):
     """
     Let's trigger BLQ over TCP while assigning leases
@@ -582,7 +582,7 @@ def test_v6_assign_and_reply_simultaneously(backend):
 
 @pytest.mark.v6
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_message_build(backend):
     """
     Check if leasequery reply, data and done messages are correctly composed
@@ -650,7 +650,7 @@ def test_v6_message_build(backend):
 
 @pytest.mark.v6
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_negative(backend):
     """
     Couple negative cases
@@ -807,7 +807,7 @@ def test_v6_negative(backend):
 
 @pytest.mark.v6
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_junk_over_tcp(backend):
     """
     Let's see if kea survive junk sent over multiple channels
@@ -878,7 +878,7 @@ def test_v6_junk_over_tcp(backend):
 
 @pytest.mark.v6
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_multiple_relays(backend):
     """
     Test of v6 lease query messages asking for ip address, se multiple relay ids and remote ids in the same subnet
@@ -953,7 +953,7 @@ def test_v6_multiple_relays(backend):
 
 @pytest.mark.v4
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v4_check_messages_correctness(backend):
     """
     Check correctness of all messages send by Kea, OFFER, REPLY, LEASEACTIVE and LEASEQUERY_DONE
@@ -1269,7 +1269,7 @@ def test_v4_multiple_networks(backend):
 
 @pytest.mark.v4
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v4_negative(backend):
 
     def simple_check_for_zeroed_addresses():
@@ -1366,7 +1366,7 @@ def test_v4_negative(backend):
 
 @pytest.mark.v4
 @pytest.mark.hook
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v4_junk_over_tcp(backend):
     """
     Let's see if kea survive junk sent over multiple channels
