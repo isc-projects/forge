@@ -319,15 +319,15 @@ def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination
 
 
 def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
-                         db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd):
+                         db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd, destination=world.f_cfg.mgmt_address):
 
     if db_type in ["mysql", "MySQL"]:
         # that is tmp solution - just clearing not saving.
         command = 'mysql -u {db_user} -p{db_passwd} -e "delete from {table_name}" {db_name}'.format(**locals())
-        fabric_run_command(command)
+        fabric_run_command(command, destination_host=destination)
     elif db_type in ["postgresql", "PostgreSQL"]:
         command = 'PGPASSWORD={db_passwd} psql -h localhost -U {db_user} -d {db_name} -c "delete from {table_name}"'.format(**locals())
-        fabric_run_command(command)
+        fabric_run_command(command, destination_host=destination)
     else:
         assert False, "db type {db_type} not recognized/not supported".format(**locals())
 

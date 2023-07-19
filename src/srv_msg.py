@@ -423,19 +423,19 @@ def table_contains_line(table_name, db_type, line, expect=True):
     multi_protocol_functions.db_table_contains_line(table_name, db_type, line=line, expect=expect)
 
 
-def table_contains_line_n_times(table_name, db_type, n, line):
+def table_contains_line_n_times(table_name, db_type, n, line, destination=world.f_cfg.mgmt_address):
     """
     Check if in table X in database type Y include line.
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     table_name, db_type, line = test_define_value(table_name, db_type, line)
-    multi_protocol_functions.db_table_contains_line_n_times(table_name, db_type, n=n, line=line)
+    multi_protocol_functions.db_table_contains_line_n_times(table_name, db_type, n=n, line=line, destination=destination)
 
 
 @step(r'Remove all records from table (\S+) in (\S+) database.')
-def remove_from_db_table(table_name, db_type):
+def remove_from_db_table(table_name, db_type, destination=world.f_cfg.mgmt_address):
     table_name, db_type = test_define_value(table_name, db_type)
-    multi_protocol_functions.remove_from_db_table(table_name, db_type)
+    multi_protocol_functions.remove_from_db_table(table_name, db_type, destination=destination)
 
 
 @step(r'Sleep for (\S+) (seconds|second|milliseconds|millisecond).')

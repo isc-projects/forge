@@ -41,13 +41,17 @@ HA_CONFIG = {
 @pytest.mark.v6
 @pytest.mark.ha
 @pytest.mark.legal_logging
-def test_ha_legallog(dhcp_version):
+@pytest.mark.parametrize('backend', ['file', 'mysql', 'postgresql'])
+def test_ha_legallog(dhcp_version, backend):
     """
     Test if both HA servers log proper messages in Legal Log.
     """
     # HA SERVER 1
     misc.test_setup()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'), dest=world.f_cfg.mgmt_address)
+    if backend == 'file':
+        srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'), dest=world.f_cfg.mgmt_address)
+    else:
+        srv_msg.remove_from_db_table('logs', backend, destination=world.f_cfg.mgmt_address)
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::100')
         srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
@@ -60,6 +64,11 @@ def test_ha_legallog(dhcp_version):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_hooks('libdhcp_legal_log.so')
+    if backend != 'file':
+        srv_control.add_parameter_to_hook(3, 'name', '$(DB_NAME)')
+        srv_control.add_parameter_to_hook(3, 'password', '$(DB_PASSWD)')
+        srv_control.add_parameter_to_hook(3, 'type', backend)
+        srv_control.add_parameter_to_hook(3, 'user', '$(DB_USER)')
 
     # Configure HA hook to use TLS.
     srv_control.update_ha_hook_parameter(HA_CONFIG)
@@ -75,7 +84,10 @@ def test_ha_legallog(dhcp_version):
 
     # HA SERVER 2
     misc.test_setup()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'), dest=world.f_cfg.mgmt_address_2)
+    if backend == 'file':
+        srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'), dest=world.f_cfg.mgmt_address_2)
+    else:
+        srv_msg.remove_from_db_table('logs', backend, destination=world.f_cfg.mgmt_address_2)
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::100',
@@ -92,6 +104,11 @@ def test_ha_legallog(dhcp_version):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_hooks('libdhcp_legal_log.so')
+    if backend != 'file':
+        srv_control.add_parameter_to_hook(3, 'name', '$(DB_NAME)')
+        srv_control.add_parameter_to_hook(3, 'password', '$(DB_PASSWD)')
+        srv_control.add_parameter_to_hook(3, 'type', backend)
+        srv_control.add_parameter_to_hook(3, 'user', '$(DB_USER)')
 
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
@@ -122,31 +139,44 @@ def test_ha_legallog(dhcp_version):
         srv_msg.check_leases({'address': '2001:db8:1::1', 'duid': '00:03:00:01:66:55:44:33:22:11'})
         srv_msg.check_leases({'address': '2001:db8:1::1', 'duid': '00:03:00:01:66:55:44:33:22:11'},
                              dest=world.f_cfg.mgmt_address_2)
-        file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                           'Address: 2001:db8:1::1 has been assigned for 1 hrs 6 mins 40 secs to a device with '
-                           'DUID: 00:03:00:01:66:55:44:33:22:11 and hardware address: '
-                           'hwtype=1 66:55:44:33:22:11 (from DUID)',
-                           destination=world.f_cfg.mgmt_address)
-        file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                           'HA partner updated information on the lease of address: 2001:db8:1::1 to a device with '
-                           'DUID: 00:03:00:01:66:55:44:33:22:11 and hardware address: '
-                           'hardware address: hwtype=1 66:55:44:33:22:11 (from DUID) for 1 hrs 6 mins 40 secs',
-                           destination=world.f_cfg.mgmt_address_2)
+        message1 = 'Address: 2001:db8:1::1 has been assigned for 1 hrs 6 mins 40 secs to a device with ' \
+                   'DUID: 00:03:00:01:66:55:44:33:22:11 and hardware address: ' \
+                   'hwtype=1 66:55:44:33:22:11 (from DUID)'
+        message2 = 'HA partner updated information on the lease of address: 2001:db8:1::1 to a device with ' \
+                   'DUID: 00:03:00:01:66:55:44:33:22:11 and hardware address: ' \
+                   'hardware address: hwtype=1 66:55:44:33:22:11 (from DUID) for 1 hrs 6 mins 40 secs'
+        if backend == 'file':
+            file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
+                               message1, destination=world.f_cfg.mgmt_address)
+            file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
+                               message2, destination=world.f_cfg.mgmt_address_2)
+        else:
+            srv_msg.table_contains_line_n_times('logs', backend, 1,
+                                                message1, destination=world.f_cfg.mgmt_address)
+            srv_msg.table_contains_line_n_times('logs', backend, 1,
+                                                message2, destination=world.f_cfg.mgmt_address)
 
     else:
         srv_msg.DORA('192.168.50.1')
         srv_msg.check_leases({'address': '192.168.50.1'})
         srv_msg.check_leases({'address': '192.168.50.1'}, dest=world.f_cfg.mgmt_address_2)
-        file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                           'Address: 192.168.50.1 has been assigned for 1 hrs 6 mins 40 secs to a device with hardware '
-                           'address: hwtype=1 ff:01:02:03:ff:04',
-                           destination=world.f_cfg.mgmt_address)
-        file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                           'HA partner updated information on the lease of address: 192.168.50.1 to a device with '
-                           'hardware address: ff:01:02:03:ff:04 for 1 hrs 6 mins 40 secs',
-                           destination=world.f_cfg.mgmt_address_2)
+        message1 = 'Address: 192.168.50.1 has been assigned for 1 hrs 6 mins 40 secs to a device with hardware ' \
+                   'address: hwtype=1 ff:01:02:03:ff:04'
+        message2 = 'HA partner updated information on the lease of address: 192.168.50.1 to a device with ' \
+                   'hardware address: ff:01:02:03:ff:04 for 1 hrs 6 mins 40 secs'
+        if backend == 'file':
+            file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
+                               message1, destination=world.f_cfg.mgmt_address)
+            file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
+                               message2, destination=world.f_cfg.mgmt_address_2)
+        else:
+            srv_msg.table_contains_line_n_times('logs', backend, 2,
+                                                message1, destination=world.f_cfg.mgmt_address)
+            srv_msg.table_contains_line_n_times('logs', backend, 2,
+                                                message2, destination=world.f_cfg.mgmt_address)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'), local_filename='server1_kea-legal.txt',
-                        dest=world.f_cfg.mgmt_address)
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'), local_filename='server2_kea-legal.txt',
-                        dest=world.f_cfg.mgmt_address_2)
+    if backend == 'file':
+        srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'), local_filename='server1_kea-legal.txt',
+                            dest=world.f_cfg.mgmt_address)
+        srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'), local_filename='server2_kea-legal.txt',
+                            dest=world.f_cfg.mgmt_address_2)
