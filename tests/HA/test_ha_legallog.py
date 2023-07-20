@@ -170,9 +170,9 @@ def test_ha_legallog(dhcp_version, backend):
             file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                message2, destination=world.f_cfg.mgmt_address_2)
         else:
-            srv_msg.table_contains_line_n_times('logs', backend, 2,
+            srv_msg.table_contains_line_n_times('logs', backend, 1,
                                                 message1, destination=world.f_cfg.mgmt_address)
-            srv_msg.table_contains_line_n_times('logs', backend, 2,
+            srv_msg.table_contains_line_n_times('logs', backend, 1,
                                                 message2, destination=world.f_cfg.mgmt_address)
 
     if backend == 'file':
