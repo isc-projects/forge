@@ -15,73 +15,177 @@ from src import srv_msg
 from src.forge_cfg import world
 
 
+def _check_ipv6_only_response(ip_address, client, send108, expect_include):
+    """
+    Function makes DORA exchange with IPv6-only-preferred request and checks server response.
+    """
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', f'00:00:00:00:00:{client}')
+    if send108:
+        srv_msg.client_requests_option(108)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', ip_address)
+    srv_msg.response_check_include_option(108, expect_include=expect_include)
+    if expect_include:
+        srv_msg.response_check_option_content(108, 'value', '1800')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', f'00:00:00:00:00:{client}')
+    srv_msg.client_does_include_with_value('requested_addr', ip_address)
+    if send108:
+        srv_msg.client_requests_option(108)
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(108, expect_include=expect_include)
+    if expect_include:
+        srv_msg.response_check_option_content(108, 'value', '1800')
+    srv_msg.response_check_content('yiaddr', ip_address)
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+
 @pytest.mark.v4
 @pytest.mark.options
-def test_ipv6_only_preferred():
+@pytest.mark.parametrize("level", ['global', 'pool', 'subnet', 'shared_network', 'reservation'])
+def test_ipv6_only_preferred(level):
     """
-    Basic test to verify IPv6-only-preferred option
+    Tests to verify IPv6-only-preferred option.
+    Forge creates set of shared networks, subnets and pools with one subnet guarded by host reservation.
+    According to selected level, DORA exchanges are performed to verify that IPv6-only-preferred is
+    sent by server only when necessary.
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-
+    # Define option for tests
     option = {"name": "v6-only-preferred", "data": "1800"}
-    world.dhcp_cfg["option-data"].append(option)
+    # Create first subnet guarded by "50" class
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2', client_class='50', id=1)
+    # Create second subnet with two pools
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.1-192.168.51.2', id=2)
+    srv_control.new_pool('192.168.51.11-192.168.51.11', 1)
+    # Create third subnet
+    srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24', '192.168.52.1-192.168.52.1', id=3)
 
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
+    # Create shared network with subnet 2 and 3
+    srv_control.shared_subnet('192.168.51.0/24', 0)
+    srv_control.shared_subnet('192.168.52.0/24', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"sharedsubnet"', 0)
+    # Create shared network with subnet 1
+    srv_control.shared_subnet('192.168.50.0/24', 1)
+    srv_control.set_conf_parameter_shared_subnet('name', '"sharedsubnetclass"', 1)
 
-    # Verify that option 108 is NOT returned if not requested.
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:f1:f2')
-    srv_msg.client_send_msg('DISCOVER')
+    # Create class and host reservation for subnet selection
+    srv_control.create_new_class('50')
+    reservations = [{"hw-address": "00:00:00:00:00:05",
+                     "client-classes": ["50"]}]
+    world.dhcp_cfg.update({'reservations': reservations})
+    # Enable Early Global Host Reservation Lookup.
+    world.dhcp_cfg['early-global-reservations-lookup'] = True
 
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.response_check_content('yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option(108, expect_include=False)
+    if level == 'global':
+        # Add v6-only-preferred on global level
+        world.dhcp_cfg["option-data"].append(option)
+        # Start server
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure()
-    srv_msg.client_copy_option('server_id')
-    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:22')
-    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:f1:f2')
-    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
-    srv_msg.client_requests_option(1)
-    srv_msg.client_send_msg('REQUEST')
+        # Verify that IPv6-only-preferred is not returned if not requested
+        _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
+        # shared network, second subnet, first pool
+        _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=True)
+        # shared network, second subnet, second pool
+        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True)
+        # shared network, third subnet
+        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True)
+        # first subnet - host reservation
+        _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=True)
 
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ACK')
-    srv_msg.response_check_include_option(108, expect_include=False)
-    srv_msg.response_check_content('yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    if level == 'pool':
+        # Add v6-only-preferred on pool level
+        world.dhcp_cfg["shared-networks"][0]["subnet4"][0]["pools"][1]["option-data"] = [option]
+        # Start server
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
 
-    # Verify that option 108 IS returned if not requested.
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
-    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:f1:f3')
-    srv_msg.client_requests_option(108)
-    srv_msg.client_send_msg('DISCOVER')
+        # Verify that IPv6-only-preferred is not returned if not requested
+        _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
+        # shared network, second subnet, first pool
+        _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=False)
+        # shared network, second subnet, second pool
+        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True)
+        # shared network, third subnet
+        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=False)
+        # first subnet - host reservation
+        _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
 
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.response_check_content('yiaddr', '192.168.50.2')
-    srv_msg.response_check_include_option(108)
-    srv_msg.response_check_option_content(108, 'value', '1800')
+    if level == 'subnet':
+        # Add v6-only-preferred on subnet level
+        world.dhcp_cfg["shared-networks"][0]["subnet4"][1]["option-data"] = [option]
+        # Start server
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
 
-    misc.test_procedure()
-    srv_msg.client_copy_option('server_id')
-    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
-    srv_msg.client_does_include_with_value('client_id', 'ff:01:02:03:ff:04:f1:f3')
-    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
-    srv_msg.client_requests_option(108)
-    srv_msg.client_requests_option(1)
-    srv_msg.client_send_msg('REQUEST')
+        # Verify that IPv6-only-preferred is not returned if not requested
+        _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
+        # shared network, second subnet, first pool
+        _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=False)
+        # shared network, second subnet, second pool
+        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=False)
+        # shared network, third subnet
+        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True)
+        # first subnet - host reservation
+        _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
 
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ACK')
-    srv_msg.response_check_include_option(108)
-    srv_msg.response_check_option_content(108, 'value', '1800')
-    srv_msg.response_check_content('yiaddr', '192.168.50.2')
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    if level == 'shared_network':
+        # Add v6-only-preferred on shared network level
+        world.dhcp_cfg["shared-networks"][0]["option-data"] = [option]
+        # Start server
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
+
+        # Verify that IPv6-only-preferred is not returned if not requested
+        _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
+        # shared network, second subnet, first pool
+        _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=True)
+        # shared network, second subnet, second pool
+        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True)
+        # shared network, third subnet
+        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True)
+        # first subnet - host reservation
+        _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
+
+    if level == 'reservation':
+        # Add v6-only-preferred on additional reservation
+        reservation = {"hw-address": "00:00:00:00:00:06",
+                       "client-classes": ["50"],
+                       "option-data": [
+                           {
+                               "name": "v6-only-preferred",
+                               "data": "1800"
+                           }
+                       ]
+                       }
+        world.dhcp_cfg['reservations'].append(reservation)
+
+        # Start server
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
+
+        # Verify that IPv6-only-preferred is not returned if not requested
+        _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
+        # shared network, second subnet, first pool
+        _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=False)
+        # shared network, second subnet, second pool
+        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=False)
+        # shared network, third subnet
+        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=False)
+        # first subnet - host reservation
+        _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
+        # first subnet - host reservation with v6-only-preferred
+        _check_ipv6_only_response('192.168.50.2', '06', send108=True, expect_include=True)
