@@ -87,6 +87,8 @@ def test_ipv6_only_preferred(level):
     world.dhcp_cfg.update({'reservations': reservations})
     # Enable Early Global Host Reservation Lookup.
     world.dhcp_cfg['early-global-reservations-lookup'] = True
+    # Required to apply reservation options
+    world.dhcp_cfg['reservations-global'] = True
 
     if level == 'global':
         # Add v6-only-preferred on global level
