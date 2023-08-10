@@ -143,9 +143,9 @@ def test_ha_legallog(dhcp_version, backend):
     # Acquire a lese and check it in both backends.
     if dhcp_version == 'v6':
         srv_msg.SARR(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11')
-        srv_msg.check_leases(srv_msg.get_all_leases())
-        srv_msg.check_leases(srv_msg.get_all_leases(),
-                             dest=world.f_cfg.mgmt_address_2)
+        lease = srv_msg.get_all_leases()
+        srv_msg.check_leases(lease)
+        srv_msg.check_leases(lease, dest=world.f_cfg.mgmt_address_2)
         message1 = 'Address: 2001:db8:1::1 has been assigned for 1 hrs 6 mins 40 secs to a device with ' \
                    'DUID: 00:03:00:01:66:55:44:33:22:11 and hardware address: ' \
                    'hwtype=1 66:55:44:33:22:11 (from DUID)'
@@ -166,8 +166,9 @@ def test_ha_legallog(dhcp_version, backend):
 
     else:
         srv_msg.DORA('192.168.50.1')
-        srv_msg.check_leases(srv_msg.get_all_leases())
-        srv_msg.check_leases(srv_msg.get_all_leases(), dest=world.f_cfg.mgmt_address_2)
+        lease = srv_msg.get_all_leases()
+        srv_msg.check_leases(lease)
+        srv_msg.check_leases(lease, dest=world.f_cfg.mgmt_address_2)
         message1 = 'Address: 192.168.50.1 has been assigned for 1 hrs 6 mins 40 secs to a device with hardware ' \
                    'address: hwtype=1 ff:01:02:03:ff:04'
         message2 = 'HA partner updated information on the lease of address: 192.168.50.1 to a device with ' \
