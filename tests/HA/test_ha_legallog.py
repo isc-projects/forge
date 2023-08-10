@@ -37,6 +37,13 @@ HA_CONFIG = {
 }
 
 
+def _save_log_files():
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'), local_filename='server1_kea-legal.txt',
+                        dest=world.f_cfg.mgmt_address)
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'), local_filename='server2_kea-legal.txt',
+                        dest=world.f_cfg.mgmt_address_2)
+
+
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ha
@@ -136,8 +143,8 @@ def test_ha_legallog(dhcp_version, backend):
     # Acquire a lese and check it in both backends.
     if dhcp_version == 'v6':
         srv_msg.SARR(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11')
-        srv_msg.check_leases({'address': '2001:db8:1::1', 'duid': '00:03:00:01:66:55:44:33:22:11'})
-        srv_msg.check_leases({'address': '2001:db8:1::1', 'duid': '00:03:00:01:66:55:44:33:22:11'},
+        srv_msg.check_leases(srv_msg.get_all_leases())
+        srv_msg.check_leases(srv_msg.get_all_leases(),
                              dest=world.f_cfg.mgmt_address_2)
         message1 = 'Address: 2001:db8:1::1 has been assigned for 1 hrs 6 mins 40 secs to a device with ' \
                    'DUID: 00:03:00:01:66:55:44:33:22:11 and hardware address: ' \
@@ -146,6 +153,7 @@ def test_ha_legallog(dhcp_version, backend):
                    'DUID: 00:03:00:01:66:55:44:33:22:11 and hardware address: ' \
                    'hardware address: hwtype=1 66:55:44:33:22:11 (from DUID) for 1 hrs 6 mins 40 secs'
         if backend == 'file':
+            _save_log_files()
             file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                message1, destination=world.f_cfg.mgmt_address)
             file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
@@ -158,13 +166,14 @@ def test_ha_legallog(dhcp_version, backend):
 
     else:
         srv_msg.DORA('192.168.50.1')
-        srv_msg.check_leases({'address': '192.168.50.1'})
-        srv_msg.check_leases({'address': '192.168.50.1'}, dest=world.f_cfg.mgmt_address_2)
+        srv_msg.check_leases(srv_msg.get_all_leases())
+        srv_msg.check_leases(srv_msg.get_all_leases(), dest=world.f_cfg.mgmt_address_2)
         message1 = 'Address: 192.168.50.1 has been assigned for 1 hrs 6 mins 40 secs to a device with hardware ' \
                    'address: hwtype=1 ff:01:02:03:ff:04'
         message2 = 'HA partner updated information on the lease of address: 192.168.50.1 to a device with ' \
                    'hardware address: ff:01:02:03:ff:04 for 1 hrs 6 mins 40 secs'
         if backend == 'file':
+            _save_log_files()
             file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                                message1, destination=world.f_cfg.mgmt_address)
             file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
@@ -174,9 +183,3 @@ def test_ha_legallog(dhcp_version, backend):
                                                 message1, destination=world.f_cfg.mgmt_address)
             srv_msg.table_contains_line_n_times('logs', backend, 1,
                                                 message2, destination=world.f_cfg.mgmt_address)
-
-    if backend == 'file':
-        srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'), local_filename='server1_kea-legal.txt',
-                            dest=world.f_cfg.mgmt_address)
-        srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'), local_filename='server2_kea-legal.txt',
-                            dest=world.f_cfg.mgmt_address_2)
