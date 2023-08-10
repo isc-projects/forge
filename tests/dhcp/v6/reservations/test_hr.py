@@ -397,17 +397,17 @@ def test_v6_host_reservation_empty(backend):
 
     # Check for 2 received KNOWN and 0 UNKNOWN packets for first transaction
     first_known = get_line_count_in_log(f'tid={first_xid}:'
-                                        ' client packet has been assigned to the following class(es): KNOWN')
+                                        ' client packet has been assigned to the following class: KNOWN')
     first_unknown = get_line_count_in_log(f'tid={first_xid}:'
-                                          ' client packet has been assigned to the following class(es): UNKNOWN')
+                                          ' client packet has been assigned to the following class: UNKNOWN')
     assert first_known == 2, 'Wrong number od KNOWN assignments for KNOWN packet'
     assert first_unknown == 0, 'Wrong number od UNKNOWN assignments for KNOWN packet'
 
     # Check for 0 received KNOWN and 2 UNKNOWN packets for first transaction
     second_known = get_line_count_in_log(f'tid={second_xid}:'
-                                         ' client packet has been assigned to the following class(es): KNOWN')
+                                         ' client packet has been assigned to the following class: KNOWN')
     second_unknown = get_line_count_in_log(f'tid={second_xid}:'
-                                           ' client packet has been assigned to the following class(es): UNKNOWN')
+                                           ' client packet has been assigned to the following class: UNKNOWN')
     assert second_known == 0, 'Wrong number od KNOWN assignments for UNKNOWN packet'
     assert second_unknown == 2, 'Wrong number od UNKNOWN assignments for UNKNOWN packet'
 

@@ -131,17 +131,17 @@ def test_v4_spawn_class_2():
     cli_id = 'ff:11:22:33:44:55'
     _get_lease(mac, cli_id)
     log_doesnt_contain('client packet belongs to an unconfigured class: SPAWN_my_vendor_client_id_')
-    assert 2 == get_line_count_in_log('packet has been assigned to the following class(es): ALL, UNKNOWN')
+    assert 2 == get_line_count_in_log('packet has been assigned to the following classes: ALL, UNKNOWN')
 
     new_mac = '11:22:33:03:ff:04'
     new_cli_id = '11:22:33:44:55:66:77:88:99:00:aa:bb'
     _get_lease(new_mac, new_cli_id)
     # for old pkt:
-    assert 2 == get_line_count_in_log('packet has been assigned to the following class(es): ALL, UNKNOWN')
+    assert 2 == get_line_count_in_log('packet has been assigned to the following classes: ALL, UNKNOWN')
     # new pkts:
     assert 2 == get_line_count_in_log(f'client packet belongs to an unconfigured class:'
                                       f' SPAWN_my_vendor_client_id_{new_cli_id[24:29]}')
-    assert 2 == get_line_count_in_log(f'client packet has been assigned to the following class(es): ALL, my_vendor_client_id, SPAWN_my_vendor_client_id_{new_cli_id[24:29]}, UNKNOWN')
+    assert 2 == get_line_count_in_log(f'client packet has been assigned to the following classes: ALL, my_vendor_client_id, SPAWN_my_vendor_client_id_{new_cli_id[24:29]}, UNKNOWN')
 
 
 @pytest.mark.v4

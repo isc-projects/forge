@@ -87,15 +87,15 @@ def test_v6_spawn_class():
 
     _get_lease('00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8')
     assert 2 == get_line_count_in_log('client packet belongs to an unconfigured class: SPAWN_client_id_type_08:00:27')
-    assert 2 == get_line_count_in_log('client packet has been assigned to the following class(es): ALL, client_id_type, SPAWN_client_id_type_08:00:27, UNKNOWN')
+    assert 2 == get_line_count_in_log('client packet has been assigned to the following classes: ALL, client_id_type, SPAWN_client_id_type_08:00:27, UNKNOWN')
 
     _get_lease('00:03:00:01:1f:2f:3f:ff:ff:01', vendor=1100)
     assert 2 == get_line_count_in_log('client packet belongs to an unconfigured class: SPAWN_client_id_type_1f:2f:3f')
-    assert 2 == get_line_count_in_log('client packet has been assigned to the following class(es): ALL, client_id_type, SPAWN_client_id_type_1f:2f:3f, client_vendor, SPAWN_client_vendor_1100, UNKNOWN')
+    assert 2 == get_line_count_in_log('client packet has been assigned to the following classes: ALL, client_id_type, SPAWN_client_id_type_1f:2f:3f, client_vendor, SPAWN_client_vendor_1100, UNKNOWN')
 
     _get_lease('00:03:00:01:1f:2f:3f:fa:fb:01', vendor=1111)
     assert 4 == get_line_count_in_log('client packet belongs to an unconfigured class: SPAWN_client_id_type_1f:2f:3f')
-    assert 2 == get_line_count_in_log('client packet has been assigned to the following class(es): ALL, client_id_type, SPAWN_client_id_type_1f:2f:3f, client_vendor, SPAWN_client_vendor_1111, UNKNOWN')
+    assert 2 == get_line_count_in_log('client packet has been assigned to the following classes: ALL, client_id_type, SPAWN_client_id_type_1f:2f:3f, client_vendor, SPAWN_client_vendor_1111, UNKNOWN')
 
 
 @pytest.mark.v6
