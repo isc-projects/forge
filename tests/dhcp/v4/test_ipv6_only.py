@@ -53,7 +53,7 @@ def _check_ipv6_only_response(ip_address, client, send108, expect_include):
 
 @pytest.mark.v4
 @pytest.mark.options
-@pytest.mark.parametrize("level", ['global', 'pool', 'subnet', 'shared_network', 'reservation'])
+@pytest.mark.parametrize("level", ['global', 'pool', 'subnet', 'shared_network', 'reservation', 'class'])
 def test_ipv6_only_preferred(level):
     """
     Tests to verify IPv6-only-preferred option.
@@ -101,12 +101,16 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
         # shared network, second subnet, first pool
         _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.2', '02', send108=False, expect_include=False)
         # shared network, second subnet, second pool
         _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.11', '03', send108=False, expect_include=False)
         # shared network, third subnet
         _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.52.1', '04', send108=False, expect_include=False)
         # first subnet - host reservation
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.50.1', '05', send108=False, expect_include=False)
 
     if level == 'pool':
         # Add v6-only-preferred on pool level
@@ -121,6 +125,7 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=False)
         # shared network, second subnet, second pool
         _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.11', '03', send108=False, expect_include=False)
         # shared network, third subnet
         _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=False)
         # first subnet - host reservation
@@ -141,6 +146,7 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=False)
         # shared network, third subnet
         _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.52.1', '04', send108=False, expect_include=False)
         # first subnet - host reservation
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
 
@@ -155,10 +161,13 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
         # shared network, second subnet, first pool
         _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.2', '02', send108=False, expect_include=False)
         # shared network, second subnet, second pool
         _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.11', '03', send108=False, expect_include=False)
         # shared network, third subnet
         _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.52.1', '04', send108=False, expect_include=False)
         # first subnet - host reservation
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
 
@@ -191,3 +200,23 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
         # first subnet - host reservation with v6-only-preferred
         _check_ipv6_only_response('192.168.50.2', '06', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.50.2', '06', send108=False, expect_include=False)
+
+    if level == 'class':
+        # Add v6-only-preferred to "50" class
+        srv_control.add_option_to_defined_class(1, 'v6-only-preferred', "1800")
+        # Start server
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started')
+
+        # Verify that IPv6-only-preferred is not returned if not requested
+        _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
+        # shared network, second subnet, first pool
+        _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=False)
+        # shared network, second subnet, second pool
+        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=False)
+        # shared network, third subnet
+        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=False)
+        # first subnet - host reservation with class
+        _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.50.1', '05', send108=False, expect_include=False)

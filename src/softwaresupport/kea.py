@@ -164,6 +164,7 @@ world.kea_options4 = {
     "authenticate": 90,  # binary
     "client-last-transaction-time": 91,  # uint32
     "associated-ip": 92,  # ipv4-address
+    "v6-only-preferred": 108,
     "subnet-selection": 118,  # ipv4-address
     "domain-search": 119,  # binary
     "vivco-suboptions": 124,  # binary
