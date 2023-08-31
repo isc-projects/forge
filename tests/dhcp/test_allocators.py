@@ -333,7 +333,7 @@ def test_v6_allocators(backend, scope):
     - correctness of address/prefix assigned (if it fits subnet)
     """
     misc.test_setup()
-    netmask = 112
+    netmask = 110
     srv_control.config_srv_subnet('2001:db8:1::/64', f'2001:db8:1::/{netmask}',
                                   allocator='iterative', pd_allocator='iterative')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64', f'2001:db8:2::/{netmask}',
@@ -366,27 +366,27 @@ def test_v6_allocators(backend, scope):
 
     for i in range(10, 15):
         leases_subnet1 += _get_lease_6('iterative', iaid=3, iapd=3, relay='2001:db8:1::1',
-                                       mac=f'11:f5:f4:f3:f2:{i}', all_leases=leases_subnet1)
+                                       mac=f'11:f5:f4:f3:f2:{i}', all_leases=leases_subnet1, netmask=netmask)
         leases_subnet2 += _get_lease_6('random', iaid=3, iapd=3, relay='2001:db8:2::1',
-                                       mac=f'22:f5:f4:f3:f2:{i}', all_leases=leases_subnet2)
+                                       mac=f'22:f5:f4:f3:f2:{i}', all_leases=leases_subnet2, netmask=netmask)
         leases_subnet3 += _get_lease_6('random', iaid=3, iapd=3, relay='2001:db8:3::1',
-                                       mac=f'33:f5:f4:f3:f2:{i}', all_leases=leases_subnet3)
+                                       mac=f'33:f5:f4:f3:f2:{i}', all_leases=leases_subnet3, netmask=netmask)
 
     for i in range(20, 25):  # without prefix
         leases_subnet1 += _get_lease_6('iterative', iaid=2, relay='2001:db8:1::1',
-                                       mac=f'44:f5:f4:f3:f2:{i}', all_leases=leases_subnet1)
+                                       mac=f'44:f5:f4:f3:f2:{i}', all_leases=leases_subnet1, netmask=netmask)
         leases_subnet2 += _get_lease_6('random', iaid=2, relay='2001:db8:2::1',
-                                       mac=f'55:f5:f4:f3:f2:{i}', all_leases=leases_subnet2)
+                                       mac=f'55:f5:f4:f3:f2:{i}', all_leases=leases_subnet2, netmask=netmask)
         leases_subnet3 += _get_lease_6('random', iaid=2, relay='2001:db8:3::1',
-                                       mac=f'66:f5:f4:f3:f2:{i}', all_leases=leases_subnet3)
+                                       mac=f'66:f5:f4:f3:f2:{i}', all_leases=leases_subnet3, netmask=netmask)
 
     for i in range(30, 35):  # with just prefix
         leases_subnet1 += _get_lease_6('iterative', iapd=2, relay='2001:db8:1::1',
-                                       mac=f'77:f5:f4:f3:f2:{i}', all_leases=leases_subnet1)
+                                       mac=f'77:f5:f4:f3:f2:{i}', all_leases=leases_subnet1, netmask=netmask)
         leases_subnet2 += _get_lease_6('random', iapd=2, relay='2001:db8:2::1',
-                                       mac=f'88:f5:{i}:f3:f2:{i}', all_leases=leases_subnet2)
+                                       mac=f'88:f5:{i}:f3:f2:{i}', all_leases=leases_subnet2, netmask=netmask)
         leases_subnet3 += _get_lease_6('random', iapd=2, relay='2001:db8:3::1',
-                                       mac=f'99:f5:f4:f3:{i}:{i}', all_leases=leases_subnet3)
+                                       mac=f'99:f5:f4:f3:{i}:{i}', all_leases=leases_subnet3, netmask=netmask)
 
     all_leases = leases_subnet1 + leases_subnet2 + leases_subnet3
     srv_msg.check_leases(all_leases, backend=backend)
