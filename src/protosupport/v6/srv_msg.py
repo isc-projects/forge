@@ -206,6 +206,7 @@ def client_does_include(sender_type, opt_type, value=None):
     Include options to message. This function refers to @step in lettuce
     """
 
+    assert sender_type is not None, "sender_type is None"
     assert sender_type in ["Client", "RelayAgent", "Relay-Supplied-Option"], "Two sender type accepted: Client or" \
                                                                              " RelayAgent, your choice is: " \
                                                                              + sender_type
