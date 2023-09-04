@@ -2181,3 +2181,106 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA(f'2001:db8:1::{8 + 2 * i:x}', expect=False)
         srv_msg.check_IA_PD('2001:db8:2::a00')
         srv_msg.check_IA_PD('2001:db8:2::b00', expect=False)
+
+
+# kea#181
+# support#21803
+@pytest.mark.v6
+@pytest.mark.flexid
+def test_v6_flexid_reservation_changing_duid():
+    """
+    Checks that there is a way to configure Kea such that a returning client that changes its DUID
+    gets the same reserved address. This can be done with a flex ID reservation. Clients that change
+    their DUID sometimes arise in PXE-booting scenarios.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8::/32', '2001:db8::1-2001:db8::4')
+    srv_control.add_hooks('libdhcp_flex_id.so')
+    srv_control.add_parameter_to_hook('libdhcp_flex_id.so', 'identifier-expression', 'option[79].hex')
+    srv_control.add_parameter_to_hook('libdhcp_flex_id.so', 'replace-client-id', True)
+    world.dhcp_cfg['host-reservation-identifiers'] = ['flex-id']
+    world.dhcp_cfg['subnet6'][0]['reservations'] = [
+        {
+            'flex-id': '00:01:52:54:00:52:da:87',
+            'ip-addresses': ['2001:db8::8']
+        }
+    ]
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Send a solicit.
+    srv_msg.client_sets_value('Client', 'DUID', '00:01:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA_Address')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_send_msg('SOLICIT')
+
+    # Expect an advertise.
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option('client-id')
+    srv_msg.response_check_include_option('server-id')
+    srv_msg.check_IA_NA('2001:db8::8')
+
+    # Send a request.
+    srv_msg.client_copy_option('IA_NA', copy_all=True)
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:01:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_send_msg('REQUEST')
+
+    # Expect a reply.
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.check_IA_NA('2001:db8::8')
+
+    # Send a renew.
+    srv_msg.client_copy_option('IA_NA', copy_all=True)
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:01:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_send_msg('RENEW')
+
+    # Expect a reply.
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.check_IA_NA('2001:db8::8')
+
+    # Send a solicit.
+    srv_msg.client_sets_value('Client', 'DUID', '00:01:00:01:f7:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA_Address')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_send_msg('SOLICIT')
+
+    # Expect an advertise.
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option('client-id')
+    srv_msg.response_check_include_option('server-id')
+    srv_msg.check_IA_NA('2001:db8::8')
+
+    # Send a request.
+    srv_msg.client_copy_option('IA_NA', copy_all=True)
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:01:00:01:f7:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_send_msg('REQUEST')
+
+    # Expect a reply.
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.check_IA_NA('2001:db8::8')
+
+    # Send a renew.
+    srv_msg.client_copy_option('IA_NA', copy_all=True)
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_sets_value('Client', 'DUID', '00:01:00:01:f7:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_send_msg('RENEW')
+
+    # Expect a reply.
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.check_IA_NA('2001:db8::8')
