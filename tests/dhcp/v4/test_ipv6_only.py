@@ -15,7 +15,7 @@ from src import srv_msg
 from src.forge_cfg import world
 
 
-def _check_ipv6_only_response(ip_address, client, send108, expect_include):
+def _check_ipv6_only_response(ip_address, client, send108, expect_include, send_rapid_commit=False):
     """
     Function makes DORA exchange with IPv6-only-preferred request and checks server response.
     """
@@ -23,6 +23,8 @@ def _check_ipv6_only_response(ip_address, client, send108, expect_include):
     srv_msg.client_sets_value('Client', 'chaddr', f'00:00:00:00:00:{client}')
     if send108:
         srv_msg.client_requests_option(108)
+    if send_rapid_commit:
+        srv_msg.client_does_include_with_value('rapid-commit', '')
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
@@ -60,6 +62,7 @@ def test_ipv6_only_preferred(level):
     Forge creates set of shared networks, subnets and pools with one subnet guarded by host reservation.
     According to selected level, DORA exchanges are performed to verify that IPv6-only-preferred is
     sent by server only when necessary.
+    If rapid-commit AND IPv6-only-preferred are included Kea should ignore rapid-commit.
     """
     misc.test_setup()
     # Define option for tests
@@ -101,15 +104,19 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
         # shared network, second subnet, first pool
         _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.51.2', '02', send108=False, expect_include=False)
         # shared network, second subnet, second pool
         _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.51.11', '03', send108=False, expect_include=False)
         # shared network, third subnet
         _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.52.1', '04', send108=False, expect_include=False)
         # first subnet - host reservation
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.50.1', '05', send108=False, expect_include=False)
 
     if level == 'pool':
@@ -125,6 +132,7 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=False)
         # shared network, second subnet, second pool
         _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.51.11', '03', send108=False, expect_include=False)
         # shared network, third subnet
         _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=False)
@@ -146,6 +154,7 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=False)
         # shared network, third subnet
         _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.52.1', '04', send108=False, expect_include=False)
         # first subnet - host reservation
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
@@ -161,12 +170,15 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
         # shared network, second subnet, first pool
         _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.51.2', '02', send108=False, expect_include=False)
         # shared network, second subnet, second pool
         _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.51.11', '03', send108=False, expect_include=False)
         # shared network, third subnet
         _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.52.1', '04', send108=False, expect_include=False)
         # first subnet - host reservation
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
@@ -200,6 +212,7 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
         # first subnet - host reservation with v6-only-preferred
         _check_ipv6_only_response('192.168.50.2', '06', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.50.2', '06', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.50.2', '06', send108=False, expect_include=False)
 
     if level == 'class':
@@ -219,4 +232,5 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=False)
         # first subnet - host reservation with class
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.50.1', '05', send108=False, expect_include=False)
