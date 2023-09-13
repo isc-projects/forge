@@ -2190,8 +2190,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
 def test_v6_flexid_reservation_changing_duid():
     """
     Checks that there is a way to configure Kea such that a returning client that changes its DUID
-    gets the same reserved address. This can be done with a flex ID reservation. Clients that change
-    their DUID sometimes arise in PXE-booting scenarios.
+    gets the same reserved address. This can be done with a flex ID reservation. Clients with
+    unstable DUIDs are known to be found in PXE-booting scenarios.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/32', '2001:db8::1-2001:db8::4')
@@ -2201,7 +2201,7 @@ def test_v6_flexid_reservation_changing_duid():
     world.dhcp_cfg['host-reservation-identifiers'] = ['flex-id']
     world.dhcp_cfg['subnet6'][0]['reservations'] = [
         {
-            'flex-id': '00:01:52:54:00:52:da:87',
+            'flex-id': '00:01:52:00:02:52:00:03',
             'ip-addresses': ['2001:db8::8']
         }
     ]
@@ -2214,7 +2214,7 @@ def test_v6_flexid_reservation_changing_duid():
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_does_include('Client', 'IA_Address')
     srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_v6_does_include_with_value('Client', 'client-link-layer-addr', '52:00:02:52:00:03')
     srv_msg.client_send_msg('SOLICIT')
 
     # Expect an advertise.
@@ -2228,7 +2228,7 @@ def test_v6_flexid_reservation_changing_duid():
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', '00:01:00:01:f6:f5:f4:f3:f2:01')
     srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_v6_does_include_with_value('Client', 'client-link-layer-addr', '52:00:02:52:00:03')
     srv_msg.client_send_msg('REQUEST')
 
     # Expect a reply.
@@ -2240,7 +2240,7 @@ def test_v6_flexid_reservation_changing_duid():
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', '00:01:00:01:f6:f5:f4:f3:f2:01')
     srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_v6_does_include_with_value('Client', 'client-link-layer-addr', '52:00:02:52:00:03')
     srv_msg.client_send_msg('RENEW')
 
     # Expect a reply.
@@ -2252,7 +2252,7 @@ def test_v6_flexid_reservation_changing_duid():
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_does_include('Client', 'IA_Address')
     srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_v6_does_include_with_value('Client', 'client-link-layer-addr', '52:00:02:52:00:03')
     srv_msg.client_send_msg('SOLICIT')
 
     # Expect an advertise.
@@ -2266,7 +2266,7 @@ def test_v6_flexid_reservation_changing_duid():
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', '00:01:00:01:f7:f5:f4:f3:f2:01')
     srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_v6_does_include_with_value('Client', 'client-link-layer-addr', '52:00:02:52:00:03')
     srv_msg.client_send_msg('REQUEST')
 
     # Expect a reply.
@@ -2278,7 +2278,7 @@ def test_v6_flexid_reservation_changing_duid():
     srv_msg.client_copy_option('server-id')
     srv_msg.client_sets_value('Client', 'DUID', '00:01:00:01:f7:f5:f4:f3:f2:01')
     srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'client-link-layer-addr')
+    srv_msg.client_v6_does_include_with_value('Client', 'client-link-layer-addr', '52:00:02:52:00:03')
     srv_msg.client_send_msg('RENEW')
 
     # Expect a reply.

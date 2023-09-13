@@ -349,7 +349,7 @@ def client_does_include(sender_type, opt_type, value=None):
 
     elif opt_type == "client-link-layer-addr":
         add_client_option(dhcp6.DHCP6OptClientLinkLayerAddr(lltype=world.cfg["values"]["address_type"],
-                                                            clladdr=world.cfg["values"]["link_local_mac_addr"]))
+                                                            clladdr=world.cfg["values"]["link_local_mac_addr"] if value is None else value))
 
     elif opt_type == "remote-id":
         add_client_option(dhcp6.DHCP6OptRemoteID(enterprisenum=world.cfg["values"]["enterprisenum"],

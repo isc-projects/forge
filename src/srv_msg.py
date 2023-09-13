@@ -124,8 +124,22 @@ def client_does_include_with_value(opt_type, value):
     "Client does (NOT )?include" as other step is that lettuce step parser is really... weak.
     What ever I'll do with that always takes wrong step.
     """
+    assert world.f_cfg.proto == 'v4', 'funciton only used for DHCPv4'
     opt_type, value = test_define_value(opt_type, value)
     dhcpmsg.client_does_include(None, opt_type, value)
+
+
+def client_v6_does_include_with_value(sender_type, opt_type, value):
+    """
+    Inserts an option into the DHCPv6 client message.
+
+    :param sender_type: who inserted the option
+    :param opt_type: option name
+    :param value: option value
+    """
+    assert world.f_cfg.proto == 'v6', 'function only used for DHCPv6'
+    opt_type, value = test_define_value(opt_type, value)
+    dhcpmsg.client_does_include(sender_type, opt_type, value)
 
 
 @step(r'(\S+) does (NOT )?include (\S+).')
