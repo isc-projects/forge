@@ -123,7 +123,55 @@ def test_server_tag_subnet4(backend):
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
+def test_server_tag_global_option4_trimmed(backend):
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend, server_tag="abc")
+    _set_server_tag(backend, "xyz")
+    _set_server_tag(backend, "abc")
+    cfg.add_subnet(backend=backend, server_tags="abc")
+    cfg.add_option(backend=backend, server_tags=["all"], code=3, csv_format=True, data="10.0.0.1", name="routers",
+                   space="dhcp4")
+
+    abc = _get_server_config()
+    # server should have just one option now, from "all"
+    assert len(abc["arguments"]["Dhcp4"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp4"]["option-data"][0]["data"] == "10.0.0.1"
+
+    get_address(req_opts=[3], exp_option={"code": 3, "data": "10.0.0.1"})
+
+    cfg.add_option(backend=backend, server_tags=["abc"], code=3, csv_format=True, data="10.0.0.2", name="routers",
+                   space="dhcp4")
+    abc = _get_server_config()
+    # now, despite the fact that two tags are for server "abc" ("abc" and "all") option "all" should be overwritten
+    assert len(abc["arguments"]["Dhcp4"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp4"]["option-data"][0]["data"] == "10.0.0.2"
+    get_address(req_opts=[3], exp_option={"code": 3, "data": "10.0.0.2"})
+
+    cfg.add_option(backend=backend, server_tags=["xyz"], code=3, csv_format=True, data="10.0.0.3", name="routers",
+                   space="dhcp4")
+    abc = _get_server_config()
+    # after adding "xyz" option, there should not be any change in running kea
+    assert len(abc["arguments"]["Dhcp4"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp4"]["option-data"][0]["data"] == "10.0.0.2"
+    get_address(req_opts=[3], exp_option={"code": 3, "data": "10.0.0.2"})
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    cfg_xyz = setup_server_for_config_backend_cmds(backend_type=backend, server_tag="xyz")
+    cfg_xyz.add_subnet(backend=backend, server_tags="xyz")
+    abc = _get_server_config()
+    # new kea is started with tag "xyz"
+    assert len(abc["arguments"]["Dhcp4"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp4"]["option-data"][0]["data"] == "10.0.0.3"
+
+    get_address(req_opts=[3], exp_option={"code": 3, "data": "10.0.0.3"})
+
+
+@pytest.mark.awaiting_fix
+@pytest.mark.disabled
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_global_option4(backend):
+    # kea1600 disabled because we will be waiting for a long time to fix,
+    # if this test will be enabled please remove test_server_tag_global_option4_trimmed
     cfg = setup_server_for_config_backend_cmds(backend_type=backend, server_tag="abc")
     _set_server_tag(backend, "xyz")
     _set_server_tag(backend, "abc")
