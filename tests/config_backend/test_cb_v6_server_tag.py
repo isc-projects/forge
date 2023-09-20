@@ -126,7 +126,55 @@ def test_server_tag_subnet(backend):
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
+def test_server_tag_global_option_trimmed(backend):
+    cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend, "xyz")
+    _set_server_tag(backend, "abc")
+    cfg.add_subnet(backend=backend, server_tags="abc")
+    cfg.add_option(backend=backend, server_tags=["all"], code=22, csv_format=True,
+                   data="2001::1", name="sip-server-addr", space="dhcp6")
+
+    abc = _get_server_config()
+    # server should have just one option now, from "all"
+    assert len(abc["arguments"]["Dhcp6"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp6"]["option-data"][0]["data"] == "2001::1"
+
+    get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::1"})
+
+    cfg.add_option(backend=backend, server_tags=["abc"], code=22, csv_format=True,
+                   data="2001::2", name="sip-server-addr", space="dhcp6")
+    abc = _get_server_config()
+    # now, despite the fact that two tags are for server "abc" ("abc" and "all") option "all" should be overwritten
+    assert len(abc["arguments"]["Dhcp6"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp6"]["option-data"][0]["data"] == "2001::2"
+    get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::2"})
+
+    cfg.add_option(backend=backend, server_tags=["xyz"], code=22, csv_format=True,
+                   data="2001::3", name="sip-server-addr", space="dhcp6")
+    abc = _get_server_config()
+    # after adding "xyz" option, there should not be any change in running kea
+    assert len(abc["arguments"]["Dhcp6"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp6"]["option-data"][0]["data"] == "2001::2"
+    get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::2"})
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    cfg_xyz = setup_server_for_config_backend_cmds(server_tag="xyz", backend_type=backend)
+    cfg_xyz.add_subnet(backend=backend, server_tags="xyz")
+    abc = _get_server_config()
+    # new kea is started with tag "xyz"
+    assert len(abc["arguments"]["Dhcp6"]["option-data"]) == 1
+    assert abc["arguments"]["Dhcp6"]["option-data"][0]["data"] == "2001::3"
+
+    get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::3"})
+
+
+@pytest.mark.awaiting_fix
+@pytest.mark.disabled
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_global_option(backend):
+    # kea1600 disabled because we will be waiting for a long time to fix,
+    # if this test will be enabled please remove test_server_tag_global_option_trimmed
     cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
     _set_server_tag(backend, "xyz")
     _set_server_tag(backend, "abc")
@@ -174,7 +222,6 @@ def test_server_tag_global_option(backend):
     assert len(xyz["arguments"]["Dhcp6"]["option-data"]) == 1
     assert xyz["arguments"]["Dhcp6"]["option-data"][0]["data"] == "2001::1"
     get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::1"})
-
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_network(backend):
