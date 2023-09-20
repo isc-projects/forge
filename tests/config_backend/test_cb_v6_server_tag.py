@@ -223,6 +223,7 @@ def test_server_tag_global_option(backend):
     assert xyz["arguments"]["Dhcp6"]["option-data"][0]["data"] == "2001::1"
     get_address(req_opts=[22], exp_option={"code": 22, "data": "2001::1"})
 
+
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_network(backend):
     cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
