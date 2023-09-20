@@ -224,7 +224,7 @@ class ConfigModel(ConfigElem):
 
         # loggers config
         cfg["loggers"] = [{"name": "kea-dhcp" + proto,
-                           "output_options": [loggers],
+                           "output-options": [loggers],
                            "debuglevel": 99,
                            "severity": "DEBUG"}]
 

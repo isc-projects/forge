@@ -497,7 +497,7 @@ def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_n
             logging_file_path = world.f_cfg.log_join(logging_file)
 
     logger = {"name": log_type,
-              "output_options": [{"output": logging_file_path}],
+              "output-options": [{"output": logging_file_path}],
               "severity": severity}
     if severity_level != "None":
         logger["debuglevel"] = int(severity_level)
@@ -509,7 +509,7 @@ def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_n
         found = False
         for cfg_logger in world.dhcp_cfg['loggers']:
             if cfg_logger['name'] == logger['name']:
-                merge_containers(cfg_logger, logger, {'output_options': 'output'})
+                merge_containers(cfg_logger, logger, {'output-options': 'output'})
                 found = True
         if not found:
             world.dhcp_cfg['loggers'].append(logger)
@@ -1116,7 +1116,7 @@ def agent_control_channel(host_address, host_port, socket_name='control_socket')
                                                                               "socket-name": world.f_cfg.run_join(socket_name)}},
                                      "loggers": [
                                          {"debuglevel": 99, "name": "kea-ctrl-agent",
-                                          "output_options": [{"output": logging_file_path}],
+                                          "output-options": [{"output": logging_file_path}],
                                           "severity": "DEBUG"}]}
 
 

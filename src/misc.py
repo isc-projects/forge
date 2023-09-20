@@ -97,10 +97,10 @@ def merge_containers(target, source, identify=None, last_list_parent_key=None):
                      to limit the places where these unique keys are considered. Values in this dict
                      are the unique IDs for the elements in the source and target lists being
                      merged. By default None which means no smart merging is attempted.
-                     E.g. {'output_options': 'output'} for:
+                     E.g. {'output-options': 'output'} for:
                      {
                          "name": "kea-dhcp6",
-                         "output_options": [
+                         "output-options": [
                              {
                                  "output": "/opt/kea/var/log/kea.log",
                                  "flush": true,

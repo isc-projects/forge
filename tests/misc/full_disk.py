@@ -234,7 +234,7 @@ def test_v6_full_disk_testing_memfile():
     world.dhcp_cfg["lease-database"] = {"type": "memfile", "name": "/tmp/kea_ram_disk/dhcp.leases"}
     world.dhcp_cfg["loggers"] = [{"debuglevel": 99,
                                   "name": "kea-dhcp6",
-                                  "output_options": [{"output": "/tmp/kea_ram_disk/kea.log"}],
+                                  "output-options": [{"output": "/tmp/kea_ram_disk/kea.log"}],
                                   "severity": "DEBUG"}]
     world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"path": "/tmp/kea_ram_disk/",
                                                                 "base-name": "kea-forensic"}})
@@ -274,7 +274,7 @@ def test_v4_full_disk_testing():
     world.dhcp_cfg["lease-database"] = {"type": "memfile", "name": "/tmp/kea_ram_disk/dhcp.leases"}
     world.dhcp_cfg["loggers"] = [{"debuglevel": 99,
                                   "name": "kea-dhcp4",
-                                  "output_options": [{"output": "/tmp/kea_ram_disk/kea.log"}],
+                                  "output-options": [{"output": "/tmp/kea_ram_disk/kea.log"}],
                                   "severity": "DEBUG"}]
     world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"path": "/tmp/kea_ram_disk/",
                                                                 "base-name": "kea-forensic"}})

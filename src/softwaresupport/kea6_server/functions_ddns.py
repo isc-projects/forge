@@ -36,7 +36,7 @@ def add_ddns_server(address, port):
                       "ncr-protocol": "UDP",
                       "loggers": [
                           {"debuglevel": 99, "name": "kea-dhcp-ddns",
-                           "output_options": [{
+                           "output-options": [{
                                "output": logging_file_path}],
                            "severity": "DEBUG"}]
                       }  # default value
