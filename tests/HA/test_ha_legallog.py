@@ -150,8 +150,7 @@ def test_ha_legallog(dhcp_version, backend):
                    'DUID: 00:03:00:01:66:55:44:33:22:11 and hardware address: ' \
                    'hwtype=1 66:55:44:33:22:11 (from DUID)'
         message2 = 'HA partner updated information on the lease of address: 2001:db8:1::1 to a device with ' \
-                   'DUID: 00:03:00:01:66:55:44:33:22:11 and hardware address: ' \
-                   'hardware address: hwtype=1 66:55:44:33:22:11 (from DUID) for 1 hrs 6 mins 40 secs'
+                   'DUID: 00:03:00:01:66:55:44:33:22:11, hardware address: 66:55:44:33:22:11 for 1 hrs 6 mins 40 secs'
         if backend == 'file':
             _save_log_files()
             file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
