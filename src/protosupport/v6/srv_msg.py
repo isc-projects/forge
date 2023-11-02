@@ -1554,9 +1554,9 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
             forward messages, and by extension whether server packets should be
             expected to be encapsulated in relay reply messages (default: False)
         status_code: the expected status code (default: Success)
-        exchange: can have values "full" meaning SARR + renew-reply or
-            "renew-reply". It is a string instead of a boolean for
-            clearer recognition of test names because this value often comes from
+        exchange: can have values "sarr-only" for 4-way SARR, "full" meaning
+            SARR + renew-reply or "renew-reply". It is a string instead of a boolean
+            for clearer recognition of test names because this value often comes from
             pytest parametrization. (default: "full")
         duid: the DUID to be used in client packets
             (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
@@ -1566,7 +1566,7 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
     """
     # TODO where should be a way to make sure that IA_PD/IA_NA option is not included
     # and same with any other option
-    if exchange == 'full':
+    if exchange in ['full', 'sarr-only']:
         # Build and send Solicit and await Advertisement
         SA(address, delegated_prefix, relay_information, status_code, duid, iaid, linkaddr, ifaceid)
 
@@ -1600,7 +1600,7 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
     # block. If there was a bug in this function, then the following if
     # statement is a hack and should be removed and the code block within should
     # be bumped one scope level up at function level i.e. always executed.
-    if not relay_information:
+    if not relay_information and exchange != 'sarr-only':
         misc.test_procedure()
         client_sets_value('DUID', duid)
         if iaid is not None:

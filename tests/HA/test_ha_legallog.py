@@ -103,8 +103,7 @@ def test_ha_legallog(dhcp_version, backend):
         srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
     else:
         srv_control.config_srv_subnet('192.168.50.0/24',
-                                      '192.168.50.1-192.168.50.200',
-                                      world.f_cfg.server2_iface)
+                                      '192.168.50.1-192.168.50.200')
 
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
@@ -142,7 +141,7 @@ def test_ha_legallog(dhcp_version, backend):
 
     # Acquire a lese and check it in both backends.
     if dhcp_version == 'v6':
-        srv_msg.SARR(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11')
+        srv_msg.SARR(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11', exchange='sarr-only')
         lease = srv_msg.get_all_leases()
         srv_msg.check_leases(lease)
         srv_msg.check_leases(lease, dest=world.f_cfg.mgmt_address_2)
@@ -161,10 +160,10 @@ def test_ha_legallog(dhcp_version, backend):
             srv_msg.table_contains_line_n_times('logs', backend, 1,
                                                 message1, destination=world.f_cfg.mgmt_address)
             srv_msg.table_contains_line_n_times('logs', backend, 1,
-                                                message2, destination=world.f_cfg.mgmt_address)
+                                                message2, destination=world.f_cfg.mgmt_address_2)
 
     else:
-        srv_msg.DORA('192.168.50.1')
+        srv_msg.DORA('192.168.50.1', exchange='dora-only')
         lease = srv_msg.get_all_leases()
         srv_msg.check_leases(lease)
         srv_msg.check_leases(lease, dest=world.f_cfg.mgmt_address_2)
@@ -182,4 +181,4 @@ def test_ha_legallog(dhcp_version, backend):
             srv_msg.table_contains_line_n_times('logs', backend, 1,
                                                 message1, destination=world.f_cfg.mgmt_address)
             srv_msg.table_contains_line_n_times('logs', backend, 1,
-                                                message2, destination=world.f_cfg.mgmt_address)
+                                                message2, destination=world.f_cfg.mgmt_address_2)

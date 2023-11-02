@@ -853,9 +853,9 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
     :param options: any additional options to be inserted in the client packets in
         dictionary form with option names as keys and option values as values.
         (default: {})
-    :param exchange: can have values 'full' meaning DORA plus an additional
-        request-reply for the renew scenario or "renew-only". It is a string
-        instead of a boolean for clearer test names because this value often
+    :param exchange: can have values 'dora-only' for 4 way DORA exhange, 'full' meaning
+        DORA plus an additional request-reply for the re-new scenario or "renew-only".
+        It is a string instead of a boolean for clearer test names because this value often
         comes from pytest parametrization. (default: 'full')
     :param response_type: the type of response to be expected in the server packet.
         Can have values 'ACK' or 'NAK'. (default: 'ACK')
@@ -871,6 +871,9 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
 
         # Send a request and expect an acknowledgement.
         RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn)
+    if exchange == 'dora-only':
+        # Send a discover and expect an offer.
+        DO(address, options, chaddr)
 
     # Send a request and expect an acknowledgement.
     # This is supposed to be the renew scenario after DORA.
