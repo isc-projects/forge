@@ -103,7 +103,8 @@ def test_ha_legallog(dhcp_version, backend):
         srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
     else:
         srv_control.config_srv_subnet('192.168.50.0/24',
-                                      '192.168.50.1-192.168.50.200')
+                                      '192.168.50.1-192.168.50.200',
+                                      world.f_cfg.server2_iface)
 
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
