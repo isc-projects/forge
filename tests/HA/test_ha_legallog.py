@@ -15,7 +15,7 @@ from src import srv_control
 from src import srv_msg
 
 from src.forge_cfg import world
-from src.protosupport.multi_protocol_functions import file_contains_line
+from src.protosupport.multi_protocol_functions import file_contains_line_n_times
 from .steps import get_status_HA, wait_until_ha_state
 
 HA_CONFIG = {
@@ -42,6 +42,23 @@ def _save_log_files():
                         dest=world.f_cfg.mgmt_address)
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'), local_filename='server2_kea-legal.txt',
                         dest=world.f_cfg.mgmt_address_2)
+
+
+def _message(protocol, server, ip, mac):
+    if protocol == 4:
+        if server == "primary":
+            return (f'Address: {ip} has been assigned for 1 hrs 6 mins 40 secs to a device with hardware address: '
+                    f'hwtype=1 {mac}')
+        else:
+            return (f'HA partner updated information on the lease of address: {ip} to a device with hardware address: '
+                    f'{mac} for 1 hrs 6 mins 40 secs')
+    else:
+        if server == "primary":
+            return (f'Address: {ip} has been assigned for 1 hrs 6 mins 40 secs to a device with '
+                    f'DUID: {mac} and hardware address: hwtype=1 {mac[12:]} (from DUID)')
+        else:
+            return (f'HA partner updated information on the lease of address: {ip} to a device with '
+                    f'DUID: {mac}, hardware address: {mac[12:]} for 1 hrs 6 mins 40 secs')
 
 
 @pytest.mark.v4
@@ -143,43 +160,73 @@ def test_ha_legallog(dhcp_version, backend):
     # Acquire a lese and check it in both backends.
     if dhcp_version == 'v6':
         srv_msg.SARR(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11', exchange='sarr-only')
+        srv_msg.SARR(address='2001:db8:1::2', duid='00:03:00:01:66:55:44:33:22:22')
         lease = srv_msg.get_all_leases()
         srv_msg.check_leases(lease)
         srv_msg.check_leases(lease, dest=world.f_cfg.mgmt_address_2)
-        message1 = 'Address: 2001:db8:1::1 has been assigned for 1 hrs 6 mins 40 secs to a device with ' \
-                   'DUID: 00:03:00:01:66:55:44:33:22:11 and hardware address: ' \
-                   'hwtype=1 66:55:44:33:22:11 (from DUID)'
-        message2 = 'HA partner updated information on the lease of address: 2001:db8:1::1 to a device with ' \
-                   'DUID: 00:03:00:01:66:55:44:33:22:11, hardware address: 66:55:44:33:22:11 for 1 hrs 6 mins 40 secs'
+
         if backend == 'file':
             _save_log_files()
-            file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               message1, destination=world.f_cfg.mgmt_address)
-            file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               message2, destination=world.f_cfg.mgmt_address_2)
+            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+                                       _message(6, 'primary', '2001:db8:1::1', '00:03:00:01:66:55:44:33:22:11'),
+                                       destination=world.f_cfg.mgmt_address)
+            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+                                       _message(6, 'standby', '2001:db8:1::1', '00:03:00:01:66:55:44:33:22:11'),
+                                       destination=world.f_cfg.mgmt_address_2)
+            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
+                                       _message(6, 'primary', '2001:db8:1::2', '00:03:00:01:66:55:44:33:22:22'),
+                                       destination=world.f_cfg.mgmt_address)
+            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
+                                       _message(6, 'standby', '2001:db8:1::2', '00:03:00:01:66:55:44:33:22:22'),
+                                       destination=world.f_cfg.mgmt_address_2)
         else:
             srv_msg.table_contains_line_n_times('logs', backend, 1,
-                                                message1, destination=world.f_cfg.mgmt_address)
+                                                _message(6, 'primary', '2001:db8:1::1',
+                                                         '00:03:00:01:66:55:44:33:22:11'),
+                                                destination=world.f_cfg.mgmt_address)
             srv_msg.table_contains_line_n_times('logs', backend, 1,
-                                                message2, destination=world.f_cfg.mgmt_address_2)
+                                                _message(6, 'standby', '2001:db8:1::1',
+                                                         '00:03:00:01:66:55:44:33:22:11'),
+                                                destination=world.f_cfg.mgmt_address_2)
+            srv_msg.table_contains_line_n_times('logs', backend, 2,
+                                                _message(6, 'primary', '2001:db8:1::2',
+                                                         '00:03:00:01:66:55:44:33:22:22'),
+                                                destination=world.f_cfg.mgmt_address)
+            srv_msg.table_contains_line_n_times('logs', backend, 2,
+                                                _message(6, 'standby', '2001:db8:1::2',
+                                                         '00:03:00:01:66:55:44:33:22:22'),
+                                                destination=world.f_cfg.mgmt_address_2)
 
     else:
         srv_msg.DORA('192.168.50.1', exchange='dora-only')
-        lease = srv_msg.get_all_leases()
-        srv_msg.check_leases(lease)
-        srv_msg.check_leases(lease, dest=world.f_cfg.mgmt_address_2)
-        message1 = 'Address: 192.168.50.1 has been assigned for 1 hrs 6 mins 40 secs to a device with hardware ' \
-                   'address: hwtype=1 ff:01:02:03:ff:04'
-        message2 = 'HA partner updated information on the lease of address: 192.168.50.1 to a device with ' \
-                   'hardware address: ff:01:02:03:ff:04 for 1 hrs 6 mins 40 secs'
+        srv_msg.DORA('192.168.50.2', chaddr='ff:01:02:03:ff:05')
+        leases = srv_msg.get_all_leases()
+        srv_msg.check_leases(leases)
+        srv_msg.check_leases(leases, dest=world.f_cfg.mgmt_address_2)
         if backend == 'file':
             _save_log_files()
-            file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               message1, destination=world.f_cfg.mgmt_address)
-            file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
-                               message2, destination=world.f_cfg.mgmt_address_2)
+            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+                                       _message(4, 'primary', '192.168.50.1', 'ff:01:02:03:ff:04'),
+                                       destination=world.f_cfg.mgmt_address)
+            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+                                       _message(4, 'standby', '192.168.50.1', 'ff:01:02:03:ff:04'),
+                                       destination=world.f_cfg.mgmt_address_2)
+            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
+                                       _message(4, 'primary', '192.168.50.2', 'ff:01:02:03:ff:05'),
+                                       destination=world.f_cfg.mgmt_address)
+            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
+                                       _message(4, 'standby', '192.168.50.2', 'ff:01:02:03:ff:05'),
+                                       destination=world.f_cfg.mgmt_address_2)
         else:
             srv_msg.table_contains_line_n_times('logs', backend, 1,
-                                                message1, destination=world.f_cfg.mgmt_address)
+                                                _message(4, 'primary', '192.168.50.1', 'ff:01:02:03:ff:04'),
+                                                destination=world.f_cfg.mgmt_address)
             srv_msg.table_contains_line_n_times('logs', backend, 1,
-                                                message2, destination=world.f_cfg.mgmt_address_2)
+                                                _message(4, 'standby', '192.168.50.1', 'ff:01:02:03:ff:04'),
+                                                destination=world.f_cfg.mgmt_address_2)
+            srv_msg.table_contains_line_n_times('logs', backend, 2,
+                                                _message(4, 'primary', '192.168.50.2', 'ff:01:02:03:ff:05'),
+                                                destination=world.f_cfg.mgmt_address)
+            srv_msg.table_contains_line_n_times('logs', backend, 2,
+                                                _message(4, 'standby', '192.168.50.2', 'ff:01:02:03:ff:05'),
+                                                destination=world.f_cfg.mgmt_address_2)
