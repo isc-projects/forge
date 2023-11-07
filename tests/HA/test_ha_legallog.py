@@ -44,21 +44,18 @@ def _save_log_files():
                         dest=world.f_cfg.mgmt_address_2)
 
 
-def _message(protocol, server, ip, mac):
+def _message(protocol, server, ip_address, mac):
     if protocol == 4:
         if server == "primary":
-            return (f'Address: {ip} has been assigned for 1 hrs 6 mins 40 secs to a device with hardware address: '
-                    f'hwtype=1 {mac}')
-        else:
-            return (f'HA partner updated information on the lease of address: {ip} to a device with hardware address: '
-                    f'{mac} for 1 hrs 6 mins 40 secs')
-    else:
-        if server == "primary":
-            return (f'Address: {ip} has been assigned for 1 hrs 6 mins 40 secs to a device with '
-                    f'DUID: {mac} and hardware address: hwtype=1 {mac[12:]} (from DUID)')
-        else:
-            return (f'HA partner updated information on the lease of address: {ip} to a device with '
-                    f'DUID: {mac}, hardware address: {mac[12:]} for 1 hrs 6 mins 40 secs')
+            return (f'Address: {ip_address} has been assigned for 1 hrs 6 mins 40 secs to a device with '
+                    f'hardware address: hwtype=1 {mac}')
+        return (f'HA partner updated information on the lease of address: {ip_address} to a device with '
+                f'hardware address: {mac} for 1 hrs 6 mins 40 secs')
+    if server == "primary":
+        return (f'Address: {ip_address} has been assigned for 1 hrs 6 mins 40 secs to a device with '
+                f'DUID: {mac} and hardware address: hwtype=1 {mac[12:]} (from DUID)')
+    return (f'HA partner updated information on the lease of address: {ip_address} to a device with '
+            f'DUID: {mac}, hardware address: {mac[12:]} for 1 hrs 6 mins 40 secs')
 
 
 @pytest.mark.v4
