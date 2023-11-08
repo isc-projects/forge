@@ -44,8 +44,8 @@ def _save_log_files():
                         dest=world.f_cfg.mgmt_address_2)
 
 
-def _message(protocol, server, ip_address, mac):
-    if protocol == 4:
+def _message(server, ip_address, mac):
+    if world.proto == 'v4':
         if server == "primary":
             return (f'Address: {ip_address} has been assigned for 1 hrs 6 mins 40 secs to a device with '
                     f'hardware address: hwtype=1 {mac}')
@@ -165,32 +165,32 @@ def test_ha_legallog(dhcp_version, backend):
         if backend == 'file':
             _save_log_files()
             file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
-                                       _message(6, 'primary', '2001:db8:1::1', '00:03:00:01:66:55:44:33:22:11'),
+                                       _message('primary', '2001:db8:1::1', '00:03:00:01:66:55:44:33:22:11'),
                                        destination=world.f_cfg.mgmt_address)
             file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
-                                       _message(6, 'standby', '2001:db8:1::1', '00:03:00:01:66:55:44:33:22:11'),
+                                       _message('standby', '2001:db8:1::1', '00:03:00:01:66:55:44:33:22:11'),
                                        destination=world.f_cfg.mgmt_address_2)
             file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
-                                       _message(6, 'primary', '2001:db8:1::2', '00:03:00:01:66:55:44:33:22:22'),
+                                       _message('primary', '2001:db8:1::2', '00:03:00:01:66:55:44:33:22:22'),
                                        destination=world.f_cfg.mgmt_address)
             file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
-                                       _message(6, 'standby', '2001:db8:1::2', '00:03:00:01:66:55:44:33:22:22'),
+                                       _message('standby', '2001:db8:1::2', '00:03:00:01:66:55:44:33:22:22'),
                                        destination=world.f_cfg.mgmt_address_2)
         else:
             srv_msg.table_contains_line_n_times('logs', backend, 1,
-                                                _message(6, 'primary', '2001:db8:1::1',
+                                                _message('primary', '2001:db8:1::1',
                                                          '00:03:00:01:66:55:44:33:22:11'),
                                                 destination=world.f_cfg.mgmt_address)
             srv_msg.table_contains_line_n_times('logs', backend, 1,
-                                                _message(6, 'standby', '2001:db8:1::1',
+                                                _message('standby', '2001:db8:1::1',
                                                          '00:03:00:01:66:55:44:33:22:11'),
                                                 destination=world.f_cfg.mgmt_address_2)
             srv_msg.table_contains_line_n_times('logs', backend, 2,
-                                                _message(6, 'primary', '2001:db8:1::2',
+                                                _message('primary', '2001:db8:1::2',
                                                          '00:03:00:01:66:55:44:33:22:22'),
                                                 destination=world.f_cfg.mgmt_address)
             srv_msg.table_contains_line_n_times('logs', backend, 2,
-                                                _message(6, 'standby', '2001:db8:1::2',
+                                                _message('standby', '2001:db8:1::2',
                                                          '00:03:00:01:66:55:44:33:22:22'),
                                                 destination=world.f_cfg.mgmt_address_2)
 
@@ -203,27 +203,27 @@ def test_ha_legallog(dhcp_version, backend):
         if backend == 'file':
             _save_log_files()
             file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
-                                       _message(4, 'primary', '192.168.50.1', 'ff:01:02:03:ff:04'),
+                                       _message('primary', '192.168.50.1', 'ff:01:02:03:ff:04'),
                                        destination=world.f_cfg.mgmt_address)
             file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
-                                       _message(4, 'standby', '192.168.50.1', 'ff:01:02:03:ff:04'),
+                                       _message('standby', '192.168.50.1', 'ff:01:02:03:ff:04'),
                                        destination=world.f_cfg.mgmt_address_2)
             file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
-                                       _message(4, 'primary', '192.168.50.2', 'ff:01:02:03:ff:05'),
+                                       _message('primary', '192.168.50.2', 'ff:01:02:03:ff:05'),
                                        destination=world.f_cfg.mgmt_address)
             file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
-                                       _message(4, 'standby', '192.168.50.2', 'ff:01:02:03:ff:05'),
+                                       _message('standby', '192.168.50.2', 'ff:01:02:03:ff:05'),
                                        destination=world.f_cfg.mgmt_address_2)
         else:
             srv_msg.table_contains_line_n_times('logs', backend, 1,
-                                                _message(4, 'primary', '192.168.50.1', 'ff:01:02:03:ff:04'),
+                                                _message('primary', '192.168.50.1', 'ff:01:02:03:ff:04'),
                                                 destination=world.f_cfg.mgmt_address)
             srv_msg.table_contains_line_n_times('logs', backend, 1,
-                                                _message(4, 'standby', '192.168.50.1', 'ff:01:02:03:ff:04'),
+                                                _message('standby', '192.168.50.1', 'ff:01:02:03:ff:04'),
                                                 destination=world.f_cfg.mgmt_address_2)
             srv_msg.table_contains_line_n_times('logs', backend, 2,
-                                                _message(4, 'primary', '192.168.50.2', 'ff:01:02:03:ff:05'),
+                                                _message('primary', '192.168.50.2', 'ff:01:02:03:ff:05'),
                                                 destination=world.f_cfg.mgmt_address)
             srv_msg.table_contains_line_n_times('logs', backend, 2,
-                                                _message(4, 'standby', '192.168.50.2', 'ff:01:02:03:ff:05'),
+                                                _message('standby', '192.168.50.2', 'ff:01:02:03:ff:05'),
                                                 destination=world.f_cfg.mgmt_address_2)
