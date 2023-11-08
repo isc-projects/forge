@@ -1241,16 +1241,13 @@ def disable_mt_if_required(cfg):
     if world.f_cfg.auto_multi_threading_configuration is False:
         return cfg
 
-    # list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_radius.so", "libdhcp_user_chk.so"]
-    list_of_non_mt_hooks = ["libdhcp_host_cache.so", "libdhcp_old_radius.so", "libdhcp_user_chk.so"]   # TODO remove this after migrating to new radius
+    # TODO: remove list_of_non_mt_hooks and maybe also its use below after
+    # libdhcp_radius.so becomes MT-compatible and libdhcp_old_radius.so gets removed.
+    list_of_non_mt_hooks = ["libdhcp_old_radius.so", "libdhcp_radius.so", "libdhcp_user_chk.so"]
 
     # all configured hooks
     list_of_used_hooks = []
     for hooks in cfg[f'Dhcp{world.proto[1]}']["hooks-libraries"]:
-        # lets' also change radius name to old_radius, we need to do it as late in a process as it's possible # TODO remove this after migrating to new radius
-        if hooks["library"].split("/")[-1] == "libdhcp_radius.so":  # TODO remove this after migrating to new radius
-            new_path = hooks["library"].split("/")[:-1] + ["libdhcp_old_radius.so"]  # TODO remove this after migrating to new radius
-            hooks["library"] = "/".join(new_path)  # TODO remove this after migrating to new radius
         list_of_used_hooks.append(hooks["library"].split("/")[-1])
 
     # if any of configured hooks is not working with multi-threading then disable multi-threading in kea config
