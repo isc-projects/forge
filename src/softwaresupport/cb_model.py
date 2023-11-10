@@ -816,7 +816,7 @@ def setup_server_with_radius(destination: str = world.f_cfg.mgmt_address,
                 ],
                 "attributes": [
                     {
-                        "name": "password",
+                        "name": "User-Password",
                         "expr": expression
                     }
                 ]
