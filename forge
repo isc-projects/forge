@@ -936,7 +936,7 @@ def _install_kea_make_on_server(args, server_idx):
         raise Exception('Folder %s is not a directory.' % local_kea_path)
 
     remote_path = os.path.join('/kea-dirs', args.path)
-    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -w ccache,forge,gssapi,install,mysql,pgsql,radius,shell -x docs,perfdhcp,unittest --ccache-dir /ccache'
+    subcmd_tpl = 'cd %s && ./hammer.py %s -p local -w ccache,forge,gssapi,install,mysql,pgsql,shell -x docs,perfdhcp,unittest --ccache-dir /ccache'
 
     vagrant_dir = get_vagrant_dir(args)
 
