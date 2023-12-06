@@ -42,7 +42,7 @@ def test_HA_hot_standby_multiple_leases_v6(hook_order: str):
     Check that Kea HA can sync multiple IA_NA and IA_PD leases provided together
     in the same exchange.
 
-    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    :param hook_order: the order in which hooks are loaded: either alphabetical
     or reverse alphabetical. This is to test all order combinations for each set
     of two hook libraries after problems were found on one order of loading HA
     with leasequery.
@@ -108,16 +108,16 @@ def test_HA_hot_standby_multiple_leases_v6(hook_order: str):
     wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2)
 
     # Check logs in server1.
-    wait_for_message_in_log('HA_STATE_TRANSITION server transitions from PARTNER-DOWN to '
+    wait_for_message_in_log('HA_STATE_TRANSITION server1: server transitions from PARTNER-DOWN to '
                             'HOT-STANDBY state, partner state is READY')
 
     # Check logs in server2.
-    wait_for_message_in_log(r'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received [0-9][0-9]* leases '
+    wait_for_message_in_log(r'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server2: received [0-9][0-9]* leases '
                             'from server1', destination=world.f_cfg.mgmt_address_2)
-    wait_for_message_in_log('HA_SYNC_SUCCESSFUL lease database synchronization with '
+    wait_for_message_in_log('HA_SYNC_SUCCESSFUL server2: lease database synchronization with '
                             'server1 completed successfully',
                             destination=world.f_cfg.mgmt_address_2)
-    wait_for_message_in_log('HA_STATE_TRANSITION server transitions from READY to '
+    wait_for_message_in_log('HA_STATE_TRANSITION server2: server transitions from READY to '
                             'HOT-STANDBY state, partner state is HOT-STANDBY',
                             destination=world.f_cfg.mgmt_address_2)
 
@@ -147,7 +147,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
 
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
-    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    :param hook_order: the order in which hooks are loaded: either alphabetical
     or reverse alphabetical. This is to test all order combinations for each set
     of two hook libraries after problems were found on one order of loading HA
     with leasequery.
@@ -233,16 +233,16 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
 
     # Check logs in server1.
-    wait_for_message_in_log('HA_STATE_TRANSITION server transitions from PARTNER-DOWN to '
+    wait_for_message_in_log('HA_STATE_TRANSITION server1: server transitions from PARTNER-DOWN to '
                             'HOT-STANDBY state, partner state is READY')
 
     # Check logs in server2.
-    wait_for_message_in_log('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 15 leases from '
+    wait_for_message_in_log('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server2: received 15 leases from '
                             'server1', 3, destination=world.f_cfg.mgmt_address_2)
-    wait_for_message_in_log('HA_SYNC_SUCCESSFUL lease database synchronization with '
+    wait_for_message_in_log('HA_SYNC_SUCCESSFUL server2: lease database synchronization with '
                             'server1 completed successfully',
                             destination=world.f_cfg.mgmt_address_2)
-    wait_for_message_in_log('HA_STATE_TRANSITION server transitions from READY to '
+    wait_for_message_in_log('HA_STATE_TRANSITION server2: server transitions from READY to '
                             'HOT-STANDBY state, partner state is HOT-STANDBY',
                             destination=world.f_cfg.mgmt_address_2)
 
@@ -266,7 +266,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
     wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
 
     # Check logs in server1.
-    wait_for_message_in_log('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED received 10 leases from '
+    wait_for_message_in_log('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server1: received 10 leases from '
                             'server2', 10)
 
     # Check synced leases.
@@ -286,7 +286,7 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
 
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
-    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    :param hook_order: the order in which hooks are loaded: either alphabetical
     or reverse alphabetical. This is to test all order combinations for each set
     of two hook libraries after problems were found on one order of loading HA
     with leasequery.
@@ -371,7 +371,7 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
 
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
-    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    :param hook_order: the order in which hooks are loaded: either alphabetical
     or reverse alphabetical. This is to test all order combinations for each set
     of two hook libraries after problems were found on one order of loading HA
     with leasequery.
@@ -493,7 +493,7 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version: str, backend: s
 
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
-    :param hook_order: the order in which hooks are loaded: either aplhabetical
+    :param hook_order: the order in which hooks are loaded: either alphabetical
     or reverse alphabetical. This is to test all order combinations for each set
     of two hook libraries after problems were found on one order of loading HA
     with leasequery.
