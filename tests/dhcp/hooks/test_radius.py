@@ -85,7 +85,7 @@ def test_RADIUS(dhcp_version: str,
 @pytest.mark.v4_bootp
 @pytest.mark.v6
 @pytest.mark.radius
-@pytest.mark.parametrize('attribute_cardinality', ['single-attribute', 'double-attributes'])
+@pytest.mark.parametrize('attribute_cardinality', ['single-attribute', 'double-attributes-bogus-first', 'double-attributes-bogus-last'])
 def test_RADIUS_framed_pool(dhcp_version: str, attribute_cardinality: str):
     """
     Check that Kea can classify a packet using a single type of RADIUS
@@ -101,9 +101,11 @@ def test_RADIUS_framed_pool(dhcp_version: str, attribute_cardinality: str):
     # RFC 2869 says that zero or one instance of the framed pool attribute MAY
     # be present.
     attributes = []
-    if attribute_cardinality == 'double-attributes':
+    if attribute_cardinality == 'double-attributes-bogus-first':
         attributes.append('Framed-Pool = "bogus"')
     attributes.append('Framed-Pool = "gold"')
+    if attribute_cardinality == 'double-attributes-bogus-last':
+        attributes.append('Framed-Pool = "bogus"')
 
     # Provid§e RADIUS configuration and start RADIUS server.
     radius.add_reservation('08:00:27:b0:c1:41', attributes)
@@ -117,7 +119,7 @@ def test_RADIUS_framed_pool(dhcp_version: str, attribute_cardinality: str):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    if attribute_cardinality == 'double-attributes':
+    if attribute_cardinality == 'double-attributes-bogus-last':
         # Whether Kea takes only the first pool into consideration, as it happens at
         # the time of writing, or if the allocation explicitly fails, expect the
         # client to not get the gold lease.
