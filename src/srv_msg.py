@@ -25,7 +25,6 @@ import ipaddress
 import logging
 
 from scapy.layers.dhcp6 import DUID_LLT, DUID_LL, DUID_EN
-from .protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
 from .forge_cfg import world, step
 from .protosupport import dns, multi_protocol_functions
 from .protosupport.multi_protocol_functions import test_define_value, substitute_vars
@@ -709,27 +708,31 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
     return dhcpmsg.DORA(address, options, exchange, response_type, chaddr, init_reboot, subnet_mask, fqdn)
 
 
-def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
+def check_IA_NA(address, status_code=None, expect=True):
     return dhcpmsg.check_IA_NA(address, status_code, expect)
 
 
-def check_IA_PD(prefix, prefix_length=None, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
-    return dhcpmsg.check_IA_PD(prefix, prefix_length, status_code, expect)
+def check_IA_PD(prefix, status_code=None, expect=True):
+    return dhcpmsg.check_IA_PD(prefix, status_code, expect)
 
 
 def SA(address=None, delegated_prefix=None, relay_information=False,
-       status_code=DHCPv6_STATUS_CODES['Success'], duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
+       status_code_IA_NA=None, status_code_IA_PD=None,
+       duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
        linkaddr='2001:db8:1::1000', ifaceid='port1234'):
-    return dhcpmsg.SA(address, delegated_prefix, relay_information, status_code, duid, iaid,
+    return dhcpmsg.SA(address, delegated_prefix, relay_information,
+                      status_code_IA_NA, status_code_IA_PD,
+                      duid, iaid,
                       linkaddr, ifaceid)
 
 
 def SARR(address=None, delegated_prefix=None, relay_information=False,
-         status_code=DHCPv6_STATUS_CODES['Success'], exchange='full',
+         status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
          linkaddr='2001:db8:1::1000', ifaceid='port1234'):
     return dhcpmsg.SARR(address, delegated_prefix, relay_information,
-                        status_code, exchange, duid, iaid, linkaddr, ifaceid)
+                        status_code_IA_NA, status_code_IA_PD, exchange,
+                        duid, iaid, linkaddr, ifaceid)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,

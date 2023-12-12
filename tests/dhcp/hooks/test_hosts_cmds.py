@@ -2388,7 +2388,7 @@ def test_v6_add_reservation_complex(channel, host_database):
     res_returned = _clean_up_reservation(res_returned)
     assert res == res_returned, "Reservation sent and returned are not the same"
 
-    srv_msg.SARR('2001:db8:1:0:cafe::1', delegated_prefix='2001:db8:2:abcd::')
+    srv_msg.SARR('2001:db8:1:0:cafe::1', delegated_prefix='2001:db8:2:abcd::/64')
 
 
 @pytest.mark.v6
@@ -3769,7 +3769,7 @@ def test_v6_reservation_update(channel, host_database):
     res_returned = _clean_up_reservation(res_returned)
     assert res == res_returned, "Reservation sent and returned are not the same"
 
-    srv_msg.SARR('2001:db8:1:0:cafe::3', delegated_prefix='2001:db8:2:abcd::')
+    srv_msg.SARR('2001:db8:1:0:cafe::3', delegated_prefix='2001:db8:2:abcd::/64')
 
     # update existing parameters and check
     res = {
@@ -3802,7 +3802,7 @@ def test_v6_reservation_update(channel, host_database):
     res_returned = _clean_up_reservation(res_returned)
     assert res == res_returned, "Reservation sent and returned are not the same"
 
-    srv_msg.SARR('2001:db8:1::5', delegated_prefix='2001:db8:2::')
+    srv_msg.SARR('2001:db8:1::5', delegated_prefix='2001:db8:2::/64')
 
     # update with fewer parameters and check
     res = {

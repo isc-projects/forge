@@ -11,7 +11,6 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 
-from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
 from src.protosupport.multi_protocol_functions import log_contains
 from src.forge_cfg import world
 
@@ -416,8 +415,7 @@ def test_overlapping_ia_na_pools_in_different_subnets(subnet_scope):
 
     # For common subnets, the remaining subnets do not provide any lease.
     # For shared networks, all the pools have been exhausted.
-    srv_msg.SARR(duid='00:03:00:01:f6:f5:f4:f3:f2:ff',
-                 status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+    srv_msg.SARR(duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
 
 
 @pytest.mark.v6
@@ -513,18 +511,17 @@ def test_overlapping_ia_pd_pools_in_different_subnets(subnet_scope):
     srv_control.start_srv('DHCP', 'started')
 
     # Leases are provided from the subnet with the lowest ID: subnet 3.
-    for i, prefix in enumerate(['2001:db8:1::', '2001:db8:1::1']):
+    for i, prefix in enumerate(['2001:db8:1::/128', '2001:db8:1::1/128']):
         srv_msg.SARR(delegated_prefix=prefix, duid=f'00:03:00:01:f6:f5:f4:f3:f2:0{i}')
 
     if 'shared-network' in subnet_scope:
         # Subnet 4
-        for i, prefix in enumerate(['2001:db8:2::', '2001:db8:2::1']):
+        for i, prefix in enumerate(['2001:db8:2::/128', '2001:db8:2::1/128']):
             srv_msg.SARR(delegated_prefix=prefix, duid=f'00:03:00:01:f6:f5:f4:f3:f2:1{i}')
 
     # For common subnets, the remaining subnets do not provide any lease.
     # For shared networks, all the pools have been exhausted.
-    srv_msg.SARR(duid='00:03:00:01:f6:f5:f4:f3:f2:ff',
-                 status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+    srv_msg.SARR(duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
 
 
 @pytest.mark.v4
@@ -825,27 +822,26 @@ def test_overlapping_ia_pd_pools_outside_subnets(subnet_scope):
     srv_control.start_srv('DHCP', 'started')
 
     # Leases are provided from the subnet with the lowest ID: subnet 3.
-    for i in [6, 7]:
-        srv_msg.SARR(delegated_prefix=f'2001:db8:{i}::', duid=f'00:03:00:01:f6:f5:f4:f3:f2:0{i}')
+    srv_msg.SARR(delegated_prefix='2001:db8:6::/80', duid='00:03:00:01:f6:f5:f4:f3:f2:06')
+    srv_msg.SARR(delegated_prefix='2001:db8:7::/96', duid='00:03:00:01:f6:f5:f4:f3:f2:07')
 
     if 'shared-network' in subnet_scope:
         # Subnet 4
-        for i in [8, 9]:
-            srv_msg.SARR(delegated_prefix=f'2001:db8:{i}::', duid=f'00:03:00:01:f6:f5:f4:f3:f2:1{i}')
+        srv_msg.SARR(delegated_prefix='2001:db8:8::/80', duid='00:03:00:01:f6:f5:f4:f3:f2:08')
+        srv_msg.SARR(delegated_prefix='2001:db8:9::/96', duid='00:03:00:01:f6:f5:f4:f3:f2:09')
 
         # Subnet 5
-        for i in ['a', 'b']:
-            srv_msg.SARR(delegated_prefix=f'2001:db8:{i}::', duid=f'00:03:00:01:f6:f5:f4:f3:f2:2{i}')
+        srv_msg.SARR(delegated_prefix='2001:db8:a::/80', duid='00:03:00:01:f6:f5:f4:f3:f2:0a')
+        srv_msg.SARR(delegated_prefix='2001:db8:b::/96', duid='00:03:00:01:f6:f5:f4:f3:f2:0b')
 
         # Subnet 22
-        for i in [2, 3]:
-            srv_msg.SARR(delegated_prefix=f'2001:db8:{i}::', duid=f'00:03:00:01:f6:f5:f4:f3:f2:3{i}')
+        srv_msg.SARR(delegated_prefix='2001:db8:2::/80', duid='00:03:00:01:f6:f5:f4:f3:f2:32')
+        srv_msg.SARR(delegated_prefix='2001:db8:3::/96', duid='00:03:00:01:f6:f5:f4:f3:f2:33')
 
         # Subnet 111
-        for i in [4, 5]:
-            srv_msg.SARR(delegated_prefix=f'2001:db8:{i}::', duid=f'00:03:00:01:f6:f5:f4:f3:f2:4{i}')
+        srv_msg.SARR(delegated_prefix='2001:db8:4::/80', duid='00:03:00:01:f6:f5:f4:f3:f2:44')
+        srv_msg.SARR(delegated_prefix='2001:db8:5::/96', duid='00:03:00:01:f6:f5:f4:f3:f2:45')
 
     # For common subnets, the remaining subnets do not provide any lease.
     # For shared networks, all the pools have been exhausted.
-    srv_msg.SARR(duid='00:03:00:01:f6:f5:f4:f3:f2:ff',
-                 status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+    srv_msg.SARR(duid='00:03:00:01:f6:f5:f4:f3:f2:ff')

@@ -1289,7 +1289,7 @@ def tcp_messages_include(**kwargs):
     :param kwargs: types of messages e.g. leasequery_reply=1, leasequery_data=199, leasequery_done=1
     """
     expected_msg_count = sum(list(kwargs.values()))
-    assert expected_msg_count == len(world.tcpmsg),\
+    assert expected_msg_count == len(world.tcpmsg), \
         f"Expected message count is {expected_msg_count} but number of received messages is {len(world.tcpmsg)}"
     received_msg_count = {}
     for msg in world.tcpmsg:
@@ -1478,64 +1478,79 @@ def save_info():
     pass
 
 
-def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
+def check_IA_NA(address, status_code=None, expect=True):
     """
     Check that the latest received response has an IA_NA option containing
-    an IA_Address suboption with the given address and containing the given
-    status code.
+    an IA_Address suboption with the given address and the given status code.
 
-    :param address: the expected address as value of the IA_Address suboption
-    :param status_code: the expected status code (default: Success)
-    :param expect: True if the address is expected to be found,
-                   False if it is expected to be missing
+    :param address: the expected address as value of the IA_Address suboption.
+                    None means that it is expected for the IA_Address to be missing.
+    :param status_code: the expected status code (default: None - expected to be missing).
+    :param expect: whether the given address or status_code is expected to be found (True),
+                   or expected to be missing (False). If the two need different values for expect,
+                   the function can be called twice, one for each.
     """
 
-    response_check_include_option(True, 'IA_NA')
-    # RFC 8415: If the Status Code option does not appear in a
-    # message in which the option could appear, the status of the message
-    # is assumed to be Success.
-    if get_suboption('IA_NA', 'status-code'):
-        response_check_suboption_content('status-code', 'IA_NA', expect, 'statuscode', status_code)
-    else:
-        assert status_code == DHCPv6_STATUS_CODES['Success'], \
-            f'status code missing so it is Success by default, but expected {status_code}'
+    if address is None and status_code is None:
+        response_check_include_option(False, 'IA_NA')
+        # No IA_NA so nothing else to check.
+        return
 
-    if status_code == DHCPv6_STATUS_CODES['Success']:
+    # If we expect either an address or a status_code, IA_NA needs to be there.
+    response_check_include_option(True, 'IA_NA')
+
+    response_check_include_suboption('IA_NA', address is not None, 'IA_address')
+    if address is not None:
         response_check_suboption_content('IA_address', 'IA_NA', expect, 'addr', address)
 
+    response_check_include_suboption('IA_NA', status_code is not None, 'status-code')
+    if status_code is not None:
+        response_check_suboption_content('status-code', 'IA_NA', expect, 'statuscode', status_code)
 
-def check_IA_PD(prefix, prefix_length=None, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
+
+def check_IA_PD(prefix, status_code=None, expect=True):
     """
     Check that the latest received response has an IA_PD option containing
-    an IA_Prefix suboption with the given address and containing the given
-    status code.
+    an IA-Prefix suboption with the given address and the given status code.
 
-    :param prefix: the expected prefix value inside the IA Prefix suboption
-    :param prefix_length: the expected prefix length value inside the IA Prefix suboption.
-                          If None, it is not checked.
-    :param status_code: the expected status code (default: Success)
-    :param expect: True if the prefix is expected to be found,
-                   False if it is expected to be missing
+    :param prefix: the expected prefix in format '<prefix>/<length>'.
+                   None means that it is expected for the IA-Prefix to be missing.
+    :param status_code: the expected status code (default: None - expected to be missing).
+    :param expect: whether the given address or status_code is expected to be found (True),
+                   or expected to be missing (False). If the two need different values for expect,
+                   the function can be called twice, one for each.
     """
 
-    response_check_include_option(True, 'IA_PD')
-    # RFC 8415: If the Status Code option does not appear in a
-    # message in which the option could appear, the status of the message
-    # is assumed to be Success.
-    if get_suboption('status-code', 'IA_PD'):
-        response_check_suboption_content('status-code', 'IA_PD', 'statuscode', status_code)
-    else:
-        assert status_code == DHCPv6_STATUS_CODES['Success'], \
-            f'status code missing so it is Success by default, but expected {status_code}'
+    if prefix is None and status_code is None:
+        response_check_include_option(False, 'IA_PD')
+        # No IA_PD so nothing else to check.
+        return
 
-    if status_code == DHCPv6_STATUS_CODES['Success']:
-        response_check_suboption_content('IA-Prefix', 'IA_PD', expect, 'prefix', prefix)
-        if prefix_length is not None:
-            response_check_suboption_content('IA-Prefix', 'IA_PD', expect, 'plen', prefix_length)
+    # If we expect either a prefix or a status_code, IA_PD needs to be there.
+    response_check_include_option(True, 'IA_PD')
+
+    options = response_check_include_suboption('IA_PD', prefix is not None, 'IA-Prefix')
+    if prefix is not None:
+        assert '/' in prefix, 'prefix expected to be in format <prefix>/<length>'
+        prefix, prefix_length = prefix.split('/')
+        # We cannot use response_check_suboption_content because it cannot check if two fields
+        # belong to the same suboption. So we iterate ourselves.
+        for o in options:
+            received_prefix = str(o.fields.get('prefix'))
+            received_plen = str(o.fields.get('plen'))
+            if received_prefix == prefix and received_plen == prefix_length:
+                # Found.
+                assert expect, f'got {prefix}/{prefix_length} in IA_PD, but was not expected'
+                return
+        assert not expect, f'expected {prefix}/{prefix_length} in IA_PD, but was not found'
+
+    response_check_include_suboption('IA_PD', status_code is not None, 'status-code')
+    if status_code is not None:
+        response_check_suboption_content('status-code', 'IA_PD', expect, 'statuscode', status_code)
 
 
 def SARR(address=None, delegated_prefix=None, relay_information=False,
-         status_code=DHCPv6_STATUS_CODES['Success'], exchange='full',
+         status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
          linkaddr='2001:db8:1::1000', ifaceid='port1234'):
     """
@@ -1548,12 +1563,12 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
     Args:
         address: the expected address as value of the IA_Address suboption.
             For multiple addresses, use additional check_IA_NA() calls.
-        delegated_prefix: the expected prefix as value of the IA_Prefix suboption.
+        delegated_prefix: the expected prefix in format '<prefix>/<length>'.
             For multiple prefixes, use additional check_IA_PD() calls.
         relay_information: whether client packets should be encapsulated in relay
             forward messages, and by extension whether server packets should be
             expected to be encapsulated in relay reply messages (default: False)
-        status_code: the expected status code (default: Success)
+        status_code: the expected status code (default: None - expected to be missing)
         exchange: can have values "sarr-only" for 4-way SARR, "full" meaning
             SARR + renew-reply or "renew-reply". It is a string instead of a boolean
             for clearer recognition of test names because this value often comes from
@@ -1564,11 +1579,13 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         linkaddr: sets Link Address in Relayed message
         ifaceid: sets Interface ID in option 18 in Relayed message
     """
-    # TODO where should be a way to make sure that IA_PD/IA_NA option is not included
-    # and same with any other option
+
+    # TODO: Add ability to check that options other than IA_NAs and IA_PDs are not included.
     if exchange in ['full', 'sarr-only']:
         # Build and send Solicit and await Advertisement
-        SA(address, delegated_prefix, relay_information, status_code, duid, iaid, linkaddr, ifaceid)
+        SA(address, delegated_prefix, relay_information,
+           status_code_IA_NA, status_code_IA_PD,
+           duid, iaid, linkaddr, ifaceid)
 
         if not relay_information:
             # Build and send a request.
@@ -1579,22 +1596,15 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
             client_copy_option('server-id')
             client_sets_value('DUID', duid)
             client_does_include('Client', 'client-id')
-            if status_code == DHCPv6_STATUS_CODES['NoAddrsAvail']:
-                if address is not None:
-                    client_sets_value('IA_Address', address)
-                if delegated_prefix is not None:
-                    client_sets_value('IA-Prefix', delegated_prefix)
             client_send_msg('REQUEST')
 
             # Expect a reply.
             misc.pass_criteria()
             send_wait_for_message('MUST', True, 'REPLY')
-            if address is not None:
-                check_IA_NA(address)
-            if delegated_prefix is not None:
-                check_IA_PD(delegated_prefix)
+            check_IA_NA(address, status_code=status_code_IA_NA)
+            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
 
-    # @todo: forge doesn't receive a reply on renews if the initial solicit was
+    # TODO: forge doesn't receive a reply on renews if the initial solicit was
     # encapsulated in a relay forward message. After an investigation is done,
     # if it is decided that it is normal behavior, you may remove this comment
     # block. If there was a bug in this function, then the following if
@@ -1616,23 +1626,17 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         client_copy_option('server-id')
         client_does_include('Client', 'client-id', None)
         client_add_saved_option(False)
-        if status_code == DHCPv6_STATUS_CODES['NoAddrsAvail']:
-            if address is not None:
-                client_sets_value('IA_Address', address)
-            if delegated_prefix is not None:
-                client_sets_value('IA_Prefix', delegated_prefix)
         client_send_msg('RENEW')
 
         # Expect a reply.
         send_wait_for_message('MUST', True, 'REPLY')
-        if address is not None:
-            check_IA_NA(address)
-        if delegated_prefix is not None:
-            check_IA_PD(delegated_prefix)
+        check_IA_NA(address, status_code=status_code_IA_NA)
+        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
 
 
 def SA(address=None, delegated_prefix=None, relay_information=False,
-       status_code=DHCPv6_STATUS_CODES['Success'], duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
+       status_code_IA_NA=None, status_code_IA_PD=None,
+       duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
        linkaddr='2001:db8:1::1000', ifaceid='port1234'):
     """
     Sends and ensures receival of 2 packets part of a regular DHCPv6 exchange
@@ -1644,18 +1648,25 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     Args:
         address: the expected address as value of the IA_Address suboption.
             For multiple addresses, use additional check_IA_NA() calls.
-        delegated_prefix: the expected prefix as value of the IA_Prefix suboption.
+        delegated_prefix: the expected prefix in format '<prefix>/<length>'.
             For multiple prefixes, use additional check_IA_PD() calls.
         relay_information: whether client packets should be encapsulated in relay
             forward messages, and by extension whether server packets should be
             expected to be encapsulated in relay reply messages (default: False)
-        status_code: the expected status code (default: Success)
+        status_code: the expected status code (default: None - expected to be missing)
         duid: the DUID to be used in client packets
             (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
         iaid: sets IAID for the client
         linkaddr: sets Link Address in Relayed message
         ifaceid: sets Interface ID in option 18 in Relayed message
         """
+
+    # Kea sends NoAddrsAvail or NoPrefixAvail in ADVERTISE when there are no
+    # leases available, as opposed to no IA_NA at all in REPLY.
+    if address is None and status_code_IA_NA is None:
+        status_code_IA_NA = DHCPv6_STATUS_CODES['NoAddrsAvail']
+    if delegated_prefix is None and status_code_IA_PD is None:
+        status_code_IA_PD = DHCPv6_STATUS_CODES['NoPrefixAvail']
 
     misc.test_procedure()
     client_sets_value('DUID', duid)
@@ -1666,12 +1677,10 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
         client_sets_value('ia_pd', iaid)
     # Build and send a solicit.
     client_does_include('Client', 'client-id')
-    if address is not None:
-        client_does_include('Client', 'IA_Address')
-        client_does_include('Client', 'IA-NA')
-    if delegated_prefix is not None:
-        client_does_include('Client', 'IA_Prefix')
-        client_does_include('Client', 'IA-PD')
+    client_does_include('Client', 'IA_Address')
+    client_does_include('Client', 'IA-NA')
+    client_does_include('Client', 'IA_Prefix')
+    client_does_include('Client', 'IA-PD')
     client_send_msg('SOLICIT')
 
     if relay_information:
@@ -1689,17 +1698,13 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
         response_check_option_content('relay-msg', True, 'Relayed', 'Message')
         response_check_include_option(True, 'client-id')
         response_check_include_option(True, 'server-id')
-        if address is not None:
-            check_IA_NA(address, status_code)
-        if delegated_prefix is not None:
-            check_IA_PD(delegated_prefix, status_code=status_code)
+        check_IA_NA(address, status_code=status_code_IA_NA)
+        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
     else:
         # Expect an advertise.
         misc.pass_criteria()
         send_wait_for_message('MUST', True, 'ADVERTISE')
         response_check_include_option(True, 'client-id')
         response_check_include_option(True, 'server-id')
-        if address is not None:
-            check_IA_NA(address, status_code)
-        if delegated_prefix is not None:
-            check_IA_PD(delegated_prefix, status_code=status_code)
+        check_IA_NA(address, status_code=status_code_IA_NA)
+        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)

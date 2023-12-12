@@ -1861,16 +1861,11 @@ def test_v6_iaids():
     srv_control.start_srv('DHCP', 'started')
 
     # Different leases for different IAIDs
-    srv_msg.SARR('2001:db8:1::1', iaid=1)
-    srv_msg.SARR('2001:db8:1::1', iaid=1)
-    srv_msg.SARR('2001:db8:1::2', iaid=2)
-    srv_msg.SARR('2001:db8:1::3', iaid=0)
-    srv_msg.SARR('2001:db8:1::4', iaid=0, duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
-    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=1)
-    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=1)
-    srv_msg.SARR(delegated_prefix='2001:db8:2::100', iaid=2)
-    srv_msg.SARR(delegated_prefix='2001:db8:2::200', iaid=0)
-    srv_msg.SARR(delegated_prefix='2001:db8:2::300', iaid=0, duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
+    srv_msg.SARR('2001:db8:1::1', '2001:db8:2::/120', iaid=1)
+    srv_msg.SARR('2001:db8:1::1', '2001:db8:2::/120', iaid=1)
+    srv_msg.SARR('2001:db8:1::2', '2001:db8:2::100/120', iaid=2)
+    srv_msg.SARR('2001:db8:1::3', '2001:db8:2::200/120', iaid=0)
+    srv_msg.SARR('2001:db8:1::4', '2001:db8:2::300/120', iaid=0, duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
 
 
 # Checks the behavior of ignore-iaid.
@@ -1895,16 +1890,11 @@ def test_v6_flexid_ignore_iaid():
     srv_control.start_srv('DHCP', 'started')
 
     # Regardless of IAID, the lease is the same. Unless the DUID changes.
-    srv_msg.SARR('2001:db8:1::1', iaid=1)
-    srv_msg.SARR('2001:db8:1::1', iaid=1)
-    srv_msg.SARR('2001:db8:1::1', iaid=2)
-    srv_msg.SARR('2001:db8:1::1', iaid=0)
-    srv_msg.SARR('2001:db8:1::2', iaid=0, duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
-    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=1)
-    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=1)
-    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=2)
-    srv_msg.SARR(delegated_prefix='2001:db8:2::', iaid=0)
-    srv_msg.SARR(delegated_prefix='2001:db8:2::100', iaid=0, duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
+    srv_msg.SARR('2001:db8:1::1', '2001:db8:2::/120', iaid=1)
+    srv_msg.SARR('2001:db8:1::1', '2001:db8:2::/120', iaid=1)
+    srv_msg.SARR('2001:db8:1::1', '2001:db8:2::/120', iaid=2)
+    srv_msg.SARR('2001:db8:1::1', '2001:db8:2::/120', iaid=0)
+    srv_msg.SARR('2001:db8:1::2', '2001:db8:2::100/120', iaid=0, duid='00:03:00:01:f6:f5:f4:f3:f2:ff')
 
 
 # Checks the behavior of ignore-iaid when a packet contains multiple IA requests.
@@ -1956,8 +1946,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA('2001:db8:1::1')
         srv_msg.check_IA_NA('2001:db8:1::2')
         srv_msg.check_IA_NA('2001:db8:1::3', expect=False)
-        srv_msg.check_IA_PD('2001:db8:2::')
-        srv_msg.check_IA_PD('2001:db8:2::100')
+        srv_msg.check_IA_PD('2001:db8:2::/120')
+        srv_msg.check_IA_PD('2001:db8:2::100/120')
         srv_msg.check_IA_NA('2001:db8:1::200', expect=False)
 
         # Send a request.
@@ -1973,8 +1963,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA('2001:db8:1::1')
         srv_msg.check_IA_NA('2001:db8:1::2')
         srv_msg.check_IA_NA('2001:db8:1::3', expect=False)
-        srv_msg.check_IA_PD('2001:db8:2::')
-        srv_msg.check_IA_PD('2001:db8:2::100')
+        srv_msg.check_IA_PD('2001:db8:2::/120')
+        srv_msg.check_IA_PD('2001:db8:2::100/120')
         srv_msg.check_IA_NA('2001:db8:1::200', expect=False)
         # Send a renew.
         srv_msg.client_copy_option('IA_NA', copy_all=True)
@@ -1989,8 +1979,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA('2001:db8:1::1')
         srv_msg.check_IA_NA('2001:db8:1::2')
         srv_msg.check_IA_NA('2001:db8:1::3', expect=False)
-        srv_msg.check_IA_PD('2001:db8:2::')
-        srv_msg.check_IA_PD('2001:db8:2::100')
+        srv_msg.check_IA_PD('2001:db8:2::/120')
+        srv_msg.check_IA_PD('2001:db8:2::100/120')
         srv_msg.check_IA_NA('2001:db8:1::200', expect=False)
 
     # Check SARR + reply-renew twice with two IA_NAs and two IA_PDs, and changing IAIDs.
@@ -2022,9 +2012,9 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA(f'2001:db8:1::{2 + 2 * i:x}')
         srv_msg.check_IA_NA(f'2001:db8:1::{3 + 2 * i:x}', expect=False)
         # Next free PD is 200.
-        srv_msg.check_IA_PD(f'2001:db8:2::{2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{1 + 2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{2 + 2 * i:x}00', expect=False)
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{1 + 2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 + 2 * i:x}00/120', expect=False)
 
         # Send a request.
         srv_msg.client_copy_option('IA_NA', copy_all=True)
@@ -2039,9 +2029,9 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA(f'2001:db8:1::{1 + 2 * i:x}')
         srv_msg.check_IA_NA(f'2001:db8:1::{2 + 2 * i:x}')
         srv_msg.check_IA_NA(f'2001:db8:1::{3 + 2 * i:x}', expect=False)
-        srv_msg.check_IA_PD(f'2001:db8:2::{2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{1 + 2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{2 + 2 * i:x}00', expect=False)
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{1 + 2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 + 2 * i:x}00/120', expect=False)
 
         # Send a renew.
         srv_msg.client_copy_option('IA_NA', copy_all=True)
@@ -2056,9 +2046,9 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA(f'2001:db8:1::{1 + 2 * i:x}')
         srv_msg.check_IA_NA(f'2001:db8:1::{2 + 2 * i:x}')
         srv_msg.check_IA_NA(f'2001:db8:1::{3 + 2 * i:x}', expect=False)
-        srv_msg.check_IA_PD(f'2001:db8:2::{2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{1 + 2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{2 + 2 * i:x}00', expect=False)
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{1 + 2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{2 + 2 * i:x}00/120', expect=False)
 
     # Check SARR + reply-renew twice with one IA_NA and two IA_PDs, and changing IAIDs.
     # The ignore-iaid should only take effect for the single IA_NA.
@@ -2085,9 +2075,9 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA('2001:db8:1::7')
         srv_msg.check_IA_NA('2001:db8:1::8', expect=False)
         # Next free PD is 600.
-        srv_msg.check_IA_PD(f'2001:db8:2::{4 + 2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{5 + 2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{6 + 2 * i:x}00', expect=False)
+        srv_msg.check_IA_PD(f'2001:db8:2::{4 + 2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{5 + 2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{6 + 2 * i:x}00/120', expect=False)
 
         # Send a request.
         srv_msg.client_copy_option('IA_NA', copy_all=True)
@@ -2101,9 +2091,9 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.send_wait_for_message('MUST', 'REPLY')
         srv_msg.check_IA_NA('2001:db8:1::7')
         srv_msg.check_IA_NA('2001:db8:1::8', expect=False)
-        srv_msg.check_IA_PD(f'2001:db8:2::{4 + 2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{5 + 2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{6 + 2 * i:x}00', expect=False)
+        srv_msg.check_IA_PD(f'2001:db8:2::{4 + 2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{5 + 2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{6 + 2 * i:x}00/120', expect=False)
 
         # Send a renew.
         srv_msg.client_copy_option('IA_NA', copy_all=True)
@@ -2117,9 +2107,9 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.send_wait_for_message('MUST', 'REPLY')
         srv_msg.check_IA_NA('2001:db8:1::7')
         srv_msg.check_IA_NA('2001:db8:1::8', expect=False)
-        srv_msg.check_IA_PD(f'2001:db8:2::{4 + 2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{5 + 2 * i:x}00')
-        srv_msg.check_IA_PD(f'2001:db8:2::{6 + 2 * i:x}00', expect=False)
+        srv_msg.check_IA_PD(f'2001:db8:2::{4 + 2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{5 + 2 * i:x}00/120')
+        srv_msg.check_IA_PD(f'2001:db8:2::{6 + 2 * i:x}00/120', expect=False)
 
     # Check SARR + reply-renew twice with two IA_NAs and one IA_PD, and changing IAIDs.
     # The ignore-iaid should only take effect for the single IA_PD.
@@ -2147,8 +2137,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA(f'2001:db8:1::{7 + 2 * i:x}')
         srv_msg.check_IA_NA(f'2001:db8:1::{8 + 2 * i:x}', expect=False)
         # Next free PD is a00.
-        srv_msg.check_IA_PD('2001:db8:2::a00')
-        srv_msg.check_IA_PD('2001:db8:2::b00', expect=False)
+        srv_msg.check_IA_PD('2001:db8:2::a00/120')
+        srv_msg.check_IA_PD('2001:db8:2::b00/120', expect=False)
 
         # Send a request.
         srv_msg.client_copy_option('IA_NA', copy_all=True)
@@ -2163,8 +2153,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA(f'2001:db8:1::{6 + 2 * i:x}')
         srv_msg.check_IA_NA(f'2001:db8:1::{7 + 2 * i:x}')
         srv_msg.check_IA_NA(f'2001:db8:1::{8 + 2 * i:x}', expect=False)
-        srv_msg.check_IA_PD('2001:db8:2::a00')
-        srv_msg.check_IA_PD('2001:db8:2::b00', expect=False)
+        srv_msg.check_IA_PD('2001:db8:2::a00/120')
+        srv_msg.check_IA_PD('2001:db8:2::b00/120', expect=False)
 
         # Send a renew.
         srv_msg.client_copy_option('IA_NA', copy_all=True)
@@ -2179,8 +2169,8 @@ def test_v6_flexid_ignore_iaid_multiple_ias():
         srv_msg.check_IA_NA(f'2001:db8:1::{6 + 2 * i:x}')
         srv_msg.check_IA_NA(f'2001:db8:1::{7 + 2 * i:x}')
         srv_msg.check_IA_NA(f'2001:db8:1::{8 + 2 * i:x}', expect=False)
-        srv_msg.check_IA_PD('2001:db8:2::a00')
-        srv_msg.check_IA_PD('2001:db8:2::b00', expect=False)
+        srv_msg.check_IA_PD('2001:db8:2::a00/120')
+        srv_msg.check_IA_PD('2001:db8:2::b00/120', expect=False)
 
 
 # kea#181

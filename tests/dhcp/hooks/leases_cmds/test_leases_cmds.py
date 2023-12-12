@@ -14,7 +14,6 @@ import pytest
 from src import misc
 from src import srv_msg
 from src import srv_control
-from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES
 from src.softwaresupport.multi_server_functions import fabric_sudo_command
 from src.protosupport.multi_protocol_functions import file_contains_line, sort_container
 from src.forge_cfg import world
@@ -1028,8 +1027,7 @@ def test_v6_lease_cmds_add_valid(backend):
 
     # checking if leases are not available -
     # lease6-add should occupy the one and only lease from subnet
-    srv_msg.SA(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11',
-               status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+    srv_msg.SA(duid='00:03:00:01:66:55:44:33:22:11')
 
     # checking if lease exists in database
     srv_msg.check_leases({"duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
@@ -1130,8 +1128,7 @@ def test_v6_lease_cmds_add_valid_with_options(backend):
     srv_msg.send_ctrl_cmd(cmd)
 
     # checking if leases are available - should be none
-    srv_msg.SA(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11',
-               status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+    srv_msg.SA(duid='00:03:00:01:66:55:44:33:22:11')
 
     # checking if added lease is got by Control Agent
     cmd = {"command": "lease6-get",
@@ -1221,8 +1218,7 @@ def test_v6_lease_cmds_del_using_address(backend):
     srv_msg.SARR(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11')
 
     # be sure none are left
-    srv_msg.SA(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:55:66',
-               status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+    srv_msg.SA(duid='00:03:00:01:66:55:44:33:55:66')
 
     # checking lease exists in database
     srv_msg.check_leases({"duid": "00:03:00:01:66:55:44:33:22:11",
@@ -1261,8 +1257,7 @@ def test_v6_lease_cmds_del_using_duid(backend):
     srv_msg.SARR(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11', iaid=1234)
 
     # be sure none are left
-    srv_msg.SA(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:55:66',
-               status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+    srv_msg.SA(duid='00:03:00:01:66:55:44:33:55:66')
 
     # checking lease exists in database
     srv_msg.check_leases({"duid": "00:03:00:01:66:55:44:33:22:11",
@@ -1304,8 +1299,7 @@ def test_v6_lease_cmds_get_using_address(backend):
     srv_msg.SARR(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11', iaid=1234)
 
     # be sure none are left
-    srv_msg.SA(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:55:66',
-               status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+    srv_msg.SA(duid='00:03:00:01:66:55:44:33:55:66')
 
     # checking lease exists in database
     srv_msg.check_leases({"duid": "00:03:00:01:66:55:44:33:22:11",
@@ -1356,8 +1350,7 @@ def test_v6_lease_cmds_get_using_duid(backend):
     srv_msg.SARR(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:22:11', iaid=1234)
 
     # be sure none are left
-    srv_msg.SA(address='2001:db8:1::1', duid='00:03:00:01:66:55:44:33:55:66',
-               status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+    srv_msg.SA(duid='00:03:00:01:66:55:44:33:55:66')
 
     # checking lease exists in database
     srv_msg.check_leases({"duid": "00:03:00:01:66:55:44:33:22:11",
