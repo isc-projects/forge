@@ -9,6 +9,7 @@
 # pylint: disable=invalid-name
 # pylint: disable=line-too-long
 
+import copy
 import pytest
 
 from src import misc
@@ -883,3 +884,105 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
+
+
+@pytest.mark.v4
+@pytest.mark.host_reservation
+@pytest.mark.hosts_cmds
+@pytest.mark.parametrize('channel', ['http'])
+@pytest.mark.parametrize('host_backend', ['MySQL', 'PostgreSQL', 'memory'])
+def test_v4_switch_ip_reservations_unique(channel, host_backend):
+    """
+    Check that switching ip-reservations-unique from false to true does not
+    check uniqueness of hosts that are already inserted in the database.
+    """
+    the_same_ip_address = '192.168.50.10'
+
+    misc.test_setup()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1 - 192.168.50.50')
+    srv_control.set_conf_parameter_global('ip-reservations-unique', False)
+    srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+    srv_control.enable_db_backend_reservation('memfile' if host_backend == 'memory' else host_backend)
+    dhcp_cfg = copy.deepcopy(world.dhcp_cfg)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Add one reservation.
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'reservation': {
+                'hw-address': 'aa:aa:aa:aa:aa:aa',
+                'ip-address': the_same_ip_address,
+                'subnet-id': 1
+            },
+            'operation-target': 'memory' if host_backend == 'memory' else 'database'
+        },
+        'command': 'reservation-add'
+    }, channel=channel)
+    assert response == {
+        'result': 0,
+        'text': 'Host added.'
+    }
+
+    # Add the second reservation.
+    response = srv_msg.send_ctrl_cmd({
+        'arguments': {
+            'reservation': {
+                'hw-address': 'bb:bb:bb:bb:bb:bb',
+                'ip-address': the_same_ip_address,
+                'subnet-id': 1
+            },
+            'operation-target': 'memory' if host_backend == 'memory' else 'database'
+        },
+        'command': 'reservation-add'
+    }, channel=channel)
+    assert response == {
+        'result': 0,
+        'text': 'Host added.'
+    }
+
+    # Switch the ip-reservations-unique flag. Expect successful reconfiguration.
+    # The configuration is not valid, but Kea is not checking the duplicate
+    # reservations, and that is what we are checking.
+    world.dhcp_cfg = dhcp_cfg
+    srv_control.set_conf_parameter_global('ip-reservations-unique', True)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'reconfigured')
+
+    # Add the third reservation. This time it fails, because the flag is true,
+    # but only for databases. In-memory reservations are never checked.
+    if host_backend == 'memory':
+        response = srv_msg.send_ctrl_cmd({
+            'arguments': {
+                'reservation': {
+                    'hw-address': 'cc:cc:cc:cc:cc:cc',
+                    'ip-address': the_same_ip_address,
+                    'subnet-id': 1
+                },
+                'operation-target': 'memory' if host_backend == 'memory' else 'database'
+            },
+            'command': 'reservation-add'
+        }, channel=channel)
+        assert response == {
+            'result': 0,
+            'text': 'Host added.'
+        }
+    else:
+        response = srv_msg.send_ctrl_cmd({
+            'arguments': {
+                'reservation': {
+                    'hw-address': 'cc:cc:cc:cc:cc:cc',
+                    'ip-address': the_same_ip_address,
+                    'subnet-id': 1
+                },
+                'operation-target': 'memory' if host_backend == 'memory' else 'database'
+            },
+            'command': 'reservation-add'
+        }, channel=channel, exp_result=1)
+        assert response == {
+            'result': 1,
+            'text': 'Database duplicate entry error'
+        }
