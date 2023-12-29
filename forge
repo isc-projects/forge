@@ -797,10 +797,7 @@ def _install_kea_native_on_server(args, server_idx):
 
     # prepare pkg source repo url
     repository_url = 'https://packages.aws.isc.org'
-    major_minor = '.'.join(args.version.split('.')[0:2])
-    repo_name = f'kea-{major_minor}-{args.system}'
-    repo_url = urljoin(repository_url, 'repository')
-    repo_url += '/%s-ci/' % repo_name
+    repo_url = urljoin(repository_url, f'repository/kea-{args.system}/')
 
     if 'alpine' in args.system:
         # nexus repository is RAW not APK, so unfortunately we have to download packages
@@ -827,15 +824,15 @@ def _install_kea_native_on_server(args, server_idx):
                 "isc-kea-premium-host-cmds",
                 "isc-kea-premium-lease-query",
                 "isc-kea-premium-limits",
-                # "isc-kea-premium-radius",  no radius pkg for alpine
+                "isc-kea-premium-radius",
                 "isc-kea-premium-rbac",
                 "isc-kea-premium-subnet-cmds"]
         pkgs = [f'{x}-{version}' for x in pkgs]
 
         # let's download all, one by one, if some fail it will be easier to debug
         for pkg in pkgs:
-            url = f'{repository_url}/repository/kea-{major_minor}-{args.system.split("-")[0]}-{distro_version}-' \
-                  f'ci/{args.version.split("-")[1]}/v{distro_version}/x86_64/{pkg}'
+            url = f'{repository_url}/repository/kea-{args.system}' \
+                  f'/{args.version.split("-")[1]}/v{distro_version}/x86_64/{pkg}'
             cmd = cmd_tpl % f'wget {url}'
             execute(cmd, cwd=vagrant_dir, log_prefix=log_prefix)
 
