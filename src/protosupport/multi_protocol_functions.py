@@ -202,6 +202,7 @@ def get_line_count_in_file(line, file, destination=world.f_cfg.mgmt_address):
     command += f')" {file} | wc -l'
     result = fabric_sudo_command(command, destination_host=destination, ignore_errors=True)
     assert result.succeeded, f'Command in get_line_count_in_file failed:\n{command}'
+    get_line_count_in_file.file = file
     return int(result)
 
 
@@ -235,6 +236,7 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
                 log_file = world.f_cfg.log_join(f'{service_name}.log')
                 cmd = f'cat {log_file} |'
             else:
+                log_file = "journalctl"
                 cmd = f'journalctl -u {service_name} |'  # get logs of kea service
             cmd += ' grep "$(cat <<EOF\n'
             cmd += f'{line}\n'
@@ -244,23 +246,24 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
         else:
             log_file = world.f_cfg.log_join(log_file)
             result = get_line_count_in_file(line, log_file, destination)
+    get_line_count_in_log.file = log_file
     return int(result)
 
 
 def file_contains_line(file, line, destination=world.f_cfg.mgmt_address):
     result = get_line_count_in_file(line, file, destination=destination)
-    assert result > 0, f'Expected file "{file}" to contain line "{line}", but it does not.'
+    assert result > 0, f'Expected file "{get_line_count_in_file.file}" to contain line "{line}", but it does not.'
 
 
 def file_contains_line_n_times(file, n, line, destination=world.f_cfg.mgmt_address):
     result = get_line_count_in_file(line, file, destination=destination)
-    assert result == n, f'Expected file {file} to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
+    assert result == n, f'Expected file {get_line_count_in_file.file} to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
 
 
 def file_doesnt_contain_line(file, line, destination=world.f_cfg.mgmt_address):
     result = get_line_count_in_file(line, file, destination=destination)
-    assert result == 0, f'Expected file "{file}" to not contain line "{line}".' \
+    assert result == 0, f'Expected file "{get_line_count_in_file.file}" to not contain line "{line}".' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
 
 
@@ -274,12 +277,12 @@ def lease_file_doesnt_contain(line, destination=world.f_cfg.mgmt_address):
 
 def log_contains(line, log_file=None, destination=world.f_cfg.mgmt_address):
     result = get_line_count_in_log(line, log_file, destination=destination)
-    assert result > 0, f'Expected log file {log_file} to contain line "{line}", but it does not.'
+    assert result > 0, f'Expected log file {get_line_count_in_log.file} to contain line "{line}", but it does not.'
 
 
 def log_doesnt_contain(line, log_file=None, destination=world.f_cfg.mgmt_address):
     result = get_line_count_in_log(line, log_file, destination=destination)
-    assert result == 0, f'Expected log file {log_file} to not contain line "{line}".' \
+    assert result == 0, f'Expected log file {get_line_count_in_log.file} to not contain line "{line}".' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
 
 
