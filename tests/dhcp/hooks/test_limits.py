@@ -148,7 +148,8 @@ def _get_lease_v6(address, duid, vendor=None, ia_na=None, ia_pd=None):
             srv_msg.check_IA_NA(address)
             successes += 1
         except AssertionError as e:
-            if e.args[0] == 'Invalid DHCP6OptIA_NA[3] option, received statuscode: 2, but expected 0':
+            if e.args[0] == 'Expected sub-option DHCP6OptIAAddress[5], ' \
+                            'but it is not present in the option DHCP6OptIA_NA[3]':
                 ia_na = None
             else:
                 raise AssertionError(e) from e
