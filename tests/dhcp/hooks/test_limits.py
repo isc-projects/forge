@@ -617,13 +617,13 @@ def test_rate_limits_mix(dhcp_version, backend):
     threshold_silver = 1
 
     # Check if difference between limit and received packets is within threshold.
-    assert abs(limit - all_success) <= threshold_subnet,\
+    assert abs(limit - all_success) <= threshold_subnet, \
         f'Difference between responses and limit ({abs(limit - all_success)})' \
         f' exceeds Subnet threshold ({threshold_subnet})'
-    assert abs(gold - success_gold) <= threshold_gold,\
+    assert abs(gold - success_gold) <= threshold_gold, \
         f'Difference between responses and limit ({abs(gold - success_gold)})' \
         f' exceeds Gold Class threshold ({threshold_gold})'
-    assert abs(silver - success_silver) <= threshold_silver,\
+    assert abs(silver - success_silver) <= threshold_silver, \
         f'Difference between responses and limit ({abs(silver - success_silver)})' \
         f' exceeds Silver Class threshold ({threshold_silver})'
 
@@ -743,10 +743,10 @@ def test_lease_limits_subnet(dhcp_version, backend):
 
     # Check if difference between limit and received packets is within threshold.
     if dhcp_version == 'v4':
-        assert abs(2 * limit - success) <= threshold,\
+        assert abs(2 * limit - success) <= threshold, \
             f'Difference between responses and limit ({abs(2 * limit - success)}) exceeds threshold ({threshold})'
     else:
-        assert abs(4 * limit - success) <= threshold,\
+        assert abs(4 * limit - success) <= threshold, \
             f'Difference between responses and limit ({abs(4 * limit - success)}) exceeds threshold ({threshold})'
 
 
@@ -919,10 +919,10 @@ def test_lease_limits_class(dhcp_version, backend):
 
     # Check if difference between limit and received packets is within threshold.
     if dhcp_version == 'v4':
-        assert abs(3 * limit - success) <= threshold,\
+        assert abs(3 * limit - success) <= threshold, \
             f'Difference between responses and limit ({abs(3 * limit - success)}) exceeds threshold ({threshold})'
     else:
-        assert abs(6 * limit - success) <= threshold,\
+        assert abs(6 * limit - success) <= threshold, \
             f'Difference between responses and limit ({abs(6 * limit - success)}) exceeds threshold ({threshold})'
 
 
@@ -1058,10 +1058,10 @@ def test_lease_limits_builtin_class(dhcp_version, backend):
 
     # Check if difference between limit and received packets is within threshold.
     if dhcp_version == 'v4':
-        assert abs(2 * limit - success) <= threshold,\
+        assert abs(2 * limit - success) <= threshold, \
             f'Difference between responses and limit ({abs(2 * limit - success)}) exceeds threshold ({threshold})'
     else:
-        assert abs(4 * limit - success) <= threshold,\
+        assert abs(4 * limit - success) <= threshold, \
             f'Difference between responses and limit ({abs(4 * limit - success)}) exceeds threshold ({threshold})'
 
 
@@ -1251,10 +1251,10 @@ def test_lease_limits_mix(dhcp_version, backend):
         print(f"exchanges made: {exchanges}")
         print(f"class successes made: {success_class}")
         print(f"noclass successes made: {success_noclass}")
-        assert abs(3 * limit_class - success_class) <= threshold,\
+        assert abs(3 * limit_class - success_class) <= threshold, \
             f'Difference between Class responses and limit ({abs(3 * limit_class - success_class)})' \
             f' exceeds threshold ({threshold})'
-        assert abs((limit_subnet + limit_class) - (success_class + success_noclass)) <= threshold,\
+        assert abs((limit_subnet + limit_class) - (success_class + success_noclass)) <= threshold, \
             f'Difference between All responses and limit' \
             f' ({abs((limit_subnet + limit_class) - (success_class + success_noclass))})' \
             f' exceeds threshold ({threshold})'
@@ -1262,10 +1262,10 @@ def test_lease_limits_mix(dhcp_version, backend):
         print(f"exchanges made: {exchanges}")
         print(f"class successes made: {success}")
         print(f"noclass successes made: {success_noclass}")
-        assert abs(6 * limit_class - success) <= threshold,\
+        assert abs(6 * limit_class - success) <= threshold, \
             f'Difference between Class responses and limit ({abs(6 * limit_class - success)})' \
             f' exceeds threshold ({threshold})'
-        assert abs(2 * (limit_subnet + limit_class) - (success + success_noclass)) <= threshold,\
+        assert abs(2 * (limit_subnet + limit_class) - (success + success_noclass)) <= threshold, \
             f'Difference between All responses and limit' \
             f' ({abs(2 * (limit_subnet + limit_class) - (success + success_noclass))})' \
             f' exceeds threshold ({threshold})'
@@ -1609,9 +1609,9 @@ def test_lease_limits_template_class(dhcp_version, backend):
                 leases += srv_msg.get_all_leases()
             exchanges += 1
 
-        assert limit - success_na_no1 <= threshold,\
+        assert limit - success_na_no1 <= threshold, \
             "In SPAWN_mac_vendor_aa:bb:cc we assigned more addresses than limit!"
-        assert limit - success_na_no2 <= threshold,\
+        assert limit - success_na_no2 <= threshold, \
             "In SPAWN_mac_vendor_11:22:33 we assigned more addresses than limit!"
 
         for lease in leases:
@@ -1670,8 +1670,8 @@ def test_lease_limits_template_class(dhcp_version, backend):
 
     # Check if difference between limit and received packets is within threshold.
     if dhcp_version == 'v4':
-        assert abs(2 * limit - success_no1) <= threshold,\
+        assert abs(2 * limit - success_no1) <= threshold, \
             f'Difference between responses and limit ({abs(2 * limit - success_no1)}) exceeds threshold ({threshold})'
     else:
-        assert abs(4 * limit - success_no2) <= threshold,\
+        assert abs(4 * limit - success_no2) <= threshold, \
             f'Difference between responses and limit ({abs(4 * limit - success_no2)}) exceeds threshold ({threshold})'
