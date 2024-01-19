@@ -370,32 +370,55 @@ def test_v6_multiple_networks(backend):
         _check_address_and_duid_in_single_lq_message(lease["duid"], prefix=lease["address"])
         _check_leasequery_relay_data()
 
-    # let's check just subsets, using query by link - type 4
-    # this will return just addresses, so we expect smaller number of leasequery data messages
-    # also we collect addresses from each subnet separately
-    _send_leasequery(4, lq_address="2001:db8:a::")
-    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 2 - 1, leasequery_done=1)
+    # let's check query by link address of a relay server - type 4
+    # this should return addresses and prefixes
+    _send_leasequery(4, lq_address="2001:db8:a::1000")
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 4 - 1, leasequery_done=1)
     for lease in filter(lambda d: "2001:db8:a" in d["address"], all_leases):
         srv_msg.tcp_get_message(address=lease["address"])
         _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
+        _check_leasequery_relay_data("2001:db8:a::1000")
+
+    for lease in filter(lambda d: d["prefix_len"] != 0 and "2001:db8:2" in d["address"], all_leases):
+        srv_msg.tcp_get_message(prefix=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], prefix=lease["address"])
+        _check_leasequery_relay_data("2001:db8:a::1000")
 
     _send_leasequery(4, lq_address="2001:db8:b::")
-    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 2 - 1, leasequery_done=1)
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 4 - 1, leasequery_done=1)
     for lease in filter(lambda d: "2001:db8:b" in d["address"], all_leases):
         srv_msg.tcp_get_message(address=lease["address"])
         _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
+        _check_leasequery_relay_data("2001:db8:b::1000")
 
-    _send_leasequery(4, lq_address="2001:db8:c::")
-    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 2 - 1, leasequery_done=1)
+    for lease in filter(lambda d: d["prefix_len"] != 0 and "2001:db8:3" in d["address"], all_leases):
+        srv_msg.tcp_get_message(prefix=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], prefix=lease["address"])
+        _check_leasequery_relay_data("2001:db8:b::1000")
+
+    _send_leasequery(4, lq_address="2001:db8:c::1000")
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 4 - 1, leasequery_done=1)
     for lease in filter(lambda d: "2001:db8:c" in d["address"], all_leases):
         srv_msg.tcp_get_message(address=lease["address"])
         _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
+        _check_leasequery_relay_data("2001:db8:c::1000")
 
-    _send_leasequery(4, lq_address="2001:db8:d::")
-    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 2 - 1, leasequery_done=1)
+    for lease in filter(lambda d: d["prefix_len"] != 0 and "2001:db8:4" in d["address"], all_leases):
+        srv_msg.tcp_get_message(prefix=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], prefix=lease["address"])
+        _check_leasequery_relay_data("2001:db8:c::1000")
+
+    _send_leasequery(4, lq_address="2001:db8:d::1000")
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 4 - 1, leasequery_done=1)
     for lease in filter(lambda d: "2001:db8:d" in d["address"], all_leases):
         srv_msg.tcp_get_message(address=lease["address"])
         _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
+        _check_leasequery_relay_data("2001:db8:d::1000")
+
+    for lease in filter(lambda d: d["prefix_len"] != 0 and "2001:db8:5" in d["address"], all_leases):
+        srv_msg.tcp_get_message(prefix=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], prefix=lease["address"])
+        _check_leasequery_relay_data("2001:db8:d::1000")
 
     # now let's add leases for clients that were used in subnet "2001:db8:a::" but in subnet "2001:db8:b::"
     new_leases = _get_lease(mac="01:02:0c:03:0a:00", link_addr="2001:db8:b::1000",
@@ -404,18 +427,30 @@ def test_v6_multiple_networks(backend):
     srv_msg.check_leases(new_leases, backend=backend)
     # and repeat checking subnets "2001:db8:a::" and "2001:db8:b::" to make sure clients are returned in proper subnets
     # so subnet "2001:db8:a::" should be the same
-    _send_leasequery(4, lq_address="2001:db8:a::")
-    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 2 - 1, leasequery_done=1)
+    _send_leasequery(4, lq_address="2001:db8:a::1000")
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 4 - 1, leasequery_done=1)
     for lease in filter(lambda d: "2001:db8:a" in d["address"], all_leases):
         srv_msg.tcp_get_message(address=lease["address"])
         _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
+        _check_leasequery_relay_data("2001:db8:a::1000")
+
+    for lease in filter(lambda d: d["prefix_len"] != 0 and "2001:db8:2" in d["address"], all_leases):
+        srv_msg.tcp_get_message(prefix=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], prefix=lease["address"])
+        _check_leasequery_relay_data("2001:db8:a::1000")
 
     # but subnet "2001:db8:b::" should have more leases, twice more than previously
     _send_leasequery(4, lq_address="2001:db8:b::")
-    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 4 - 1, leasequery_done=1)
-    for lease in filter(lambda d: "2001:db8:b" in d["address"], all_leases + new_leases):
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 8 - 1, leasequery_done=1)
+    for lease in filter(lambda d: "2001:db8:b" in d["address"], all_leases):
         srv_msg.tcp_get_message(address=lease["address"])
         _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
+        _check_leasequery_relay_data("2001:db8:b::1000")
+
+    for lease in filter(lambda d: d["prefix_len"] != 0 and "2001:db8:3" in d["address"], all_leases):
+        srv_msg.tcp_get_message(prefix=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], prefix=lease["address"])
+        _check_leasequery_relay_data("2001:db8:b::1000")
 
     # now let's use remote-id and relay-id, we should get more than previously
     # let's check all leases using remote id (lq query type 5):
@@ -451,20 +486,32 @@ def test_v6_multiple_networks(backend):
         _check_leasequery_relay_data()
 
     # now let's use query by remote id AND linkaddress, Kea should:
-    # * not return prefixes at all (it's not supported)
+    # * return prefixes only from "2001:db8:3::"
     # * return addresses only from "2001:db8:b::" (from all_leases and new_leases)
     _send_leasequery(5, remote_id='0a0027000001', lq_address="2001:db8:b::")
-    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 4 - 1, leasequery_done=1)
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 8 - 1, leasequery_done=1)
     for lease in filter(lambda d: "2001:db8:b" in d["address"], all_leases + new_leases):
         srv_msg.tcp_get_message(address=lease["address"])
         _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
+        _check_leasequery_relay_data("2001:db8:b::1000")
+
+    for lease in filter(lambda d: d["prefix_len"] != 0 and "2001:db8:3" in d["address"], all_leases + new_leases):
+        srv_msg.tcp_get_message(prefix=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], prefix=lease["address"])
+        _check_leasequery_relay_data("2001:db8:b::1000")
 
     # and the same this but checking relay-id:
     _send_leasequery(3, relay_id='00:03:00:01:ff:ff:ff:ff:ff:01', lq_address="2001:db8:b::")
-    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 4 - 1, leasequery_done=1)
+    srv_msg.tcp_messages_include(leasequery_reply=1, leasequery_data=clients_per_subnet * 8 - 1, leasequery_done=1)
     for lease in filter(lambda d: "2001:db8:b" in d["address"], all_leases + new_leases):
         srv_msg.tcp_get_message(address=lease["address"])
         _check_address_and_duid_in_single_lq_message(lease["duid"], addr=lease["address"])
+        _check_leasequery_relay_data("2001:db8:b::1000")
+
+    for lease in filter(lambda d: d["prefix_len"] != 0 and "2001:db8:3" in d["address"], all_leases + new_leases):
+        srv_msg.tcp_get_message(prefix=lease["address"])
+        _check_address_and_duid_in_single_lq_message(lease["duid"], prefix=lease["address"])
+        _check_leasequery_relay_data("2001:db8:b::1000")
 
 
 @pytest.mark.v6

@@ -1313,6 +1313,7 @@ def tcp_get_message(**kwargs):
     :return: DHCP6 message
     """
     # we can look for address or prefix, address in scapy is represented by addr and prefix is represented by prefix
+    print(".", end="", flush=True)
     scapy_field = "addr"
     if "prefix" in kwargs:
         scapy_field = "prefix"
