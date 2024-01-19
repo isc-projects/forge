@@ -158,7 +158,7 @@ def test_ha_legallog(dhcp_version, backend):
     if dhcp_version == 'v6':
         srv_msg.SARR(address='2001:db8:1::1', delegated_prefix='2001:db8:2::/91',
                      duid='00:03:00:01:66:55:44:33:22:11', exchange='sarr-only')
-        srv_msg.SARR(address='2001:db8:1::2', delegated_prefix='2001:db8:2:0:0:20::/91',
+        srv_msg.SARR(address='2001:db8:1::2', delegated_prefix='2001:db8:2::20:0:0/91',
                      duid='00:03:00:01:66:55:44:33:22:22')
         lease = srv_msg.get_all_leases()
         srv_msg.check_leases(lease)
