@@ -1535,14 +1535,17 @@ def check_IA_PD(prefix, status_code=None, expect=True):
         prefix, prefix_length = prefix.split('/')
         # We cannot use response_check_suboption_content because it cannot check if two fields
         # belong to the same suboption. So we iterate ourselves.
+        received_prefixes = []
         for o in options:
             received_prefix = str(o.fields.get('prefix'))
             received_plen = str(o.fields.get('plen'))
+            received_prefixes.append({'prefix': received_prefix, 'plen': received_plen})
             if received_prefix == prefix and received_plen == prefix_length:
                 # Found.
                 assert expect, f'got {prefix}/{prefix_length} in IA_PD, but was not expected'
                 return
-        assert not expect, f'expected {prefix}/{prefix_length} in IA_PD, but was not found'
+        assert not expect, f'expected {prefix}/{prefix_length} in IA_PD, but was not found. ' \
+                           f'Here are all the received_prefixes: {str(received_prefixes)}'
 
     response_check_include_suboption('IA_PD', status_code is not None, 'status-code')
     if status_code is not None:
