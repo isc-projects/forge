@@ -259,7 +259,7 @@ def _check_leaseactive(lease, start_time, renew_time, rebind_time, valid_lifetim
 @pytest.mark.v6
 @pytest.mark.hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_v6_multiple_networks(backend):
+def test_v6_multiple_networks(backend):  # pylint: disable=too-many-branches
     """
     Configure 4 different subnets and assign multiple leases from each. Than send multiple
     bulk leasequery messages with different query types to check if returned leases are correct
