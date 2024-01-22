@@ -326,6 +326,17 @@ def test_start():
             world.server_system_version = result.stdout
     print('server running on %s based system' % world.server_system)
 
+    # let's assume x86_64 is the default architecture
+    world.server_architecture = 'x86_64'
+    # chech what architecture system is returning
+    result = fabric_run_command('arch',
+                                hide_all=True, ignore_errors=True)
+    if result.succeeded:
+        world.server_architecture = result.stdout.rstrip()
+        print(f'server running on {world.server_architecture} architecture')
+    else:
+        print('server running on UNKNOWN architecture, defaulting to x86_64')
+
     # stop any SUT running
     kea_under_test = False
     if not world.f_cfg.no_server_management:
