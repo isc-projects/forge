@@ -15,7 +15,7 @@ from src import srv_control
 
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
-from tests.HA.steps import get_status_HA, wait_until_ha_state, send_increased_elapsed_time
+from .steps import get_status_HA, wait_until_ha_state, send_increased_elapsed_time
 
 
 # Set of IP addresses to be used in testing. Number corresponds to the shift in last field from CIADDR.
