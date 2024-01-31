@@ -21,12 +21,6 @@ from src.softwaresupport.cb_model import setup_server_with_radius
 from src.softwaresupport import radius
 
 
-@pytest.fixture(autouse=True)
-def run_around_each_test(request):
-    if world.server_system == 'alpine' and world.f_cfg.install_method != 'make':
-        pytest.skip("We don't have radius hook package, skipping test")
-
-
 @pytest.mark.v4
 @pytest.mark.v4_bootp
 @pytest.mark.v6
