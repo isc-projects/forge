@@ -34,9 +34,11 @@ def prepare_pingcheck_env():
     ciaddr = world.f_cfg.ciaddr
     # Assign responding IP address to forge interface
     new_ip = ".".join(ciaddr.split(".")[0:-1] + [str(int(ciaddr.split(".")[-1]) + IPADDRESSES[3])])
-    os.system(f'ip address add {new_ip}/24 dev enp0s9')
+    rc = os.system(f'ip address replace {new_ip}/24 dev {world.f_cfg.iface}')
+    assert rc == 0
     yield
-    os.system(f'ip address del {new_ip}/24 dev enp0s9')
+    rc = os.system(f'ip address del {new_ip}/24 dev {world.f_cfg.iface}')
+    assert rc == 0
 
 
 HA_CONFIG = {
@@ -159,7 +161,7 @@ def test_v4_ping_check_basic_ha(ha_state):
         srv_msg.forge_sleep(2, 'seconds')
 
     # Send DORA for new client. (IPADDRESSES[0])
-    srv_msg.DORA(ip_addresses[0], chaddr='ff:01:02:03:ff:04', exchange='dora-only')
+    srv_msg.DORA(ip_addresses[0], chaddr='ff:01:02:03:ff:04')
 
     # Send DISCOVER - next IP in line is used. (IPADDRESSES[1] = CIADDR)
     misc.test_procedure()
@@ -171,7 +173,7 @@ def test_v4_ping_check_basic_ha(ha_state):
     srv_msg.send_wait_for_message('MUST', 'OFFER', expect_response=False)
 
     # Send DORA for new client. (IPADDRESSES[2])
-    srv_msg.DORA(ip_addresses[2], chaddr='ff:01:02:03:ff:05', exchange='dora-only')
+    srv_msg.DORA(ip_addresses[2], chaddr='ff:01:02:03:ff:05')
 
     # Send DISCOVER - next IP in line is used. (IPADDRESSES[3])
     misc.test_procedure()
@@ -183,7 +185,7 @@ def test_v4_ping_check_basic_ha(ha_state):
     srv_msg.send_wait_for_message('MUST', 'OFFER', expect_response=False)
 
     # Send DORA for new client. (IPADDRESSES[4])
-    srv_msg.DORA(ip_addresses[4], chaddr='ff:01:02:03:ff:06', exchange='dora-only')
+    srv_msg.DORA(ip_addresses[4], chaddr='ff:01:02:03:ff:06')
 
 
 @pytest.mark.v4
@@ -278,7 +280,7 @@ def test_v4_ping_check_requests_ha(ha_state):
         srv_msg.forge_sleep(2, 'seconds')
 
     # Send DORA for new client.
-    srv_msg.DORA(ip_address, chaddr='ff:01:02:03:ff:04', exchange='dora-only')
+    srv_msg.DORA(ip_address, chaddr='ff:01:02:03:ff:04')
 
     # Verify that proper number of PINGs was sent.
     log_server = world.f_cfg.mgmt_address_2 if ha_state == 'partnerdown' else world.f_cfg.mgmt_address
@@ -501,7 +503,7 @@ def test_v4_ping_check_cltt_ha(ha_state):
         srv_msg.forge_sleep(2, 'seconds')
 
     # Send DORA for new client.
-    srv_msg.DORA(ip_address, chaddr='ff:01:02:03:ff:04', exchange='dora-only')
+    srv_msg.DORA(ip_address, chaddr='ff:01:02:03:ff:04')
 
     log_server = world.f_cfg.mgmt_address_2 if ha_state == 'partnerdown' else world.f_cfg.mgmt_address
     # Verify that only one PING was send.
