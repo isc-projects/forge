@@ -34,11 +34,11 @@ def prepare_pingcheck_env():
     ciaddr = world.f_cfg.ciaddr
     # Assign responding IP address to forge interface
     new_ip = ".".join(ciaddr.split(".")[0:-1] + [str(int(ciaddr.split(".")[-1]) + IPADDRESSES[3])])
-    rc = os.system(f'ip address replace {new_ip}/24 dev {world.f_cfg.iface}')
-    assert rc == 0
+    command = os.system(f'ip address replace {new_ip}/24 dev {world.f_cfg.iface}')
+    assert command == 0
     yield
-    rc = os.system(f'ip address del {new_ip}/24 dev {world.f_cfg.iface}')
-    assert rc == 0
+    command = os.system(f'ip address del {new_ip}/24 dev {world.f_cfg.iface}')
+    assert command == 0
 
 
 HA_CONFIG = {
