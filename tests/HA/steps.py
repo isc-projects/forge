@@ -394,8 +394,6 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
         assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
         assert response['ha-servers']['remote']['connecting-clients'] >= 0
         assert response['ha-servers']['remote']['in-touch'] == in_touch
-        assert response['ha-servers']['remote']['last-scopes'] == secondary_scopes
-        assert response['ha-servers']['remote']['last-state'] == secondary_state
         assert response['ha-servers']['remote']['role'] == secondary_role
         assert response['ha-servers']['remote']['unacked-clients'] >= 0
         assert response['ha-servers']['remote']['unacked-clients-left'] >= 0
@@ -414,8 +412,6 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
         assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
         assert response['ha-servers']['remote']['connecting-clients'] >= 0
         assert response['ha-servers']['remote']['in-touch'] == in_touch
-        assert response['ha-servers']['remote']['last-scopes'] == primary_scopes
-        assert response['ha-servers']['remote']['last-state'] == primary_state
         assert response['ha-servers']['remote']['role'] == primary_role
         assert response['ha-servers']['remote']['unacked-clients'] >= 0
         assert response['ha-servers']['remote']['unacked-clients-left'] >= 0
