@@ -280,6 +280,12 @@ def log_contains(line, log_file=None, destination=world.f_cfg.mgmt_address):
     assert result > 0, f'Expected log file {get_line_count_in_log.file} to contain line "{line}", but it does not.'
 
 
+def log_contains_n_times(line, n, log_file=None, destination=world.f_cfg.mgmt_address):
+    result = get_line_count_in_log(line, log_file, destination=destination)
+    assert result == n, f'Expected log file {get_line_count_in_log.file} to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
+                        f'Found {result} time{"" if result == 1 else "s"}.'
+
+
 def log_doesnt_contain(line, log_file=None, destination=world.f_cfg.mgmt_address):
     result = get_line_count_in_log(line, log_file, destination=destination)
     assert result == 0, f'Expected log file {get_line_count_in_log.file} to not contain line "{line}".' \

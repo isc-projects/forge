@@ -358,11 +358,11 @@ def define_temporary_lease_db_backend_credentials(db_type, tmp_db_user, tmp_db_p
 @step(r'Use (\S+) reservation system.')
 def enable_db_backend_reservation(db_type, clear=True):
     # for now we are not implementing new configuration system for this one host reservation in databases
-    if db_type == 'MySQL':
+    if db_type.lower() == 'mysql':
         mysql_reservation.enable_db_backend_reservation()
         if clear:
             mysql_reservation.clear_all_reservations()
-    elif db_type == 'PostgreSQL':
+    elif db_type.lower() == 'postgresql':
         pgsql_reservation.enable_db_backend_reservation()
         if clear:
             pgsql_reservation.clear_all_reservations()
@@ -374,9 +374,9 @@ def enable_db_backend_reservation(db_type, clear=True):
 
 @step(r'Create new (\S+) reservation identified by (\S+) (\S+).')
 def new_db_backend_reservation(db_type, reservation_identifier, reservation_identifier_value):
-    if db_type == 'MySQL':
+    if db_type.lower() == 'mysql':
         mysql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
-    elif db_type == 'PostgreSQL':
+    elif db_type.lower() == 'postgresql':
         pgsql_reservation.new_db_backend_reservation(reservation_identifier, reservation_identifier_value)
     else:
         assert False, "Database type not recognised."
@@ -384,9 +384,9 @@ def new_db_backend_reservation(db_type, reservation_identifier, reservation_iden
 
 @step(r'Add (\S+) (\S+) to (\S+) reservation record id (\d+).')
 def update_db_backend_reservation(field_name, field_value, db_type, reservation_record_id):
-    if db_type == 'MySQL' or db_type == 'mysql':
+    if db_type.lower() == 'mysql':
         mysql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
-    elif db_type == 'PostgreSQL' or db_type == 'postgresql':
+    elif db_type.lower() == 'postgresql':
         pgsql_reservation.update_db_backend_reservation(field_name, field_value, int(reservation_record_id))
     else:
         assert False, "Database type not recognised."
@@ -396,10 +396,10 @@ def update_db_backend_reservation(field_name, field_value, db_type, reservation_
 def ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len,
                                        reserved_iaid, db_type, reservation_record_id):
 
-    if db_type == 'MySQL':
+    if db_type.lower() == 'mysql':
         mysql_reservation.ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, reserved_iaid,
                                                              int(reservation_record_id))
-    elif db_type == 'PostgreSQL':
+    elif db_type.lower() == 'postgresql':
         pgsql_reservation.ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, reserved_iaid,
                                                              int(reservation_record_id))
     else:
@@ -408,10 +408,10 @@ def ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len,
 
 @step(r'Add IPv6 address reservation (\S+) with iaid (\S+) to (\S+) record id (\d+).')
 def ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, db_type, reservation_record_id):
-    if db_type == 'MySQL':
+    if db_type.lower() == 'mysql':
         mysql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid,
                                                               int(reservation_record_id))
-    elif db_type == 'PostgreSQL':
+    elif db_type.lower() == 'postgresql':
         pgsql_reservation.ipv6_address_db_backend_reservation(reserved_address, reserved_iaid,
                                                               int(reservation_record_id))
     else:
@@ -422,12 +422,12 @@ def ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, db_type
 def option_db_record_reservation(reserved_option_code, reserved_option_value, reserved_option_space,
                                  reserved_option_persistent, reserved_option_client_class, reserved_subnet_id,
                                  reserved_option_scope, db_type, reservation_record_id):
-    if db_type == 'MySQL':
+    if db_type.lower() == 'mysql':
         mysql_reservation.option_db_record_reservation(reserved_option_code, reserved_option_value,
                                                        reserved_option_space, reserved_option_persistent,
                                                        reserved_option_client_class, reserved_subnet_id,
                                                        reserved_option_scope, int(reservation_record_id))
-    elif db_type == 'PostgreSQL':
+    elif db_type.lower() == 'postgresql':
         pgsql_reservation.option_db_record_reservation(reserved_option_code, reserved_option_value,
                                                        reserved_option_space, reserved_option_persistent,
                                                        reserved_option_client_class, reserved_subnet_id,
@@ -438,9 +438,9 @@ def option_db_record_reservation(reserved_option_code, reserved_option_value, re
 
 @step(r'Dump all the reservation entries from (\S+) database.')
 def dump_db_reservation(db_type):
-    if db_type == 'MySQL':
+    if db_type.lower() == 'mysql':
         mysql_reservation.clear_all_reservations()
-    elif db_type == 'PostgreSQL':
+    elif db_type.lower() == 'postgresql':
         pgsql_reservation.clear_all_reservations()
     else:
         assert False, "Database type not recognised."
@@ -448,9 +448,9 @@ def dump_db_reservation(db_type):
 
 @step(r'Upload hosts reservation to (\S+) database.')
 def upload_db_reservation(db_type, exp_failed=False):
-    if db_type == 'MySQL':
+    if db_type.lower() == 'mysql':
         mysql_reservation.upload_db_reservation(exp_failed)
-    elif db_type == 'PostgreSQL':
+    elif db_type.lower() == 'postgresql':
         pgsql_reservation.upload_db_reservation(exp_failed)
     else:
         assert False, "Database type not recognised."
