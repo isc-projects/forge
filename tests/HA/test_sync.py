@@ -1022,7 +1022,6 @@ def test_HA_hot_standby_ha_sync_command(dhcp_version: str, backend: str, hook_or
             }
         }, channel='http', address=world.f_cfg.mgmt_address_2, exp_result=3)
 
-
     # create new set of leases
     set_of_leases_2 = generate_leases(leases_count=20, dhcp_version=dhcp_version,
                                       mac="02:02:0c:03:0a:00")
