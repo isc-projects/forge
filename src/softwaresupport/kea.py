@@ -1442,7 +1442,7 @@ def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_pa
         fabric_run_command(command, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
     elif world.f_cfg.db_type == "postgresql":
         command = 'for table_name in dhcp4_options dhcp6_options ipv6_reservations hosts lease4 lease6 logs;' \
-                  ' do psql -U {db_user} -d {db_name} -c "delete from $table_name" ; done'.format(**locals())
+                  ' do PGPASSWORD={db_passwd} psql -U {db_user} -d {db_name} -c "delete from $table_name" ; done'.format(**locals())
         fabric_run_command(command, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
     elif world.f_cfg.db_type in ["memfile", ""]:
         fabric_remove_file_command(world.f_cfg.get_leases_path(), destination_host=destination_address,
