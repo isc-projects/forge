@@ -1415,6 +1415,16 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
 def clear_logs(destination_address=world.f_cfg.mgmt_address):
     fabric_remove_file_command(world.f_cfg.log_join('kea*'),
                                destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+    # clear kea logs in journald (actually all logs)
+    if world.f_cfg.install_method != 'make':
+        if world.server_system == 'alpine':
+            cmd = 'truncate /var/log/messages -s0'
+            fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+        else:
+            cmd = 'journalctl --rotate'
+            fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+            cmd = 'journalctl --vacuum-time=1s'
+            fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
 
 def clear_leases(db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
@@ -1486,17 +1496,6 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
                      db_passwd=db_passwd,
                      db_name=db_name)
     fabric_run_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
-
-    # clear kea logs in journald (actually all logs)
-    if world.f_cfg.install_method != 'make':
-        if world.server_system == 'alpine':
-            cmd = 'truncate /var/log/messages -s0'
-            fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
-        else:
-            cmd = 'journalctl --rotate'
-            fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
-            cmd = 'journalctl --vacuum-time=1s'
-            fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
 
 def _check_kea_status(destination_address=world.f_cfg.mgmt_address):

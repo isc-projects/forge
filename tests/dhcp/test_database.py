@@ -136,6 +136,7 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
+    srv_control.clear_some_data('logs')
     srv_control.start_srv('DHCP', 'restarted')
 
     # Confirm Kea is waiting for DB
@@ -241,6 +242,7 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
+    srv_control.clear_some_data('logs')
     srv_control.start_srv('DHCP', 'restarted')
 
     # Confirm Kea is waiting for DB
@@ -355,7 +357,9 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
         srv_msg.response_check_option_content(7, 'value', 123)
 
     # Start Kea again (logs are cleared)
-    srv_control.start_srv('DHCP', 'restarted')
+    srv_control.start_srv('DHCP', 'stopped')
+    srv_control.clear_some_data('logs')
+    srv_control.start_srv('DHCP', 'started')
 
     # Confirm Kea is waiting for DB
     # Kea#3223 - It is not decided yet how Kea should report to status-get when there is no DB connection,
@@ -452,6 +456,7 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
+    srv_control.clear_some_data('logs')
     srv_control.start_srv('DHCP', 'restarted')
 
     # Confirm Kea is waiting for DB
@@ -548,6 +553,7 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
+    srv_control.clear_some_data('logs')
     srv_control.start_srv('DHCP', 'restarted')
 
     # Confirm Kea is waiting for DB
@@ -645,7 +651,9 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
         srv_msg.SARR('2001:db8:1::51', duid='00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:05')
 
     # Start Kea again (logs are cleared)
-    srv_control.start_srv('DHCP', 'restarted')
+    srv_control.start_srv('DHCP', 'stopped')
+    srv_control.clear_some_data('logs')
+    srv_control.start_srv('DHCP', 'started')
 
     # Confirm Kea is waiting for DB
     # Kea#3223 - It is not decided yet how Kea should report to status-get when there is no DB connection,
@@ -734,6 +742,7 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
+    srv_control.clear_some_data('logs')
     srv_control.start_srv('DHCP', 'restarted')
 
     # Confirm Kea is waiting for DB
@@ -834,6 +843,7 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
+    srv_control.clear_some_data('logs')
     srv_control.start_srv('DHCP', 'restarted')
 
     # Confirm Kea is waiting for DB
@@ -940,7 +950,9 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
         srv_msg.SARR('2001:db8:1::51', duid='00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:05')
 
     # Start Kea again (logs are cleared)
-    srv_control.start_srv('DHCP', 'restarted')
+    srv_control.start_srv('DHCP', 'stopped')
+    srv_control.clear_some_data('logs')
+    srv_control.start_srv('DHCP', 'started')
 
     # Confirm Kea is waiting for DB
     # Kea#3223 - It is not decided yet how Kea should report to status-get when there is no DB connection,
