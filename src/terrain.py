@@ -179,6 +179,7 @@ def _v6_initialize():
     # All DHCP_Servers ff05::1:3.
     world.cfg["address_v6"] = "ff02::1:2"
     world.cfg["cli_link_local"] = world.f_cfg.cli_link_local
+    world.cfg["cli_link_local2"] = world.f_cfg.cli_link_local2
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
     world.cfg["space"] = "dhcp6"
@@ -211,7 +212,8 @@ def _define_software(dhcp_version):
     world.cfg["dns_under_test"] = ""
     for name in world.f_cfg.software_under_test:
         if name in world.f_cfg.dhcp_used:
-            world.cfg["dhcp_under_test"] = name.replace('6', '4') if dhcp_version in ['v4', 'v4_bootp'] else name.replace('4', '6')
+            world.cfg["dhcp_under_test"] = name.replace('6', '4') if dhcp_version in [
+                'v4', 'v4_bootp'] else name.replace('4', '6')
             # world.cfg["dns_under_test"] = ""
         elif name in world.f_cfg.dns_used:
             world.cfg["dns_under_test"] = name
@@ -353,6 +355,8 @@ def test_start():
         kea.db_setup()
         if world.f_cfg.mgmt_address_2:
             kea.db_setup(dest=world.f_cfg.mgmt_address_2)
+        if world.f_cfg.mgmt_address_3:
+            kea.db_setup(dest=world.f_cfg.mgmt_address_3)
 
 
 def _clear_remainings():
@@ -381,6 +385,7 @@ def initialize(scenario):
     declare_all(dhcp_version)
 
     world.cfg["iface"] = world.f_cfg.iface
+    world.cfg["iface2"] = world.f_cfg.iface2
     # world.cfg["server_type"] = SOFTWARE_UNDER_TEST for now I'll leave it here,
     # now we use world.cfg["dhcp_under_test"] and world.cfg["dns_under_test"] (in function _define_software)
     # it is being filled with values in srv_control

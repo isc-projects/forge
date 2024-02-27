@@ -72,9 +72,13 @@ PASSIVE_BACKUP = {
 
 
 def send_heartbeat(dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_address, exp_failed=False,
-                   channel='http', verify=None, cert=None, port=8000):
-    return send_command(cmd={"command": "ha-heartbeat"}, dhcp_version=dhcp_version, exp_result=exp_result,
-                        dest=dest, exp_failed=exp_failed, channel=channel, verify=verify, cert=cert, port=port)
+                   channel='http', verify=None, cert=None, port=8000, relationship=None):
+    if relationship is None:
+        cmd = {"command": "ha-heartbeat"}
+    else:
+        cmd = {"command": "ha-heartbeat", "arguments": {"server-name": relationship}}
+    return send_command(cmd=cmd, dhcp_version=dhcp_version, exp_result=exp_result,
+                        dest=dest, exp_failed=exp_failed, channel=channel, verify=verify, cert=cert, port=port,)
 
 
 def send_command(cmd: dict = None, dhcp_version: str = 'v6', exp_result: int = 0,
@@ -102,7 +106,7 @@ def send_command(cmd: dict = None, dhcp_version: str = 'v6', exp_result: int = 0
 
 
 def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1, dhcp_version='v6',
-                        channel='http', verify=None, cert=None, port=8000):
+                        channel='http', verify=None, cert=None, port=8000, relationship=None):
     """
     Send ha-heartbeat messages to server as long as we get expected state, HA tend to be slow so it's
     way of active sleep
@@ -121,7 +125,7 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1,
     for _ in range(retry):
         srv_msg.forge_sleep(sleep, 'seconds')
         resp = send_heartbeat(dest=dest, dhcp_version=dhcp_version, channel=channel, verify=verify, cert=cert,
-                              port=port)
+                              port=port, relationship=relationship)
         if resp["arguments"]["state"] == "terminated":
             assert False, "State reached terminated! Tests will fail"
         elif resp["arguments"]["state"] == state:
@@ -285,7 +289,8 @@ def generate_leases(leases_count: int = 1, iana: int = 1, iapd: int = 1,
 
 
 def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
-                                mac="05:02:0c:03:0a:00", duid="00:03:00:01:05:02:0c:03:0a:00"):
+                                mac="05:02:0c:03:0a:00", duid="00:03:00:01:05:02:0c:03:0a:00",
+                                iface=None):
     """
     Send messages with increased elapsed time (v6) or secs field (v4) to simulate one node failure
     :param msg_count: how many messages send
@@ -294,6 +299,7 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
     :param mac: in load-balancing v4 we need to send specific mac addresses
     :param duid: in load-balancing v6 we need to send specific duids
     """
+    iface = world.cfg["iface"] if iface is None else iface
     tmp = world.f_cfg.show_packets_from
     world.f_cfg.show_packets_from = ""
     if dhcp_version == 'v6':
@@ -318,10 +324,10 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
             srv_msg.client_sets_value('Client', 'elapsedtime', elapsed + i)
             srv_msg.client_does_include('Client', 'time-elapsed')
 
-            srv_msg.client_send_msg('SOLICIT')
+            srv_msg.client_send_msg('SOLICIT', iface)
 
             misc.pass_criteria()
-            srv_msg.send_dont_wait_for_message()
+            srv_msg.send_dont_wait_for_message(iface)
 
     elif dhcp_version == 'v4':
         for i in range(msg_count):
@@ -335,10 +341,10 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
             srv_msg.client_sets_value('Client', 'chaddr', my_mac)
             srv_msg.client_sets_value('Client', 'secs', elapsed + i)
             srv_msg.client_requests_option(1)
-            srv_msg.client_send_msg('DISCOVER')
+            srv_msg.client_send_msg('DISCOVER', iface)
 
             misc.pass_criteria()
-            srv_msg.send_dont_wait_for_message()
+            srv_msg.send_dont_wait_for_message(iface)
 
     world.f_cfg.show_packets_from = tmp
 

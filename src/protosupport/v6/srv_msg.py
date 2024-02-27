@@ -29,6 +29,7 @@
 # pylint: disable=unidiomatic-typecheck
 # pylint: disable=unused-argument
 # pylint: disable=unused-variable
+# pylint: disable=too-many-arguments
 
 import codecs
 import random
@@ -134,39 +135,39 @@ def client_send_msg(msgname, iface=None, addr=None):
     Parameters:
     msg ('<msg> message'): name of the message.
     """
-    # iface and addr not used for v6 for now.
 
     # Remove previous message waiting to be sent, just in case this is a
     # REQUEST after we received ADVERTISE. We don't want to send SOLICIT
     # the second time.
+    iface = world.cfg["iface"] if iface is None else iface
     world.climsg = []
 
     if msgname == "SOLICIT":
-        msg = build_msg(dhcp6.DHCP6_Solicit())
+        msg = build_msg(dhcp6.DHCP6_Solicit(), iface)
 
     elif msgname == "REQUEST":
-        msg = build_msg(dhcp6.DHCP6_Request())
+        msg = build_msg(dhcp6.DHCP6_Request(), iface)
 
     elif msgname == "CONFIRM":
-        msg = build_msg(dhcp6.DHCP6_Confirm())
+        msg = build_msg(dhcp6.DHCP6_Confirm(), iface)
 
     elif msgname == "RENEW":
-        msg = build_msg(dhcp6.DHCP6_Renew())
+        msg = build_msg(dhcp6.DHCP6_Renew(), iface)
 
     elif msgname == "REBIND":
-        msg = build_msg(dhcp6.DHCP6_Rebind())
+        msg = build_msg(dhcp6.DHCP6_Rebind(), iface)
 
     elif msgname == "DECLINE":
-        msg = build_msg(dhcp6.DHCP6_Decline())
+        msg = build_msg(dhcp6.DHCP6_Decline(), iface)
 
     elif msgname == "RELEASE":
-        msg = build_msg(dhcp6.DHCP6_Release())
+        msg = build_msg(dhcp6.DHCP6_Release(), iface)
 
     elif msgname == "INFOREQUEST":
-        msg = build_msg(dhcp6.DHCP6_InfoRequest())
+        msg = build_msg(dhcp6.DHCP6_InfoRequest(), iface)
 
     elif msgname == "LEASEQUERY":
-        msg = build_msg(dhcp6.DHCP6_Leasequery())
+        msg = build_msg(dhcp6.DHCP6_Leasequery(), iface)
 
     else:
         assert False, "Invalid message type: %s" % msgname
@@ -176,7 +177,7 @@ def client_send_msg(msgname, iface=None, addr=None):
     if msg:
         world.climsg.append(msg)
 
-    log.debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
+    log.debug("Message %s will be sent over %s interface." % (msgname, iface))
 
 
 def client_sets_value(value_name, new_value):
@@ -557,8 +558,12 @@ def build_raw(msg, append):
         world.climsg[0] = world.climsg[0] / Raw(load=append)
 
 
-def build_msg(msg_dhcp):
-    msg = IPv6(dst=world.cfg["address_v6"], src=world.cfg["cli_link_local"])
+def build_msg(msg_dhcp, iface=None):
+    if iface == world.cfg["iface2"]:
+        src = world.cfg["cli_link_local2"]
+    else:
+        src = world.cfg["cli_link_local"]
+    msg = IPv6(dst=world.cfg["address_v6"], src=src)
     msg /= UDP(sport=world.cfg["source_port"], dport=world.cfg["destination_port"])
 
     # print("IP/UDP layers in bytes: ", raw(msg))
@@ -725,7 +730,7 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
 
 
 def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
-                          protocol: str = 'UDP', address: str = None, port: int = None):
+                          protocol: str = 'UDP', address: str = None, port: int = None, iface=None):
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # debug.recv=[]
     # Uncomment this to get debug.recv filled with all received messages
@@ -739,6 +744,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     world.srvmsg = []
     world.tcpmsg = []
     received_name = ""
+    iface = world.cfg["iface"] if iface is None else iface
 
     pytest_current_test = os.environ.get('PYTEST_CURRENT_TEST')
     if 'HA' in pytest_current_test.split('/'):
@@ -751,7 +757,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
 
     if protocol == 'UDP':
         ans, unans = sr(world.climsg,
-                        iface=world.cfg["iface"],
+                        iface=iface,
                         timeout=factor * world.cfg['wait_interval'],
                         nofilter=1,
                         verbose=int(world.f_cfg.forge_verbose))
@@ -1556,7 +1562,7 @@ def check_IA_PD(prefix, status_code=None, expect=True):
 def SARR(address=None, delegated_prefix=None, relay_information=False,
          status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
-         linkaddr='2001:db8:1::1000', ifaceid='port1234'):
+         linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None):
     """
     Sends and ensures receival of 6 packets part of a regular DHCPv6 exchange
     in the correct sequence: solicit, advertise, request, reply, renew, reply.
@@ -1582,14 +1588,15 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         iaid: sets IAID for the client
         linkaddr: sets Link Address in Relayed message
         ifaceid: sets Interface ID in option 18 in Relayed message
+        iface: sets interface for the client
     """
-
+    iface = world.cfg["iface"] if iface is None else iface
     # TODO: Add ability to check that options other than IA_NAs and IA_PDs are not included.
     if exchange in ['full', 'sarr-only']:
         # Build and send Solicit and await Advertisement
         SA(address, delegated_prefix, relay_information,
            status_code_IA_NA, status_code_IA_PD,
-           duid, iaid, linkaddr, ifaceid)
+           duid, iaid, linkaddr, ifaceid, iface)
 
         if not relay_information:
             # Build and send a request.
@@ -1600,11 +1607,11 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
             client_copy_option('server-id')
             client_sets_value('DUID', duid)
             client_does_include('Client', 'client-id')
-            client_send_msg('REQUEST')
+            client_send_msg('REQUEST', iface)
 
             # Expect a reply.
             misc.pass_criteria()
-            send_wait_for_message('MUST', True, 'REPLY')
+            send_wait_for_message('MUST', True, 'REPLY', iface=iface)
             check_IA_NA(address, status_code=status_code_IA_NA)
             check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
 
@@ -1630,10 +1637,10 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         client_copy_option('server-id')
         client_does_include('Client', 'client-id', None)
         client_add_saved_option(False)
-        client_send_msg('RENEW')
+        client_send_msg('RENEW', iface)
 
         # Expect a reply.
-        send_wait_for_message('MUST', True, 'REPLY')
+        send_wait_for_message('MUST', True, 'REPLY', iface=iface)
         check_IA_NA(address, status_code=status_code_IA_NA)
         check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
 
@@ -1641,7 +1648,7 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
 def SA(address=None, delegated_prefix=None, relay_information=False,
        status_code_IA_NA=None, status_code_IA_PD=None,
        duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
-       linkaddr='2001:db8:1::1000', ifaceid='port1234'):
+       linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None):
     """
     Sends and ensures receival of 2 packets part of a regular DHCPv6 exchange
     in the correct sequence: solicit, advertise.
@@ -1665,6 +1672,7 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
         ifaceid: sets Interface ID in option 18 in Relayed message
         """
 
+    iface = world.cfg["iface"] if iface is None else iface
     # Kea sends NoAddrsAvail or NoPrefixAvail in ADVERTISE when there are no
     # leases available, as opposed to no IA_NA at all in REPLY.
     if address is None and status_code_IA_NA is None:
@@ -1685,7 +1693,7 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     client_does_include('Client', 'IA-NA')
     client_does_include('Client', 'IA_Prefix')
     client_does_include('Client', 'IA-PD')
-    client_send_msg('SOLICIT')
+    client_send_msg('SOLICIT', iface)
 
     if relay_information:
         # Encapsulate the solicit in a relay forward message.
@@ -1696,7 +1704,7 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
 
         # Expect a relay reply.
         misc.pass_criteria()
-        send_wait_for_message('MUST', True, 'RELAYREPLY')
+        send_wait_for_message('MUST', True, 'RELAYREPLY', iface=iface)
         response_check_include_option(True, 'interface-id')
         response_check_include_option(True, 'relay-msg')
         response_check_option_content('relay-msg', True, 'Relayed', 'Message')
@@ -1707,7 +1715,7 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     else:
         # Expect an advertise.
         misc.pass_criteria()
-        send_wait_for_message('MUST', True, 'ADVERTISE')
+        send_wait_for_message('MUST', True, 'ADVERTISE', iface=iface)
         response_check_include_option(True, 'client-id')
         response_check_include_option(True, 'server-id')
         check_IA_NA(address, status_code=status_code_IA_NA)

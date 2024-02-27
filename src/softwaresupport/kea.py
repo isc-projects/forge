@@ -183,6 +183,7 @@ class CreateCert:
     download() function downloads selected certificate to test result directory on forge machine
     and returns full path of the file.
     """
+
     def __init__(self):
         # Assign certificate files paths to attributes.
         self.ca_key = world.f_cfg.data_join('ca_key.pem')
@@ -1051,19 +1052,19 @@ def delete_parameter_from_hook(hook_number_or_name, parameter_name: str):
         del world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"][parameter_name]
 
 
-def ha_add_parameter_to_hook(parameter_name, parameter_value):
+def ha_add_parameter_to_hook(parameter_name, parameter_value, relationship=0):
     # First let's find HA hook in the list:
     # btw.. I wonder why "high-availability" is list of dictionaries not dictionary
     # and it's just for current backward compatibility, I will change it when I will get back to HA tests
     for hook in world.dhcp_cfg["hooks-libraries"]:
         if "libdhcp_ha" in hook["library"]:
             if parameter_name == "machine-state":
-                hook["parameters"]["high-availability"][0]["state-machine"]["states"].append(parameter_value)
+                hook["parameters"]["high-availability"][relationship]["state-machine"]["states"].append(parameter_value)
             elif parameter_name == "peers":
                 if isinstance(parameter_value, str):
                     parameter_value.strip("'")
                     parameter_value = json.loads(parameter_value)
-                hook["parameters"]["high-availability"][0]["peers"].append(parameter_value)
+                hook["parameters"]["high-availability"][relationship]["peers"].append(parameter_value)
             elif parameter_name == "lib":
                 pass
             else:
@@ -1071,14 +1072,17 @@ def ha_add_parameter_to_hook(parameter_name, parameter_value):
                     parameter_value = int(parameter_value)
                 else:
                     parameter_value = parameter_value.strip("\"")
-                hook["parameters"]["high-availability"][0][parameter_name] = parameter_value
+                hook["parameters"]["high-availability"][relationship][parameter_name] = parameter_value
 
 
-def update_ha_hook_parameter(param):
+def update_ha_hook_parameter(param, relationship=0):
     assert isinstance(param, dict), "pass just dict as parameter"
     for hook in world.dhcp_cfg["hooks-libraries"]:
         if "libdhcp_ha" in hook["library"]:
-            hook["parameters"]["high-availability"][0].update(param)
+            if len(hook["parameters"]["high-availability"]) > relationship:
+                hook["parameters"]["high-availability"][relationship].update(param)
+            else:
+                hook["parameters"]["high-availability"].append(param)
 
 
 def disable_lease_affinity():
@@ -1518,8 +1522,10 @@ def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
 def _restart_kea_with_systemctl(destination_address):
     cmd_tpl = 'systemctl reset-failed {service} ;'  # prevent failing due to too many restarts
     cmd_tpl += ' systemctl restart {service} &&'  # restart service
-    cmd_tpl += ' ts=`systemctl show -p ActiveEnterTimestamp {service}.service | awk \'{{print $2 $3}}\'`;'  # get time of log beginning
-    cmd_tpl += ' ts=${{ts:-$(date +"%Y-%m-%d%H:%M:%S")}};'  # if started for the first time then ts is empty so set to current date
+    # get time of log beginning
+    cmd_tpl += ' ts=`systemctl show -p ActiveEnterTimestamp {service}.service | awk \'{{print $2 $3}}\'`;'
+    # if started for the first time then ts is empty so set to current date
+    cmd_tpl += ' ts=${{ts:-$(date +"%Y-%m-%d%H:%M:%S")}};'
     cmd_tpl += ' SECONDS=0; while (( SECONDS < 4 )); do'  # watch logs for max 4 seconds
     cmd_tpl += ' journalctl -u {service}.service --since $ts |'  # get logs since last start of kea service
     cmd_tpl += ' grep "server version .* started" 2>/dev/null;'  # if in the logs there is given sequence then ok
@@ -1573,8 +1579,10 @@ def _restart_kea_with_openrc(destination_address):
 
 def _reload_kea_with_systemctl(destination_address):
     cmd_tpl = 'systemctl reload {service} &&'  # reload service
-    cmd_tpl += ' ts=`systemctl show -p ExecReload {service}.service | sed -E -n \'s/.*stop_time=\\[(.*)\\].*/\\1/p\'`;'  # get time of log beginning
-    cmd_tpl += ' ts=${{ts:-$(date +"%Y-%m-%d%H:%M:%S")}};'  # if started for the first time then ts is empty so set to current date
+    # get time of log beginning
+    cmd_tpl += ' ts=`systemctl show -p ExecReload {service}.service | sed -E -n \'s/.*stop_time=\\[(.*)\\].*/\\1/p\'`;'
+    # if started for the first time then ts is empty so set to current date
+    cmd_tpl += ' ts=${{ts:-$(date +"%Y-%m-%d%H:%M:%S")}};'
     cmd_tpl += ' SECONDS=0; while (( SECONDS < 4 )); do'  # watch logs for max 4 seconds
     cmd_tpl += ' journalctl -u {service}.service --since "$ts" |'  # get logs since last start of kea service
     cmd_tpl += ' grep "{sentence}" 2>/dev/null;'  # if in the logs there is given sequence then ok

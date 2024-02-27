@@ -96,8 +96,7 @@ def client_send_msg(msgname, iface=None, addr=None):
     addr: address to send to (default: None)
     """
     # set different ethernet interface than default one.
-    if iface is not None:
-        world.cfg["iface"] = iface
+    if addr is not None:
         world.cfg["srv4_addr"] = addr
 
     world.climsg = []
@@ -118,31 +117,31 @@ def client_send_msg(msgname, iface=None, addr=None):
     if msgname == "DISCOVER":
         # msg code: 1
         # world.cfg["values"]["broadcastBit"] = True
-        msg = build_msg([("message-type", "discover")] + options)
+        msg = build_msg([("message-type", "discover")] + options, iface)
 
     elif msgname == "REQUEST":
         # msg code: 3
-        msg = build_msg([("message-type", "request")] + options)
+        msg = build_msg([("message-type", "request")] + options, iface)
 
     elif msgname == "DECLINE":
         # msg code: 4
-        msg = build_msg([("message-type", "decline")] + options)
+        msg = build_msg([("message-type", "decline")] + options, iface)
 
     elif msgname == "RELEASE":
         # msg code: 7
-        msg = build_msg([("message-type", "release")] + options)
+        msg = build_msg([("message-type", "release")] + options, iface)
 
     elif msgname == "INFORM":
         # msg code: 8
-        msg = build_msg([("message-type", "inform")] + options)
+        msg = build_msg([("message-type", "inform")] + options, iface)
 
     elif msgname == "LEASEQUERY":
         # msg code: 10
-        msg = build_msg([("message-type", "lease_query")] + options)
+        msg = build_msg([("message-type", "lease_query")] + options, iface)
 
     elif msgname == "BULK_LEASEQUERY":
         # msg code: 14
-        msg = build_msg([("message-type", "bulk_leasequery")] + options)
+        msg = build_msg([("message-type", "bulk_leasequery")] + options, iface)
 
     elif msgname == "BOOTP_REQUEST":
         world.cfg["values"]["broadcastBit"] = True
@@ -151,7 +150,7 @@ def client_send_msg(msgname, iface=None, addr=None):
         # should be the magic cookie, but the magic cookie is right before it, placed by scapy, and
         # that's where Kea correctly ends up reading it from. So let's put some four-byte padding.
         padding = ['\x00\x00\x00\x00']
-        msg = build_msg(padding + options)
+        msg = build_msg(padding + options, iface)
     else:
         assert False, "Invalid message type: %s" % msgname
 
@@ -160,7 +159,7 @@ def client_send_msg(msgname, iface=None, addr=None):
     if msg:
         world.climsg.append(msg)
 
-    log.debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
+    log.debug("Message %s will be sent over %s interface." % (msgname, iface))
 
 
 def client_sets_value(value_name, new_value):
@@ -287,9 +286,12 @@ def convert_to_hex(mac):
     return codecs.decode(mac.replace(":", ""), 'hex')
 
 
-def build_msg(opts):
+def build_msg(opts, iface=None):
     conf.checkIPaddr = False
-    fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
+    if iface is None:
+        fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
+    else:
+        fam, hw = get_if_raw_hwaddr(str(iface))
 
     # we need to choose if we want to use chaddr, or client id.
     # also we can include both: client_id and chaddr
@@ -499,7 +501,7 @@ def tcp_get_message(**kwargs):
 
 
 def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
-                          protocol: str = 'UDP', address: str = None, port: int = None):
+                          protocol: str = 'UDP', address: str = None, port: int = None, iface=None):
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # We need to use srp() here (send and receive on layer 2)
     factor = 1
@@ -512,6 +514,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     world.srvmsg = []
     world.tcpmsg = []
     received_name = ""
+    iface = world.cfg["iface"] if iface is None else iface
 
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
@@ -519,7 +522,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
 
     if protocol == 'UDP':
         ans, unans = srp(world.climsg,
-                         iface=world.cfg["iface"],
+                         iface=iface,
                          timeout=factor * world.cfg['wait_interval'],
                          multi=False,
                          verbose=int(world.f_cfg.forge_verbose))
@@ -750,7 +753,7 @@ def get_all_leases(decode_duid=True):
     return lease
 
 
-def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04'):
+def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
     """
     Sends a discover and expects an offer. Inserts options in the client
     packets based on given parameters and ensures that the right options are
@@ -765,25 +768,26 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04'):
     :param chaddr: the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
     """
+    iface = world.cfg["iface"] if iface is None else iface
     # Send a discover.
     client_sets_value('chaddr', chaddr)
     if options:
         for k, v in options.items():
             client_does_include(None, k, v)
-    client_send_msg('DISCOVER')
+    client_send_msg('DISCOVER', iface)
 
     # If the test requires an address, expect it in the offer, otherwise expect
     # no message back.
     if address is None:
-        send_wait_for_message('MUST', False, None)
+        send_wait_for_message('MUST', False, None, iface=iface)
     else:
-        send_wait_for_message('MUST', True, 'OFFER')
+        send_wait_for_message('MUST', True, 'OFFER', iface=iface)
         response_check_content(True, 'yiaddr', address)
         client_sets_value('chaddr', chaddr)
 
 
 def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
-       init_reboot=False, subnet_mask='255.255.255.0', fqdn=None):
+       init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
     """
     Sends a request and expects an advertise. Inserts options in the client
     packets based on given parameters and ensures that the right options are
@@ -802,6 +806,7 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
     :param subnet_mask: the value for option 1 subnet mask expected in a DHCPACK
     """
+    iface = world.cfg["iface"] if iface is None else iface
     client_sets_value('chaddr', chaddr)
     # Copy server ID if the client is not simulating an INIT-REBOOT state and if
     # there was a server response in the past to copy it from.
@@ -821,12 +826,12 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
         client_sets_value('FQDN_domain_name', fqdn)
         client_sets_value('FQDN_flags', 'S')
         client_does_include(None, 'fqdn', 'fqdn')
-    client_send_msg('REQUEST')
+    client_send_msg('REQUEST', iface)
 
     if response_type is None:
-        send_wait_for_message('MUST', False, None)
+        send_wait_for_message('MUST', False, None, iface=iface)
     elif response_type == 'ACK':
-        send_wait_for_message('MUST', True, 'ACK')
+        send_wait_for_message('MUST', True, 'ACK', iface=iface)
         response_check_content(True, 'yiaddr', address)
         response_check_include_option(True, 'subnet-mask')
         response_check_option_content('subnet-mask', True, 'value', subnet_mask)
@@ -834,11 +839,11 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
             response_check_include_option(True, 81)
             response_check_option_content(81, True, 'fqdn', fqdn)
     elif response_type == 'NAK':
-        send_wait_for_message('MUST', True, 'NAK')
+        send_wait_for_message('MUST', True, 'NAK', iface=iface)
 
 
 def DORA(address=None, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04',
-         init_reboot=False, subnet_mask='255.255.255.0', fqdn=None):
+         init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
     """
     Sends and ensures receival of 6 packets part of a regular DHCPv4 exchange
     in the correct sequence: discover, offer, request,
@@ -862,22 +867,23 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
     :param chaddr: the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
     :param subnet_mask: the value for option 1 subnet mask expected in a DHCPACK
+    :param iface: the interface to send and receive packets on
     """
     misc.test_procedure()
     client_sets_value('chaddr', chaddr)
     if exchange == 'full':
         # Send a discover and expect an offer.
-        DO(address, options, chaddr)
+        DO(address, options, chaddr, iface=iface)
 
         # Send a request and expect an acknowledgement.
-        RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn)
+        RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
     if exchange == 'dora-only':
         # Send a discover and expect an offer.
-        DO(address, options, chaddr)
+        DO(address, options, chaddr, iface=iface)
 
     # Send a request and expect an acknowledgement.
     # This is supposed to be the renew scenario after DORA.
-    RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn)
+    RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,

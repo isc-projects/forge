@@ -17,6 +17,7 @@
 # pylint: disable=unknown-option-value
 # pylint: disable=unused-argument
 # pylint: disable=useless-object-inheritance
+# pylint: disable=too-many-arguments
 
 import random
 import json
@@ -97,7 +98,7 @@ def client_send_msg_via_interface(iface, addr, msgname):
 
 
 @step(r'Client sends (\w+) message.')
-def client_send_msg(msgname):
+def client_send_msg(msgname, iface=None):
     r"""
     This step actually build message (e.g. SOLICIT) with all details
     specified in steps like:
@@ -107,7 +108,7 @@ def client_send_msg(msgname):
     Message builded here will be send in step: Server must response with...
     Message will be send via interface set in init_all.py marked as IFACE.
     """
-    dhcpmsg.client_send_msg(msgname, None, None)
+    dhcpmsg.client_send_msg(msgname, iface, None)
 
 
 @step(r'Send (\S+) with raw appending (.+)')
@@ -240,17 +241,18 @@ def change_message_filed(message_filed, value, value_type):
 
 # checking DHCP respond
 @step(r'Server MUST NOT respond.')
-def send_dont_wait_for_message():
+def send_dont_wait_for_message(iface=None):
     """
     This step causes to send message in cases when we don't expect any response.
     Step used only for v4 testing
     """
-    dhcpmsg.send_wait_for_message("MUST", False, None)
+    dhcpmsg.send_wait_for_message("MUST", False, None, iface=iface)
 
 
 @step(r'Server (\S+) (NOT )?respond with (\w+) message.')
 def send_wait_for_message(requirement_level: str, message: str, expect_response: bool = True,
-                          protocol: str = 'UDP', address: str = None, port: int = None):
+                          protocol: str = 'UDP', address: str = None, port: int = None,
+                          iface: str = None):
     """
     Send messages to server either TCP or UDP, check if response is received.
     :param requirement_level: not used. RFC-grade requirement level e.g. 'MAY', 'MUST'
@@ -262,7 +264,8 @@ def send_wait_for_message(requirement_level: str, message: str, expect_response:
     :param port: destination port for TCP connection
     :return: list of replies from server
     """
-    return dhcpmsg.send_wait_for_message(requirement_level, expect_response, message, protocol, address=address, port=port)
+    return dhcpmsg.send_wait_for_message(requirement_level, expect_response, message, protocol,
+                                         address=address, port=port, iface=iface)
 
 
 @step(r'(Response|Relayed Message) MUST (NOT )?include option (\d+).')
@@ -694,18 +697,18 @@ def get_subopt_from_option(exp_opt_code, exp_subopt_code):
     return dhcpmsg.get_subopt_from_option(exp_opt_code, exp_subopt_code)
 
 
-def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04'):
-    return dhcpmsg.DO(address, options, chaddr)
+def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
+    return dhcpmsg.DO(address, options, chaddr, iface=iface)
 
 
 def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
-       init_reboot=False, subnet_mask='255.255.255.0', fqdn=None):
-    return dhcpmsg.RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn)
+       init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
+    return dhcpmsg.RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
 
 
 def DORA(address=None, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04',
-         init_reboot=False, subnet_mask='255.255.255.0', fqdn=None):
-    return dhcpmsg.DORA(address, options, exchange, response_type, chaddr, init_reboot, subnet_mask, fqdn)
+         init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
+    return dhcpmsg.DORA(address, options, exchange, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
 
 
 def check_IA_NA(address, status_code=None, expect=True):
@@ -729,10 +732,10 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
 def SARR(address=None, delegated_prefix=None, relay_information=False,
          status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
-         linkaddr='2001:db8:1::1000', ifaceid='port1234'):
+         linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None):
     return dhcpmsg.SARR(address, delegated_prefix, relay_information,
                         status_code_IA_NA, status_code_IA_PD, exchange,
-                        duid, iaid, linkaddr, ifaceid)
+                        duid, iaid, linkaddr, ifaceid, iface)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,

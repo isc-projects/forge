@@ -137,12 +137,12 @@ def update_subnet_counter():
 
 
 @step(r'Server is configured with another subnet on interface (\S+) with (\S+) subnet and (\S+) pool.')
-def config_srv_another_subnet(interface, subnet, pool, **kwargs):
+def config_srv_another_subnet(iface, subnet, pool, **kwargs):
     """
     Add another subnet with specified subnet/pool/interface.
     """
-    subnet, pool, interface = test_define_value(subnet, pool, interface)
-    dhcp.config_srv_another_subnet(subnet, pool, interface, **kwargs)
+    subnet, pool, iface = test_define_value(subnet, pool, iface)
+    dhcp.config_srv_another_subnet(subnet, pool, iface, **kwargs)
 
 
 @step(r'Server is configured with another subnet: (\S+) with (\S+) pool.')
@@ -321,13 +321,13 @@ def add_ha_hook(library_path):
 
 
 @step(r'To HA hook configuration add (\S+) with value: (.+)')
-def add_parameter_to_ha_hook(parameter_name, parameter_value):
+def add_parameter_to_ha_hook(parameter_name, parameter_value, relationship=0):
     parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
-    dhcp.ha_add_parameter_to_hook(parameter_name, parameter_value)
+    dhcp.ha_add_parameter_to_hook(parameter_name, parameter_value, relationship)
 
 
-def update_ha_hook_parameter(param):
-    dhcp.update_ha_hook_parameter(param)
+def update_ha_hook_parameter(param, relationship=0):
+    dhcp.update_ha_hook_parameter(param, relationship)
 
 
 def build_database(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
