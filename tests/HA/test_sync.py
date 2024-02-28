@@ -351,7 +351,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
     srv_msg.check_leases(set_of_leases_2, backend=backend)
 
 
-# ha_sync crashes kea primary server in passive-backup mode kea#3276
+# ha_sync causes bug in kea primary server in passive-backup mode kea#3276
 @pytest.mark.v4_bootp
 @pytest.mark.v4
 @pytest.mark.v6
