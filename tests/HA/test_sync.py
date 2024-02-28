@@ -164,7 +164,6 @@ def test_HA_hot_standby_multiple_leases_v6(trigger, hook_order: str):
             'text': "Lease database synchronization complete."
         }
 
-
     srv_msg.check_leases(set_of_leases_1)
     srv_msg.check_leases(set_of_leases_2)
 
@@ -316,7 +315,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
 
         # create leases in HA 2
         set_of_leases_2 = generate_leases(leases_count=50, dhcp_version=dhcp_version,
-                                        mac="02:02:0c:03:0a:00")
+                                          mac="02:02:0c:03:0a:00")
 
         # start server1
         srv_control.start_srv('DHCP', 'started')
@@ -332,7 +331,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
 
         # create leases in HA 2
         set_of_leases_2 = generate_leases(leases_count=50, dhcp_version=dhcp_version,
-                                        mac="02:02:0c:03:0a:00")
+                                          mac="02:02:0c:03:0a:00")
 
         # Send ha-sync command to server1
         response = srv_msg.send_ctrl_cmd({
