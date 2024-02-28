@@ -34,14 +34,35 @@ def kill_kea_on_second_system():
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
 
 
+def _clear_leases_from_server(dhcp_version, backend, server):
+    if backend == 'memfile':
+        srv_msg.send_ctrl_cmd({
+            "command": f'lease{dhcp_version[1]}-wipe',
+            "arguments": {
+                "subnets": [1]
+            }
+        }, channel='http', address=server, exp_result=0)
+        srv_msg.send_ctrl_cmd({
+            "command": "leases-reclaim",
+            "arguments": {
+                "remove": True,
+            }
+        }, channel='http', address=server, exp_result=0)
+        fabric_sudo_command(f'> {world.f_cfg.get_leases_path()}', server)
+    else:
+        srv_control.clear_some_data('leases', dest=server)
+
+
 @pytest.mark.v6
 @pytest.mark.ha
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
-def test_HA_hot_standby_multiple_leases_v6(hook_order: str):
+@pytest.mark.parametrize('trigger', ['restart', 'ha_sync'])
+def test_HA_hot_standby_multiple_leases_v6(trigger, hook_order: str):
     """
     Check that Kea HA can sync multiple IA_NA and IA_PD leases provided together
     in the same exchange.
 
+    :param trigger: the trigger for the lease synchronization: either Kea restart or ha_sync command
     :param hook_order: the order in which hooks are loaded: either alphabetical
     or reverse alphabetical. This is to test all order combinations for each set
     of two hook libraries after problems were found on one order of loading HA
@@ -103,29 +124,46 @@ def test_HA_hot_standby_multiple_leases_v6(hook_order: str):
     srv_msg.check_leases(set_of_leases_1)
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2)
 
-    # Stop server 1 and wait for server 2 to enter partner-down state.
-    srv_control.start_srv('DHCP', 'stopped')
-    wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2)
+    if trigger == 'restart':
+        # Stop server 1 and wait for server 2 to enter partner-down state.
+        srv_control.start_srv('DHCP', 'stopped')
+        wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2)
 
-    # Check logs in server1.
-    wait_for_message_in_log('HA_STATE_TRANSITION server1: server transitions from PARTNER-DOWN to '
-                            'HOT-STANDBY state, partner state is READY')
+        # Check logs in server1.
+        wait_for_message_in_log('HA_STATE_TRANSITION server1: server transitions from PARTNER-DOWN to '
+                                'HOT-STANDBY state, partner state is READY')
 
-    # Check logs in server2.
-    wait_for_message_in_log(r'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server2: received [0-9][0-9]* leases '
-                            'from server1', destination=world.f_cfg.mgmt_address_2)
-    wait_for_message_in_log('HA_SYNC_SUCCESSFUL server2: lease database synchronization with '
-                            'server1 completed successfully',
-                            destination=world.f_cfg.mgmt_address_2)
-    wait_for_message_in_log('HA_STATE_TRANSITION server2: server transitions from READY to '
-                            'HOT-STANDBY state, partner state is HOT-STANDBY',
-                            destination=world.f_cfg.mgmt_address_2)
+        # Check logs in server2.
+        wait_for_message_in_log(r'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server2: received [0-9][0-9]* leases '
+                                'from server1', destination=world.f_cfg.mgmt_address_2)
+        wait_for_message_in_log('HA_SYNC_SUCCESSFUL server2: lease database synchronization with '
+                                'server1 completed successfully',
+                                destination=world.f_cfg.mgmt_address_2)
+        wait_for_message_in_log('HA_STATE_TRANSITION server2: server transitions from READY to '
+                                'HOT-STANDBY state, partner state is HOT-STANDBY',
+                                destination=world.f_cfg.mgmt_address_2)
+        # More message exchanges
+        set_of_leases_2 = generate_leases(leases_count=4, iana=3, iapd=2, mac="02:02:0c:03:0a:00")
 
-    # More message exchanges
-    set_of_leases_2 = generate_leases(leases_count=4, iana=3, iapd=2, mac="02:02:0c:03:0a:00")
+        srv_control.start_srv('DHCP', 'started')
+        wait_until_ha_state('hot-standby')
+    elif trigger == 'ha_sync':
+        # Clear leases on server1
+        _clear_leases_from_server('v6', 'memfile', world.f_cfg.mgmt_address)
+        set_of_leases_2 = generate_leases(leases_count=4, iana=3, iapd=2, mac="02:02:0c:03:0a:00")
+        # Send ha-sync command to server1
+        response = srv_msg.send_ctrl_cmd({
+            "command": "ha-sync",
+            "arguments": {
+                "server-name": "server2",
+                "max-period": 60
+            }
+            }, channel='http', address=world.f_cfg.mgmt_address, exp_result=0)
+        assert response == {
+            'result': 0,
+            'text': "Lease database synchronization complete."
+        }
 
-    srv_control.start_srv('DHCP', 'started')
-    wait_until_ha_state('hot-standby')
 
     srv_msg.check_leases(set_of_leases_1)
     srv_msg.check_leases(set_of_leases_2)
@@ -140,7 +178,8 @@ def test_HA_hot_standby_multiple_leases_v6(hook_order: str):
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
-def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: str, hook_order: str):
+@pytest.mark.parametrize('trigger', ['restart', 'ha_sync'])
+def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: str, hook_order: str, trigger: str):
     """
     Check that Kea HA nodes can work if they have different sync-page-limit
     configuration entries.
@@ -151,6 +190,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
     or reverse alphabetical. This is to test all order combinations for each set
     of two hook libraries after problems were found on one order of loading HA
     with leasequery.
+    :param trigger: the trigger for the lease synchronization: either Kea restart or ha_sync command
     """
 
     # HA SERVER 1
@@ -223,64 +263,104 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
     # Message exchanges
     set_of_leases_1 = generate_leases(leases_count=50, dhcp_version=dhcp_version)
 
-    # turn off server2
-    srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
-    # dump leases and logs of server2
-    srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
-    # start clean server2
-    srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
-    # let's wait for full synchronization of server2
-    wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
+    if trigger == 'restart':
+        # turn off server2
+        srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
+        # dump leases and logs of server2
+        srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+        # start clean server2
+        srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
+        # let's wait for full synchronization of server2
+        wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
 
-    # Check logs in server1.
-    wait_for_message_in_log('HA_STATE_TRANSITION server1: server transitions from PARTNER-DOWN to '
-                            'HOT-STANDBY state, partner state is READY')
+        # Check logs in server1.
+        wait_for_message_in_log('HA_STATE_TRANSITION server1: server transitions from PARTNER-DOWN to '
+                                'HOT-STANDBY state, partner state is READY')
 
-    # Check logs in server2.
-    wait_for_message_in_log('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server2: received 15 leases from '
-                            'server1', 3, destination=world.f_cfg.mgmt_address_2)
-    wait_for_message_in_log('HA_SYNC_SUCCESSFUL server2: lease database synchronization with '
-                            'server1 completed successfully',
-                            destination=world.f_cfg.mgmt_address_2)
-    wait_for_message_in_log('HA_STATE_TRANSITION server2: server transitions from READY to '
-                            'HOT-STANDBY state, partner state is HOT-STANDBY',
-                            destination=world.f_cfg.mgmt_address_2)
+        # Check logs in server2.
+        wait_for_message_in_log('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server2: received 15 leases from '
+                                'server1', 3, destination=world.f_cfg.mgmt_address_2)
+        wait_for_message_in_log('HA_SYNC_SUCCESSFUL server2: lease database synchronization with '
+                                'server1 completed successfully',
+                                destination=world.f_cfg.mgmt_address_2)
+        wait_for_message_in_log('HA_STATE_TRANSITION server2: server transitions from READY to '
+                                'HOT-STANDBY state, partner state is HOT-STANDBY',
+                                destination=world.f_cfg.mgmt_address_2)
+    elif trigger == 'ha_sync':
+        # Clear leases on server1
+        _clear_leases_from_server(dhcp_version, backend, world.f_cfg.mgmt_address_2)
+        # Send ha-sync command to server1
+        response = srv_msg.send_ctrl_cmd({
+            "command": "ha-sync",
+            "arguments": {
+                "server-name": "server1",
+                "max-period": 60
+            }
+            }, channel='http', address=world.f_cfg.mgmt_address_2, exp_result=0)
+        assert response == {
+            'result': 0,
+            'text': "Lease database synchronization complete."
+        }
 
     # check if all leases are synced
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2, backend=backend)
-    # stop server1
-    srv_control.start_srv('DHCP', 'stopped')
-    # dump leases and logs from server1
-    srv_control.clear_some_data('all')
-    # let's wait until secondary system switch status, we don't need elapsed time increased
-    # due to server settings
-    wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)
 
-    # create leases in HA 2
-    set_of_leases_2 = generate_leases(leases_count=50, dhcp_version=dhcp_version,
-                                      mac="02:02:0c:03:0a:00")
+    if trigger == 'restart':
+        # stop server1
+        srv_control.start_srv('DHCP', 'stopped')
+        # dump leases and logs from server1
+        srv_control.clear_some_data('all')
+        # let's wait until secondary system switch status, we don't need elapsed time increased
+        # due to server settings
+        wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)
 
-    # start server1
-    srv_control.start_srv('DHCP', 'started')
-    # let's wait for full synchronization of server2
-    wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
+        # create leases in HA 2
+        set_of_leases_2 = generate_leases(leases_count=50, dhcp_version=dhcp_version,
+                                        mac="02:02:0c:03:0a:00")
 
-    # Check logs in server1.
-    wait_for_message_in_log('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server1: received 10 leases from '
-                            'server2', 10)
+        # start server1
+        srv_control.start_srv('DHCP', 'started')
+        # let's wait for full synchronization of server2
+        wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
+
+        # Check logs in server1.
+        wait_for_message_in_log('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server1: received 10 leases from '
+                                'server2', 10)
+    elif trigger == 'ha_sync':
+        # Clear leases on server1
+        _clear_leases_from_server(dhcp_version, backend, world.f_cfg.mgmt_address)
+
+        # create leases in HA 2
+        set_of_leases_2 = generate_leases(leases_count=50, dhcp_version=dhcp_version,
+                                        mac="02:02:0c:03:0a:00")
+
+        # Send ha-sync command to server1
+        response = srv_msg.send_ctrl_cmd({
+            "command": "ha-sync",
+            "arguments": {
+                "server-name": "server2",
+                "max-period": 60
+            }
+            }, channel='http', address=world.f_cfg.mgmt_address, exp_result=0)
+        assert response == {
+            'result': 0,
+            'text': "Lease database synchronization complete."
+        }
 
     # Check synced leases.
     srv_msg.check_leases(set_of_leases_1, backend=backend)
     srv_msg.check_leases(set_of_leases_2, backend=backend)
 
 
+# ha_sync crashes kea primary server in passive-backup mode kea#3276
 @pytest.mark.v4_bootp
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
-def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str):
+@pytest.mark.parametrize('trigger', ['start', 'ha_sync'])
+def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str, trigger: str):
     """
     Check that Kea can synchronize leases between HA nodes in passive-backup mode.
 
@@ -290,6 +370,7 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
     or reverse alphabetical. This is to test all order combinations for each set
     of two hook libraries after problems were found on one order of loading HA
     with leasequery.
+    :param trigger: additional trigger for the lease synchronization: ha_sync command
     """
 
     # HA SERVER 1
@@ -352,6 +433,39 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
         # 5 IPv6 leases == 3 IA_NA + 2 IA_PD in each response
         wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 5 IPv6 leases completed\." } \]', leases_count)
 
+    if trigger == 'ha_sync':
+        # Clear leases on primary
+        _clear_leases_from_server(dhcp_version, backend, world.f_cfg.mgmt_address)
+        # Send ha-sync command to primary
+        response = srv_msg.send_ctrl_cmd({
+            "command": "ha-sync",
+            "arguments": {
+                "server-name": "server2",
+                "max-period": 60
+            }
+            }, channel='http', address=world.f_cfg.mgmt_address, exp_result=0)
+        assert response == {
+            'result': 0,
+            'text': "Lease database synchronization complete."
+        }
+        # check synced leases
+        srv_msg.check_leases(set_of_leases_1, backend=backend)
+        srv_msg.check_leases(set_of_leases_1, backend=backend, dest=world.f_cfg.mgmt_address_2)
+
+        # Clear leases on backup
+        _clear_leases_from_server(dhcp_version, backend, world.f_cfg.mgmt_address_2)
+        # Send ha-sync command to backup
+        response = srv_msg.send_ctrl_cmd({
+            "command": "ha-sync",
+            "arguments": {
+                "server-name": "server1",
+                "max-period": 60
+            }
+            }, channel='http', address=world.f_cfg.mgmt_address_2, exp_result=0)
+        assert response == {
+            'result': 0,
+            'text': "Lease database synchronization complete."
+        }
     # check synced leases
     srv_msg.check_leases(set_of_leases_1, backend=backend)
     srv_msg.check_leases(set_of_leases_1, backend=backend, dest=world.f_cfg.mgmt_address_2)
@@ -902,147 +1016,3 @@ def test_HA_and_RADIUS(dhcp_version: str,
     for leases in [set_of_leases, set_of_leases_2, radius_leases]:
         for dest in [world.f_cfg.mgmt_address, world.f_cfg.mgmt_address_2]:
             srv_msg.check_leases(leases, backend=backend, dest=dest)
-
-
-@pytest.mark.v4
-@pytest.mark.v6
-@pytest.mark.ha
-@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-@pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
-def test_HA_hot_standby_ha_sync_command(dhcp_version: str, backend: str, hook_order: str):
-    """
-    Check that the HA sync command works in hot-standby mode.
-    Test runs two Kea servers in hot-standby mode. Than a set of leases is generated.
-    It is removed from the second server. Second set of leases is generated and removed.
-    ha-sync is run and the leases are checked on both servers.
-
-    :param dhcp_version: v4 or v6, determined by pytest marks
-    :param backend: the database backend to be used for leases
-    :param hook_order: the order in which hooks are loaded: either alphabetical
-    or reverse alphabetical. This is to test all order combinations for each set
-    of two hook libraries after problems were found on one order of loading HA
-    with leasequery.
-    """
-
-    # HA SERVER 1
-    misc.test_setup()
-
-    srv_control.define_temporary_lease_db_backend(backend)
-
-    if dhcp_version == 'v6':
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
-    elif dhcp_version in ['v4']:
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
-    srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.dhcpsrv', 'DEBUG', 99)
-    srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
-
-    load_hook_libraries(dhcp_version, hook_order)
-
-    srv_control.update_ha_hook_parameter(HOT_STANDBY)
-    srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 100,
-                                          "max-response-delay": 1500,
-                                          "max-unacked-clients": 0,
-                                          "sync-page-limit": 10,
-                                          "this-server-name": "server1"})
-
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    # HA SERVER 2
-    misc.test_setup()
-
-    srv_control.define_temporary_lease_db_backend(backend)
-    # we have to clear data on second system, before test forge does not know that we have multiple systems
-    srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
-
-    if dhcp_version == 'v6':
-        srv_control.config_srv_subnet('2001:db8:1::/64',
-                                      '2001:db8:1::1-2001:db8:1::ffff',
-                                      world.f_cfg.server2_iface)
-    elif dhcp_version in ['v4', 'v4_bootp']:
-        srv_control.config_srv_subnet('192.168.50.0/24',
-                                      '192.168.50.1-192.168.50.200',
-                                      world.f_cfg.server2_iface)
-
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
-    srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.dhcpsrv', 'DEBUG', 99)
-    srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
-
-    load_hook_libraries(dhcp_version, hook_order)
-
-    srv_control.update_ha_hook_parameter(HOT_STANDBY)
-    srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
-                                          "max-ack-delay": 100,
-                                          "max-response-delay": 1500,
-                                          "max-unacked-clients": 0,
-                                          "sync-page-limit": 15,
-                                          "this-server-name": "server2"})
-    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
-    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
-    srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
-
-    # Wait for the hot-standby state.
-    wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
-
-    # Message exchanges
-    set_of_leases_1 = generate_leases(leases_count=20, dhcp_version=dhcp_version)
-
-    # dump leases of server2
-
-    if backend == 'memfile':
-        srv_msg.send_ctrl_cmd({
-            "command": f'lease{dhcp_version[1]}-wipe',
-            "arguments": {
-                "subnets": [1]
-            }
-        }, channel='http', address=world.f_cfg.mgmt_address_2, exp_result=0)
-        srv_msg.send_ctrl_cmd({
-            "command": "leases-reclaim",
-            "arguments": {
-                "remove": True,
-            }
-        }, channel='http', address=world.f_cfg.mgmt_address_2, exp_result=0)
-        fabric_sudo_command(f'> {world.f_cfg.get_leases_path()}', world.f_cfg.mgmt_address_2)
-    else:
-        srv_control.clear_some_data('leases', dest=world.f_cfg.mgmt_address_2)
-
-    # check if we deleted leases from second server
-    srv_msg.check_leases(set_of_leases_1, backend=backend)
-    srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2, backend=backend, should_succeed=False)
-    srv_msg.send_ctrl_cmd({
-            "command": f'lease{dhcp_version[1]}-get-all',
-            "arguments": {
-                "subnets": [1]
-            }
-        }, channel='http', address=world.f_cfg.mgmt_address_2, exp_result=3)
-
-    # create new set of leases
-    set_of_leases_2 = generate_leases(leases_count=20, dhcp_version=dhcp_version,
-                                      mac="02:02:0c:03:0a:00")
-
-    # Verify that second server has only second set of leases.
-    srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2, backend=backend, should_succeed=False)
-    srv_msg.check_leases(set_of_leases_2, backend=backend, dest=world.f_cfg.mgmt_address_2)
-
-    # Send ha-sync command to server2
-    response = srv_msg.send_ctrl_cmd({
-        "command": "ha-sync",
-        "arguments": {
-            "server-name": "server1",
-            "max-period": 60
-        }
-        }, channel='http', address=world.f_cfg.mgmt_address_2, exp_result=0)
-    assert response == {
-        'result': 0,
-        'text': "Lease database synchronization complete."
-    }
-
-    # Check synced leases.
-    srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2, backend=backend)
-    srv_msg.check_leases(set_of_leases_2, backend=backend, dest=world.f_cfg.mgmt_address_2)
