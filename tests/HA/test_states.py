@@ -787,3 +787,98 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
     assert send_heartbeat(dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)["arguments"]["state"] == "hot-standby"
 
     _send_message(dhcp=dhcp_version)
+
+
+@pytest.mark.v6
+@pytest.mark.v4
+@pytest.mark.ha
+@pytest.mark.parametrize('mode', ['load-balancing', 'hot-standby'])
+def test_HA_ha_reset(dhcp_version, mode):
+    '''
+    Test checks if sending ha-reset command will reset state machine and put server in waiting state.
+    '''
+    config = {'load-balancing': LOAD_BALANCING, 'hot-standby': HOT_STANDBY}
+
+    # HA SERVER 1
+    misc.test_setup()
+    if dhcp_version == 'v6':
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
+    else:
+        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.update_ha_hook_parameter(config[mode])
+    srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
+                                          "max-ack-delay": 100,
+                                          "max-response-delay": 1100,
+                                          "max-unacked-clients": 0,
+                                          "this-server-name": "server1",
+                                          "state-machine": {"states": [{"state": "waiting", "pause": "always"}]}})
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # HA SERVER 2
+    misc.test_setup()
+
+    if dhcp_version == 'v6':
+        srv_control.config_srv_subnet('2001:db8:1::/64',
+                                      '2001:db8:1::1-2001:db8:1::1',
+                                      world.f_cfg.server2_iface)
+    else:
+        srv_control.config_srv_subnet('192.168.50.0/24',
+                                      '192.168.50.1-192.168.50.1',
+                                      world.f_cfg.server2_iface)
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.update_ha_hook_parameter(config[mode])
+    srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
+                                          "max-ack-delay": 100,
+                                          "max-response-delay": 1100,
+                                          "max-unacked-clients": 0,
+                                          "this-server-name": "server2",
+                                          "state-machine": {"states": []}})
+    world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
+    srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
+    srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
+
+    _send_message(dhcp=dhcp_version, expect_answer=False)
+
+    # make sure server 1 stay in waiting state
+    assert send_heartbeat(dhcp_version=dhcp_version)["arguments"]["state"] == "waiting"
+    assert send_heartbeat(dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)["arguments"]["state"] == "waiting"
+    srv_msg.forge_sleep(WAIT_TIME, 'seconds')
+    assert send_heartbeat(dhcp_version=dhcp_version)["arguments"]["state"] == "waiting"
+    assert send_heartbeat(dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)["arguments"]["state"] == "waiting"
+
+    # continue server1 from WAITING
+    assert send_command(dhcp_version=dhcp_version, cmd={
+                        "command": "ha-continue"})["text"] == 'HA state machine continues.'
+    wait_until_ha_state(mode, dhcp_version=dhcp_version)
+    srv_msg.forge_sleep(WAIT_TIME, 'seconds')
+
+    # Check if both servers are in correct state
+    assert send_heartbeat(dhcp_version=dhcp_version)["arguments"]["state"] == mode
+    assert send_heartbeat(dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)["arguments"]["state"] == mode
+
+    # reset server1
+    assert send_command(dhcp_version=dhcp_version, cmd={
+                        "command": "ha-reset", "arguments": {"server-name": "server2"}})["text"] == 'HA state machine reset.'
+
+    # make sure server 1 goes and stays in waiting state
+    assert send_heartbeat(dhcp_version=dhcp_version)["arguments"]["state"] == "waiting"
+    srv_msg.forge_sleep(WAIT_TIME, 'seconds')
+    assert send_heartbeat(dhcp_version=dhcp_version)["arguments"]["state"] == "waiting"
+
+    # continue server1 from WAITING
+    assert send_command(dhcp_version=dhcp_version, cmd={
+                        "command": "ha-continue"})["text"] == 'HA state machine continues.'
+    wait_until_ha_state(mode, dhcp_version=dhcp_version)
+
+    # Check if both servers are in correct state
+    assert send_heartbeat(dhcp_version=dhcp_version)["arguments"]["state"] == mode
+    assert send_heartbeat(dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)["arguments"]["state"] == mode
