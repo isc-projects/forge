@@ -39,8 +39,7 @@ def kill_kea_on_second_system():
 @pytest.mark.parametrize('mode', ['load-balancing', 'hot-standby', 'passive-backup'])
 def test_HA_ha_scopes(dhcp_version: str, backend: str, hook_order: str, mode: str):
     """
-    Check that Kea HA nodes can work if they have different sync-page-limit
-    configuration entries.
+    Check that Kea recieves ha-scopes command and returns correct scopes.
 
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
@@ -118,19 +117,22 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, hook_order: str, mode: st
     # Wait for the hot-standby state.
     wait_until_ha_state(mode, dhcp_version=dhcp_version)
 
+    # Send ha-scopes command to the server1
     cmd = {"command": "ha-scopes", "arguments": {"scopes": ["server1", "server2"],
                                                  "server-name": "server1"}}
     srv_msg.send_ctrl_cmd(cmd, address=world.f_cfg.mgmt_address)
-    
+
+    # Check if server1 has received ha-scopes command
     cmd = {"command": "status-get", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd, address=world.f_cfg.mgmt_address)
     assert response['arguments']['high-availability'][0]['ha-servers']['local']['scopes'] == ["server1", "server2"]
 
-
+    # Send ha-scopes command to the server2
     cmd = {"command": "ha-scopes", "arguments": {"scopes": ["server1", "server2"],
                                                  "server-name": "server1"}}
     srv_msg.send_ctrl_cmd(cmd, address=world.f_cfg.mgmt_address_2)
-    
+
+    # Check if server2 has received ha-scopes command
     cmd = {"command": "status-get", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd, address=world.f_cfg.mgmt_address_2)
     assert response['arguments']['high-availability'][0]['ha-servers']['local']['scopes'] == ["server1", "server2"]
