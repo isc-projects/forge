@@ -1,10 +1,10 @@
-# Copyright (C) 2020-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-"""Kea HA syncing"""
+"""Kea ha-scopes command"""
 
 # pylint: disable=invalid-name
 # pylint: disable=line-too-long
@@ -47,6 +47,7 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, hook_order: str, mode: st
     or reverse alphabetical. This is to test all order combinations for each set
     of two hook libraries after problems were found on one order of loading HA
     with leasequery.
+    :param mode: the HA mode to be used in test.
     """
     config = {'load-balancing': LOAD_BALANCING, 'hot-standby': HOT_STANDBY, 'passive-backup': PASSIVE_BACKUP}
 
