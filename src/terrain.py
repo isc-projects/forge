@@ -24,6 +24,8 @@ from Crypto.Random.random import randint
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 
+from icecream import install
+
 from . import dependencies
 from .forge_cfg import world
 from .softwaresupport.multi_server_functions import make_tarfile, archive_file_name, \
@@ -31,6 +33,9 @@ from .softwaresupport.multi_server_functions import make_tarfile, archive_file_n
 from .softwaresupport import kea
 from . import logging_facility
 from .srv_control import start_srv
+
+# install simple debbuging tool `icecream`. Use by envoking `ic()` in any test.
+install()
 
 log = logging.getLogger('forge')
 
