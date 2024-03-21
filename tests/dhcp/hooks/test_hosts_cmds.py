@@ -2183,19 +2183,19 @@ def test_v6_del_reservation(channel, host_database, number_of_parameters):
         ],
         "subnet-id": 1
         },
-                   {"duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
-        "ip-addresses": [
-            "2001:db8:1::102"
-        ],
-        "subnet-id": 1
-    },
-      {      "duid": "00:03:00:01:f6:f5:f4:f3:f2:03",
-        "ip-addresses": [
-            "2001:db8:1::103"
-        ],
-        "subnet-id": 1
-    }]
-           
+        {"duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
+         "ip-addresses": [
+             "2001:db8:1::102"
+         ],
+         "subnet-id": 1
+         },
+        {"duid": "00:03:00:01:f6:f5:f4:f3:f2:03",
+         "ip-addresses": [
+                 "2001:db8:1::103"
+         ],
+         "subnet-id": 1
+         }]
+
     for reservation in res:
         _reservation_add(reservation, target=_get_target(host_database), channel=channel)
 
@@ -2218,10 +2218,10 @@ def test_v6_del_reservation(channel, host_database, number_of_parameters):
         "result": 0,
         "text": "Host deleted."
     }
-    
+
     response = _reservation_get("reservation-get-all", {"subnet-id": 1},
                                 target=_get_target(host_database), channel=channel)
-    
+
     assert response["result"] == 0
     assert response["text"] == "2 IPv6 host(s) found."
 
