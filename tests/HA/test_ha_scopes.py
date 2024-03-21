@@ -16,7 +16,7 @@ from src import srv_control
 from src import srv_msg
 
 from src.forge_cfg import world
-from .steps import load_hook_libraries, wait_until_ha_state
+from .steps import wait_until_ha_state
 from .steps import HOT_STANDBY, LOAD_BALANCING, PASSIVE_BACKUP
 
 
@@ -35,9 +35,8 @@ def kill_kea_on_second_system():
 @pytest.mark.v6
 @pytest.mark.ha
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-@pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
 @pytest.mark.parametrize('mode', ['load-balancing', 'hot-standby', 'passive-backup'])
-def test_HA_ha_scopes(dhcp_version: str, backend: str, hook_order: str, mode: str):
+def test_HA_ha_scopes(dhcp_version: str, backend: str, mode: str):
     """
     Check that Kea recieves ha-scopes command and returns correct scopes.
 
@@ -67,7 +66,10 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, hook_order: str, mode: st
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
 
-    load_hook_libraries(dhcp_version, hook_order)
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.add_ha_hook('libdhcp_ha.so')
+    if dhcp_version == 'v4_bootp':
+        srv_control.add_hooks('libdhcp_bootp.so')
 
     srv_control.update_ha_hook_parameter(config[mode])
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
@@ -91,7 +93,7 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, hook_order: str, mode: st
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::ffff',
                                       world.f_cfg.server2_iface, id=1)
-    elif dhcp_version in ['v4', 'v4_bootp']:
+    else:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.200',
                                       world.f_cfg.server2_iface, id=1)
@@ -102,7 +104,10 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, hook_order: str, mode: st
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
 
-    load_hook_libraries(dhcp_version, hook_order)
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.add_ha_hook('libdhcp_ha.so')
+    if dhcp_version == 'v4_bootp':
+        srv_control.add_hooks('libdhcp_bootp.so')
 
     srv_control.update_ha_hook_parameter(config[mode])
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
