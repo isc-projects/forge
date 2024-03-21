@@ -1246,7 +1246,6 @@ def disable_mt_if_required(cfg):
         return cfg
 
     # TODO: remove list_of_non_mt_hooks and maybe also its use below after
-    # libdhcp_radius.so becomes MT-compatible and libdhcp_old_radius.so gets removed.
     list_of_non_mt_hooks = ["libdhcp_user_chk.so"]
 
     # all configured hooks
