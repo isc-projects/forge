@@ -77,7 +77,8 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Leases db is checked to confirm Kea is using it.
     """
-    retries = 3
+    retries = 5
+    wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
     _stop_database(backend)
@@ -92,7 +93,7 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
                                         "password": world.f_cfg.db_passwd,
                                         "retry-on-startup": True,
                                         "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": 2000,
+                                        "reconnect-wait-time": wait_time,
                                         "on-fail": "stop-retry-exit"}
 
     srv_control.open_control_channel()
@@ -126,7 +127,8 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
     _confirm_no_dhcp_service(dhcp_version)
 
     # Wait for kea shutdown after exhausting retries
-    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1, timeout=12)
+    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
+                            timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is done waiting before shutdown
     cmd = {"command": "version-get", "arguments": {}}
@@ -152,7 +154,8 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1, timeout=12)
+        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1,
+        timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is started and connected to DB
     if dhcp_version == 'v4':
@@ -180,7 +183,8 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Leases db is checked to confirm Kea is using it.
     """
-    retries = 3
+    retries = 5
+    wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
     _stop_database(backend)
@@ -197,7 +201,7 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
                                         "password": world.f_cfg.db_passwd,
                                         "retry-on-startup": True,
                                         "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": 2000,
+                                        "reconnect-wait-time": wait_time,
                                         "on-fail": "serve-retry-exit"}
 
     srv_control.open_control_channel()
@@ -232,7 +236,8 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
         srv_msg.response_check_option_content(7, 'value', 123)
 
     # Wait for kea shutdown after exhausting retries
-    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1, timeout=12)
+    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
+                            timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is done waiting before shutdown
     cmd = {"command": "version-get", "arguments": {}}
@@ -258,7 +263,8 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1, timeout=12)
+        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1,
+        timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is started and connected to DB
     if dhcp_version == 'v4':
@@ -286,7 +292,8 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Leases db is checked to confirm Kea is using it.
     """
-    retries = 3
+    retries = 5
+    wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
     _stop_database(backend)
@@ -303,7 +310,7 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
                                         "password": world.f_cfg.db_passwd,
                                         "retry-on-startup": True,
                                         "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": 2000,
+                                        "reconnect-wait-time": wait_time,
                                         "on-fail": "serve-retry-continue"}
 
     srv_control.open_control_channel()
@@ -339,7 +346,8 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
 
     # Wait for Kea to be done waiting
     wait_for_message_in_log(f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
-                            f'{retries}, has been exhausted without success', count=1, timeout=32)
+                            f'{retries}, has been exhausted without success', count=1,
+                            timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is still serving Clients non lease messages
     if dhcp_version == 'v4':
@@ -374,7 +382,8 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1, timeout=12)
+        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1,
+        timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is started and connected to DB
     if dhcp_version == 'v4':
@@ -399,7 +408,8 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     DHCP traffic is send to confirm Kea is using reservations.
     """
-    retries = 3
+    retries = 5
+    wait_time = 2000
     misc.test_setup()
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
@@ -421,7 +431,7 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
                                         "password": world.f_cfg.db_passwd,
                                         "retry-on-startup": True,
                                         "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": 2000,
+                                        "reconnect-wait-time": wait_time,
                                         "on-fail": "stop-retry-exit"}
 
     srv_control.open_control_channel()
@@ -446,7 +456,8 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
     _confirm_no_dhcp_service(dhcp_version)
 
     # Wait for kea shutdown
-    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1, timeout=12)
+    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
+                            timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is done waiting before shutdown
     cmd = {"command": "version-get", "arguments": {}}
@@ -472,7 +483,8 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1, timeout=12)
+        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1,
+        timeout=retries*wait_time/1000+1)
 
     if dhcp_version == 'v4':
         srv_msg.DORA('192.168.50.100', chaddr='ff:01:02:03:ff:04')
@@ -493,7 +505,8 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     DHCP traffic is send to confirm Kea is using reservations.
     """
-    retries = 3
+    retries = 5
+    wait_time = 2000
     misc.test_setup()
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
@@ -515,7 +528,7 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
                                         "password": world.f_cfg.db_passwd,
                                         "retry-on-startup": True,
                                         "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": 2000,
+                                        "reconnect-wait-time": wait_time,
                                         "on-fail": "serve-retry-exit"}
 
     srv_control.open_control_channel()
@@ -543,7 +556,8 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
         srv_msg.SARR('2001:db8:1::50')
 
     # Wait for kea shutdown after exhausting retries
-    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1, timeout=12)
+    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
+                            timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is done waiting before shutdown
     cmd = {"command": "version-get", "arguments": {}}
@@ -569,7 +583,8 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1, timeout=12)
+        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1,
+        timeout=retries*wait_time/1000+1)
 
     if dhcp_version == 'v4':
         srv_msg.DORA('192.168.50.100', chaddr='ff:01:02:03:ff:04')
@@ -591,7 +606,8 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     DHCP traffic is send to confirm Kea is using reservations.
     """
-    retries = 3
+    retries = 5
+    wait_time = 2000
     misc.test_setup()
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
@@ -613,7 +629,7 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
                                         "password": world.f_cfg.db_passwd,
                                         "retry-on-startup": True,
                                         "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": 2000,
+                                        "reconnect-wait-time": wait_time,
                                         "on-fail": "serve-retry-continue"}
 
     srv_control.open_control_channel()
@@ -642,7 +658,8 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
 
     # Wait for Kea to be done waiting
     wait_for_message_in_log(f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
-                            f'{retries}, has been exhausted without success', count=1, timeout=32)
+                            f'{retries}, has been exhausted without success', count=1,
+                            timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is still started and serves clients
     if dhcp_version == 'v4':
@@ -668,7 +685,8 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1, timeout=12)
+        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1,
+        timeout=retries*wait_time/1000+1)
 
     if dhcp_version == 'v4':
         srv_msg.DORA('192.168.50.100', chaddr='ff:01:02:03:ff:04')
@@ -690,7 +708,8 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Legal log is checked to confirm Kea is using DB.
     """
-    retries = 3
+    retries = 5
+    wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
     _stop_database(backend)
@@ -709,7 +728,7 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
     srv_control.add_parameter_to_hook(1, 'user', world.f_cfg.db_user)
     srv_control.add_parameter_to_hook(1, 'retry-on-startup', True)
     srv_control.add_parameter_to_hook(1, 'max-reconnect-tries', retries)
-    srv_control.add_parameter_to_hook(1, 'reconnect-wait-time', 2000)
+    srv_control.add_parameter_to_hook(1, 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook(1, 'on-fail', 'stop-retry-exit')
 
     srv_control.open_control_channel()
@@ -732,7 +751,8 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
     _confirm_no_dhcp_service(dhcp_version)
 
     # Wait for kea shutdown after exhausting retries
-    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1, timeout=32)
+    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
+                            timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is done waiting before shutdown
     cmd = {"command": "version-get", "arguments": {}}
@@ -758,7 +778,8 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1, timeout=12)
+        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1,
+        timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is started and connected to DB
     if dhcp_version == 'v4':
@@ -788,7 +809,8 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Legal log is checked to confirm Kea is using DB.
     """
-    retries = 3
+    retries = 5
+    wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
     _stop_database(backend)
@@ -807,7 +829,7 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
     srv_control.add_parameter_to_hook(1, 'user', world.f_cfg.db_user)
     srv_control.add_parameter_to_hook(1, 'retry-on-startup', True)
     srv_control.add_parameter_to_hook(1, 'max-reconnect-tries', retries)
-    srv_control.add_parameter_to_hook(1, 'reconnect-wait-time', 2000)
+    srv_control.add_parameter_to_hook(1, 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook(1, 'on-fail', 'serve-retry-exit')
 
     srv_control.open_control_channel()
@@ -833,7 +855,8 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
         srv_msg.SARR('2001:db8:1::50', duid='00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01')
 
     # Wait for kea shutdown
-    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1, timeout=32)
+    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
+                            timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is done waiting before shutdown
     cmd = {"command": "version-get", "arguments": {}}
@@ -865,7 +888,8 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1, timeout=12)
+        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1,
+        timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is started and connected to DB
     if dhcp_version == 'v4':
@@ -895,7 +919,8 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Legal log is checked to confirm Kea is using DB.
     """
-    retries = 3
+    retries = 5
+    wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
     _stop_database(backend)
@@ -914,7 +939,7 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
     srv_control.add_parameter_to_hook(1, 'user', world.f_cfg.db_user)
     srv_control.add_parameter_to_hook(1, 'retry-on-startup', True)
     srv_control.add_parameter_to_hook(1, 'max-reconnect-tries', retries)
-    srv_control.add_parameter_to_hook(1, 'reconnect-wait-time', 2000)
+    srv_control.add_parameter_to_hook(1, 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook(1, 'on-fail', 'serve-retry-continue')
 
     srv_control.open_control_channel()
@@ -941,7 +966,8 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
 
     # Wait for Kea to be done waiting
     wait_for_message_in_log(f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
-                            f'{retries}, has been exhausted without success', count=1, timeout=32)
+                            f'{retries}, has been exhausted without success', count=1,
+                            timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is still started and serves clients
     if dhcp_version == 'v4':
@@ -973,7 +999,8 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1, timeout=12)
+        f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1,
+        timeout=retries*wait_time/1000+1)
 
     # Confirm Kea is started and connected to DB
     if dhcp_version == 'v4':
