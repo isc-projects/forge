@@ -2279,7 +2279,7 @@ def test_v6_del_reservation(channel, host_database, query_type):
          ],
          "subnet-id": 1
          },
-         {"duid": "00:03:00:01:f6:f5:f4:f3:f2:04",
+        {"duid": "00:03:00:01:f6:f5:f4:f3:f2:04",
          "ip-addresses": [
                  "2001:db8:1::104", "2001:db8:1::105"
          ],
