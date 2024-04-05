@@ -129,6 +129,36 @@ def _get_target(database: str):
     return 'database'
 
 
+def _get_multiple_iana(adresses, iaid, duid):
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', duid)
+    srv_msg.client_does_include('Client', 'client-id')
+    for id in iaid:
+        srv_msg.client_sets_value('Client', 'ia_id', id)
+        srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.generate_new('IA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', duid)
+    srv_msg.client_copy_option('IA_NA', copy_all=True)
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    for ip in adresses:
+        srv_msg.response_check_suboption_content(5, 3, 'addr', ip)
+
+
 @pytest.mark.v4
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
@@ -2290,7 +2320,7 @@ def test_v6_del_reservation(channel, host_database, query_type):
         _reservation_add(reservation, target=_get_target(host_database), channel=channel)
 
     srv_msg.SARR('2001:db8:1::101')
-    srv_msg.SARR('2001:db8:1::104',  duid='00:03:00:01:f6:f5:f4:f3:f2:04')
+    _get_multiple_iana(['2001:db8:1::104','2001:db8:1::105'], [2123,2124], '00:03:00:01:f6:f5:f4:f3:f2:04')
 
     del_res = {
         "ip-address": "2001:db8:1::101",
@@ -2317,7 +2347,7 @@ def test_v6_del_reservation(channel, host_database, query_type):
     assert response["text"] == "3 IPv6 host(s) found."
 
     srv_msg.SARR('2001:db8:1::51')
-    srv_msg.SARR('2001:db8:1::104',  duid='00:03:00:01:f6:f5:f4:f3:f2:04')
+    _get_multiple_iana(['2001:db8:1::104','2001:db8:1::105'], [2123,2124],  '00:03:00:01:f6:f5:f4:f3:f2:04')
 
     del_res = {
         "ip-address": "2001:db8:1::105",
@@ -2343,8 +2373,8 @@ def test_v6_del_reservation(channel, host_database, query_type):
     assert response["result"] == 0
     assert response["text"] == "2 IPv6 host(s) found."
 
-    srv_msg.SARR('2001:db8:1::51')
-    srv_msg.SARR('2001:db8:1::52',  duid='00:03:00:01:f6:f5:f4:f3:f2:04')
+    srv_msg.SARR('2001:db8:1::52')
+    srv_msg.SARR('2001:db8:1::53',  duid='00:03:00:01:f6:f5:f4:f3:f2:04')
 
 
 @pytest.mark.v6
