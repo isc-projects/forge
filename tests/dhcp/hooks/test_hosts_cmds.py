@@ -2320,7 +2320,7 @@ def test_v6_del_reservation(channel, host_database, query_type):
         _reservation_add(reservation, target=_get_target(host_database), channel=channel)
 
     srv_msg.SARR('2001:db8:1::101')
-    _get_multiple_iana(['2001:db8:1::104','2001:db8:1::105'], [2123,2124], '00:03:00:01:f6:f5:f4:f3:f2:04')
+    _get_multiple_iana(['2001:db8:1::104', '2001:db8:1::105'], [2123, 2124], '00:03:00:01:f6:f5:f4:f3:f2:04')
 
     del_res = {
         "ip-address": "2001:db8:1::101",
@@ -2347,7 +2347,7 @@ def test_v6_del_reservation(channel, host_database, query_type):
     assert response["text"] == "3 IPv6 host(s) found."
 
     srv_msg.SARR('2001:db8:1::51')
-    _get_multiple_iana(['2001:db8:1::104','2001:db8:1::105'], [2123,2124],  '00:03:00:01:f6:f5:f4:f3:f2:04')
+    _get_multiple_iana(['2001:db8:1::104', '2001:db8:1::105'], [2123, 2124],  '00:03:00:01:f6:f5:f4:f3:f2:04')
 
     del_res = {
         "ip-address": "2001:db8:1::105",
