@@ -129,12 +129,12 @@ def _get_target(database: str):
     return 'database'
 
 
-def _get_multiple_iana(adresses, iaid, duid):
+def _get_multiple_iana(adresses, iaids, duid):
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
     srv_msg.client_does_include('Client', 'client-id')
-    for id in iaid:
-        srv_msg.client_sets_value('Client', 'ia_id', id)
+    for iaid in iaids:
+        srv_msg.client_sets_value('Client', 'ia_id', iaid)
         srv_msg.client_does_include('Client', 'IA-NA')
     srv_msg.generate_new('IA')
     srv_msg.client_send_msg('SOLICIT')
