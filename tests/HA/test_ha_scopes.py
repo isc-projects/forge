@@ -129,6 +129,7 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, mode: str):
     srv_msg.send_ctrl_cmd(cmd, address=world.f_cfg.mgmt_address)
 
     # Check if server1 has received ha-scopes command
+    srv_msg.forge_sleep(2)
     cmd = {"command": "status-get", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd, address=world.f_cfg.mgmt_address)
     assert response['arguments']['high-availability'][0]['ha-servers']['local']['scopes'] == ["server1", "server2"]
@@ -139,6 +140,7 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, mode: str):
     srv_msg.send_ctrl_cmd(cmd, address=world.f_cfg.mgmt_address_2)
 
     # Check if server2 has received ha-scopes command
+    srv_msg.forge_sleep(2)
     cmd = {"command": "status-get", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd, address=world.f_cfg.mgmt_address_2)
     assert response['arguments']['high-availability'][0]['ha-servers']['local']['scopes'] == ["server1", "server2"]
