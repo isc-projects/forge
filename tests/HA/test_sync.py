@@ -136,8 +136,8 @@ def test_HA_hot_standby_multiple_leases_v6(trigger, hook_order: str):
         # Check logs in server2.
         wait_for_message_in_log(r'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server2: received [0-9][0-9]* leases '
                                 'from server1', destination=world.f_cfg.mgmt_address_2)
-        wait_for_message_in_log('HA_SYNC_SUCCESSFUL server2: lease database synchronization with '
-                                'server1 completed successfully',
+        wait_for_message_in_log(f'HA_SYNC_SUCCESSFUL server2: lease database synchronization with '
+                                f'server1 (http://{world.f_cfg.mgmt_address}:8003/) completed successfully',
                                 destination=world.f_cfg.mgmt_address_2)
         wait_for_message_in_log('HA_STATE_TRANSITION server2: server transitions from READY to '
                                 'HOT-STANDBY state, partner state is HOT-STANDBY',
@@ -279,8 +279,8 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
         # Check logs in server2.
         wait_for_message_in_log('HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server2: received 15 leases from '
                                 'server1', 3, destination=world.f_cfg.mgmt_address_2)
-        wait_for_message_in_log('HA_SYNC_SUCCESSFUL server2: lease database synchronization with '
-                                'server1 completed successfully',
+        wait_for_message_in_log(f'HA_SYNC_SUCCESSFUL server2: lease database synchronization with '
+                                f'server1 (http://{world.f_cfg.mgmt_address}:8003/) completed successfully',
                                 destination=world.f_cfg.mgmt_address_2)
         wait_for_message_in_log('HA_STATE_TRANSITION server2: server transitions from READY to '
                                 'HOT-STANDBY state, partner state is HOT-STANDBY',
