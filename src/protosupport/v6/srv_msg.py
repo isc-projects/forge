@@ -787,7 +787,6 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
         for msg in world.srvmsg:
             log.info("Received packet %s (code %s)" % (get_msg_type(msg), msg.msgtype))
 
-
     if not ignore_response:
         if exp_message is not None:
             for x in unans:
