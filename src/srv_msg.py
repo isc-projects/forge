@@ -241,12 +241,12 @@ def change_message_filed(message_filed, value, value_type):
 
 # checking DHCP respond
 @step(r'Server MUST NOT respond.')
-def send_dont_wait_for_message(iface=None):
+def send_dont_wait_for_message(iface=None, ignore_response=False):
     """
     This step causes to send message in cases when we don't expect any response.
     Step used only for v4 testing
     """
-    dhcpmsg.send_wait_for_message("MUST", False, None, iface=iface)
+    dhcpmsg.send_wait_for_message("MUST", False, None, iface=iface, ignore_response=ignore_response)
 
 
 @step(r'Server (\S+) (NOT )?respond with (\w+) message.')

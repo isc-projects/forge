@@ -327,7 +327,7 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
             srv_msg.client_send_msg('SOLICIT', iface)
 
             misc.pass_criteria()
-            srv_msg.send_dont_wait_for_message(iface)
+            srv_msg.send_dont_wait_for_message(iface, ignore_response=True)
 
     elif dhcp_version == 'v4':
         for i in range(msg_count):
@@ -344,7 +344,7 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
             srv_msg.client_send_msg('DISCOVER', iface)
 
             misc.pass_criteria()
-            srv_msg.send_dont_wait_for_message(iface)
+            srv_msg.send_dont_wait_for_message(iface, ignore_response=True)
 
     world.f_cfg.show_packets_from = tmp
 

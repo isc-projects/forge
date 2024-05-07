@@ -730,7 +730,8 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
 
 
 def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
-                          protocol: str = 'UDP', address: str = None, port: int = None, iface=None):
+                          protocol: str = 'UDP', address: str = None, port: int = None, iface=None,
+                          ignore_response: bool = False):
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # debug.recv=[]
     # Uncomment this to get debug.recv filled with all received messages
@@ -786,15 +787,16 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
         for msg in world.srvmsg:
             log.info("Received packet %s (code %s)" % (get_msg_type(msg), msg.msgtype))
 
-    if exp_message is not None:
-        for x in unans:
-            log.error(("Unanswered packet type=%s" % get_msg_type(x)))
 
-    if presence:
-        assert len(world.srvmsg) != 0, "No response received."
-        assert received_name == exp_message, f"Expected message {exp_message} not received (got {received_name})"
-    elif not presence:
-        assert len(world.srvmsg) == 0, f"Response received ({received_name}) was not expected!"
+    if not ignore_response:
+        if exp_message is not None:
+            for x in unans:
+                log.error(("Unanswered packet type=%s" % get_msg_type(x)))
+        if presence:
+            assert len(world.srvmsg) != 0, "No response received."
+            assert received_name == exp_message, f"Expected message {exp_message} not received (got {received_name})"
+        elif not presence:
+            assert len(world.srvmsg) == 0, f"Response received ({received_name}) was not expected!"
 
     return world.srvmsg
 
