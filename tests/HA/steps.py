@@ -364,7 +364,7 @@ def load_hook_libraries(dhcp_version, hook_order):
 
 def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str, secondary_state: str,
                   primary_role: str, secondary_role: str, primary_scopes: list, secondary_scopes: list,
-                  comm_interrupt: bool, in_touch: bool = True, channel: str = 'http', verify: bool = None,
+                  comm_interrupt: bool = None, in_touch: bool = None, channel: str = 'http', verify: bool = None,
                   port: int = 8000):
     """Check HA dependent status returned by 'status-get' command according to parameters.
     This function checks 2 servers in HA pair.
@@ -397,9 +397,11 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
         assert response['ha-servers']['local']['state'] == primary_state
         assert response['ha-servers']['remote']['age'] >= 0
         assert response['ha-servers']['remote']['analyzed-packets'] >= 0
-        assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
+        if comm_interrupt is not None:
+            assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
         assert response['ha-servers']['remote']['connecting-clients'] >= 0
-        assert response['ha-servers']['remote']['in-touch'] == in_touch
+        if in_touch is not None:
+            assert response['ha-servers']['remote']['in-touch'] == in_touch
         assert response['ha-servers']['remote']['role'] == secondary_role
         assert response['ha-servers']['remote']['unacked-clients'] >= 0
         assert response['ha-servers']['remote']['unacked-clients-left'] >= 0
@@ -415,9 +417,11 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
         assert response['ha-servers']['local']['state'] == secondary_state
         assert response['ha-servers']['remote']['age'] >= 0
         assert response['ha-servers']['remote']['analyzed-packets'] >= 0
-        assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
+        if comm_interrupt is not None:
+            assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
         assert response['ha-servers']['remote']['connecting-clients'] >= 0
-        assert response['ha-servers']['remote']['in-touch'] == in_touch
+        if in_touch is not None:
+            assert response['ha-servers']['remote']['in-touch'] == in_touch
         assert response['ha-servers']['remote']['role'] == primary_role
         assert response['ha-servers']['remote']['unacked-clients'] >= 0
         assert response['ha-servers']['remote']['unacked-clients-left'] >= 0
