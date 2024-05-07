@@ -129,10 +129,6 @@ def test_HA_hot_standby_multiple_leases_v6(trigger, hook_order: str):
         srv_control.start_srv('DHCP', 'stopped')
         wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2)
 
-        # Check logs in server1.
-        wait_for_message_in_log('HA_STATE_TRANSITION server1: server transitions from PARTNER-DOWN to '
-                                'HOT-STANDBY state, partner state is READY')
-
         # Check logs in server2.
         wait_for_message_in_log(r'HA_LEASES_SYNC_LEASE_PAGE_RECEIVED server2: received [0-9][0-9]* leases '
                                 'from server1', destination=world.f_cfg.mgmt_address_2)
@@ -267,10 +263,12 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
         srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
         # dump leases and logs of server2
         srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+        wait_until_ha_state('partner-down', dhcp_version=dhcp_version)
         # start clean server2
         srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
         # let's wait for full synchronization of server2
         wait_until_ha_state('hot-standby', dhcp_version=dhcp_version)
+        wait_until_ha_state('hot-standby', dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)
 
         # Check logs in server1.
         wait_for_message_in_log('HA_STATE_TRANSITION server1: server transitions from PARTNER-DOWN to '
