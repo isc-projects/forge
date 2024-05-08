@@ -751,6 +751,7 @@ def test_v4_classification_release_different_chaddr_client_id():
     srv_msg.send_dont_wait_for_message()
     # we should check logs here..
 
+
 def _get_address(mac, address, class_id=None):
     misc.test_procedure()
     srv_msg.client_sets_value("Client", "chaddr", mac)
@@ -772,6 +773,7 @@ def _get_address(mac, address, class_id=None):
     srv_msg.send_wait_for_message("MUST", "ACK")
     srv_msg.response_check_content("yiaddr", address)
 
+
 @pytest.mark.v4
 @pytest.mark.classification
 @pytest.mark.parametrize("level", ['global', 'shared-networks'])
@@ -785,7 +787,6 @@ def test_v4_classification_vendor_different_levels(level):
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.15')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.10-192.168.51.15')
     srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24', '192.168.52.10-192.168.52.15')
-    # srv_control.config_srv_another_subnet_no_interface('192.168.53.0/24', '192.168.53.10-192.168.53.15')
 
     for i in range(3):
         srv_control.config_client_classification(i, f'VENDOR_CLASS_subnet-{i}')

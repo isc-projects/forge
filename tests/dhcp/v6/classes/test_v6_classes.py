@@ -904,3 +904,65 @@ def test_v6_classification_shared_subnet_options_subnet():
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:a::1')
     srv_msg.response_check_include_option(23)
     srv_msg.response_check_option_content(23, 'addresses', '2001:db8::888')
+
+
+def _get_address(duid, address, class_id=None):
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "DUID", duid)
+    srv_msg.client_does_include("Client", "client-id")
+    srv_msg.client_does_include("Client", "IA-NA")
+    srv_msg.client_sets_value("Client", "vendor_class_data", class_id)
+    srv_msg.client_does_include("Client", "vendor-class")
+    srv_msg.client_send_msg("SOLICIT")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "ADVERTISE")
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, "sub-option", 5)
+    srv_msg.response_check_suboption_content(5, 3, "addr", address)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "vendor_class_data", class_id)
+    srv_msg.client_does_include("Client", "vendor-class")
+    srv_msg.client_sets_value("Client", "DUID", duid)
+    srv_msg.client_copy_option("IA_NA")
+    srv_msg.client_copy_option("server-id")
+    srv_msg.client_does_include("Client", "client-id")
+    srv_msg.client_send_msg("REQUEST")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "REPLY")
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, "sub-option", 5)
+    srv_msg.response_check_suboption_content(5, 3, "addr", address)
+
+
+@pytest.mark.v6
+@pytest.mark.classification
+@pytest.mark.parametrize("level", ['global', 'shared-networks'])
+def test_v6_classification_vendor_different_levels(level):
+    """test_v6_classification_vendor_different_levels Check vendor classes when shared networks are used and when those are not used.
+
+    :param level: subnets configured in shared-networks or global
+    :type level: string
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::10')
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64', '2001:db8:b::1-2001:db8:b::10')
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:c::/64', '2001:db8:c::1-2001:db8:c::10')
+
+    for i, j in zip(["a", "b", "c"], range(3)):
+        srv_control.config_client_classification(j, f'VENDOR_CLASS_subnet-{i}')
+
+    if level == 'shared-networks':
+        srv_control.shared_subnet('2001:db8:a::/64', 0)
+        srv_control.shared_subnet('2001:db8:b::/64', 0)
+        srv_control.shared_subnet('2001:db8:c::/64', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+        srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv("DHCP", "started")
+
+    for i in ["a", "b", "c"]:
+        _get_address(duid=f"00:03:00:01:00:00:00:00:11:0{i.upper()}", address=f"2001:db8:{i}::1", class_id=f'subnet-{i}')
