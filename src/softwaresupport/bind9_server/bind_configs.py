@@ -1874,6 +1874,14 @@ zone "52.168.192.in-addr.arpa." {
      allow-query { any; };              // This is the default
 };
 
+zone "53.168.192.in-addr.arpa." {
+     type master;
+     file "rev4.db";
+     notify no;
+     allow-update { any; };              // This is the default
+     allow-query { any; };              // This is the default
+};
+
 zone "four.example.com" {
      type master;
      file "fwd.db";

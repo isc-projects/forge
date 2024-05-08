@@ -750,3 +750,55 @@ def test_v4_classification_release_different_chaddr_client_id():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
     # we should check logs here..
+
+def _get_address(mac, address, class_id=None):
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "chaddr", mac)
+    srv_msg.client_does_include_with_value('vendor_class_id', class_id)
+    srv_msg.client_send_msg("DISCOVER")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "OFFER")
+    srv_msg.response_check_content("yiaddr", address)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "chaddr", mac)
+    srv_msg.client_copy_option("server_id")
+    srv_msg.client_does_include_with_value('vendor_class_id', class_id)
+    srv_msg.client_does_include_with_value("requested_addr", address)
+    srv_msg.client_send_msg("REQUEST")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "ACK")
+    srv_msg.response_check_content("yiaddr", address)
+
+@pytest.mark.v4
+@pytest.mark.classification
+@pytest.mark.parametrize("level", ['global', 'shared-networks'])
+def test_v4_classification_vendor_different_levels(level):
+    """test_v4_classification_vendor_different_levels Check vendor classes when shared networks are used and when those are not used.
+
+    :param level: subnets configured in shared-networks or global
+    :type level: string
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.15')
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.10-192.168.51.15')
+    srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24', '192.168.52.10-192.168.52.15')
+    # srv_control.config_srv_another_subnet_no_interface('192.168.53.0/24', '192.168.53.10-192.168.53.15')
+
+    for i in range(3):
+        srv_control.config_client_classification(i, f'VENDOR_CLASS_subnet-{i}')
+
+    if level == 'shared-networks':
+        srv_control.shared_subnet('192.168.50.0/24', 0)
+        srv_control.shared_subnet('192.168.51.0/24', 0)
+        srv_control.shared_subnet('192.168.52.0/24', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+        srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv("DHCP", "started")
+
+    for i in range(3):
+        _get_address(mac=f"00:00:00:00:00:0{i}", address=f"192.168.5{i}.10", class_id=f'subnet-{i}')
