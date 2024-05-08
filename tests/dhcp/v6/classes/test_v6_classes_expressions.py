@@ -1433,3 +1433,131 @@ def test_v6_classification_expressions_split():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:a::1')
+
+
+@pytest.mark.v6
+@pytest.mark.classification
+@pytest.mark.parametrize('datatype', ['numbers', 'lcase', 'ucase', 'special', 'mixed'])
+def test_v6_classification_expressions_lcase(datatype):
+    """
+    Test 'lcase' expression by sending FQDN and checking if equals pattern.
+    """
+    test_set = {'numbers': ['1234567890.', '1234567890.'],
+                'lcase': ['abcdefghijklmnoprstuwxyz.', 'abcdefghijklmnoprstuwxyz.'],
+                'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ.', 'abcdefghijklmnoprstuwxyz.'],
+                'special': ['-:*%^&.', '-:*%^&.'],
+                'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890-:*%^&.',
+                                  'abcdefghijklmnoprstuwxyz1234567890-:*%^&.']}
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
+
+    srv_control.create_new_class('Client_Class_1')
+    # Using ASCI number 0x27 as a single quote character.
+    # option[39].text returns: "39(CLIENT_FQDN), flags: (N=0, O=0, S=1), domain-name='test.example.com.' (full)"
+    srv_control.add_test_to_class(1, 'test', f'lcase(split(option[39].text, 0x27,2)) == \'{test_set[datatype][1]}\'')
+
+    srv_control.config_client_classification(0, 'Client_Class_1')
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Sending incorrect FQDN should return and "Server could not select subnet for this client" in Advertise
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'nottest.dot.null.')
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 13)
+    srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
+
+    # Sending correct FQDN should return and IP in Advertise
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', test_set[datatype][0])
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:a::1')
+
+
+@pytest.mark.v6
+@pytest.mark.classification
+@pytest.mark.parametrize('datatype', ['numbers', 'lcase', 'ucase', 'special', 'mixed'])
+def test_v6_classification_expressions_ucase(datatype):
+    """
+    Test 'ucase' expression by sending FQDN and checking if equals pattern.
+    """
+    test_set = {'numbers': ['1234567890.', '1234567890.'],
+                'lcase': ['abcdefghijklmnoprstuwxyz.', 'ABCDEFGHIJKLMNOPRSTUWXYZ.'],
+                'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ.', 'ABCDEFGHIJKLMNOPRSTUWXYZ.'],
+                'special': ['-:*%^&.', '-:*%^&.'],
+                'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890-:*%^&.',
+                                  'ABCDEFGHIJKLMNOPRSTUWXYZ1234567890-:*%^&.']}
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
+
+    srv_control.create_new_class('Client_Class_1')
+    # Using ASCI number 0x27 as a single quote character.
+    # option[39].text returns: "39(CLIENT_FQDN), flags: (N=0, O=0, S=1), domain-name='test.example.com.' (full)"
+    srv_control.add_test_to_class(1, 'test', f'ucase(split(option[39].text, 0x27,2)) == \'{test_set[datatype][1]}\'')
+
+    srv_control.config_client_classification(0, 'Client_Class_1')
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Sending incorrect FQDN should return and "Server could not select subnet for this client" in Advertise
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'nottest.dot.null.')
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 13)
+    srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
+
+    # Sending correct FQDN should return and IP in Advertise
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', test_set[datatype][0])
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:a::1')

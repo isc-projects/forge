@@ -1421,3 +1421,113 @@ def test_v4_classification_expressions_split():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
+
+
+@pytest.mark.v4
+@pytest.mark.classification
+@pytest.mark.parametrize('datatype', ['numbers', 'lcase', 'ucase', 'special', 'mixed'])
+def test_v4_classification_expressions_lcase(datatype):
+    """
+    Test 'lcase' expression by sending Hostname and checking if equals pattern.
+
+    """
+    test_set = {'numbers': ['1234567890', '1234567890'],
+                'lcase': ['abcdefghijklmnoprstuwxyz', 'abcdefghijklmnoprstuwxyz'],
+                'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ', 'abcdefghijklmnoprstuwxyz'],
+                'special': ['!@#%^&*()-=_+[];:,<.>?', '!@#%^&*()-=_+[];:,<.>?'],
+                'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890!@#%^&*()-=_+[];:,<.>?',
+                                  'abcdefghijklmnoprstuwxyz1234567890!@#%^&*()-=_+[];:,<.>?']}
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+
+    srv_control.create_new_class('Client_Class_1')
+    srv_control.add_test_to_class(1, 'test', f'lcase(option[12].hex) == \'{test_set[datatype][1]}\'')
+    srv_control.config_client_classification(0, 'Client_Class_1')
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Sending correct hostname should return and IP in Offer
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('hostname', test_set[datatype][0])
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+
+    # Sending incorrect hostname should be dropped
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('hostname', 'nottest.dot.null.')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
+
+    # Sending correct hostname should return and IP in Offer
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('hostname', test_set[datatype][0])
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+
+
+@pytest.mark.v4
+@pytest.mark.classification
+@pytest.mark.parametrize('datatype', ['numbers', 'lcase', 'ucase', 'special', 'mixed'])
+def test_v4_classification_expressions_ucase(datatype):
+    """
+    Test 'ucase' expression by sending Hostname and checking if equals pattern.
+
+    """
+    test_set = {'numbers': ['1234567890', '1234567890'],
+                'lcase': ['abcdefghijklmnoprstuwxyz', 'ABCDEFGHIJKLMNOPRSTUWXYZ'],
+                'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ', 'ABCDEFGHIJKLMNOPRSTUWXYZ'],
+                'special': ['!@#%^&*()-=_+[];:,<.>?', '!@#%^&*()-=_+[];:,<.>?'],
+                'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890!@#%^&*()-=_+[];:,<.>?',
+                                  'ABCDEFGHIJKLMNOPRSTUWXYZ1234567890!@#%^&*()-=_+[];:,<.>?']}
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+
+    srv_control.create_new_class('Client_Class_1')
+    srv_control.add_test_to_class(1, 'test', f'ucase(option[12].hex) == \'{test_set[datatype][1]}\'')
+    srv_control.config_client_classification(0, 'Client_Class_1')
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Sending correct hostname should return and IP in Offer
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('hostname', test_set[datatype][0])
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+
+    # Sending incorrect hostname should be dropped
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('hostname', 'nottest.dot.null.')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
+
+    # Sending correct hostname should return and IP in Offer
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('hostname', test_set[datatype][0])
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
