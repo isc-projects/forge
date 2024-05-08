@@ -1436,7 +1436,7 @@ def test_v4_classification_expressions_lcase(datatype):
                 'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ', 'abcdefghijklmnoprstuwxyz'],
                 'special': ['!@#%^&*()-=_+[];:,<.>?', '!@#%^&*()-=_+[];:,<.>?'],
                 'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890!@#%^&*()-=_+[];:,<.>?',
-                                  'abcdefghijklmnoprstuwxyz1234567890!@#%^&*()-=_+[];:,<.>?']}
+                          'abcdefghijklmnoprstuwxyz1234567890!@#%^&*()-=_+[];:,<.>?']}
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
@@ -1491,7 +1491,7 @@ def test_v4_classification_expressions_ucase(datatype):
                 'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ', 'ABCDEFGHIJKLMNOPRSTUWXYZ'],
                 'special': ['!@#%^&*()-=_+[];:,<.>?', '!@#%^&*()-=_+[];:,<.>?'],
                 'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890!@#%^&*()-=_+[];:,<.>?',
-                                  'ABCDEFGHIJKLMNOPRSTUWXYZ1234567890!@#%^&*()-=_+[];:,<.>?']}
+                          'ABCDEFGHIJKLMNOPRSTUWXYZ1234567890!@#%^&*()-=_+[];:,<.>?']}
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')

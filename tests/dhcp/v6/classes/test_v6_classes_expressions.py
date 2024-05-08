@@ -1447,7 +1447,7 @@ def test_v6_classification_expressions_lcase(datatype):
                 'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ.', 'abcdefghijklmnoprstuwxyz.'],
                 'special': ['-:*%^&.', '-:*%^&.'],
                 'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890-:*%^&.',
-                                  'abcdefghijklmnoprstuwxyz1234567890-:*%^&.']}
+                          'abcdefghijklmnoprstuwxyz1234567890-:*%^&.']}
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
@@ -1511,7 +1511,7 @@ def test_v6_classification_expressions_ucase(datatype):
                 'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ.', 'ABCDEFGHIJKLMNOPRSTUWXYZ.'],
                 'special': ['-:*%^&.', '-:*%^&.'],
                 'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890-:*%^&.',
-                                  'ABCDEFGHIJKLMNOPRSTUWXYZ1234567890-:*%^&.']}
+                          'ABCDEFGHIJKLMNOPRSTUWXYZ1234567890-:*%^&.']}
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
