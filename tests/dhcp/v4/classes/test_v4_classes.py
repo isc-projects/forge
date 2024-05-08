@@ -778,7 +778,8 @@ def _get_address(mac, address, class_id=None):
 @pytest.mark.classification
 @pytest.mark.parametrize("level", ['global', 'shared-networks'])
 def test_v4_classification_vendor_different_levels(level):
-    """test_v4_classification_vendor_different_levels Check vendor classes when shared networks are used and when those are not used.
+    """test_v4_classification_vendor_different_levels Check vendor classes
+    when shared networks are used and when those are not used.
 
     :param level: subnets configured in shared-networks or global
     :type level: string
