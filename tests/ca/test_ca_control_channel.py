@@ -352,10 +352,14 @@ def test_ca_version_get():
     # TODO maybe version of kea could be held in forge?
 
 
+@pytest.mark.disabled
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
 def test_ca_config_hash_get():
+    # https://gitlab.isc.org/isc-projects/kea/-/issues/2940
+    # CA will be removed, so it won't be fixed. Test disabled for now, it will need restructure
+    # after CA will be removed anyway
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.open_control_channel()

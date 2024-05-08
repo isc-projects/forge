@@ -160,10 +160,13 @@ def test_v6_host_reservation_conflicts_two_entries_for_one_host_3():
     srv_msg.response_check_suboption_content(26, 25, 'plen', 110)
 
 
+@pytest.mark.disabled
 @pytest.mark.v6
 @pytest.mark.host_reservation
 def test_v6_host_reservation_conflicts_two_entries_for_one_host_different_subnets_prefix():
     # https://gitlab.isc.org/isc-projects/kea/-/issues/2745
+    # solved with doc update https://gitlab.isc.org/isc-projects/kea/-/merge_requests/2054
+    # test from now on will be disabled
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
     srv_control.config_srv_prefix('2001:db8::', 0, 32, 34)
@@ -736,10 +739,13 @@ def test_v6_reserve_both_address_and_prefix():
     srv_msg.response_check_suboption_content(26, 25, 'plen', 50)
 
 
+@pytest.mark.disabled
 @pytest.mark.v6
 @pytest.mark.host_reservation
 def test_v6_reserve_both_address_and_prefix_different_reservations():
-
+    # https://gitlab.isc.org/isc-projects/kea/-/issues/2745
+    # solved with doc update https://gitlab.isc.org/isc-projects/kea/-/merge_requests/2054
+    # test from now on will be disabled
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/30', '3000::1-3000::2')
     srv_control.config_srv_prefix('2001:db8::', 0, 32, 35)
