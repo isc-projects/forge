@@ -9,6 +9,7 @@
 # pylint: disable=line-too-long
 
 import pytest
+import string
 
 from src import misc
 from src import srv_control
@@ -1442,9 +1443,9 @@ def test_v6_classification_expressions_lcase(datatype):
     """
     Test 'lcase' expression by sending FQDN and checking if equals pattern.
     """
-    test_set = {'numbers': ['1234567890.', '1234567890.'],
-                'lcase': ['abcdefghijklmnoprstuwxyz.', 'abcdefghijklmnoprstuwxyz.'],
-                'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ.', 'abcdefghijklmnoprstuwxyz.'],
+    test_set = {'numbers': [string.digits+'.', string.digits+'.'],
+                'lcase': [string.ascii_lowercase+'.', string.ascii_lowercase+'.'],
+                'ucase': [string.ascii_uppercase+'.', string.ascii_lowercase+'.'],
                 'special': ['-:*%^&.', '-:*%^&.'],
                 'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890-:*%^&.',
                           'abcdefghijklmnoprstuwxyz1234567890-:*%^&.']}
@@ -1498,6 +1499,20 @@ def test_v6_classification_expressions_lcase(datatype):
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:a::1')
 
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', test_set[datatype][0])
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+
+    srv_msg.check_leases(srv_msg.get_all_leases())
+
 
 @pytest.mark.v6
 @pytest.mark.classification
@@ -1506,9 +1521,9 @@ def test_v6_classification_expressions_ucase(datatype):
     """
     Test 'ucase' expression by sending FQDN and checking if equals pattern.
     """
-    test_set = {'numbers': ['1234567890.', '1234567890.'],
-                'lcase': ['abcdefghijklmnoprstuwxyz.', 'ABCDEFGHIJKLMNOPRSTUWXYZ.'],
-                'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ.', 'ABCDEFGHIJKLMNOPRSTUWXYZ.'],
+    test_set = {'numbers': [string.digits+'.', string.digits+'.'],
+                'lcase': [string.ascii_lowercase+'.', string.ascii_uppercase+'.'],
+                'ucase': [string.ascii_uppercase+'.', string.ascii_uppercase+'.'],
                 'special': ['-:*%^&.', '-:*%^&.'],
                 'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890-:*%^&.',
                           'ABCDEFGHIJKLMNOPRSTUWXYZ1234567890-:*%^&.']}
@@ -1561,3 +1576,17 @@ def test_v6_classification_expressions_ucase(datatype):
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:a::1')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', test_set[datatype][0])
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+
+    srv_msg.check_leases(srv_msg.get_all_leases())

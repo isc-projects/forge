@@ -9,6 +9,7 @@
 # pylint: disable=line-too-long
 
 import pytest
+import string
 
 from src import misc
 from src import srv_control
@@ -1431,9 +1432,9 @@ def test_v4_classification_expressions_lcase(datatype):
     Test 'lcase' expression by sending Hostname and checking if equals pattern.
 
     """
-    test_set = {'numbers': ['1234567890', '1234567890'],
-                'lcase': ['abcdefghijklmnoprstuwxyz', 'abcdefghijklmnoprstuwxyz'],
-                'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ', 'abcdefghijklmnoprstuwxyz'],
+    test_set = {'numbers': [string.digits, string.digits],
+                'lcase': [string.ascii_lowercase, string.ascii_lowercase],
+                'ucase': [string.ascii_uppercase, string.ascii_lowercase],
                 'special': ['!@#%^&*()-=_+[];:,<.>?', '!@#%^&*()-=_+[];:,<.>?'],
                 'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890!@#%^&*()-=_+[];:,<.>?',
                           'abcdefghijklmnoprstuwxyz1234567890!@#%^&*()-=_+[];:,<.>?']}
@@ -1458,6 +1459,19 @@ def test_v4_classification_expressions_lcase(datatype):
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.50')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_does_include_with_value('hostname', test_set[datatype][0])
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
     # Sending incorrect hostname should be dropped
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
@@ -1477,6 +1491,21 @@ def test_v4_classification_expressions_lcase(datatype):
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
 
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.50')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_does_include_with_value('hostname', test_set[datatype][0])
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+    srv_msg.check_leases(srv_msg.get_all_leases())
+
 
 @pytest.mark.v4
 @pytest.mark.classification
@@ -1486,9 +1515,9 @@ def test_v4_classification_expressions_ucase(datatype):
     Test 'ucase' expression by sending Hostname and checking if equals pattern.
 
     """
-    test_set = {'numbers': ['1234567890', '1234567890'],
-                'lcase': ['abcdefghijklmnoprstuwxyz', 'ABCDEFGHIJKLMNOPRSTUWXYZ'],
-                'ucase': ['ABCDEFGHIJKLMNOPRSTUWXYZ', 'ABCDEFGHIJKLMNOPRSTUWXYZ'],
+    test_set = {'numbers': [string.digits, string.digits],
+                'lcase': [string.ascii_lowercase, string.ascii_uppercase],
+                'ucase': [string.ascii_uppercase, string.ascii_uppercase],
                 'special': ['!@#%^&*()-=_+[];:,<.>?', '!@#%^&*()-=_+[];:,<.>?'],
                 'mixed': ['AbCdEfGhIjKlMnOpRstUwXyZ1234567890!@#%^&*()-=_+[];:,<.>?',
                           'ABCDEFGHIJKLMNOPRSTUWXYZ1234567890!@#%^&*()-=_+[];:,<.>?']}
@@ -1512,6 +1541,19 @@ def test_v4_classification_expressions_ucase(datatype):
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    misc.test_procedure()
+
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.50')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_does_include_with_value('hostname', test_set[datatype][0])
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
     # Sending incorrect hostname should be dropped
     misc.test_procedure()
@@ -1531,3 +1573,18 @@ def test_v4_classification_expressions_ucase(datatype):
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_content('yiaddr', '192.168.50.50')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.50')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_does_include_with_value('hostname', test_set[datatype][0])
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+    srv_msg.check_leases(srv_msg.get_all_leases())
