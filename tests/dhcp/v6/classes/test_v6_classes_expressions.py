@@ -8,8 +8,8 @@
 
 # pylint: disable=line-too-long
 
-import pytest
 import string
+import pytest
 
 from src import misc
 from src import srv_control
