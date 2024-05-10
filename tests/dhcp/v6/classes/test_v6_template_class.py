@@ -150,10 +150,10 @@ def test_v6_spawn_class_as_subnet_guard():
     # two clients should be dropped:
     _get_lease('00:03:00:01:11:22:33:ff:ff:01', vendor=1100, drop=True)
     assert 1 == get_line_count_in_log(
-        "EVAL_DEBUG_MEMBER Checking membership of 'SPAWN_client_id_type_11:22:33', pushing result 'true'")
+        "EVAL_DEBUG_MEMBER .* Checking membership of 'SPAWN_client_id_type_11:22:33', pushing result 'true'")
     _get_lease('00:01:00:01:52:7b:a8:f0:11:22:33:58:f1:e8', drop=True)
     assert 2 == get_line_count_in_log(
-        "EVAL_DEBUG_MEMBER Checking membership of 'SPAWN_client_id_type_11:22:33', pushing result 'true'")
+        "EVAL_DEBUG_MEMBER .* Checking membership of 'SPAWN_client_id_type_11:22:33', pushing result 'true'")
 
     # and one that will have address from second subnet and no preference option
     _get_lease('00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8')
