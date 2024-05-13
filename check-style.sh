@@ -31,7 +31,7 @@ fi
 
 printf 'Checking %s files...\n' "$(printf '%s\n' "${PY_FILES}" | wc -w)"
 printf '======== pylint ========\n'
-pylint   --rcfile=pylint.rc ${PY_FILES} || pylint_failed=true
+pylint -j "$(nproc || gnproc || echo 1)" --rcfile=pylint.rc ${PY_FILES} || pylint_failed=true
 printf '===== pycodestyle ======\n'
 pycodestyle --max-line-length=3000 ${PY_FILES}
 
