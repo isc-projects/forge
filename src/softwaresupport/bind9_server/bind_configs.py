@@ -7,7 +7,6 @@
 # Author: Wlodzimierz Wencel
 
 # pylint: disable=invalid-name
-
 config_file_set = {
     # number : [named.conf, rndc.conf, fwd.db, rev.db ]
     1: ["""
@@ -1874,13 +1873,6 @@ zone "52.168.192.in-addr.arpa." {
      allow-query { any; };              // This is the default
 };
 
-zone "53.168.192.in-addr.arpa." {
-     type master;
-     file "rev4.db";
-     notify no;
-     allow-update { any; };              // This is the default
-     allow-query { any; };              // This is the default
-};
 
 zone "four.example.com" {
      type master;
@@ -2280,3 +2272,34 @@ managed-keys {
     Qageu+ipAdTTJ25AsRTAoub8ONGcLmqrAmRLKBP1dfwhYB4N7knNnulq
     QxA+Uk1ihz0=";
 };'''
+
+if __name__ == '__main__':
+    import argparse
+    import os
+    import sys
+
+    parser = argparse.ArgumentParser(description='Generate named.conf and related files')
+    parser.add_argument('--config', type=int, default=None, help='Configuration number')
+    parser.add_argument('--clear', action="store_true", default=None, help='remove generated files')
+    args = parser.parse_args()
+
+    files = ["named.conf", "rndc.conf", "fwd.db", "rev.db"]
+
+    if args.clear:
+        for i in files:
+            # remove files
+            try:
+                print("Removing ", i)
+                os.remove(i)
+            except FileNotFoundError:
+                pass
+        sys.exit(0)
+
+    if args.config not in config_file_set:
+        print('Invalid configuration number')
+        sys.exit(1)
+
+    for i, content in zip(["named.conf", "rndc.conf", "fwd.db", "rev.db"], config_file_set[args.config]):
+        with open(i, 'w', encoding='utf-8') as f:
+            print("Creating ", i)
+            f.write(content)

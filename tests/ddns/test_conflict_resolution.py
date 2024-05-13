@@ -940,7 +940,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
     """
 
     # basic config
-    main_valid_lifetime = 20
+    main_valid_lifetime = 50
     misc.test_setup()
     srv_control.config_srv_subnet("2001:db8:a::/64", "2001:db8:a::10-2001:db8:a::20")
     srv_control.config_srv_another_subnet_no_interface(
