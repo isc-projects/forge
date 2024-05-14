@@ -301,7 +301,7 @@ def test_hook_v4_network_cmds_del_non_existing():
 def test_hook_v4_network_cmds_del_global_options():
     misc.test_setup()
     srv_control.config_srv_opt('domain-name-servers', '199.199.199.1,100.100.100.1')
-    srv_control.config_srv_subnet('192.168.51.0/24','192.168.51.1-192.168.51.1')
+    srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.config_srv_another_subnet_no_interface('192.168.50.0/24', '$(EMPTY)')
 
     # first shared subnet
