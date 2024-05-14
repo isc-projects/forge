@@ -119,7 +119,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_one_subnet_based_on_relay_a
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.shared_subnet('192.168.50.0/24', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 0)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-addresses": ["$(GIADDR4)"]}', 0)
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -406,7 +406,7 @@ def test_v4_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_control.shared_subnet('192.168.51.0/24', 0)
     srv_control.shared_subnet('192.168.52.0/24', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 0)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-addresses": ["$(GIADDR4)"]}', 0)
 
     srv_control.build_and_send_config_files()
 
@@ -590,7 +590,7 @@ def test_v4_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_control.shared_subnet('192.168.52.0/24', 1)
     srv_control.shared_subnet('192.168.53.0/24', 1)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', 1)
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"$(GIADDR4)"}', 1)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-addresses": ["$(GIADDR4)"]}', 1)
 
     srv_control.build_and_send_config_files()
 
@@ -1228,7 +1228,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_one_subnet_based_on_relay_a
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', 0)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-addresses": ["2001:db8::abcd"]}', 0)
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -1860,7 +1860,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_three_subnets_based_on_rela
     srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.shared_subnet('2001:db8:c::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', 0)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-addresses": ["2001:db8::abcd"]}', 0)
 
     srv_control.build_and_send_config_files()
 
@@ -1995,7 +1995,7 @@ def test_v6_sharednetworks_single_shared_subnet_with_two_subnets_based_on_relay_
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', 0)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-addresses": ["2001:db8::abcd"]}', 0)
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -2136,7 +2136,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_based_on_id_and_
     srv_control.shared_subnet('2001:db8:e::/64', 2)
     srv_control.shared_subnet('2001:db8:f::/64', 2)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-something"', 2)
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', 2)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-addresses": ["2001:db8::1234"]}', 2)
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -2424,7 +2424,7 @@ def test_v6_sharednetworks_three_shared_subnet_with_two_subnets_options_override
     srv_control.shared_subnet('2001:db8:e::/64', 2)
     srv_control.shared_subnet('2001:db8:f::/64', 2)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-something"', 2)
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', 2)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-addresses": ["2001:db8::1234"]}', 2)
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -2763,12 +2763,12 @@ def test_v6_sharednetworks_two_shared_subnet_with_two_subnets_based_on_relay_add
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::abcd"}', 0)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-addresses": ["2001:db8::abcd"]}', 0)
     # second shared-subnet
     srv_control.shared_subnet('2001:db8:c::/64', 1)
     srv_control.shared_subnet('2001:db8:d::/64', 1)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-xyz"', 1)
-    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-address":"2001:db8::1234"}', 1)
+    srv_control.set_conf_parameter_shared_subnet('relay', '{"ip-addresses": ["2001:db8::1234"]}', 1)
 
     srv_control.build_and_send_config_files()
 

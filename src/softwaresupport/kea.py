@@ -628,6 +628,7 @@ def prepare_cfg_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
     if subnet:
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]] = {"subnet": subnet,
                                                          "pools": [],
+                                                         "id": world.dhcp["subnet_cnt"]+1,
                                                          "interface": iface}
     if pool:
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]]["pools"].append({"pool": pool})
@@ -668,6 +669,7 @@ def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
     if subnet:
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]] = {"subnet": subnet,
                                                          "pools": [],
+                                                         "id": world.dhcp["subnet_cnt"]+1,
                                                          "interface": interface}
     if pool:
         world.dhcp_cfg[sub][world.dhcp["subnet_cnt"]]["pools"].append({"pool": pool})
