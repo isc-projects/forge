@@ -179,7 +179,7 @@ def configurations(interface: str = world.f_cfg.server_iface):
         f'subnet{v}': [
             {
                 'interface': interface,
-                'id': 1000,
+                'id': 1,
                 'pools': [
                     {
                         'client-class': 'gold',
@@ -201,7 +201,7 @@ def configurations(interface: str = world.f_cfg.server_iface):
                 f'subnet{v}': [
                     {
                         'interface': interface,
-                        'id': 1000,
+                        'id': 2,
                         'pools': [
                             {
                                 'client-class': 'gold',
@@ -225,7 +225,7 @@ def configurations(interface: str = world.f_cfg.server_iface):
                 f'subnet{v}': [
                     {
                         'interface': interface,
-                        'id': 1000,
+                        'id': 3,
                         'pools': [
                             {
                                 'client-class': 'gold',
@@ -244,7 +244,7 @@ def configurations(interface: str = world.f_cfg.server_iface):
                     },
                     {
                         'interface': interface,
-                        'id': 2000,
+                        'id': 4,
                         'pools': [
                             {
                                 'client-class': 'gold',
@@ -260,7 +260,7 @@ def configurations(interface: str = world.f_cfg.server_iface):
                     {
                         'client-class': 'platinum',
                         'interface': interface,
-                        'id': 3000,
+                        'id': 5,
                         'pools': [
                             {
                                 'pool': '192.168.70.5 - 192.168.70.5' if world.proto == 'v4' else '2001:db8:70::5 - 2001:db8:70::5'
