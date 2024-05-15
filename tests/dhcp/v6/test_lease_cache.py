@@ -241,11 +241,11 @@ def test_lease_cache_different_levels(backend):
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
                                                        '2001:db8:b::1-2001:db8:b::1')
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:c::/64', '2001:db8:c::1-2001:db8:c::1')
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.config_srv_subnet('2001:db8:c::/64', '2001:db8:c::1-2001:db8:c::1')
 
     world.dhcp_cfg.update({"cache-max-age": 10})  # global setting
     world.dhcp_cfg["subnet6"][0].update({"client-class": "Client_Class_1"})

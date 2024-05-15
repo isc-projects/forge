@@ -174,11 +174,11 @@ def test_lease_cache_different_levels(backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.10-192.168.51.10')
+    srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24', '192.168.52.10-192.168.52.10')
     srv_control.shared_subnet('192.168.50.0/24', 0)
     srv_control.shared_subnet('192.168.51.0/24', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.config_srv_subnet('192.168.52.0/24', '192.168.52.10-192.168.52.10')
 
     world.dhcp_cfg.update({"cache-max-age": 10})  # global setting
     world.dhcp_cfg["subnet4"][0].update({"client-class": "Client_Class_1"})

@@ -42,6 +42,7 @@ def test_reservation_mode_in_globals(dhcp_version, backend):
             subnet4=[{
                 'subnet': '2.2.2.0/24',
                 'pools': [{'pool': '2.2.2.1/32'}],
+                'id': 1,
                 'interface': '$(SERVER_IFACE)',
                 'reservations': [{
                     "hw-address": "00:00:00:00:00:01",
@@ -56,6 +57,7 @@ def test_reservation_mode_in_globals(dhcp_version, backend):
             subnet6=[{
                 'subnet': '2001:db8:1::/64',
                 'pools': [{'pool': '2001:db8:1::1/128'}],
+                'id': 1,
                 'interface': '$(SERVER_IFACE)',
                 'reservations': [{
                     "duid": "00:03:00:01:00:00:00:00:00:01",
