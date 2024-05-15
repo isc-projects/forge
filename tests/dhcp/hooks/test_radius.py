@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -149,6 +149,7 @@ def test_RADIUS_no_attributes(dhcp_version: str):
     setup_server_with_radius(**{
         f'subnet{world.proto[1]}': [
             {
+                'id': 50,
                 'interface': world.f_cfg.server_iface,
                 'pools': [
                     {
