@@ -179,7 +179,7 @@ def configurations(interface: str = world.f_cfg.server_iface):
         f'subnet{v}': [
             {
                 'interface': interface,
-                'id:': 1000,
+                'id': 1000,
                 'pools': [
                     {
                         'client-class': 'gold',
@@ -201,7 +201,7 @@ def configurations(interface: str = world.f_cfg.server_iface):
                 f'subnet{v}': [
                     {
                         'interface': interface,
-                        'id:': 1000,
+                        'id': 1000,
                         'pools': [
                             {
                                 'client-class': 'gold',
