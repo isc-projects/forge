@@ -2218,7 +2218,7 @@ def test_v6_add_reservation(channel, host_database):
             "2001:db8:1::101"
         ],
         "subnet-id": 1
-        },
+    },
         {"duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
          "ip-addresses": [
              "2001:db8:1::102"
@@ -2280,7 +2280,6 @@ def test_v6_del_reservation(channel, host_database, query_type):
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::60')
     srv_control.config_srv_prefix('3000:db8::', 0, 32, 34)
-    srv_control.config_srv_prefix('3000:db8::', 0, 32, 34)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -2291,66 +2290,39 @@ def test_v6_del_reservation(channel, host_database, query_type):
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.SARR('2001:db8:1::50', '3000:db8::/34')
-    srv_msg.SARR('2001:db8:1::50', '3000:db8::/34')
 
-    res = [{
-        "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
-        "ip-addresses": [
-            "2001:db8:1::101"
-        ],
-        "prefixes": [
-            "3000:db8:1:0:1000::/110"
-        ],
-        "prefixes": [
-            "3000:db8:1:0:1000::/110"
-        ],
-        "subnet-id": 1
+    res = [
+        {
+            "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+            "ip-addresses": ["2001:db8:1::101"],
+            "prefixes": ["3000:db8:1:0:1000::/110"],
+            "subnet-id": 1,
         },
-        {"duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
-         "ip-addresses": [
-             "2001:db8:1::102"
-         ],
-        "prefixes": [
-            "3000:db8:2:0:1000::/110"
-        ],
-         ],
-        "prefixes": [
-            "3000:db8:2:0:1000::/110"
-        ],
-         "subnet-id": 1
-         },
-        {"duid": "00:03:00:01:f6:f5:f4:f3:f2:03",
-         "ip-addresses": [
-                 "2001:db8:1::103"
-         ],
-        "prefixes": [
-            "3000:db8:3:0:1000::/110"
-        ],
-         ],
-        "prefixes": [
-            "3000:db8:3:0:1000::/110"
-        ],
-         "subnet-id": 1
-         },
-        {"duid": "00:03:00:01:f6:f5:f4:f3:f2:04",
-         "ip-addresses": [
-                 "2001:db8:1::104", "2001:db8:1::105"
-         ],
-        "prefixes": [
-            "3000:db8:4:0:1000::/110"
-        ],
-         ],
-        "prefixes": [
-            "3000:db8:4:0:1000::/110"
-        ],
-         "subnet-id": 1
-         }]
+        {
+            "duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
+            "ip-addresses": ["2001:db8:1::102"],
+            "prefixes": ["3000:db8:2:0:1000::/110"],
+            "subnet-id": 1,
+        },
+        {
+            "duid": "00:03:00:01:f6:f5:f4:f3:f2:03",
+            "ip-addresses": ["2001:db8:1::103"],
+            "prefixes": ["3000:db8:3:0:1000::/110"],
+            "subnet-id": 1,
+        },
+        {
+            "duid": "00:03:00:01:f6:f5:f4:f3:f2:04",
+            "ip-addresses": ["2001:db8:1::104", "2001:db8:1::105"],
+            "prefixes": ["3000:db8:4:0:1000::/110"],
+            "subnet-id": 1,
+        },
+    ]
 
     for reservation in res:
         _reservation_add(reservation, target=_get_target(host_database), channel=channel)
 
     srv_msg.SARR('2001:db8:1::101', '3000:db8:1:0:1000::/110')
-    _get_multiple_iana(['2001:db8:1::104','2001:db8:1::105'], [2123,2124], '00:03:00:01:f6:f5:f4:f3:f2:04')
+    _get_multiple_iana(['2001:db8:1::104', '2001:db8:1::105'], [2123, 2124], '00:03:00:01:f6:f5:f4:f3:f2:04')
 
     del_res = {
         "ip-address": "2001:db8:1::101",
@@ -2377,7 +2349,7 @@ def test_v6_del_reservation(channel, host_database, query_type):
     assert response["text"] == "3 IPv6 host(s) found."
 
     srv_msg.SARR('2001:db8:1::51', '3000:db8:4000::/34')
-    _get_multiple_iana(['2001:db8:1::104','2001:db8:1::105'], [2123,2124],  '00:03:00:01:f6:f5:f4:f3:f2:04')
+    _get_multiple_iana(['2001:db8:1::104', '2001:db8:1::105'], [2123, 2124],  '00:03:00:01:f6:f5:f4:f3:f2:04')
 
     del_res = {
         "ip-address": "2001:db8:1::105",
@@ -2405,15 +2377,13 @@ def test_v6_del_reservation(channel, host_database, query_type):
 
     srv_msg.SARR('2001:db8:1::52', '3000:db8:4000::/34')
     srv_msg.SARR('2001:db8:1::53', '3000:db8:8000::/34', duid='00:03:00:01:f6:f5:f4:f3:f2:04')
-    srv_msg.SARR('2001:db8:1::52', '3000:db8:4000::/34')
-    srv_msg.SARR('2001:db8:1::53', '3000:db8:8000::/34', duid='00:03:00:01:f6:f5:f4:f3:f2:04')
 
 
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.parametrize('channel', ['http'])
-@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
+@ pytest.mark.v6
+@ pytest.mark.host_reservation
+@ pytest.mark.hosts_cmds
+@ pytest.mark.parametrize('channel', ['http'])
+@ pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_get_reservation(channel, host_database):
     """
     Test reservation-get command using:
@@ -2471,11 +2441,11 @@ def test_v6_get_reservation(channel, host_database):
     assert res == res_returned, "Reservation sent and returned are not the same"
 
 
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.parametrize('channel', ['http'])
-@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
+@ pytest.mark.v6
+@ pytest.mark.host_reservation
+@ pytest.mark.hosts_cmds
+@ pytest.mark.parametrize('channel', ['http'])
+@ pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_add_reservation_flex_id(channel, host_database):
     """
     Add reservation with flex id
@@ -2515,11 +2485,11 @@ def test_v6_add_reservation_flex_id(channel, host_database):
     srv_msg.SARR('2001:db8:1::100', relay_information=True)
 
 
-@pytest.mark.v6
-@pytest.mark.host_reservation
-@pytest.mark.hosts_cmds
-@pytest.mark.parametrize('channel', ['http'])
-@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
+@ pytest.mark.v6
+@ pytest.mark.host_reservation
+@ pytest.mark.hosts_cmds
+@ pytest.mark.parametrize('channel', ['http'])
+@ pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_add_reservation_complex(channel, host_database):
     """
     Add, get, and assign complex reservation
