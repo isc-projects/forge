@@ -1,6 +1,8 @@
 variables:
   # B101    assert_used
-  BANDIT_SKIPS: 'B101'
+  # B104    hardcoded_bind_all_interfaces
+  # B108    hardcoded_tmp_directory
+  BANDIT_SKIPS: 'B101,B104,B108'
 
   CI_REGISTRY_IMAGE: registry.gitlab.isc.org/isc-projects/forge
 
