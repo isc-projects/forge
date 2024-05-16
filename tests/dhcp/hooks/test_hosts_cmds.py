@@ -2218,7 +2218,7 @@ def test_v6_add_reservation(channel, host_database):
             "2001:db8:1::101"
         ],
         "subnet-id": 1
-    },
+        },
         {"duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
          "ip-addresses": [
              "2001:db8:1::102"
@@ -2379,11 +2379,11 @@ def test_v6_del_reservation(channel, host_database, query_type):
     srv_msg.SARR('2001:db8:1::53', '3000:db8:8000::/34', duid='00:03:00:01:f6:f5:f4:f3:f2:04')
 
 
-@ pytest.mark.v6
-@ pytest.mark.host_reservation
-@ pytest.mark.hosts_cmds
-@ pytest.mark.parametrize('channel', ['http'])
-@ pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
+@pytest.mark.v6
+@pytest.mark.host_reservation
+@pytest.mark.hosts_cmds
+@pytest.mark.parametrize('channel', ['http'])
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_get_reservation(channel, host_database):
     """
     Test reservation-get command using:
@@ -2441,11 +2441,11 @@ def test_v6_get_reservation(channel, host_database):
     assert res == res_returned, "Reservation sent and returned are not the same"
 
 
-@ pytest.mark.v6
-@ pytest.mark.host_reservation
-@ pytest.mark.hosts_cmds
-@ pytest.mark.parametrize('channel', ['http'])
-@ pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
+@pytest.mark.v6
+@pytest.mark.host_reservation
+@pytest.mark.hosts_cmds
+@pytest.mark.parametrize('channel', ['http'])
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_add_reservation_flex_id(channel, host_database):
     """
     Add reservation with flex id
@@ -2485,11 +2485,11 @@ def test_v6_add_reservation_flex_id(channel, host_database):
     srv_msg.SARR('2001:db8:1::100', relay_information=True)
 
 
-@ pytest.mark.v6
-@ pytest.mark.host_reservation
-@ pytest.mark.hosts_cmds
-@ pytest.mark.parametrize('channel', ['http'])
-@ pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
+@pytest.mark.v6
+@pytest.mark.host_reservation
+@pytest.mark.hosts_cmds
+@pytest.mark.parametrize('channel', ['http'])
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_add_reservation_complex(channel, host_database):
     """
     Add, get, and assign complex reservation
