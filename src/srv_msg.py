@@ -688,9 +688,11 @@ def lease_upload(backend, leases_file, db_name=world.f_cfg.db_name, db_user=worl
     return multi_protocol_functions.lease_upload(backend, leases_file, db_name, db_user, db_passwd,
                                                  destination_address)
 
+
 def print_leases(backend='memfile', db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
                  db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address):
     return multi_protocol_functions.print_leases(backend, db_name, db_user, db_passwd, destination_address)
+
 
 def get_option(msg, opt_code):
     return dhcpmsg.get_option(msg, opt_code)
