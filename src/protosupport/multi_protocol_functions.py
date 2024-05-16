@@ -825,6 +825,27 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
             assert result.failed, "Expected lease to not exist, but it does: %s" % json.dumps(lease)
         # TODO write check if there is more than one entry of the same type
 
+def print_leases(backend='memfile', db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
+                 db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address):
+    """print_leases Print leases to standad out, not very useful in automated tests,
+    but can speed up debugging and writing new tests
+
+    :param backend: type of lease backend, defaults to 'memfile'
+    :type backend: str, optional
+    :param db_name: database name, defaults to world.f_cfg.db_name
+    :type db_name: str, optional
+    :param db_user: database user name, defaults to world.f_cfg.db_user
+    :type db_user: srt, optional
+    :param db_passwd: database user password, defaults to world.f_cfg.db_passwd
+    :type db_passwd: str, optional
+    :param destination_address: destination of a node on which action will be executed, defaults to world.f_cfg.mgmt_address
+    :type destination_address: str, optional
+    """
+    if backend.lower() in ['mysql', 'postgresql', 'pgsql']:
+        lease_dump(backend, destination_address=destination_address)
+        fabric_sudo_command('cat /tmp/lease_dump.csv', ignore_errors=True, destination_host=destination_address)
+    else:
+        fabric_sudo_command(f'cat {world.f_cfg.get_leases_path()}', ignore_errors=True, destination_host=destination_address)
 
 def convert_address_to_hex(address):
     '''Convert string address to hexadecimal representation.'''
