@@ -167,6 +167,7 @@ world.kea_options4 = {
     "v6-only-preferred": 108,
     "subnet-selection": 118,  # ipv4-address
     "domain-search": 119,  # binary
+    "classless-static-route": 121,  # internal
     "vivco-suboptions": 124,  # binary
     "vivso-suboptions": 125,  # binary
     "end": 255

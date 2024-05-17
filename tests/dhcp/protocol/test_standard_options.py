@@ -3726,3 +3726,118 @@ def test_v6_options_inforequest_negative():
     srv_msg.response_check_include_option(23)
 
     references.references_check('RFC364')
+
+
+@pytest.mark.v4
+@pytest.mark.options
+def test_v4_classless():
+    # Testing server ability to configure it with option classless-static-route, cover 4 masks lengths.
+    # 2 full octets and 2 partial.
+    # negative scenarios are covered by unit tests.
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.100')
+    srv_control.config_srv_opt('classless-static-route',
+                               '10.229.0.128/25 - 10.229.0.1, 10.198.122.47/32 - 10.198.122.1')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(121)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    msg = srv_msg.send_wait_for_message('MUST', 'OFFER')[0]
+    srv_msg.response_check_include_option(121)
+    srv_msg.response_check_option_content(121, 'value', "10.229.0.128/25:10.229.0.1")
+    srv_msg.response_check_option_content(121, 'value', "10.198.122.47/32:10.198.122.1")
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', msg.yiaddr)
+    srv_msg.client_requests_option(121)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(121)
+    srv_msg.response_check_option_content(121, 'value', "10.229.0.128/25:10.229.0.1")
+    srv_msg.response_check_option_content(121, 'value', "10.198.122.47/32:10.198.122.1")
+
+    srv_control.start_srv('DHCP', 'stopped')
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.100')
+    srv_control.config_srv_opt('classless-static-route',
+                               '10.229.0.128/16 - 10.229.0.1, 10.0.0.3/8 - 10.0.0.189')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(121)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    msg = srv_msg.send_wait_for_message('MUST', 'OFFER')[0]
+    srv_msg.response_check_include_option(121)
+    srv_msg.response_check_option_content(121, 'value', "10.229.0.0/16:10.229.0.1")
+    srv_msg.response_check_option_content(121, 'value', "10.0.0.0/8:10.0.0.189")
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', msg.yiaddr)
+    srv_msg.client_requests_option(121)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(121)
+    # 10 0a e5 0a e5 00 01, that's correct coding
+    srv_msg.response_check_option_content(121, 'value', "10.229.0.0/16:10.229.0.1")
+    # 08 0a 0a 00 00 bd
+    srv_msg.response_check_option_content(121, 'value', "10.0.0.0/8:10.0.0.189")
+
+
+@pytest.mark.disabled
+@pytest.mark.v4
+@pytest.mark.options
+def test_v4_classless_with_other_router():
+    # May be implemented at some point in the future
+    # https://gitlab.isc.org/isc-projects/kea/-/issues/3164
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.100')
+    srv_control.config_srv_opt('classless-static-route',
+                               '10.229.0.128/25 - 10.229.0.1, 10.198.122.47/32 - 10.198.122.1')
+    srv_control.config_srv_opt('static-routes', '199.199.199.1,70.70.70.1')
+    srv_control.config_srv_opt('routers', '100.100.100.10,50.50.50.5')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(121)
+    srv_msg.client_requests_option(3)
+    srv_msg.client_requests_option(33)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    msg = srv_msg.send_wait_for_message('MUST', 'OFFER')[0]
+    srv_msg.response_check_include_option(3, expect_include=False)
+    srv_msg.response_check_include_option(33, expect_include=False)
+    srv_msg.response_check_include_option(121)
+    srv_msg.response_check_option_content(121, 'value', "10.229.0.128/25:10.229.0.1")
+    srv_msg.response_check_option_content(121, 'value', "10.198.122.47/32:10.198.122.1")
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', msg.yiaddr)
+    srv_msg.client_requests_option(121)
+    srv_msg.client_requests_option(3)
+    srv_msg.client_requests_option(33)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(3, expect_include=False)
+    srv_msg.response_check_include_option(33, expect_include=False)
+    srv_msg.response_check_include_option(121)
+    srv_msg.response_check_option_content(121, 'value', "10.229.0.128/25:10.229.0.1")
+    srv_msg.response_check_option_content(121, 'value', "10.198.122.47/32:10.198.122.1")

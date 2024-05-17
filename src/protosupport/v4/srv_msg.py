@@ -461,7 +461,7 @@ def tcp_messages_include(**kwargs):
     :param kwargs: types of messages e.g. leasequery_reply=1, leasequery_data=199, leasequery_done=1
     """
     expected_msg_count = sum(list(kwargs.values()))
-    assert expected_msg_count == len(world.tcpmsg),\
+    assert expected_msg_count == len(world.tcpmsg), \
         f"Expected message count is {expected_msg_count} but number of received messages is {len(world.tcpmsg)}"
     received_msg_count = {}
     for msg in world.tcpmsg:
@@ -692,6 +692,8 @@ def response_check_option_content(opt_code, expect, data_type, expected):
         expected = convert_to_hex(expected)
     elif opt_code == 82:
         expected = convert_to_hex(expected)
+    elif opt_code == 121:
+        received = received[1]
     elif isinstance(received[1], bytes):
         received = (received[0], received[1])
 
