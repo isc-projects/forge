@@ -304,12 +304,12 @@ def test_ddns4_conflict_resolution_check_with_dhcid(level):
     main_valid_lifetime = 25
     misc.test_setup()
     # subnets
-    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.10-192.168.50.15")
+    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.10-192.168.50.15", id=1)
     srv_control.config_srv_another_subnet_no_interface(
-        "192.168.51.0/24", "192.168.51.10-192.168.51.15"
+        "192.168.51.0/24", "192.168.51.10-192.168.51.15", id=2
     )
     srv_control.config_srv_another_subnet_no_interface(
-        "192.168.52.0/24", "192.168.52.10-192.168.52.15"
+        "192.168.52.0/24", "192.168.52.10-192.168.52.15", id=3
     )
     # subnet settings:
     if level == "subnet":
@@ -473,12 +473,12 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
     main_valid_lifetime = 10
     misc.test_setup()
     # subnets
-    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.10-192.168.50.15")
+    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.10-192.168.50.15", id=1)
     srv_control.config_srv_another_subnet_no_interface(
-        "192.168.51.0/24", "192.168.51.10-192.168.51.15"
+        "192.168.51.0/24", "192.168.51.10-192.168.51.15", id=2
     )
     srv_control.config_srv_another_subnet_no_interface(
-        "192.168.52.0/24", "192.168.52.10-192.168.52.15"
+        "192.168.52.0/24", "192.168.52.10-192.168.52.15", id=3
     )
     # subnet settings:
     if level == "subnet":
@@ -645,12 +645,12 @@ def test_ddns4_conflict_resolution(level, conflict):
     main_valid_lifetime = 10
     misc.test_setup()
     # subnets
-    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.10-192.168.50.25")
+    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.10-192.168.50.25", id=1)
     srv_control.config_srv_another_subnet_no_interface(
-        "192.168.51.0/24", "192.168.51.10-192.168.51.15"
+        "192.168.51.0/24", "192.168.51.10-192.168.51.15", id=2
     )
     srv_control.config_srv_another_subnet_no_interface(
-        "192.168.52.0/24", "192.168.52.10-192.168.52.15"
+        "192.168.52.0/24", "192.168.52.10-192.168.52.15", id=3
     )
     # subnet settings:
     if level == "subnet":
@@ -753,12 +753,12 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
     main_valid_lifetime = 25
     misc.test_setup()
     # subnets
-    srv_control.config_srv_subnet("2001:db8:a::/64", "2001:db8:a::10-2001:db8:a::20")
+    srv_control.config_srv_subnet("2001:db8:a::/64", "2001:db8:a::10-2001:db8:a::20", id=1)
     srv_control.config_srv_another_subnet_no_interface(
-        "2001:db8:b::/64", "2001:db8:b::10-2001:db8:b::20"
+        "2001:db8:b::/64", "2001:db8:b::10-2001:db8:b::20", id=2
     )
     srv_control.config_srv_another_subnet_no_interface(
-        "2001:db8:c::/64", "2001:db8:c::10-2001:db8:c::20"
+        "2001:db8:c::/64", "2001:db8:c::10-2001:db8:c::20", id=3
     )
     # subnet settings:
     if level == "subnet":
@@ -942,12 +942,12 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
     # basic config
     main_valid_lifetime = 50
     misc.test_setup()
-    srv_control.config_srv_subnet("2001:db8:a::/64", "2001:db8:a::10-2001:db8:a::20")
+    srv_control.config_srv_subnet("2001:db8:a::/64", "2001:db8:a::10-2001:db8:a::20", id=1)
     srv_control.config_srv_another_subnet_no_interface(
-        "2001:db8:b::/64", "2001:db8:b::10-2001:db8:b::20"
+        "2001:db8:b::/64", "2001:db8:b::10-2001:db8:b::20", id=2
     )
     srv_control.config_srv_another_subnet_no_interface(
-        "2001:db8:c::/64", "2001:db8:c::10-2001:db8:c::20"
+        "2001:db8:c::/64", "2001:db8:c::10-2001:db8:c::20", id=3
     )
     # subnet settings:
     if level == "subnet":
@@ -1136,12 +1136,12 @@ def test_ddns6_conflict_resolution(level, conflict):
     main_valid_lifetime = 10
     misc.test_setup()
     # subnets
-    srv_control.config_srv_subnet("2001:db8:a::/64", "2001:db8:a::10-2001:db8:a::20")
+    srv_control.config_srv_subnet("2001:db8:a::/64", "2001:db8:a::10-2001:db8:a::20", id=1)
     srv_control.config_srv_another_subnet_no_interface(
-        "2001:db8:b::/64", "2001:db8:b::10-2001:db8:b::20"
+        "2001:db8:b::/64", "2001:db8:b::10-2001:db8:b::20", id=2
     )
     srv_control.config_srv_another_subnet_no_interface(
-        "2001:db8:c::/64", "2001:db8:c::10-2001:db8:c::20"
+        "2001:db8:c::/64", "2001:db8:c::10-2001:db8:c::20", id=3
     )
     # subnet settings:
     if level == "subnet":
@@ -1246,12 +1246,12 @@ def test_ddns6_conflict_resolution_simple_scenario(level):
     main_valid_lifetime = 50
     misc.test_setup()
     # subnets
-    srv_control.config_srv_subnet("2001:db8:a::/64", "2001:db8:a::10-2001:db8:a::20")
+    srv_control.config_srv_subnet("2001:db8:a::/64", "2001:db8:a::10-2001:db8:a::20", id=1)
     srv_control.config_srv_another_subnet_no_interface(
-        "2001:db8:b::/64", "2001:db8:b::10-2001:db8:b::20"
+        "2001:db8:b::/64", "2001:db8:b::10-2001:db8:b::20", id=2
     )
     srv_control.config_srv_another_subnet_no_interface(
-        "2001:db8:c::/64", "2001:db8:c::10-2001:db8:c::20"
+        "2001:db8:c::/64", "2001:db8:c::10-2001:db8:c::20", id=3
     )
     # subnet settings:
     if level == "subnet":

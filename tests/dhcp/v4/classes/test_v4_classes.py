@@ -785,9 +785,9 @@ def test_v4_classification_vendor_different_levels(level):
     :type level: string
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.15')
-    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.10-192.168.51.15')
-    srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24', '192.168.52.10-192.168.52.15')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.15', id=1)
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.10-192.168.51.15', id=2)
+    srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24', '192.168.52.10-192.168.52.15', id=3)
 
     for i in range(3):
         srv_control.config_client_classification(i, f'VENDOR_CLASS_subnet-{i}')
