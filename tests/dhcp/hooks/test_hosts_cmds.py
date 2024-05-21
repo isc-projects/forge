@@ -2279,6 +2279,119 @@ def test_v6_del_reservation(channel, host_database, query_type):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::60')
+    srv_control.open_control_channel()
+    if channel == 'http':
+        srv_control.agent_control_channel()
+
+    srv_control.enable_db_backend_reservation(host_database)
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    srv_msg.SARR('2001:db8:1::50')
+
+    res = [{
+        "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
+        "ip-addresses": [
+            "2001:db8:1::101"
+        ],
+        "subnet-id": 1
+        },
+        {"duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
+         "ip-addresses": [
+             "2001:db8:1::102"
+         ],
+         "subnet-id": 1
+         },
+        {"duid": "00:03:00:01:f6:f5:f4:f3:f2:03",
+         "ip-addresses": [
+                 "2001:db8:1::103"
+         ],
+         "subnet-id": 1
+         },
+        {"duid": "00:03:00:01:f6:f5:f4:f3:f2:04",
+         "ip-addresses": [
+                 "2001:db8:1::104", "2001:db8:1::105"
+         ],
+         "subnet-id": 1
+         }]
+
+    for reservation in res:
+        _reservation_add(reservation, target=_get_target(host_database), channel=channel)
+
+    srv_msg.SARR('2001:db8:1::101')
+    _get_multiple_iana(['2001:db8:1::104', '2001:db8:1::105'], [2123, 2124], '00:03:00:01:f6:f5:f4:f3:f2:04')
+
+    del_res = {
+        "ip-address": "2001:db8:1::101",
+        "subnet-id": 1
+    }
+    if query_type == 'by-mac':
+        del_res = {
+            "identifier": "00:03:00:01:f6:f5:f4:f3:f2:01",
+            "identifier-type": "duid",
+            "subnet-id": 1
+        }
+
+    response = _reservation_del(del_res, target=_get_target(host_database), channel=channel)
+
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
+
+    response = _reservation_get("reservation-get-all", {"subnet-id": 1},
+                                target=_get_target(host_database), channel=channel)
+
+    assert response["result"] == 0
+    assert response["text"] == "3 IPv6 host(s) found."
+
+    srv_msg.SARR('2001:db8:1::51')
+    _get_multiple_iana(['2001:db8:1::104', '2001:db8:1::105'], [2123, 2124],  '00:03:00:01:f6:f5:f4:f3:f2:04')
+
+    del_res = {
+        "ip-address": "2001:db8:1::105",
+        "subnet-id": 1
+    }
+    if query_type == 'by-mac':
+        del_res = {
+            "identifier": "00:03:00:01:f6:f5:f4:f3:f2:04",
+            "identifier-type": "duid",
+            "subnet-id": 1
+        }
+
+    response = _reservation_del(del_res, target=_get_target(host_database), channel=channel)
+
+    assert response == {
+        "result": 0,
+        "text": "Host deleted."
+    }
+
+    response = _reservation_get("reservation-get-all", {"subnet-id": 1},
+                                target=_get_target(host_database), channel=channel)
+
+    assert response["result"] == 0
+    assert response["text"] == "2 IPv6 host(s) found."
+
+    srv_msg.SARR('2001:db8:1::52')
+    srv_msg.SARR('2001:db8:1::53',  duid='00:03:00:01:f6:f5:f4:f3:f2:04')
+
+
+@pytest.mark.v6
+@pytest.mark.host_reservation
+@pytest.mark.hosts_cmds
+@pytest.mark.parametrize('channel', ['http'])
+@pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
+@pytest.mark.parametrize('query_type', ['by-ip', 'by-mac'])
+def test_v6_del_reservation_with_prefix(channel, host_database, query_type):
+    """
+    Add and delete reservation using:
+    * by-mac (subnet-id, identifier-type, identifier)
+    * by-ip (subnet-id, address)
+    """
+    misc.test_setup()
+    srv_control.add_hooks('libdhcp_host_cmds.so')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::60')
     srv_control.config_srv_prefix('3000:db8::', 0, 32, 34)
     srv_control.open_control_channel()
     if channel == 'http':
