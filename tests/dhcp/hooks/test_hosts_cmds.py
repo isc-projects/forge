@@ -170,7 +170,7 @@ def test_v4_reconfigure(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -197,7 +197,7 @@ def test_v4_reconfigure(channel, host_database):
     srv_msg.DORA('192.168.50.100')
 
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.250-192.168.50.250')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.250-192.168.50.250', id=1)
     srv_control.enable_db_backend_reservation(host_database, clear=False)
     srv_control.open_control_channel()
     if channel == 'http':
@@ -219,7 +219,7 @@ def test_v4_add_reservation(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -294,7 +294,7 @@ def test_v4_del_reservation(channel, host_database, query_type):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -371,7 +371,7 @@ def test_v4_get_reservation(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -429,7 +429,7 @@ def test_v4_add_reservation_flex_id(channel, host_database):
     Add reservation based on flex id
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -473,7 +473,7 @@ def test_v4_add_reservation_complex(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -573,7 +573,7 @@ def test_v4_get_reservation_by_id(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -720,8 +720,8 @@ def test_v4_reservation_get_all(channel, host_database):
     Check command reservation-get-all
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
-    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50', id=2)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -800,8 +800,8 @@ def test_v4_reservation_get_page(channel, host_database):
     """
 
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
-    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50', id=2)
     srv_control.enable_db_backend_reservation(host_database)
     srv_control.open_control_channel()
     if channel == 'http':
@@ -1085,7 +1085,7 @@ def test_v4_reservation_update(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
     srv_control.create_new_class('Client_Class_1')
     srv_control.create_new_class('Client_Class_2')
     srv_control.disable_leases_affinity()
@@ -1207,7 +1207,7 @@ def test_v4_reservation_update_negative(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
     srv_control.create_new_class('Client_Class_1')
     srv_control.create_new_class('Client_Class_2')
     srv_control.disable_leases_affinity()
@@ -1321,7 +1321,7 @@ def test_v4_conflicts_duplicate_mac_reservations(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -1374,7 +1374,7 @@ def test_v4_conflicts_duplicate_ip_reservations(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -1430,7 +1430,7 @@ def test_v4_duplicate_ip_reservations_allowed(channel, host_database):
     the_same_ip_address = '192.168.50.10'
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50', id=1)
     # allow non-unique IP address in multiple reservations
     srv_control.set_conf_parameter_global('ip-reservations-unique', False)
     srv_control.open_control_channel()
@@ -1672,8 +1672,8 @@ def test_v4_reservation_get_by_hostname(channel):
      * valid values, but not in configuration
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
-    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50', id=2)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -1799,8 +1799,8 @@ def test_v4_reservation_get_by_id(channel):
      * bogus values
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
-    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.50-192.168.51.50', id=2)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -2145,7 +2145,7 @@ def test_v6_reconfigure(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -2175,7 +2175,7 @@ def test_v6_reconfigure(channel, host_database):
 
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -2200,7 +2200,7 @@ def test_v6_add_reservation(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -2278,7 +2278,7 @@ def test_v6_del_reservation(channel, host_database, query_type):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::60')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::60', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -2391,7 +2391,7 @@ def test_v6_del_reservation_with_prefix(channel, host_database, query_type):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::60')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::60', id=1)
     srv_control.config_srv_prefix('3000:db8::', 0, 32, 34)
     srv_control.open_control_channel()
     if channel == 'http':
@@ -2505,7 +2505,7 @@ def test_v6_get_reservation(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -2564,7 +2564,7 @@ def test_v6_add_reservation_flex_id(channel, host_database):
     Add reservation with flex id
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -2609,7 +2609,7 @@ def test_v6_add_reservation_complex(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -2685,8 +2685,8 @@ def test_v6_reservation_get_all(channel, host_database):
     Check reservation-get-all command in separate subnets on all backends
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff', id=1)
+    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff', id=2)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -2772,8 +2772,8 @@ def test_v6_reservation_get_page(channel, host_database):
     while using different limit.
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff', id=1)
+    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff', id=2)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -3081,7 +3081,7 @@ def test_v6_conflicts_duplicate_duid_reservations(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
+    srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10', id=1)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -3165,7 +3165,7 @@ def test_v6_duplicate_ip_reservations_allowed(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10')
+    srv_control.config_srv_subnet('3000::/30', '3000::1-3000::10', id=1)
     # allow non-unique IP address in multiple reservations
     srv_control.set_conf_parameter_global('ip-reservations-unique', False)
     srv_control.disable_leases_affinity()
@@ -3417,8 +3417,8 @@ def test_v6_reservation_get_by_hostname(channel):
      * valid values, but not in configuration
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff', id=1)
+    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff', id=2)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -3664,8 +3664,8 @@ def test_v6_reservation_get_by_hostname(channel):
 @pytest.mark.parametrize('channel', ['http'])
 def test_v6_reservation_get_by_id(channel):
     misc.test_setup()
-    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff')
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff', id=1)
+    srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff', id=2)
     srv_control.open_control_channel()
     if channel == 'http':
         srv_control.agent_control_channel()
@@ -3985,7 +3985,7 @@ def test_v6_reservation_update(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50', id=1)
     srv_control.create_new_class('Client_Class_1')
     srv_control.create_new_class('Client_Class_2')
     srv_control.disable_leases_affinity()
@@ -4113,7 +4113,7 @@ def test_v6_reservation_update_negative(channel, host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50', id=1)
     srv_control.create_new_class('Client_Class_1')
     srv_control.create_new_class('Client_Class_2')
     srv_control.disable_leases_affinity()
@@ -4227,7 +4227,7 @@ def test_v6_memfile_with_(host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::51')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::51', id=1)
     srv_control.disable_leases_affinity()
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
@@ -4310,7 +4310,7 @@ def test_v4_memfile_with_(host_database):
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.51')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.51', id=1)
     srv_control.disable_leases_affinity()
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
@@ -4394,9 +4394,9 @@ def test_save_reservation_to_the_config_file(dhcp_version):
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
     if dhcp_version == 'v4':
-        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
+        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
     else:
-        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50', id=1)
     srv_control.disable_leases_affinity()
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
