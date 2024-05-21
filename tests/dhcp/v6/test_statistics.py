@@ -14,6 +14,7 @@ import pytest
 from src import misc
 from src import srv_control
 from src import srv_msg
+from src.forge_cfg import world
 
 
 class StatsState6:
@@ -849,3 +850,307 @@ def test_stats_6():
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',
                                      socket_name='control_socket2')
+
+
+def _increase_mac(mac: str):
+    """
+    Recalculate mac address by: keep first octet unchanged (we can change it in test to make sure that
+    consecutive steps will generate different sets, change second octet always by 1, all the rest we can
+    change by one or random number between 3 and 20. Used rand=True to generate test data
+
+    :param mac: mac address as string
+    :param rand: whether to use randomness in changing the MAC
+    :return: increased mac address as string
+    """
+    mac = mac.split(":")
+    new_mac = (int(mac[0], 16),)
+    new_mac += (int(mac[1], 16) + 1,)
+    for i in range(2, 6):
+        if int(mac[i], 16) + 1 > 255:
+            mac[i] = 1
+        new_mac += (int(mac[i], 16) + 1,)
+    return ':'.join(f'{i:02x}' for i in new_mac)
+
+
+def _increase_ip(ip: str):
+    ip = ip.split(":")
+    ip[6]= f'{(int(ip[6], 16) + 1):x}'
+    return ':'.join(f'{i}' for i in ip)
+
+
+def _get_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00"):
+    all_leases = []
+    for _ in range(leases_count):
+        mac = _increase_mac(mac)
+        duid = "00:03:00:01:" + mac
+
+        misc.test_procedure()
+        srv_msg.client_sets_value('Client', 'DUID', duid)
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_send_msg('SOLICIT')
+
+        misc.pass_criteria()
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+
+        misc.test_procedure()
+        srv_msg.client_copy_option('server-id')
+        srv_msg.client_copy_option('IA_NA')
+        srv_msg.client_sets_value('Client', 'DUID', duid)
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_send_msg('REQUEST')
+
+        misc.pass_criteria()
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+
+        all_leases.append(srv_msg.get_all_leases())
+
+    return all_leases
+
+
+def _decline_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00", ip: str = "2001:db8:a:a:1::0"):
+    for _ in range(leases_count):
+        mac = _increase_mac(mac)
+        duid = "00:03:00:01:" + mac
+        ip = _increase_ip(ip)
+
+        misc.test_procedure()
+        srv_msg.client_sets_value('Client', 'DUID', duid)
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_copy_option('server-id')
+        srv_msg.client_sets_value('Client', 'IA_Address', ip)
+        srv_msg.client_does_include('Client', 'IA_Address')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_send_msg('DECLINE')
+
+        misc.pass_criteria()
+        srv_msg.send_wait_for_message('MUST', 'REPLY')
+
+
+@pytest.mark.v6
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('lease_remove_method', ['wipe', 'del', 'expire'])
+def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
+    """Test checks if pool statistics are updated corectly.
+    Test scenario:
+    - create 4 pools with different sizes
+    - get leases from all pools
+    - check if statistics are updated correctly
+    - remove leases from the server (using wipe, del or expire method)
+    - check if statistics are updated correctly 
+
+    Args:
+        lease_remove_method: method of removing leases from server.
+        backend: lease backend to use
+    """
+    # Skip running test with lease4-wipe in case of database backend
+    if (lease_remove_method == 'wipe' and (backend == 'mysql' or backend == 'postgresql')):
+        pytest.skip("lease6-wipe not supported in database kea#1045")
+    # lease6-wipe method fails to remove statistics kea#3422
+
+    pool_0_A_size = 3
+    pool_0_B_size = 5
+    pool_0_size = pool_0_A_size + pool_0_B_size
+    pool_1_size = 5
+    pool_2_size = 10
+    leases_to_get = pool_0_size + pool_1_size + pool_2_size
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:a:a:1::/64', f'2001:db8:a:a:1::1-2001:db8:a:a:1::{pool_0_A_size:x}', id=1)
+    srv_control.new_pool(f'2001:db8:a:a:2::1-2001:db8:a:a:2::{pool_0_B_size:x}', 0)
+    srv_control.new_pool(f'2001:db8:a:a:3::1-2001:db8:a:a:3::{pool_1_size:x}', 0, pool_id=1)
+    srv_control.new_pool(f'2001:db8:a:a:4::1-2001:db8:a:a:4::{pool_2_size:x}', 0, pool_id=2)
+    if lease_remove_method == 'expire':
+        srv_control.set_time('valid-lifetime', int(leases_to_get * 0.4 + 1))
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.disable_leases_affinity()
+    srv_control.open_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    assert get_stat('subnet[1].pool[0].total-nas')[0] == pool_0_size
+    assert get_stat('subnet[1].pool[1].total-nas')[0] == pool_1_size
+    assert get_stat('subnet[1].pool[2].total-nas')[0] == pool_2_size
+
+    # Get leases to fill the pools
+    _get_leases(leases_to_get, mac = "02:02:0c:03:0a:00")
+
+    # Subnet statistics checks
+    assert get_stat('subnet[1].assigned-nas')[0] == leases_to_get
+    assert get_stat('subnet[1].cumulative-assigned-nas')[0] == leases_to_get
+
+    # Pool statistics checks
+    assert get_stat('subnet[1].pool[0].assigned-nas')[0] == pool_0_size
+    assert get_stat('subnet[1].pool[0].cumulative-assigned-nas')[0] == pool_0_size
+    assert get_stat('subnet[1].pool[1].assigned-nas')[0] == pool_1_size
+    assert get_stat('subnet[1].pool[1].cumulative-assigned-nas')[0] == pool_1_size
+    assert get_stat('subnet[1].pool[2].assigned-nas')[0] == pool_2_size
+    assert get_stat('subnet[1].pool[2].cumulative-assigned-nas')[0] == pool_2_size
+
+    if lease_remove_method == 'expire':
+        # Wait for leases to expire
+        srv_msg.forge_sleep(int(leases_to_get * 0.8 + 5), "seconds")
+    elif lease_remove_method == 'wipe':
+        # wipe those assigned leases
+        cmd = {"command": "lease6-wipe", "arguments": {"subnet-id": 1}}
+        srv_msg.send_ctrl_cmd_via_socket(cmd)
+    else:
+        # delete those assigned leases
+        for number in range(pool_0_A_size):
+            cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:a:a:1::{(number+1):x}'}}
+            srv_msg.send_ctrl_cmd_via_socket(cmd)
+        for number in range(pool_0_B_size):
+            cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:a:a:2::{(number+1):x}'}}
+            srv_msg.send_ctrl_cmd_via_socket(cmd)
+        for number in range(pool_1_size):
+            cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:a:a:3::{(number+1):x}'}}
+            srv_msg.send_ctrl_cmd_via_socket(cmd)
+        for number in range(pool_2_size):
+            cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:a:a:4::{(number+1):x}'}}
+            srv_msg.send_ctrl_cmd_via_socket(cmd)
+
+    # Make sure lease reclamation is done
+    cmd = {"command": "leases-reclaim", "arguments": {"remove": True}}
+    srv_msg.send_ctrl_cmd_via_socket(cmd)
+
+    # Subnet statistics checks
+    assert get_stat('subnet[1].reclaimed-leases')[0] == (leases_to_get if lease_remove_method == 'expire' else 0)
+    assert get_stat('subnet[1].assigned-nas')[0] == 0
+    assert get_stat('subnet[1].cumulative-assigned-nas')[0] == leases_to_get
+
+    # Pool statistics checks
+    assert get_stat('subnet[1].pool[0].assigned-nas')[0] == 0
+    assert get_stat('subnet[1].pool[0].cumulative-assigned-nas')[0] == pool_0_size
+    assert get_stat('subnet[1].pool[0].reclaimed-leases')[0] == (pool_0_size if lease_remove_method == 'expire' else 0)
+    assert get_stat('subnet[1].pool[1].assigned-nas')[0] == 0
+    assert get_stat('subnet[1].pool[1].cumulative-assigned-nas')[0] == pool_1_size
+    assert get_stat('subnet[1].pool[1].reclaimed-leases')[0] == (pool_1_size if lease_remove_method == 'expire' else 0)
+    assert get_stat('subnet[1].pool[2].assigned-nas')[0] == 0
+    assert get_stat('subnet[1].pool[2].cumulative-assigned-nas')[0] == pool_2_size
+    assert get_stat('subnet[1].pool[2].reclaimed-leases')[0] == (pool_2_size if lease_remove_method == 'expire' else 0)
+
+    # Get leases again. We split into pools so we can decline them later.
+    _get_leases(pool_0_A_size, mac = "50:02:0c:03:0a:00")
+    _get_leases(pool_0_B_size, mac = "51:02:0c:03:0a:00")
+    _get_leases(pool_1_size, mac = "52:02:0c:03:0a:00")
+    _get_leases(pool_2_size, mac = "53:02:0c:03:0a:00")
+
+    # Subnet statistics checks
+    assert get_stat('subnet[1].reclaimed-leases')[0] == (leases_to_get if lease_remove_method == 'expire' else 0)
+    assert get_stat('subnet[1].assigned-nas')[0] == leases_to_get
+    assert get_stat('subnet[1].cumulative-assigned-nas')[0] == 2 * leases_to_get
+
+    # Pool statistics checks
+    assert get_stat('subnet[1].pool[0].assigned-nas')[0] == pool_0_size
+    assert get_stat('subnet[1].pool[0].cumulative-assigned-nas')[0] == 2 * pool_0_size
+    assert get_stat('subnet[1].pool[0].reclaimed-leases')[0] == (pool_0_size if lease_remove_method == 'expire' else 0)
+    assert get_stat('subnet[1].pool[1].assigned-nas')[0] == pool_1_size
+    assert get_stat('subnet[1].pool[1].cumulative-assigned-nas')[0] == 2 * pool_1_size
+    assert get_stat('subnet[1].pool[1].reclaimed-leases')[0] == (pool_1_size if lease_remove_method == 'expire' else 0)
+    assert get_stat('subnet[1].pool[2].assigned-nas')[0] == pool_2_size
+    assert get_stat('subnet[1].pool[2].cumulative-assigned-nas')[0] == 2 * pool_2_size
+    assert get_stat('subnet[1].pool[2].reclaimed-leases')[0] == (pool_2_size if lease_remove_method == 'expire' else 0)
+
+
+@pytest.mark.v6
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_stats_pool_id_decline(backend):
+    """Test checks if pool decline leases statistics are updated corectly.
+    Test scenario:
+    - create 4 pools with different sizes
+    - get leases from all pools
+    - check if statistics are updated correctly
+    - decline leases
+    - check if statistics are updated correctly 
+
+    Args:
+        backend: lease backend to use
+    """
+
+    pool_0_A_size = 2
+    pool_0_B_size = 3
+    pool_0_size = pool_0_A_size + pool_0_B_size
+    pool_1_size = 4
+    pool_2_size = 8
+    leases_to_get = pool_0_size + pool_1_size + pool_2_size
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:a:a:1::/64', f'2001:db8:a:a:1::1-2001:db8:a:a:1::{pool_0_A_size:x}', id=1)
+    srv_control.new_pool(f'2001:db8:a:a:2::1-2001:db8:a:a:2::{pool_0_B_size:x}', 0)
+    srv_control.new_pool(f'2001:db8:a:a:3::1-2001:db8:a:a:3::{pool_1_size:x}', 0, pool_id=1)
+    srv_control.new_pool(f'2001:db8:a:a:4::1-2001:db8:a:a:4::{pool_2_size:x}', 0, pool_id=2)
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    # Probation period must be longer, than time required to Decline all leases
+    srv_control.add_line({"decline-probation-period": int(leases_to_get * 0.4 + 1)})
+    srv_control.disable_leases_affinity()
+    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.open_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    assert get_stat('subnet[1].pool[0].total-nas')[0] == pool_0_size
+    assert get_stat('subnet[1].pool[1].total-nas')[0] == pool_1_size
+    assert get_stat('subnet[1].pool[2].total-nas')[0] == pool_2_size
+
+    # Get leases. We split into pools so we can decline them later.
+    _get_leases(pool_0_A_size, mac = "50:02:0c:03:0a:00")
+    _get_leases(pool_0_B_size, mac = "51:02:0c:03:0a:00")
+    _get_leases(pool_1_size, mac = "52:02:0c:03:0a:00")
+    _get_leases(pool_2_size, mac = "53:02:0c:03:0a:00")
+
+    # Subnet statistics checks
+    assert get_stat('subnet[1].assigned-nas')[0] == leases_to_get
+    assert get_stat('subnet[1].cumulative-assigned-nas')[0] == leases_to_get
+    assert get_stat('subnet[1].declined-addresses')[0] == 0
+
+    # Pool statistics checks
+    assert get_stat('subnet[1].pool[0].assigned-nas')[0] == pool_0_size
+    assert get_stat('subnet[1].pool[0].cumulative-assigned-nas')[0] == pool_0_size
+    assert get_stat('subnet[1].pool[0].declined-addresses')[0] == 0
+    assert get_stat('subnet[1].pool[1].assigned-nas')[0] == pool_1_size
+    assert get_stat('subnet[1].pool[1].cumulative-assigned-nas')[0] == pool_1_size
+    assert get_stat('subnet[1].pool[1].declined-addresses')[0] == 0
+    assert get_stat('subnet[1].pool[2].assigned-nas')[0] == pool_2_size
+    assert get_stat('subnet[1].pool[2].cumulative-assigned-nas')[0] == pool_2_size
+    assert get_stat('subnet[1].pool[2].declined-addresses')[0] == 0
+
+    assert get_stat('subnet[1].declined-addresses')[0] == 0
+
+    # Shorten wait after sending Decline messages - we don't expect responses
+    world.cfg['wait_interval'] = 0.1
+
+    _decline_leases(pool_0_A_size, mac = "50:02:0c:03:0a:00", ip = "2001:db8:a:a:1::0")
+    _decline_leases(pool_0_B_size, mac = "51:02:0c:03:0a:00", ip = "2001:db8:a:a:2::0")
+    _decline_leases(pool_1_size, mac = "52:02:0c:03:0a:00", ip = "2001:db8:a:a:3::0")
+    _decline_leases(pool_2_size, mac = "53:02:0c:03:0a:00", ip = "2001:db8:a:a:4::0")
+
+    # Subnet statistics checks
+    assert get_stat('subnet[1].declined-addresses')[0] == leases_to_get
+    assert get_stat('subnet[1].reclaimed-declined-addresses')[0] == 0
+
+    # Pool statistics checks
+    assert get_stat('subnet[1].pool[0].declined-addresses')[0] == pool_0_size
+    assert get_stat('subnet[1].pool[1].declined-addresses')[0] == pool_1_size
+    assert get_stat('subnet[1].pool[2].declined-addresses')[0] == pool_2_size
+    assert get_stat('subnet[1].pool[0].reclaimed-declined-addresses')[0] == 0
+    assert get_stat('subnet[1].pool[1].reclaimed-declined-addresses')[0] == 0
+    assert get_stat('subnet[1].pool[2].reclaimed-declined-addresses')[0] == 0
+
+    # Wait for lease probation period to expire
+    srv_msg.forge_sleep(int(leases_to_get * 0.4 + 5), "seconds")
+
+    # Make sure lease reclamation is done
+    cmd = {"command": "leases-reclaim", "arguments": {"remove": True}}
+    srv_msg.send_ctrl_cmd_via_socket(cmd)
+
+    # Subnet statistics checks
+    assert get_stat('subnet[1].declined-addresses')[0] == 0
+    assert get_stat('subnet[1].reclaimed-declined-addresses')[0] == leases_to_get
+    # Pool statistics checks
+    assert get_stat('subnet[1].pool[0].declined-addresses')[0] == 0
+    assert get_stat('subnet[1].pool[1].declined-addresses')[0] == 0
+    assert get_stat('subnet[1].pool[2].declined-addresses')[0] == 0
+    assert get_stat('subnet[1].pool[0].reclaimed-declined-addresses')[0] == pool_0_size
+    assert get_stat('subnet[1].pool[1].reclaimed-declined-addresses')[0] == pool_1_size
+    assert get_stat('subnet[1].pool[2].reclaimed-declined-addresses')[0] == pool_2_size

@@ -9,7 +9,6 @@
 # pylint: disable=invalid-name
 # pylint: disable=line-too-long
 
-import random
 import pytest
 
 from src import misc
@@ -72,15 +71,13 @@ class StatsState4:
         for key, _ in self.s.items():
             if key not in statistics_from_kea:
                 statistics_not_found.append(key)
-        assert len(
-            statistics_not_found) == 0, f'The following statistics were expected, but not received: {statistics_not_found}'
+        assert len(statistics_not_found) == 0, f'The following statistics were expected, but not received: {statistics_not_found}'
 
         statistics_not_found = []
         for key in statistics_from_kea:
             if key not in self.s:
                 statistics_not_found.append(key)
-        assert len(
-            statistics_not_found) == 0, f'The following statistics were received, but not expected: {statistics_not_found}'
+        assert len(statistics_not_found) == 0, f'The following statistics were received, but not expected: {statistics_not_found}'
 
         assert len(statistics_from_kea) == 41, 'Number of all statistics is incorrect.'
 
@@ -573,7 +570,7 @@ def test_stats_sample_age():
     assert get_stat('pkt4-received') == [3], "Stat pkt4-received is not correct"
 
 
-def _increase_mac(mac: str, rand: bool = False):
+def _increase_mac(mac: str):
     """
     Recalculate mac address by: keep first octet unchanged (we can change it in test to make sure that
     consecutive steps will generate different sets, change second octet always by 1, all the rest we can
@@ -587,10 +584,9 @@ def _increase_mac(mac: str, rand: bool = False):
     new_mac = (int(mac[0], 16),)
     new_mac += (int(mac[1], 16) + 1,)
     for i in range(2, 6):
-        a = random.randint(3, 20) if rand else 1
-        if int(mac[i], 16) + a > 255:
+        if int(mac[i], 16) + 1 > 255:
             mac[i] = 1
-        new_mac += (int(mac[i], 16) + a,)
+        new_mac += (int(mac[i], 16) + 1,)
     return ':'.join(f'{i:02x}' for i in new_mac)
 
 def _increase_ip(ip: str):
@@ -660,10 +656,12 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
 
     Args:
         lease_remove_method: method of removing leases from server.
+        backend: lease backend to use
     """
     # Skip running test with lease4-wipe in case of database backend
     if (lease_remove_method == 'wipe' and (backend == 'mysql' or backend == 'postgresql')):
-        pytest.skip("lease4-wipe not supported in database")
+        pytest.skip("lease4-wipe not supported in database kea#1045")
+    # lease4-wipe method fails to remove statistics kea#3422
 
     pool_0_A_size = 3
     pool_0_B_size = 5
@@ -673,12 +671,12 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
     leases_to_get = pool_0_size + pool_1_size + pool_2_size
 
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.0.0/16', f'192.168.50.1-192.168.50.{pool_0_A_size}', id=0)
+    srv_control.config_srv_subnet('192.168.0.0/16', f'192.168.50.1-192.168.50.{pool_0_A_size}', id=1)
     srv_control.new_pool(f'192.168.51.1-192.168.51.{pool_0_B_size}', 0)
     srv_control.new_pool(f'192.168.52.1-192.168.52.{pool_1_size}', 0, pool_id=1)
     srv_control.new_pool(f'192.168.53.1-192.168.53.{pool_2_size}', 0, pool_id=2)
     if lease_remove_method == 'expire':
-        srv_control.set_time('valid-lifetime', int(leases_to_get * 0.2 + 1))
+        srv_control.set_time('valid-lifetime', int(leases_to_get * 0.3 + 1))
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.define_temporary_lease_db_backend(backend)
     srv_control.disable_leases_affinity()
@@ -707,7 +705,7 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
 
     if lease_remove_method == 'expire':
         # Wait for leases to expire
-        srv_msg.forge_sleep(int(leases_to_get * 0.2 + 2), "seconds")
+        srv_msg.forge_sleep(int(leases_to_get * 0.3 + 4), "seconds")
     elif lease_remove_method == 'wipe':
         # wipe those assigned leases
         cmd = {"command": "lease4-wipe", "arguments": {"subnet-id": 1}}
@@ -782,7 +780,7 @@ def test_stats_pool_id_decline(backend):
     - check if statistics are updated correctly 
 
     Args:
-        lease_remove_method: method of removing leases from server.
+        backend: lease backend to use
     """
 
     pool_0_A_size = 2
@@ -793,7 +791,7 @@ def test_stats_pool_id_decline(backend):
     leases_to_get = pool_0_size + pool_1_size + pool_2_size
 
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.0.0/16', f'192.168.50.1-192.168.50.{pool_0_A_size}', id=0)
+    srv_control.config_srv_subnet('192.168.0.0/16', f'192.168.50.1-192.168.50.{pool_0_A_size}', id=1)
     srv_control.new_pool(f'192.168.51.1-192.168.51.{pool_0_B_size}', 0)
     srv_control.new_pool(f'192.168.52.1-192.168.52.{pool_1_size}', 0, pool_id=1)
     srv_control.new_pool(f'192.168.53.1-192.168.53.{pool_2_size}', 0, pool_id=2)
