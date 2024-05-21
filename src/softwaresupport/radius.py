@@ -8,11 +8,13 @@
 # pylint: disable=global-variable-not-assigned
 # pylint: disable=line-too-long
 
+import re
+
 from src import srv_msg
 
 from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES, get_address4, get_address6, send_discover_with_no_answer
 from src.forge_cfg import world
-from .multi_server_functions import fabric_sudo_command, fabric_send_file, TemporaryFile
+from .multi_server_functions import fabric_download_file, fabric_is_file, fabric_sudo_command, fabric_send_file, TemporaryFile
 
 AUTHORIZE_CONTENT = ''
 
@@ -279,6 +281,42 @@ def configurations(interface: str = world.f_cfg.server_iface):
     return configs
 
 
+def _tweak_radius_config(destination: str = world.f_cfg.mgmt_address):
+    """ Remove comments and empty lines, and enable auth logs. """
+    for file in [
+        '/etc/raddb/radiusd.conf',
+        '/etc/freeradius/3.0/radiusd.conf',
+    ]:
+        if fabric_is_file(file, destination):
+            world.radius_config = file
+            break
+
+    assert world.radius_config is not None, "radius config file not found"
+
+    # Download config.
+    fabric_download_file(world.radius_config, '/tmp/radiusd.conf', destination_host=destination)
+
+    # Read config.
+    with open('/tmp/radiusd.conf', 'r', encoding='utf-8') as file:
+        content = file.read()
+
+    # Remove comments and empty lines.
+    content = ''.join([line for line in content.splitlines(True)
+                       if not re.search(r'^\s*#.*', line) and not re.search(r'^$', line)])
+
+    # Make sure auth logs are enabled.
+    content = content.replace('auth = no', 'auth = yes')
+    content = content.replace('auth_badpass = no', 'auth_badpass = yes')
+    content = content.replace('auth_goodpass = no', 'auth_goodpass = yes')
+
+    # Write config back.
+    with open('/tmp/radiusd.conf', 'w', encoding='utf-8') as file:
+        file.write(content)
+
+    # Send config back.
+    fabric_send_file('/tmp/radiusd.conf', world.radius_config, destination_host=destination)
+
+
 def get_address(mac: str,
                 giaddr: str = None,
                 expected_lease: str = None,
@@ -470,18 +508,15 @@ def _init_radius(destination: str = world.f_cfg.mgmt_address):
     global AUTHORIZE_CONTENT
     authorize_file = 'authorize.txt'
     with TemporaryFile(authorize_file, AUTHORIZE_CONTENT):
-        if world.server_system in ['redhat', 'alpine']:
-            # freeradius 3.x
-            fabric_send_file(authorize_file, '/etc/raddb/mods-config/files/authorize',
-                             destination_host=destination)
-        else:
-            # freeradius 3.x
-            fabric_send_file(authorize_file,
-                             '/etc/freeradius/3.0/mods-config/files/authorize',
-                             destination_host=destination)
-            # freeradius 2.x
-            fabric_send_file(authorize_file, '/etc/freeradius/users',
-                             destination_host=destination)
+        for file in [
+                '/etc/raddb/mods-config/files/authorize',  # freeradius 3.x usualy on RPM distros
+                '/etc/freeradius/3.0/mods-config/files/authorize',  # freeradius 3.x usually on deb distros
+                '/etc/freeradius/users',  # freeradius 2.x
+        ]:
+            if fabric_is_file(file, destination):
+                fabric_send_file(authorize_file, file, destination_host=destination)
+                world.radius_authorize_file = file
+                break
 
     # clients.conf file
     clients_conf_content = '''
@@ -496,21 +531,21 @@ client {mgmt_address} {{
       lifetime = 0
       idle_timeout = 30
    }}
-}}'''
+}}
+'''
+    clients_conf_content = clients_conf_content.strip()
     clients_conf_content = clients_conf_content.format(mgmt_address=destination)
     clients_conf_file = 'clients.conf'
     with TemporaryFile(clients_conf_file, clients_conf_content):
-        if world.server_system in ['redhat', 'alpine']:
-            # freeradius 3.x
-            fabric_send_file(clients_conf_file, '/etc/raddb/clients.conf',
-                             destination_host=destination)
-        else:
-            # freeradius 3.x
-            fabric_send_file(clients_conf_file, '/etc/freeradius/3.0/clients.conf',
-                             destination_host=destination)
-            # freeradius 2.x
-            fabric_send_file(clients_conf_file, '/etc/freeradius/clients.conf',
-                             destination_host=destination)
+        for file in [
+                '/etc/raddb/clients.conf',  # freeradius 3.x usualy on RPM distros
+                '/etc/freeradius/3.0/clients.conf',  # freeradius 3.x usually on deb distros
+                '/etc/freeradius/clients.conf',  # freeradius 2.x
+        ]:
+            if fabric_is_file(file, destination):
+                fabric_send_file(clients_conf_file, file, destination_host=destination)
+                world.radius_clients_file = file
+                break
 
 
 def _start_radius(destination: str = world.f_cfg.mgmt_address):
@@ -519,6 +554,17 @@ def _start_radius(destination: str = world.f_cfg.mgmt_address):
 
     :param destination: address of the server that hosts the RADIUS service
     """
+
+    for file in [
+        '/var/log/radius/radius.log',
+        '/var/log/freeradius/radius.log',
+    ]:
+        if fabric_is_file(file, destination):
+            world.radius_log = file
+            break
+
+    fabric_sudo_command(f'truncate -s 0 {world.radius_log}', destination_host=destination, ignore_errors=True)
+    _tweak_radius_config(destination)
     if world.server_system == 'redhat':
         cmd = 'sudo systemctl restart radiusd'
     elif world.server_system == 'alpine':

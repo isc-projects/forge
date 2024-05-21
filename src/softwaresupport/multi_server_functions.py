@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -131,6 +131,14 @@ def fabric_remove_file_command(remote_path,
             else:
                 result = sudo("rm -rf " + remote_path)
     return result
+
+
+def fabric_is_file(remote_path, destination_host=world.f_cfg.mgmt_address):
+    try:
+        fabric_sudo_command(f'test -f {remote_path}', destination_host=destination_host)
+    except SystemExit:
+        return False
+    return True
 
 
 def remove_local_file(file_local):

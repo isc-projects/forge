@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -287,6 +287,11 @@ def declare_all(dhcp_version=None):
     world.ddns_enable = False
     world.ctrl_enable = False
     world.fuzzing = False
+
+    world.radius_authorize_file = None
+    world.radius_clients_file = None
+    world.radius_config = None
+    world.radius_log = None
 
     # clear tmp DB values to use default from configuration
     world.f_cfg.db_type = world.f_cfg.db_type_bk

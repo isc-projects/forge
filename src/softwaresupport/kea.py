@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1902,6 +1902,23 @@ def save_ctrl_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address)
                          hide_all=not world.f_cfg.forge_verbose)
 
 
+def save_radius_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address):
+    """ Download RADIUS logs and relevant RADIUS config files. """
+
+    radius_dir = os.path.join(local_dest_dir, 'radius')
+
+    for i in [
+        world.radius_authorize_file,
+        world.radius_clients_file,
+        world.radius_config,
+        world.radius_log,
+    ]:
+        if i is not None:
+            os.makedirs(radius_dir, exist_ok=True)
+            fabric_download_file(i, radius_dir, destination_host=destination_address,
+                                 ignore_errors=True, hide_all=not world.f_cfg.forge_verbose)
+
+
 def save_logs(destination_address: str = world.f_cfg.mgmt_address):
     """
     Save all types of log files to results file
@@ -1916,6 +1933,8 @@ def save_logs(destination_address: str = world.f_cfg.mgmt_address):
 
     if world.ddns_enable:
         save_ddns_logs(local_dest_dir, destination_address)
+
+    save_radius_logs(local_dest_dir, destination_address)
 
 
 def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
