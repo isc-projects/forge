@@ -382,25 +382,20 @@ def test_stats_basic():
     assert get_stat("pkt4-offer-sent") == [4, 3, 2, 1, 0], "Stat pkt4-offer-sent is not correct"
     assert get_stat("pkt4-parse-failed") == [0], "Stat pkt4-parse-failed is not correct"
     assert get_stat("pkt4-receive-drop") == [1, 0], "Stat pkt4-receive-drop is not correct"
-    assert get_stat("pkt4-received") == [13, 12, 11, 10, 9, 8, 7, 6, 5,
-                                         4, 3, 2, 1, 0], "Stat pkt4-received is not correct"
+    assert get_stat("pkt4-received") == [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], "Stat pkt4-received is not correct"
     assert get_stat("pkt4-request-received") == [4, 3, 2, 1, 0], "Stat pkt4-request-received is not correct"
     assert get_stat("pkt4-release-received") == [2, 1, 0], "Stat pkt4-release-received is not correct"
     assert get_stat("pkt4-sent") == [9, 8, 7, 6, 5, 4, 3, 2, 1, 0], "Stat pkt4-sent is not correct"
     assert get_stat("pkt4-unknown-received") == [0], "Stat pkt4-unknown-received is not correct"
     assert get_stat("reclaimed-declined-addresses") == [0], "Stat reclaimed-declined-addresses is not correct"
     assert get_stat("reclaimed-leases") == [0], "Stat reclaimed-leases is not correct"
-    assert get_stat("subnet[1].assigned-addresses") == [2, 1, 0, 1, 0, 1,
-                                                        0], "Stat subnet[1].assigned-addresses is not correct"
-    assert get_stat("subnet[1].pool[0].assigned-addresses") == [2, 1, 0, 1, 0,
-                                                                1, 0], "Stat subnet[1].assigned-addresses is not correct"
+    assert get_stat("subnet[1].assigned-addresses") == [2, 1, 0, 1, 0, 1, 0], "Stat subnet[1].assigned-addresses is not correct"
+    assert get_stat("subnet[1].pool[0].assigned-addresses") == [2, 1, 0, 1, 0, 1, 0], "Stat subnet[1].assigned-addresses is not correct"
     assert get_stat("subnet[1].declined-addresses") == [1, 0], "Stat subnet[1].declined-addresses is not correct"
-    assert get_stat(
-        "subnet[1].reclaimed-declined-addresses") == [0], "Stat subnet[1].reclaimed-declined-addresses is not correct"
+    assert get_stat("subnet[1].reclaimed-declined-addresses") == [0], "Stat subnet[1].reclaimed-declined-addresses is not correct"
     assert get_stat("subnet[1].reclaimed-leases") == [0], "Stat subnet[1].reclaimed-leases is not correct"
     assert get_stat("subnet[1].total-addresses") == [10], "Stat subnet[1].total-addresses is not correct"
-    assert get_stat("subnet[1].v4-reservation-conflicts") == [1,
-                                                              0], "Stat subnet[1].v4-reservation-conflicts is not correct"
+    assert get_stat("subnet[1].v4-reservation-conflicts") == [1, 0], "Stat subnet[1].v4-reservation-conflicts is not correct"
     assert get_stat("v4-reservation-conflicts") == [1, 0], "Stat v4-reservation-conflicts is not correct"
 
 
