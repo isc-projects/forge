@@ -707,9 +707,12 @@ def add_interface(iface, add_to_existing=True):
             world.dhcp_cfg["interfaces-config"]["interfaces"].append(iface)
 
 
-def add_pool_to_subnet(pool, subnet):
+def add_pool_to_subnet(pool, subnet, pool_id=None):
     sub = f'subnet{world.proto[1]}'
-    world.dhcp_cfg[sub][subnet]["pools"].append({"pool": pool})
+    if pool_id is None:
+        world.dhcp_cfg[sub][subnet]["pools"].append({"pool": pool})
+    else:
+        world.dhcp_cfg[sub][subnet]["pools"].append({"pool": pool, "pool-id": pool_id})
 
 
 def add_prefix_to_subnet(prefix, length, delegated,  subnet):

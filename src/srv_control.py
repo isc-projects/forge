@@ -539,8 +539,8 @@ def set_time_in_subnet(which_time, subnet, value):
 
 
 @step(r'Server is configured with another pool (\S+) in subnet (\d+).')
-def new_pool(pool, subnet):
-    dhcp.add_pool_to_subnet(pool, int(subnet))
+def new_pool(pool, subnet, pool_id=None):
+    dhcp.add_pool_to_subnet(pool, int(subnet), pool_id)
 
 
 @step(r'Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
