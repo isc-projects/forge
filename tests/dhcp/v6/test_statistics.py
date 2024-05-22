@@ -878,7 +878,7 @@ def _increase_ip(ip: str):
     return ':'.join(f'{i}' for i in ip)
 
 
-def _get_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00", pd = False):
+def _get_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00", pd=False):
     all_leases = []
     for _ in range(leases_count):
         mac = _increase_mac(mac)
@@ -1087,7 +1087,7 @@ def test_stats_pool_id_assign_reclaim_pd(lease_remove_method, backend):
     pool_0_size = pool_0_A_size + pool_0_B_size
     pool_1_size = pow(2, (pool_1_delegated-32))
     pool_2_size = pow(2, (pool_2_delegated-32))
-    leases_to_get = pool_0_size #+ pool_1_size + pool_2_size
+    leases_to_get = pool_0_size + pool_1_size + pool_2_size
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a:a:1::/64', None, id=1)
