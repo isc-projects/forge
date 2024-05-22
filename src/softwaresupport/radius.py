@@ -165,6 +165,61 @@ def add_usual_reservations():
         'Framed-IPv6-Pool = "platinum"',
     ])
 
+    # Prefix only
+    add_reservation('08:ff:ee:dd:cc:01', [
+        'Delegated-IPv6-Prefix = "2001:db8:0:0:01::/96"',
+    ])
+
+    # Framed prefix and delegated prefix. Equal.
+    add_reservation('08:ff:ee:dd:cc:02', [
+        'Framed-IPv6-Prefix = "2001:db8:0:0:2::/96"',
+        'Delegated-IPv6-Prefix = "2001:db8:0:0:2::/96"',
+    ])
+
+    # Framed prefix and delegated prefix. Different.
+    add_reservation('08:ff:ee:dd:cc:03', [
+        'Framed-IPv6-Prefix = "2001:db8:0:0:3:3::/96"',
+        'Delegated-IPv6-Prefix = "2001:db8:0:0:3::/96"',
+    ])
+
+    # Address and prefix
+    add_reservation('08:ff:ee:dd:cc:04', [
+        'Framed-IP-Address = "192.192.0.4"',
+        'Framed-IPv6-Address = "2001:db8:0:0:4:4::"',
+        'Delegated-IPv6-Prefix = "2001:db8:0:0:4::/96"',
+    ])
+
+    # Address same as prefix
+    add_reservation('08:ff:ee:dd:cc:05', [
+        'Framed-IP-Address = "192.192.0.5"',
+        'Framed-IPv6-Address = "2001:db8:0:0:5::"',
+        'Delegated-IPv6-Prefix = "2001:db8:0:0:5::/96"',
+    ])
+
+    # Address same as prefix and /128
+    add_reservation('08:ff:ee:dd:cc:065', [
+        'Framed-IP-Address = "192.192.0.6"',
+        'Framed-IPv6-Address = "2001:db8:0:0:6::"',
+        'Delegated-IPv6-Prefix = "2001:db8:0:0:6::/96"',
+    ])
+
+    # Pool and prefix
+    add_reservation('08:ff:ee:dd:cc:07', [
+        'Framed-Pool = "silver"',
+        'Framed-IPv6-Pool = "silver"',
+        'Delegated-IPv6-Prefix = "2001:db8:0:0:7::/96"',
+    ])
+
+    # All attributes
+    add_reservation('08:ff:ee:dd:cc:08', [
+        'Framed-Pool = "silver"',
+        'Framed-IPv6-Pool = "silver"',
+        'Framed-IP-Address = "192.192.0.8"',
+        'Framed-IPv6-Address = "2001:db8:0:0:8:8::"',
+        'Framed-IPv6-Prefix = "2001:db8:0:0:8:8::/112"',
+        'Delegated-IPv6-Prefix = "2001:db8:0:0:8::/96"',
+    ])
+
 
 def configurations(interface: str = world.f_cfg.server_iface):
     """

@@ -71,7 +71,7 @@ def test_RADIUS(dhcp_version: str,
     # Check the leases.
     leases = radius.send_and_receive(config_type, radius_reservation_in_pool)
 
-    # Check that leases are in the backend.
+    # Check that the leases are in the backend.
     srv_msg.check_leases(leases, backend=backend)
 
 
@@ -123,7 +123,7 @@ def test_RADIUS_framed_pool(dhcp_version: str, attribute_cardinality: str):
         lease = radius.get_address(mac='08:00:27:b0:c1:41',
                                    expected_lease='192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5')
 
-        # Check that leases are in the backend.
+        # Check that the leases are in the backend.
         srv_msg.check_leases([lease])
 
 
@@ -169,7 +169,7 @@ def test_RADIUS_no_attributes(dhcp_version: str):
     lease = radius.get_address(mac='08:00:27:b0:c1:41',
                                expected_lease='192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5')
 
-    # Check that leases are in the backend.
+    # Check that the leases are in the backend.
     srv_msg.check_leases([lease])
 
 
@@ -192,7 +192,7 @@ def test_RADIUS_giaddr(dhcp_version: str,
     :param config_type: whether usual subnets are used or shared network
     :param giaddr: how the used giaddr is positioned relative to configured subnets
     :param leading_subnet: whether a random subnet is introduced in order to test subnet reselection
-    :param reselect: whether to enable reselect-subnet-address in the RADIUS hook library
+    :param reselect: whether to enable reselect-subnet-* in the RADIUS hook library
     """
 
     misc.test_setup()
@@ -252,6 +252,9 @@ def test_RADIUS_giaddr(dhcp_version: str,
         giaddr_value = '192.168.99.99'
     elif giaddr == 'out-of-subnet':
         giaddr_value = '192.168.77.77'
+    else:
+        giaddr_value = None
+        pytest.fail(f"unrecognized giaddr == '{giaddr}'")
 
     leases = []
 
@@ -358,5 +361,271 @@ def test_RADIUS_giaddr(dhcp_version: str,
                                          giaddr=giaddr_value,
                                          expected_lease='192.168.99.123'))
 
-    # Check that leases are in the backend.
+    # Check that the leases are in the backend.
     srv_msg.check_leases(leases)
+
+
+@pytest.mark.v4
+@pytest.mark.v4_bootp
+@pytest.mark.v6
+@pytest.mark.radius
+def test_RADIUS_Delegated_IPv6_Prefix_simple(dhcp_version: str):
+    """
+    Simple test for the Delegated-IPv6-Prefix RADIUS attribute.
+
+    :param dhcp_version: the DHCP version being tested
+    """
+
+    misc.test_setup()
+
+    # Provide RADIUS configuration and start RADIUS server.
+    radius.add_usual_reservations()
+    radius.init_and_start_radius()
+
+    # Configure a subnet with no pool and start Kea.
+    setup_server_with_radius(**{
+        f'subnet{world.proto[1]}': [
+            {
+                'id': 50,
+                'interface': world.f_cfg.server_iface,
+                'subnet': '192.168.50.5/24'if world.proto == 'v4' else '2001:db8:50::/64'
+            }
+        ]
+    })
+    if dhcp_version == 'v4_bootp':
+        srv_control.add_hooks('libdhcp_bootp.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Check that Delegated-IPv6-Prefix has no effect on v4.
+    if dhcp_version.startswith('v4'):
+        radius.send_message_and_expect_no_more_leases(mac='08:ff:ee:dd:cc:00')
+        return
+
+    # Two consecutive SARRs should both get the delegated prefix configured in RADIUS.
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:01', delegated_prefix='2001:db8:0:0:1::/96')
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:01', delegated_prefix='2001:db8:0:0:1::/96')
+
+    # A random client should not get the delegated prefix configured in RADIUS
+    # or any other lease for that matter.
+    srv_msg.SARR(duid='00:03:00:01:00:00:00:00:00:00')
+    srv_msg.SARR(duid='00:03:00:01:00:00:00:00:00:00')
+
+    # Check that the leases are in the backend.
+    srv_msg.check_leases([{'address': '2001:db8:0:0:1::', 'prefix_len': 96}])
+
+
+@pytest.mark.v6
+@pytest.mark.radius
+@pytest.mark.parametrize('pool', ['pool', 'no-pool'])
+@pytest.mark.parametrize('reselect', ['reselect', '_'])
+def test_RADIUS_Delegated_IPv6_Prefix(dhcp_version: str,
+                                      pool: str,
+                                      reselect: str):
+    """
+    Check the Delegated-IPv6-Prefix RADIUS attribute.
+
+    :param dhcp_version: the DHCP version being tested
+    :param reselect: whether to enable reselect-subnet-* in the RADIUS hook library
+    """
+
+    misc.test_setup()
+
+    # Provide RADIUS configuration and start RADIUS server.
+    radius.add_usual_reservations()
+    radius.init_and_start_radius()
+
+    # Configure a subnet and start Kea.
+    if pool == 'pool':
+        setup_server_with_radius(**{
+            'subnet6': [
+                {
+                    'id': 2001,
+                    'interface': world.f_cfg.server_iface,
+                    'pools': [
+                        {
+                           'pool': '2001:db8::1 - 2001:db8::100'
+                        }
+                    ],
+                    'subnet': '2001:db8::/64'
+                }
+            ]
+        })
+    elif pool == 'no-pool':
+        setup_server_with_radius(**{
+            'subnet6': [
+                {
+                    'id': 2001,
+                    'interface': world.f_cfg.server_iface,
+                    'subnet': '2001:db8::/64'
+                }
+            ]
+        })
+    else:
+        pytest.fail(f"unrecognized pool == '{pool}'")
+    if reselect == 'reselect':
+        srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-address', True)
+        srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-pool', True)
+    else:
+        srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-address', False)
+        srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-pool', False)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # All the following should get the delegated prefixes and framed ipv6 addresses configured in RADIUS or otherwise
+    # addresses from the dynamic pool.
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:01',
+                 address='2001:db8::1' if pool == 'pool' else None, delegated_prefix='2001:db8:0:0:1::/96')
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:01',
+                 address='2001:db8::1' if pool == 'pool' else None, delegated_prefix='2001:db8:0:0:1::/96')
+
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:02',
+                 address='2001:db8::2' if pool == 'pool' else None, delegated_prefix='2001:db8:0:0:2::/96')
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:02',
+                 address='2001:db8::2' if pool == 'pool' else None, delegated_prefix='2001:db8:0:0:2::/96')
+
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:03',
+                 address='2001:db8::3' if pool == 'pool' else None, delegated_prefix='2001:db8:0:0:3::/96')
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:03',
+                 address='2001:db8::3' if pool == 'pool' else None, delegated_prefix='2001:db8:0:0:3::/96')
+
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:04',
+                 address='2001:db8::4:4:0:0', delegated_prefix='2001:db8:0:0:4::/96')
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:04',
+                 address='2001:db8::4:4:0:0', delegated_prefix='2001:db8:0:0:4::/96')
+
+    # TODO: investigate what is going on. Kea with reselect enabled treats clients with Framed-Pool differently based on
+    # whether a subnet has pools or not. That should not be the case.
+    if reselect == 'reselect' and pool == 'no-pool':
+        srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:07')
+        srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:07')
+
+        srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:08')
+        srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:08')
+    else:
+        srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:07',
+                     address='2001:db8::4' if pool == 'pool' else None, delegated_prefix='2001:db8:0:0:7::/96')
+        srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:07',
+                     address='2001:db8::4' if pool == 'pool' else None, delegated_prefix='2001:db8:0:0:7::/96')
+
+        srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:08',
+                     address='2001:db8::8:8:0:0', delegated_prefix='2001:db8:0:0:8::/96')
+        srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:08',
+                     address='2001:db8::8:8:0:0', delegated_prefix='2001:db8:0:0:8::/96')
+
+    # A random client should not get any lease.
+    srv_msg.SARR(duid='00:03:00:01:00:00:00:00:00:00')
+    srv_msg.SARR(duid='00:03:00:01:00:00:00:00:00:00')
+
+    # Check that the leases are in the backend.
+    srv_msg.check_leases([
+        {'address': '2001:db8:0:0:1::', 'duid': '00:03:00:01:08:ff:ee:dd:cc:01', 'prefix_len': 96},
+        {'address': '2001:db8:0:0:2::', 'duid': '00:03:00:01:08:ff:ee:dd:cc:02', 'prefix_len': 96},
+        {'address': '2001:db8:0:0:3::', 'duid': '00:03:00:01:08:ff:ee:dd:cc:03', 'prefix_len': 96},
+        {'address': '2001:db8:0:0:4::', 'duid': '00:03:00:01:08:ff:ee:dd:cc:04', 'prefix_len': 96},
+        {'address': '2001:db8::4:4:0:0', 'duid': '00:03:00:01:08:ff:ee:dd:cc:04', 'prefix_len': 128},
+    ])
+    if pool == 'pool':
+        srv_msg.check_leases([
+            {'address': '2001:db8::1', 'duid': '00:03:00:01:08:ff:ee:dd:cc:01', 'prefix_len': 128},
+            {'address': '2001:db8::2', 'duid': '00:03:00:01:08:ff:ee:dd:cc:02', 'prefix_len': 128},
+            {'address': '2001:db8::3', 'duid': '00:03:00:01:08:ff:ee:dd:cc:03', 'prefix_len': 128},
+        ])
+        if reselect != 'reselect':
+            srv_msg.check_leases([
+                {'address': '2001:db8::4', 'duid': '00:03:00:01:08:ff:ee:dd:cc:07', 'prefix_len': 128},
+            ])
+
+    if reselect != 'reselect' or pool == 'pool':
+        srv_msg.check_leases([
+            {'address': '2001:db8:0:0:7::', 'duid': '00:03:00:01:08:ff:ee:dd:cc:07', 'prefix_len': 96},
+            {'address': '2001:db8:0:0:8::', 'duid': '00:03:00:01:08:ff:ee:dd:cc:08', 'prefix_len': 96},
+            {'address': '2001:db8::8:8:0:0', 'duid': '00:03:00:01:08:ff:ee:dd:cc:08', 'prefix_len': 128},
+        ])
+
+
+@pytest.mark.v6
+@pytest.mark.radius
+def test_RADIUS_Delegated_IPv6_Prefix_same_prefix(dhcp_version: str):
+    """
+    Check that the Delegated-IPv6-Prefix RADIUS attribute alongside a Framed-IPv6-Address with the same prefix result in
+    both leases being offered.
+
+    Fails. Under investigation in kea#3423. When fixed, consider merging the SARRs into
+    test_RADIUS_Delegated_IPv6_Prefix_no_pool. The only reason they were separated is because this particular test fails.
+
+    :param dhcp_version: the DHCP version being tested
+    """
+
+    misc.test_setup()
+
+    # Provide RADIUS configuration and start RADIUS server.
+    radius.add_usual_reservations()
+    radius.init_and_start_radius()
+
+    # Configure a subnet with no pool and start Kea.
+    setup_server_with_radius(**{
+        'subnet6': [
+            {
+                'id': 2001,
+                'interface': world.f_cfg.server_iface,
+                'subnet': '2001:db8::/64'
+            }
+        ]
+    })
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:05',
+                 address='2001:db8:0:0:5::', delegated_prefix='2001:db8:0:0:5::/96')
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:05',
+                 address='2001:db8:0:0:5::', delegated_prefix='2001:db8:0:0:5::/96')
+
+    # Check that the leases are in the backend.
+    srv_msg.check_leases([
+        {'address': '2001:db8:0:0:5::', 'prefix_len': 128},
+        {'address': '2001:db8:0:0:5::', 'prefix_len': 96},
+    ])
+
+
+@pytest.mark.v6
+@pytest.mark.radius
+def test_RADIUS_Delegated_IPv6_Prefix_same_prefix_and_prefix_length(dhcp_version: str):
+    """
+    Check that the Delegated-IPv6-Prefix RADIUS attribute alongside a Framed-IPv6-Address with the same prefix and the
+    same prefix length result in both leases being offered.
+
+    Fails. Under investigation in kea#3423. When fixed, consider merging the SARRs into
+    test_RADIUS_Delegated_IPv6_Prefix_no_pool. The only reason they were separated is because this particular test fails.
+
+    :param dhcp_version: the DHCP version being tested
+    """
+
+    misc.test_setup()
+
+    # Provide RADIUS configuration and start RADIUS server.
+    radius.add_usual_reservations()
+    radius.init_and_start_radius()
+
+    # Configure a subnet with no pool and start Kea.
+    setup_server_with_radius(**{
+        'subnet6': [
+            {
+                'id': 2001,
+                'interface': world.f_cfg.server_iface,
+                'subnet': '2001:db8::/64'
+            }
+        ]
+    })
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:06',
+                 address='2001:db8:0:0:6::', delegated_prefix='2001:db8:0:0:6::/128')
+    srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:06',
+                 address='2001:db8:0:0:6::', delegated_prefix='2001:db8:0:0:6::/128')
+
+    # Check that the leases are in the backend.
+    srv_msg.check_leases([
+        {'address': '2001:db8:0:0:5::', 'prefix_len': 128},
+    ])
