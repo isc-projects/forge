@@ -580,7 +580,7 @@ def _increase_mac(mac: str):
     :param rand: whether to use randomness in changing the MAC
     :return: increased mac address as string
     """
-    mac = mac.split(":")
+    mac=mac.split(":")
     new_mac = (int(mac[0], 16),)
     new_mac += (int(mac[1], 16) + 1,)
     for i in range(2, 6):
@@ -589,15 +589,17 @@ def _increase_mac(mac: str):
         new_mac += (int(mac[i], 16) + 1,)
     return ':'.join(f'{i:02x}' for i in new_mac)
 
+
 def _increase_ip(ip: str):
-    ip = ip.split(".")
-    ip[3]= int(ip[3]) + 1
+    ip=ip.split(".")
+    ip[3] = int(ip[3]) + 1
     return '.'.join(f'{i}' for i in ip)
+
 
 def _get_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00"):
     all_leases = []
     for _ in range(leases_count):
-        mac = _increase_mac(mac)
+        mac=_increase_mac(mac)
         client_id = '11' + mac.replace(':', '')
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'chaddr', mac)
@@ -628,12 +630,12 @@ def _get_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00"):
 
 def _decline_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00", ip: str = "192.168.50.0"):
     for _ in range(leases_count):
-        mac = _increase_mac(mac)
+        mac=_increase_mac(mac)
         client_id = '11' + mac.replace(':', '')
-        ip = _increase_ip(ip)
+        ip=_increase_ip(ip)
         srv_msg.client_sets_value('Client', 'chaddr', mac)
         srv_msg.client_does_include_with_value('client_id', client_id)
-        #srv_msg.client_copy_option('server_id')
+        # srv_msg.client_copy_option('server_id')
         srv_msg.client_sets_value('Client', 'ciaddr', '0.0.0.0')
         srv_msg.client_does_include_with_value('requested_addr', ip)
         srv_msg.client_send_msg('DECLINE')
@@ -652,14 +654,14 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
     - get leases from all pools
     - check if statistics are updated correctly
     - remove leases from the server (using wipe, del or expire method)
-    - check if statistics are updated correctly 
+    - check if statistics are updated correctly
 
     Args:
         lease_remove_method: method of removing leases from server.
         backend: lease backend to use
     """
     # Skip running test with lease4-wipe in case of database backend
-    if (lease_remove_method == 'wipe' and (backend == 'mysql' or backend == 'postgresql')):
+    if (lease_remove_method == 'wipe' and backend in ['mysql', 'postgresql']):
         pytest.skip("lease4-wipe not supported in database kea#1045")
     # lease4-wipe method fails to remove statistics kea#3422
 
@@ -689,7 +691,7 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
     assert get_stat('subnet[1].pool[2].total-addresses')[0] == pool_2_size
 
     # Get leases to fill the pools
-    _get_leases(leases_to_get, mac = "02:02:0c:03:0a:00")
+    _get_leases(leases_to_get, mac="02:02:0c:03:0a:00")
 
     # Subnet statistics checks
     assert get_stat('subnet[1].assigned-addresses')[0] == leases_to_get
@@ -746,10 +748,10 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
     assert get_stat('subnet[1].pool[2].reclaimed-leases')[0] == (pool_2_size if lease_remove_method == 'expire' else 0)
 
     # Get leases again. We split into pools so we can decline them later.
-    _get_leases(pool_0_A_size, mac = "50:02:0c:03:0a:00")
-    _get_leases(pool_0_B_size, mac = "51:02:0c:03:0a:00")
-    _get_leases(pool_1_size, mac = "52:02:0c:03:0a:00")
-    _get_leases(pool_2_size, mac = "53:02:0c:03:0a:00")
+    _get_leases(pool_0_A_size, mac="50:02:0c:03:0a:00")
+    _get_leases(pool_0_B_size, mac="51:02:0c:03:0a:00")
+    _get_leases(pool_1_size, mac="52:02:0c:03:0a:00")
+    _get_leases(pool_2_size, mac="53:02:0c:03:0a:00")
 
     # Subnet statistics checks
     assert get_stat('subnet[1].reclaimed-leases')[0] == (leases_to_get if lease_remove_method == 'expire' else 0)
@@ -809,10 +811,10 @@ def test_stats_pool_id_decline(backend):
     assert get_stat('subnet[1].pool[2].total-addresses')[0] == pool_2_size
 
     # Get leases. We split into pools so we can decline them later.
-    _get_leases(pool_0_A_size, mac = "50:02:0c:03:0a:00")
-    _get_leases(pool_0_B_size, mac = "51:02:0c:03:0a:00")
-    _get_leases(pool_1_size, mac = "52:02:0c:03:0a:00")
-    _get_leases(pool_2_size, mac = "53:02:0c:03:0a:00")
+    _get_leases(pool_0_A_size, mac="50:02:0c:03:0a:00")
+    _get_leases(pool_0_B_size, mac="51:02:0c:03:0a:00")
+    _get_leases(pool_1_size, mac="52:02:0c:03:0a:00")
+    _get_leases(pool_2_size, mac="53:02:0c:03:0a:00")
 
     # Subnet statistics checks
     assert get_stat('subnet[1].assigned-addresses')[0] == leases_to_get
@@ -835,10 +837,10 @@ def test_stats_pool_id_decline(backend):
     # Shorten wait after sending Decline messages - we don't expect responses
     world.cfg['wait_interval'] = 0.1
 
-    _decline_leases(pool_0_A_size, mac = "50:02:0c:03:0a:00", ip = "192.168.50.0")
-    _decline_leases(pool_0_B_size, mac = "51:02:0c:03:0a:00", ip = "192.168.51.0")
-    _decline_leases(pool_1_size, mac = "52:02:0c:03:0a:00", ip = "192.168.52.0")
-    _decline_leases(pool_2_size, mac = "53:02:0c:03:0a:00", ip = "192.168.53.0")
+    _decline_leases(pool_0_A_size, mac="50:02:0c:03:0a:00", ip="192.168.50.0")
+    _decline_leases(pool_0_B_size, mac="51:02:0c:03:0a:00", ip="192.168.51.0")
+    _decline_leases(pool_1_size, mac="52:02:0c:03:0a:00", ip="192.168.52.0")
+    _decline_leases(pool_2_size, mac="53:02:0c:03:0a:00", ip="192.168.53.0")
 
     # Subnet statistics checks
     assert get_stat('subnet[1].declined-addresses')[0] == leases_to_get
