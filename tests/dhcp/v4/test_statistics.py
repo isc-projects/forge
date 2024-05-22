@@ -580,7 +580,7 @@ def _increase_mac(mac: str):
     :param rand: whether to use randomness in changing the MAC
     :return: increased mac address as string
     """
-    mac=mac.split(":")
+    mac = mac.split(":")
     new_mac = (int(mac[0], 16),)
     new_mac += (int(mac[1], 16) + 1,)
     for i in range(2, 6):
@@ -591,7 +591,7 @@ def _increase_mac(mac: str):
 
 
 def _increase_ip(ip: str):
-    ip=ip.split(".")
+    ip = ip.split(".")
     ip[3] = int(ip[3]) + 1
     return '.'.join(f'{i}' for i in ip)
 
@@ -599,7 +599,7 @@ def _increase_ip(ip: str):
 def _get_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00"):
     all_leases = []
     for _ in range(leases_count):
-        mac=_increase_mac(mac)
+        mac = _increase_mac(mac)
         client_id = '11' + mac.replace(':', '')
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'chaddr', mac)
@@ -630,9 +630,9 @@ def _get_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00"):
 
 def _decline_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00", ip: str = "192.168.50.0"):
     for _ in range(leases_count):
-        mac=_increase_mac(mac)
+        mac = _increase_mac(mac)
         client_id = '11' + mac.replace(':', '')
-        ip=_increase_ip(ip)
+        ip = _increase_ip(ip)
         srv_msg.client_sets_value('Client', 'chaddr', mac)
         srv_msg.client_does_include_with_value('client_id', client_id)
         # srv_msg.client_copy_option('server_id')
@@ -779,7 +779,7 @@ def test_stats_pool_id_decline(backend):
     - get leases from all pools
     - check if statistics are updated correctly
     - decline leases
-    - check if statistics are updated correctly 
+    - check if statistics are updated correctly
 
     Args:
         backend: lease backend to use

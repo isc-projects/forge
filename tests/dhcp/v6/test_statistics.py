@@ -862,7 +862,7 @@ def _increase_mac(mac: str):
     :param rand: whether to use randomness in changing the MAC
     :return: increased mac address as string
     """
-    mac=mac.split(":")
+    mac = mac.split(":")
     new_mac = (int(mac[0], 16),)
     new_mac += (int(mac[1], 16) + 1,)
     for i in range(2, 6):
@@ -873,7 +873,7 @@ def _increase_mac(mac: str):
 
 
 def _increase_ip(ip: str):
-    ip=ip.split(":")
+    ip = ip.split(":")
     ip[6] = f'{(int(ip[6], 16) + 1):x}'
     return ':'.join(f'{i}' for i in ip)
 
@@ -881,7 +881,7 @@ def _increase_ip(ip: str):
 def _get_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00"):
     all_leases = []
     for _ in range(leases_count):
-        mac=_increase_mac(mac)
+        mac = _increase_mac(mac)
         duid = "00:03:00:01:" + mac
 
         misc.test_procedure()
@@ -910,9 +910,9 @@ def _get_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00"):
 
 def _decline_leases(leases_count: int = 1, mac: str = "01:02:0c:03:0a:00", ip: str = "2001:db8:a:a:1::0"):
     for _ in range(leases_count):
-        mac=_increase_mac(mac)
+        mac = _increase_mac(mac)
         duid = "00:03:00:01:" + mac
-        ip=_increase_ip(ip)
+        ip = _increase_ip(ip)
 
         misc.test_procedure()
         srv_msg.client_sets_value('Client', 'DUID', duid)
