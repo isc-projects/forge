@@ -144,7 +144,7 @@ def test_v4_basic_configuration():
 
     # default setting
     misc.test_setup()
-    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.1")
+    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.1", id=1)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     srv_control.build_and_send_config_files()
@@ -156,7 +156,7 @@ def test_v4_basic_configuration():
     ], "Default value of stash-agent-options is incorrect"
 
     misc.test_setup()
-    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.1")
+    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.1", id=1)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     srv_control.set_conf_parameter_global("stash-agent-options", True)
@@ -167,10 +167,9 @@ def test_v4_basic_configuration():
     assert rsp["arguments"]["Dhcp4"][
         "stash-agent-options"
     ], "Value of stash-agent-options is incorrect"
-    srv_control.start_srv("DHCP", "stopped")
 
     misc.test_setup()
-    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.1")
+    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.1", id=1)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     srv_control.set_conf_parameter_global("stash-agent-options", False)
