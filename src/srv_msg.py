@@ -840,3 +840,13 @@ def check_if_address_belongs_to_subnet(subnet: str = None, address: str = None):
     assert ipaddress.ip_address(address) in ipaddress.ip_network(subnet), f"Address {address} " \
                                                                           f"does NOT belong to subnet {subnet}"
     log.debug("%s fit into %s", address, subnet)
+
+def create_db_dump(database: str, db_name: str=world.f_cfg.db_name,
+                   db_user: str=world.f_cfg.db_user, db_password: str=world.f_cfg.db_passwd,
+                   destination_address=world.f_cfg.mgmt_address, file_name=None):
+    multi_protocol_functions.create_db_dump(database, db_name, db_user, db_password, destination_address, file_name)
+
+def restore_db_from_dump(database: str, db_name: str=None,
+                         db_user: str=None, db_password: str=world.f_cfg.db_passwd,
+                         destination_address=world.f_cfg.mgmt_address, file_name=None):
+    multi_protocol_functions.restore_db_from_dump(database, db_name, db_user, db_password, destination_address, file_name)

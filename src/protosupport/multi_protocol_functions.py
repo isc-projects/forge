@@ -892,3 +892,52 @@ def get_address_of_local_vm(addr: str = None):
     a = s.getsockname()[0]
     s.close()
     return a
+
+def create_db_dump(database: str, db_name: str=world.f_cfg.db_name,
+                   db_user: str=world.f_cfg.db_user, db_password: str=world.f_cfg.db_passwd,
+                   destination_address=world.f_cfg.mgmt_address, file_name=None):
+    if file_name is None:
+        file_name = f"/tmp/{database}_dump.sql"
+
+    remove_file_from_server(file_name, dest=destination_address)
+
+    if database == 'mysql':
+        # create dump of database with events and procedures
+        execute_shell_cmd(f"mysqldump --events --routines -u {db_user} -p'{db_password}' {db_name} > {file_name}",
+                        dest=destination_address)
+        # replace interface and user used on setup that was used to generate dump to value later changed to interface
+        # it's needed otherwise kea would not start on differently configured setup
+        execute_shell_cmd(f"sed -i 's/$(SERVER_IFACE)/!serverinterface!/g' {file_name}",
+                        dest=destination_address)
+        execute_shell_cmd(f"sed -i 's/$(DB_USER)/!db_user!/g' {file_name}",
+                        dest=destination_address)
+    else:
+        cmd = f'sudo -S -u postgres pg_dump {db_name} > {file_name}'
+        fabric_run_command(cmd, ignore_errors=False, destination_host=destination_address)
+        execute_shell_cmd(f"sed -i 's/$(DB_USER)/!db_user!/g' {file_name}", dest=destination_address)
+        execute_shell_cmd(f"sed -i 's/$(SERVER_IFACE)/!serverinterface!/g' {file_name}",
+                        dest=destination_address)
+
+def restore_db_from_dump(database: str, db_name: str=None,
+                         db_user: str=None,
+                         db_password: str=world.f_cfg.db_passwd,
+                         destination_address=world.f_cfg.mgmt_address, file_name=None):
+
+    for i in [db_name, db_user, db_password, file_name]:
+        assert i, "Missing required parameter"
+
+    execute_shell_cmd(f"sed -i 's/!serverinterface!/$(SERVER_IFACE)/g' {file_name}")
+    execute_shell_cmd(f"sed -i 's/!db_user!/{db_user}/g' {file_name}")
+    if world.server_system == 'redhat' and database == 'mysql':
+        execute_shell_cmd(f"sed -i 's/CHARSET=utf8mb4/CHARSET=latin1/g' {file_name}")
+
+    if database == 'mysql':
+        # this solves the problem: "Variable 'sql_mode' can't be set to the value of 'NO_AUTO_CREATE_USER'"
+        execute_shell_cmd(f"sed -i 's/NO_AUTO_CREATE_USER,//g' {file_name}")
+        cmd = f"mysql -u root -e 'GRANT SUPER ON *.* TO {db_user}@localhost;'"
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        # recreate db content in new db
+        execute_shell_cmd(f'mysql -u {db_user} -p{db_password} {db_name} < {file_name}')
+    else:
+        cmd = f'sudo -S -u postgres psql {db_name} < {file_name}'
+        fabric_run_command(cmd, ignore_errors=False, destination_host=destination_address)
