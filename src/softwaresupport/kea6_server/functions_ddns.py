@@ -51,7 +51,7 @@ def change_to_boolean(value):
         return value
     if value.lower() == "true":
         return True
-    elif value.lower() == "false":
+    if value.lower() == "false":
         return False
     return value
 
@@ -81,12 +81,12 @@ def add_ddns_server_behavioral_options(option, value=None, subnet: int = None, s
         else:
             world.dhcp_cfg[option] = change_to_boolean(value)
     elif subnet:
-        for subnet in world.dhcp_cfg[f"subnet{dhcp_version}"]:
-            if subnet["id"] == subnet:
+        for sub in world.dhcp_cfg[f"subnet{dhcp_version}"]:
+            if sub["id"] == sub:
                 if isinstance(option, dict) and value is None:
-                    subnet.update(option)
+                    sub.update(option)
                 else:
-                    subnet[option] = change_to_boolean(value)
+                    sub[option] = change_to_boolean(value)
     elif sharednetwork:
         for network in world.dhcp_cfg["shared-networks"]:
             if network["name"] == network:
