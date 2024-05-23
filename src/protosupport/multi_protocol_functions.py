@@ -600,7 +600,7 @@ def _process_ctrl_response(response, exp_result):
         result = json.loads(response)
         if world.f_cfg.forge_verbose:
             log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
-    except json.JSONDecodeError:
+    except BaseException:  # pylint: disable=broad-exception-caught
         log.exception('Problem with parsing json:\n"%s"', str(response))
         result = response
 
@@ -851,7 +851,7 @@ def convert_address_to_hex(address):
     if ':' in address:
         # TODO: support for abbreviated two-colon format e.g. 2001:db8::1
         return codecs.decode(address.replace(':', ''), 'hex')
-    raise Exception('%s is not a valid IPv4 or IPv6 address' % address)
+    raise Exception('%s is not a valid IPv4 or IPv6 address' % address)  # pylint: disable=broad-exception-raised
 
 
 def _increase_address_n(prefix):
@@ -878,7 +878,7 @@ def increase_address(address, prefix_length):
         new_network = ipaddress.IPv6Network(
             new_address.compressed + '/' + prefix_length)
         return str(new_network.network_address)
-    raise Exception('%s is not a valid IPv4 or IPv6 address' % address)
+    raise Exception('%s is not a valid IPv4 or IPv6 address' % address)  # pylint: disable=broad-exception-raised
 
 
 def get_address_of_local_vm(addr: str = None):
@@ -893,8 +893,9 @@ def get_address_of_local_vm(addr: str = None):
     s.close()
     return a
 
-def create_db_dump(database: str, db_name: str=world.f_cfg.db_name,
-                   db_user: str=world.f_cfg.db_user, db_password: str=world.f_cfg.db_passwd,
+
+def create_db_dump(database: str, db_name: str = world.f_cfg.db_name,
+                   db_user: str = world.f_cfg.db_user, db_password: str = world.f_cfg.db_passwd,
                    destination_address=world.f_cfg.mgmt_address, file_name=None):
     if file_name is None:
         file_name = f"/tmp/{database}_dump.sql"
@@ -904,23 +905,24 @@ def create_db_dump(database: str, db_name: str=world.f_cfg.db_name,
     if database == 'mysql':
         # create dump of database with events and procedures
         execute_shell_cmd(f"mysqldump --events --routines -u {db_user} -p'{db_password}' {db_name} > {file_name}",
-                        dest=destination_address)
+                          est=destination_address)
         # replace interface and user used on setup that was used to generate dump to value later changed to interface
         # it's needed otherwise kea would not start on differently configured setup
         execute_shell_cmd(f"sed -i 's/$(SERVER_IFACE)/!serverinterface!/g' {file_name}",
-                        dest=destination_address)
+                          dest=destination_address)
         execute_shell_cmd(f"sed -i 's/$(DB_USER)/!db_user!/g' {file_name}",
-                        dest=destination_address)
+                          dest=destination_address)
     else:
         cmd = f'sudo -S -u postgres pg_dump {db_name} > {file_name}'
         fabric_run_command(cmd, ignore_errors=False, destination_host=destination_address)
         execute_shell_cmd(f"sed -i 's/$(DB_USER)/!db_user!/g' {file_name}", dest=destination_address)
         execute_shell_cmd(f"sed -i 's/$(SERVER_IFACE)/!serverinterface!/g' {file_name}",
-                        dest=destination_address)
+                          dest=destination_address)
 
-def restore_db_from_dump(database: str, db_name: str=None,
-                         db_user: str=None,
-                         db_password: str=world.f_cfg.db_passwd,
+
+def restore_db_from_dump(database: str, db_name: str = None,
+                         db_user: str = None,
+                         db_password: str = world.f_cfg.db_passwd,
                          destination_address=world.f_cfg.mgmt_address, file_name=None):
 
     for i in [db_name, db_user, db_password, file_name]:
