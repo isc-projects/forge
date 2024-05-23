@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -87,7 +87,10 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
                 "name": "NOTspecial",
                 "test": "not member('special') and not member('special2')"
             }
-        ], "reservation-mode": "global"})
+        ],
+        "reservations-global": True,
+        "reservations-in-subnet": False
+    })
 
     srv_control.shared_subnet('2001:db8:a::/64', 0)
     srv_control.shared_subnet('2001:db8:b::/64', 0)
@@ -133,7 +136,10 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
 #                 "test": "not member('special')"
 #             }
 #
-#         ], "reservation-mode": "global"})
+#         ],
+#         "reservations-global": True,
+#         "reservations-in-subnet": False
+#     })
 #
 #     world.dhcp_cfg["subnet6"][0]["pools"][0]["client-class"] = "NOTspecial"
 #     world.dhcp_cfg["subnet6"][0]["pools"][1]["client-class"] = "special"
@@ -176,14 +182,21 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
 #                 "name": "NOTspecial",
 #                 "test": "not member('special')"
 #             }
-#         ], "reservation-mode": "global"})
+#         ],
+#         "reservations-global": True,
+#         "reservations-in-subnet": False
+#     })
 #
-#     world.dhcp_cfg["subnet6"][1].update({"reservations": [
-#         {
-#             "ip-addresses": ["2001:db8:b::1111"],
-#             "hw-address": "01:02:03:04:05:07"
-#         }
-#     ], "reservation-mode": "all"})
+#     world.dhcp_cfg["subnet6"][1].update({
+#         "reservations": [
+#             {
+#                 "ip-addresses": ["2001:db8:b::1111"],
+#                 "hw-address": "01:02:03:04:05:07"
+#             }
+#         ],
+#         "reservations-global": True,
+#         "reservations-in-subnet": False
+#     })
 #
 #     srv_control.shared_subnet('2001:db8:a::/64', 0)
 #     srv_control.shared_subnet('2001:db8:b::/64', 0)
@@ -227,17 +240,24 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
 #                 "test": "not member('special')"
 #             }
 #
-#         ], "reservation-mode": "global"})
+#         ],
+#         "reservations-global": True,
+#         "reservations-in-subnet": False
+#     })
 #
 #     world.dhcp_cfg["subnet6"][0]["pools"][0]["client-class"] = "NOTspecial"
 #     world.dhcp_cfg["subnet6"][0]["pools"][1]["client-class"] = "special"
 #
-#     world.dhcp_cfg["subnet6"][0].update({"reservations": [
-#         {
-#             "ip-addresses": ["2001:db8:1::100"],
-#             "hw-address": "01:02:03:04:05:07"
-#         }
-#     ], "reservation-mode": "all"})
+#     world.dhcp_cfg["subnet6"][0].update({
+#         "reservations": [
+#             {
+#                 "ip-addresses": ["2001:db8:1::100"],
+#                 "hw-address": "01:02:03:04:05:07"
+#             }
+#         ],
+#         "reservations-global": True,
+#         "reservations-in-subnet": False
+#     })
 #
 #     srv_control.build_and_send_config_files()
 #     srv_control.start_srv('DHCP', 'started')

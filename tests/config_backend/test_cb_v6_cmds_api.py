@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -225,7 +225,9 @@ def test_remote_subnet6_set_all_values(backend):
                                                                          "delegated-len": 91,
                                                                          "prefix": "2001:db8:2::",
                                                                          "prefix-len": 90}],
-                                                                     "reservation-mode": "all",
+                                                                     "reservations-global": False,
+                                                                     "reservations-in-subnet": True,
+                                                                     "reservations-out-of-pool": False,
                                                                      "subnet": "2001:db8:1::/64",
                                                                      "valid-lifetime": 1000,
                                                                      "rebind-timer": 500,
@@ -287,7 +289,9 @@ def test_remote_subnet6_get_all_values(backend):
                 'require-client-classes': [
                     'XYZ'
                 ],
-                'reservation-mode': 'all',
+                'reservations-global': False,
+                'reservations-in-subnet': True,
+                'reservations-out-of-pool': False,
                 'shared-network-name': '',
                 'subnet': '2001:db8:1::/64',
                 'valid-lifetime': 1000
@@ -403,7 +407,9 @@ def test_remote_subnet6_set_reservation_mode_all_old(backend):
                                                                      "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "",
-                                                                     "reservation-mode": "all",
+                                                                     "reservations-global": False,
+                                                                     "reservations-in-subnet": True,
+                                                                     "reservations-out-of-pool": False,
                                                                      "pools": [
                                                                          {"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -462,7 +468,8 @@ def test_remote_subnet6_set_reservation_mode_global_old(backend):
                                                                      "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "",
-                                                                     "reservation-mode": "global",
+                                                                     'reservations-global': True,
+                                                                     'reservations-in-subnet': False,
                                                                      "pools": [
                                                                          {"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -518,7 +525,10 @@ def test_remote_subnet6_set_reservation_mode_out_of_pool_old(backend):
                                                         "subnets": [{"subnet": "2001:db8:1::/64", "id": 1,
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "shared-network-name": "",
-                                                                     "reservation-mode": "out-of-pool",
+                                                                     'reservations-global': False,
+                                                                     'reservations-in-subnet': True,
+                                                                     'reservations-out-of-pool': True,
+
                                                                      "pools": [
                                                                          {"pool": "2001:db8:1::1-2001:db8:1::10"}]}]})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -578,7 +588,8 @@ def test_remote_subnet6_set_reservation_mode_disabled_old(backend):
                                                                      "id": 1,
                                                                      "shared-network-name": "",
                                                                      "interface": "$(SERVER_IFACE)",
-                                                                     "reservation-mode": "disabled"}]})
+                                                                     'reservations-global': False,
+                                                                     'reservations-in-subnet': False}]})
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "2001:db8:1::/64"}]},
@@ -719,7 +730,8 @@ def test_remote_subnet6_get_by_id(backend):
                                                                                                  "data": "123",
                                                                                                  "always-send": True,
                                                                                                  "csv-format": True}]}],
-                                                                     "reservation-mode": "global",
+                                                                     'reservations-global': True,
+                                                                     'reservations-in-subnet': False,
                                                                      "subnet": "2001:db8:1::/64",
                                                                      "valid-lifetime": 1000,
                                                                      "rebind-timer": 500,
@@ -797,7 +809,9 @@ def test_remote_subnet6_get_by_prefix(backend):
                                                                      "interface": "$(SERVER_IFACE)",
                                                                      "pools": [
                                                                          {"pool": "2001:db8:1::1-2001:db8:1::10"}],
-                                                                     "reservation-mode": "all",
+                                                                     "reservations-global": False,
+                                                                     "reservations-in-subnet": True,
+                                                                     "reservations-out-of-pool": False,
                                                                      "require-client-classes": ["XYZ"],
                                                                      "subnet": "2001:db8:1::/64", "id": 1,
                                                                      "valid-lifetime": 1000}]})
@@ -988,7 +1002,8 @@ def test_remote_network6_get_all_values(backend):
                                                              "t2-percent": 0.8,
                                                              "rapid-commit": True,
                                                              "valid-lifetime": 300,
-                                                             "reservation-mode": "global",
+                                                             'reservations-global': True,
+                                                             'reservations-in-subnet': False,
                                                              "user-context": {"some weird network": 55},
                                                              "interface": "$(SERVER_IFACE)",
                                                              "option-data": [{"code": 7,

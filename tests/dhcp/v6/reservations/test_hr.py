@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -320,10 +320,16 @@ def test_v6_host_reservation_empty(backend):
                 {
                     "duid": "00:03:00:01:f6:f5:f4:f3:f2:22"
                 }
-            ], "reservation-mode": "global"})
+            ],
+            "reservations-global": True,
+            "reservations-in-subnet": False
+        })
     else:
         srv_control.add_hooks('libdhcp_host_cmds.so')
-        world.dhcp_cfg.update({"reservation-mode": "global"})
+        world.dhcp_cfg.update({
+            "reservations-global": True,
+            "reservations-in-subnet": False
+        })
         srv_control.enable_db_backend_reservation(backend)
         srv_control.open_control_channel()
         srv_control.agent_control_channel()
@@ -447,7 +453,10 @@ def test_v6_host_reservation_example_access_control():
             {"duid": "00:03:00:01:f6:f5:f4:f3:f2:11",
              "client-classes": ["blocked"]},
             {"duid": "00:03:00:01:f6:f5:f4:f3:f2:22"}
-        ], "reservation-mode": "global"})
+        ],
+        "reservations-global": True,
+        "reservations-in-subnet": False
+    })
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')

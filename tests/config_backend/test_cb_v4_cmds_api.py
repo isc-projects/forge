@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -263,7 +263,9 @@ def test_remote_subnet4_set_all_values(backend):
                                                                                                  "never-send": False
                                                                                                  }]}],
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
-                                                                     "reservation-mode": "all",
+                                                                     "reservations-global": False,
+                                                                     "reservations-in-subnet": True,
+                                                                     "reservations-out-of-pool": False,
                                                                      "server-hostname": "name-xyz",
                                                                      "subnet": "192.168.50.0/24",
                                                                      "valid-lifetime": 1000,
@@ -325,7 +327,9 @@ def test_remote_subnet4_get_all_values(backend):
                 'require-client-classes': [
                     'XYZ'
                 ],
-                'reservation-mode': 'all',
+                'reservations-global': False,
+                'reservations-in-subnet': True,
+                'reservations-out-of-pool': False,
                 'server-hostname': 'name-xyz',
                 'shared-network-name': '',
                 'subnet': '192.168.50.0/24',
@@ -430,36 +434,6 @@ def test_remote_subnet4_get_all_values(backend):
     }
 
 
-# reservation-mode is integer in db, so we need to check if it's converted correctly
-@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
-def test_remote_subnet4_set_reservation_mode_all_old(backend):
-    _setup_server(backend)
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
-                                                        "server-tags": ["abc"],
-                                                        "subnets": [{"subnet": "192.168.50.0/24",
-                                                                     "id": 1,
-                                                                     "interface": "$(SERVER_IFACE)",
-                                                                     "shared-network-name": "",
-                                                                     "reservation-mode": "all",
-                                                                     "pools": [
-                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
-    response = srv_msg.send_ctrl_cmd(cmd)
-
-    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
-                        "result": 0, "text": "IPv4 subnet successfully set."}
-
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
-                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
-    response = srv_msg.send_ctrl_cmd(cmd)
-
-    subnet = response["arguments"]["subnets"][0]
-    # since 1.9.1:
-    assert "reservation-mode" not in subnet
-    assert subnet["reservations-global"] is False
-    assert subnet["reservations-in-subnet"] is True
-    assert subnet["reservations-out-of-pool"] is False
-
-
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet4_set_reservation_mode_all(backend):
     _setup_server(backend)
@@ -492,34 +466,6 @@ def test_remote_subnet4_set_reservation_mode_all(backend):
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
-def test_remote_subnet4_set_reservation_mode_global_old(backend):
-    _setup_server(backend)
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
-                                                        "server-tags": ["abc"],
-                                                        "subnets": [{"subnet": "192.168.50.0/24",
-                                                                     "id": 1,
-                                                                     "interface": "$(SERVER_IFACE)",
-                                                                     "shared-network-name": "",
-                                                                     "reservation-mode": "global",
-                                                                     "pools": [
-                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
-    response = srv_msg.send_ctrl_cmd(cmd)
-
-    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
-                        "result": 0, "text": "IPv4 subnet successfully set."}
-
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
-                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
-    response = srv_msg.send_ctrl_cmd(cmd)
-
-    subnet = response["arguments"]["subnets"][0]
-    # since 1.9.1:
-    assert "reservation-mode" not in subnet
-    assert subnet["reservations-global"] is True
-    assert subnet["reservations-in-subnet"] is False
-
-
-@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_subnet4_set_reservation_mode_global(backend):
     _setup_server(backend)
     cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
@@ -546,35 +492,6 @@ def test_remote_subnet4_set_reservation_mode_global(backend):
     assert "reservation-mode" not in subnet
     assert subnet["reservations-global"] is True
     assert subnet["reservations-in-subnet"] is False
-
-
-@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
-def test_remote_subnet4_set_reservation_mode_out_of_pool_old(backend):
-    _setup_server(backend)
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
-                                                        "server-tags": ["abc"],
-                                                        "subnets": [{"subnet": "192.168.50.0/24",
-                                                                     "id": 1,
-                                                                     "interface": "$(SERVER_IFACE)",
-                                                                     "shared-network-name": "",
-                                                                     "reservation-mode": "out-of-pool",
-                                                                     "pools": [
-                                                                         {"pool": "192.168.50.1-192.168.50.100"}]}]})
-    response = srv_msg.send_ctrl_cmd(cmd)
-
-    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
-                        "result": 0, "text": "IPv4 subnet successfully set."}
-
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
-                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
-    response = srv_msg.send_ctrl_cmd(cmd)
-
-    subnet = response["arguments"]["subnets"][0]
-    # since 1.9.1:
-    assert "reservation-mode" not in subnet
-    assert subnet["reservations-global"] is False
-    assert subnet["reservations-in-subnet"] is True
-    assert subnet["reservations-out-of-pool"] is True
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -606,32 +523,6 @@ def test_remote_subnet4_set_reservation_mode_out_of_pool(backend):
     assert subnet["reservations-global"] is False
     assert subnet["reservations-in-subnet"] is True
     assert subnet["reservations-out-of-pool"] is True
-
-
-@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
-def test_remote_subnet4_set_reservation_mode_disabled_old(backend):
-    _setup_server(backend)
-    cmd = dict(command="remote-subnet4-set", arguments={"remote": {"type": backend},
-                                                        "server-tags": ["abc"],
-                                                        "subnets": [{"subnet": "192.168.50.0/24",
-                                                                     "id": 1,
-                                                                     "shared-network-name": "",
-                                                                     "interface": "$(SERVER_IFACE)",
-                                                                     "reservation-mode": "disabled"}]})
-    response = srv_msg.send_ctrl_cmd(cmd)
-
-    assert response == {"arguments": {"subnets": [{"id": 1, "subnet": "192.168.50.0/24"}]},
-                        "result": 0, "text": "IPv4 subnet successfully set."}
-
-    cmd = dict(command="remote-subnet4-get-by-prefix", arguments={"remote": {"type": backend},
-                                                                  "subnets": [{"subnet": "192.168.50.0/24"}]})
-    response = srv_msg.send_ctrl_cmd(cmd)
-
-    subnet = response["arguments"]["subnets"][0]
-    # since 1.9.1:
-    assert "reservation-mode" not in subnet
-    assert subnet["reservations-global"] is False
-    assert subnet["reservations-in-subnet"] is False
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -769,7 +660,8 @@ def test_remote_subnet4_get_by_id(backend):
                                                                                                  "csv-format": True,
                                                                                                  "never-send": True}]}],
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
-                                                                     "reservation-mode": "global",
+                                                                     "reservations-global": True,
+                                                                     "reservations-in-subnet": False,
                                                                      "server-hostname": "name-xyz",
                                                                      "subnet": "192.168.50.0/24",
                                                                      "valid-lifetime": 1000,
@@ -810,9 +702,8 @@ def test_remote_subnet4_get_by_id(backend):
                                                               "pool": "192.168.50.1-192.168.50.100"}],
                                                    "rebind-timer": 500,
                                                    "relay": {"ip-addresses": ["192.168.5.5"]}, "renew-timer": 200,
-                                                   # "reservation-mode": "global",   # not anymore since 1.9.1
-                                                   'reservations-global': True,      # new since 1.9.1
-                                                   'reservations-in-subnet': False,  # new since 1.9.1
+                                                   "reservations-global": True,      # new since 1.9.1
+                                                   "reservations-in-subnet": False,  # new since 1.9.1
                                                    "server-hostname": "name-xyz",
                                                    "max-valid-lifetime": 1000,
                                                    "min-valid-lifetime": 1000,
@@ -862,7 +753,9 @@ def test_remote_subnet4_get_by_prefix(backend):
                                                                      "match-client-id": True, "next-server": "0.0.0.0",
                                                                      "pools": [{"pool": "192.168.50.1-192.168.50.100"}],
                                                                      "relay": {"ip-addresses": ["192.168.5.5"]},
-                                                                     "reservation-mode": "all",
+                                                                     "reservations-global": False,
+                                                                     "reservations-in-subnet": True,
+                                                                     "reservations-out-of-pool": False,
                                                                      "server-hostname": "name-xyz",
                                                                      "subnet": "192.168.50.0/24",
                                                                      "valid-lifetime": 1000}]})
@@ -896,10 +789,9 @@ def test_remote_subnet4_get_by_prefix(backend):
             "relay": {
                 "ip-addresses": [
                     "192.168.5.5"]},
-            # "reservation-mode": "all",  # not anymore since 1.9.1
-            'reservations-global': False,       # new since 1.9.1
-            'reservations-in-subnet': True,     # new since 1.9.1
-            'reservations-out-of-pool': False,  # new since 1.9.1
+            "reservations-global": False,       # new since 1.9.1
+            "reservations-in-subnet": True,     # new since 1.9.1
+            "reservations-out-of-pool": False,  # new since 1.9.1
             "server-hostname": "name-xyz",
             "max-valid-lifetime": 1000,
             "min-valid-lifetime": 1000,
@@ -1062,7 +954,8 @@ def test_remote_network4_get_all_values(backend):
                                                              "t1-percent": 0.5,
                                                              "t2-percent": 0.8,
                                                              "valid-lifetime": 300,
-                                                             "reservation-mode": "global",
+                                                             "reservations-global": True,
+                                                             "reservations-in-subnet": False,
                                                              "match-client-id": True,
                                                              "user-context": {"some weird network": 55},
                                                              "interface": "$(SERVER_IFACE)",
@@ -1082,9 +975,8 @@ def test_remote_network4_get_all_values(backend):
                                                            "valid-lifetime": 300,
                                                            "max-valid-lifetime": 300,
                                                            "min-valid-lifetime": 300,
-                                                           # "reservation-mode": "global",   # not anymore since 1.9.1
-                                                           'reservations-global': True,      # new since 1.9.1
-                                                           'reservations-in-subnet': False,  # new since 1.9.1
+                                                           "reservations-global": True,      # new since 1.9.1
+                                                           "reservations-in-subnet": False,  # new since 1.9.1
                                                            "interface": srv_msg.get_server_interface(),
                                                            "metadata": {"server-tags": ["abc"]},
                                                            "require-client-classes": ["XYZ"],

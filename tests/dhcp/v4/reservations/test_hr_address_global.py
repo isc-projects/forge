@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -68,7 +68,10 @@ def test_v4_subnet_selection_based_on_global_reservation_of_class():
                 "name": "NOTspecial",
                 "test": "not member('special')"
             }
-        ], "reservation-mode": "global"})
+        ],
+        "reservations-global": True,
+        "reservations-in-subnet": False
+    })
 
     srv_control.shared_subnet('192.168.50.0/24', 0)
     srv_control.shared_subnet('192.168.51.0/24', 0)
@@ -111,7 +114,10 @@ def test_v4_pool_selection_based_on_global_reservation_of_class():
                 "name": "NOTspecial",
                 "test": "not member('special')"
             }
-        ], "reservation-mode": "global"})
+        ],
+        "reservations-global": True,
+        "reservations-in-subnet": False
+    })
 
     world.dhcp_cfg["subnet4"][0]["pools"][0]["client-class"] = "NOTspecial"
     world.dhcp_cfg["subnet4"][0]["pools"][1]["client-class"] = "special"
@@ -154,13 +160,21 @@ def test_v4_pool_selection_based_on_global_reservation_of_class():
 #                 "name": "NOTspecial",
 #                 "test": "not member('special')"
 #             }
-#         ], "reservation-mode": "global"})
+#         ],
+#         "reservations-global": True,
+#         "reservations-in-subnet": False
+#     })
 #
-#     world.dhcp_cfg["subnet4"][1].update({"reservations": [
-#         {
-#             "ip-address": "192.168.51.200",
-#             "hw-address": "ff:01:02:03:ff:04"}
-#     ], "reservation-mode": "all"})
+#     world.dhcp_cfg["subnet4"][1].update({
+#         "reservations": [
+#             {
+#                 "ip-address": "192.168.51.200",
+#                 "hw-address": "ff:01:02:03:ff:04"
+#             }
+#         ],
+#         "reservations-global": True,
+#         "reservations-in-subnet": False
+#     })
 #
 #     srv_control.shared_subnet('192.168.50.0/24', 0)
 #     srv_control.shared_subnet('192.168.51.0/24', 0)

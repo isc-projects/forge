@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -140,8 +140,9 @@ CONFIG_DEFAULTS['v4'] = {
     'echo-client-id': True,
     'match-client-id': True,
     'next-server': '0.0.0.0',
-    'reservation-mode': 'all',  # deprecated in 1.9.1, replaced by reservations-global, reservations-in-subnet and reservations-out-of-pool
+    'reservations-global': False,
     'reservations-in-subnet': True,
+    'reservations-out-of-pool': False,
     't1-percent': 0.5,
     't2-percent': 0.875,
     'valid-lifetime': 7200,
@@ -152,8 +153,9 @@ CONFIG_DEFAULTS['v6'] = {
     "mac-sources": ["any"],
     'preferred-lifetime': int(0.625 * 7200),  # last changed as of kea#2835 merged in Kea 2.3.8
     'relay-supplied-options': ["65"],
-    "reservation-mode": "all",  # deprecated in 1.9.1, replaced by reservations-global, reservations-in-subnet and reservations-out-of-pool
+    'reservations-global': False,
     'reservations-in-subnet': True,
+    'reservations-out-of-pool': False,
     "server-id": {
         "enterprise-id": 0,
         "htype": 0,
@@ -263,29 +265,6 @@ class ConfigModel(ConfigElem):
         # get config seen by server and compare it with our configuration
         srv_config = get_config()
         my_cfg = self.get_dict()
-
-        # translate old fields to new fields
-        if 'reservation-mode' in my_cfg[dhcp_key]:
-            mode = my_cfg[dhcp_key]['reservation-mode']
-            del my_cfg[dhcp_key]['reservation-mode']
-            if mode == 'all':
-                my_cfg[dhcp_key]['reservations-global'] = False
-                my_cfg[dhcp_key]['reservations-in-subnet'] = True
-                my_cfg[dhcp_key]['reservations-out-of-pool'] = False
-            elif mode == 'out-of-pool':
-                my_cfg[dhcp_key]['reservations-global'] = False
-                my_cfg[dhcp_key]['reservations-in-subnet'] = True
-                my_cfg[dhcp_key]['reservations-out-of-pool'] = True
-            elif mode == 'global':
-                my_cfg[dhcp_key]['reservations-global'] = True
-                my_cfg[dhcp_key]['reservations-in-subnet'] = False
-                my_cfg[dhcp_key]['reservations-out-of-pool'] = False
-            elif mode == 'disabled':
-                my_cfg[dhcp_key]['reservations-global'] = False
-                my_cfg[dhcp_key]['reservations-in-subnet'] = False
-                my_cfg[dhcp_key]['reservations-out-of-pool'] = False
-            else:
-                assert False, "unsupported 'reservation-mode' value in config: '%s'" % mode
 
         # log.info('MY CFG\n%s', pprint.pformat(my_cfg))
         # log.info('KEA CFG\n%s', pprint.pformat(srv_config['Dhcp4']))

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -75,7 +75,9 @@ def _create_mysql_dump():
                                             "always-send": True,
                                             "csv-format": True}]}],
                 "relay": {"ip-addresses": ["192.168.5.5"]},
-                "reservation-mode": "all",
+                "reservations-global": False,
+                "reservations-in-subnet": True,
+                "reservations-out-of-pool": False,
                 "server-hostname": "name-xyz",
                 "subnet": "192.168.50.0/24",
                 "valid-lifetime": 1000,
@@ -98,7 +100,8 @@ def _create_mysql_dump():
                         "t1-percent": 0.5,
                         "t2-percent": 0.8,
                         "valid-lifetime": 300,
-                        "reservation-mode": "global",
+                        "reservations-global": True,
+                        "reservations-in-subnet": False,
                         "match-client-id": True,
                         "user-context": {"some weird network": 55},
                         "interface": "$(SERVER_IFACE)",

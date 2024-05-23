@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2018-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -513,7 +513,6 @@ class ConfigurationSubnet:
         self.relay = ""
         self.renew_timer = world.cfg["server_times"]["renew-timer"]
         self.require_client_class = ""
-        self.reservation_mode = ""
         self.server_hostname = ""
         self.user_context = ""
         self.valid_lifetime = world.cfg["server_times"]["valid-lifetime"]
@@ -541,7 +540,6 @@ class ConfigurationSharedNetworks:
         self.relay = ""
         self.renew_timer = ""
         self.require_client_class = ""
-        self.reservation_mode = ""
         self.server_hostname = ""
         self.user_context = ""
         self.valid_lifetime = ""

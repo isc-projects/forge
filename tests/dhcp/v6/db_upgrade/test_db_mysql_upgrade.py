@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -71,7 +71,9 @@ def _create_mysql_dump():
                 "pd-pools": [{"delegated-len": 91,
                               "prefix": "2001:db8:2::",
                               "prefix-len": 90}],
-                "reservation-mode": "all",
+                "reservations-global": False,
+                "reservations-in-subnet": True,
+                "reservations-out-of-pool": False,
                 "subnet": "2001:db8:1::/64",
                 "valid-lifetime": 1000,
                 "rebind-timer": 500,
@@ -91,7 +93,8 @@ def _create_mysql_dump():
                         "t2-percent": 0.8,
                         "rapid-commit": True,
                         "valid-lifetime": 300,
-                        "reservation-mode": "global",
+                        'reservations-global': True,
+                        'reservations-in-subnet': False,
                         "user-context": {"some weird network": 55},
                         "interface": "$(SERVER_IFACE)",
                         "option-data": [{"code": 7,
