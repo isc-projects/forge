@@ -127,7 +127,8 @@ def test_ddns6_all_levels_lease4_del_with_dns():
                                                  "ddns-qualifying-suffix": "example.com"})
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_forward_ddns('abc.example.com.', 'EMPTY_KEY')
     srv_control.add_forward_ddns('xyz.example.com.', 'EMPTY_KEY')
@@ -218,7 +219,8 @@ def test_ddns6_all_levels_lease4_del_without_dns():
                                                  "ddns-qualifying-suffix": "example.com"})
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_forward_ddns('abc.example.com.', 'EMPTY_KEY')
     srv_control.add_forward_ddns('xyz.example.com.', 'EMPTY_KEY')

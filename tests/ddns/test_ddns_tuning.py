@@ -426,7 +426,8 @@ def test_v4_ddns_tuning_skip(backend, option):
     world.dhcp_cfg.update({"ddns-send-updates": True,
                            "ddns-qualifying-suffix": "example.com"})
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.start_srv('DNS', 'started', config_set=32)
 
@@ -502,7 +503,8 @@ def test_v6_ddns_tuning_skip(backend):
     world.dhcp_cfg.update({"ddns-send-updates": True,
                            "ddns-qualifying-suffix": "example.com"})
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.start_srv('DNS', 'started', config_set=32)
 
@@ -563,8 +565,9 @@ def test_ddns_tuning_based_on_fqdn():
 
     misc.test_setup()
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'four.example.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'four.example.com')
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
     srv_control.use_dns_set_number(20)

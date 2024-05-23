@@ -99,7 +99,8 @@ def test_ddns4_subnet():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
 
@@ -128,7 +129,8 @@ def test_ddns4_shared_network():
                                                  "ddns-qualifying-suffix": "example.com"})
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
 
@@ -157,7 +159,8 @@ def test_ddns4_gloabl():
                            "ddns-qualifying-suffix": "example.com"})
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
 
@@ -202,7 +205,8 @@ def test_ddns4_all_levels_resend_command():
                                                  "ddns-qualifying-suffix": "example.com"})
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_forward_ddns('five.example.com.', 'EMPTY_KEY')
     srv_control.add_forward_ddns('three.example.com.', 'EMPTY_KEY')
@@ -276,7 +280,8 @@ def test_ddns4_all_levels_resend_without_ddns():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
 

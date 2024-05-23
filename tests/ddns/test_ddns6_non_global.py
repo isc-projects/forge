@@ -92,7 +92,8 @@ def test_ddns6_global():
     # simple case, global ddns configuration - get and address and dns entry
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
 
@@ -121,7 +122,8 @@ def test_ddns6_shared_network():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
 
@@ -155,7 +157,8 @@ def test_ddns6_subnet():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
 
@@ -201,7 +204,8 @@ def test_ddns6_all_levels_resend_command():
                                                  "ddns-qualifying-suffix": "example.com"})
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_forward_ddns('abc.example.com.', 'EMPTY_KEY')
     srv_control.add_forward_ddns('xyz.example.com.', 'EMPTY_KEY')
@@ -278,7 +282,8 @@ def test_ddns6_all_levels_resend_without_ddns():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
     srv_control.add_reverse_ddns('a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
 

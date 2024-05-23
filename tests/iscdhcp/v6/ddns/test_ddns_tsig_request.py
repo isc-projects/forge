@@ -23,7 +23,7 @@ def test_ddns6_tsig_sha1_forw_and_rev():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.', 'forge.sha1.key', '2001:db8:1::1000')
@@ -104,7 +104,7 @@ def test_ddns6_tsig_sha224_forw_and_rev():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.',
@@ -189,7 +189,7 @@ def test_ddns6_tsig_sha256_forw_and_rev():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.',
@@ -274,7 +274,7 @@ def test_ddns6_tsig_sha384_forw_and_rev():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.',
@@ -359,7 +359,7 @@ def test_ddns6_tsig_sha512_forw_and_rev():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.',
@@ -444,7 +444,7 @@ def test_ddns6_tsig_md5_forw_and_rev():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.',
@@ -529,7 +529,7 @@ def test_ddns6_tsig_multi_key_forw_and_rev():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.',

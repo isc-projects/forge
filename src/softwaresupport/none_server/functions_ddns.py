@@ -12,7 +12,7 @@ def add_ddns_server(*args):
     pass
 
 
-def add_ddns_server_options(*args):
+def add_ddns_server_behavioral_options(*args):
     pass
 
 

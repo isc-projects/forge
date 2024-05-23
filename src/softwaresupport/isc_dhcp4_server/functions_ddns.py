@@ -10,6 +10,6 @@
 # Author: Wlodzimierz Wencel
 
 from src.forge_cfg import world
-from src.softwaresupport.isc_dhcp6_server.functions_ddns import add_ddns_server, add_ddns_server_options
+from src.softwaresupport.isc_dhcp6_server.functions_ddns import add_ddns_server, add_ddns_server_behavioral_options
 from src.softwaresupport.isc_dhcp6_server.functions_ddns import add_forward_ddns
 from src.softwaresupport.isc_dhcp6_server.functions_ddns import add_reverse_ddns, add_keys, build_ddns_config

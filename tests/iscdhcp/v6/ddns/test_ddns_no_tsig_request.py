@@ -30,7 +30,7 @@ def test_ddns6_notsig_forw_and_rev_add_success_Sflag():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
@@ -112,7 +112,7 @@ def test_ddns6_notsig_forw_and_rev_add_fail_Sflag():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
@@ -289,7 +289,7 @@ def test_ddns6_notsig_forw_and_rev_update_success_Sflag():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
@@ -378,7 +378,7 @@ def test_ddns6_notsig_forw_and_rev_update_success_Sflag():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::51-2001:db8:1::51')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
@@ -482,7 +482,7 @@ def test_ddns6_notsig_forw_and_rev_two_dhci_Sflag():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::51-2001:db8:1::52')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
@@ -604,7 +604,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_Sflag():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::51-2001:db8:1::52')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
@@ -787,7 +787,7 @@ def test_ddns6_notsig_forw_and_rev_dhci_conflicts_remove_Sflag():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::51-2001:db8:1::52')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
@@ -968,8 +968,8 @@ def test_ddns6_notsig_forw_and_rev_add_success_withoutflag_override_client():
     # I can't figure out how to configure that... yet.
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
-    srv_control.add_ddns_server_options('ignore', 'client-update')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ignore', 'client-update')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')
@@ -1060,7 +1060,7 @@ def test_ddns6_notsig_rev_success_withoutflag():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('ddns-update-style', 'interim')
+    srv_control.add_ddns_server_behavioral_options('ddns-update-style', 'interim')
     # DDNS server is configured with generated-prefix option set to six.
     # DDNS server is configured with qualifying-suffix option set to example.com.
     add_forward_ddns('six.example.com.', 'EMPTY_KEY', '2001:db8:1::1000')

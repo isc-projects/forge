@@ -41,24 +41,68 @@ def add_ddns_server(address, port):
                            "severity": "DEBUG"}]
                       }  # default value
 
-    add_ddns_server_options("server-ip", address)
-    add_ddns_server_options("server-port", int(port))
-    add_ddns_server_options("enable-updates", False)
+    add_ddns_server_connectivity_options("server-ip", address)
+    add_ddns_server_connectivity_options("server-port", int(port))
+    add_ddns_server_connectivity_options("enable-updates", False)
 
 
-def add_ddns_server_options(option, value=None):
-    # function test_define_value return everything as string, until this function will be rewritten
-    # we will have to have such combinations as below
+def change_to_boolean(value):
+    if not isinstance(value, str):
+        return value
+    if value.lower() == "true":
+        return True
+    elif value.lower() == "false":
+        return False
+    return value
+
+
+# Kea now has two types of configuration parameters, Behavioral Parameters and Connectivity Parameters.
+# Connectivity Parameters are kept in {"DhcpX":{"dhcp-ddns": {} }}
+# Behavioral Parameters are kept globally {"DhcpX": {}} or per subnet
+def add_ddns_server_behavioral_options(option, value=None, subnet: int = None, sharednetwork: str = None):
+    """add_ddns_server_behavioral_options Put behavioral options for DDNS server into configuration
+    If subnet is not none - put it in subnet section
+    If sharednetwork is not none - put it in sharednetwork section
+    If both are none - put it in global section
+
+    :param option: option name
+    :type option: str
+    :param subnet: subnet id to which ddns parameter should be applied, defaults to None
+    :type subnet: int, optional
+    :param sharednetwork: network name to which parameter should be applied, defaults to None
+    :type sharednetwork: str, optional
+    :param value: value of an option, can be string, int, dict, defaults to None
+    :type value: any, optional
+    """
+    dhcp_version = int(world.proto[1])
+    if not subnet and not sharednetwork:
+        if isinstance(option, dict) and value is None:
+            world.dhcp_cfg.update(option)
+        else:
+            world.dhcp_cfg[option] = change_to_boolean(value)
+    elif subnet:
+        for subnet in world.dhcp_cfg[f"subnet{dhcp_version}"]:
+            if subnet["id"] == subnet:
+                if isinstance(option, dict) and value is None:
+                    subnet.update(option)
+                else:
+                    subnet[option] = change_to_boolean(value)
+    elif sharednetwork:
+        for network in world.dhcp_cfg["shared-networks"]:
+            if network["name"] == network:
+                if isinstance(option, dict) and value is None:
+                    network.update(option)
+                else:
+                    network[option] = change_to_boolean(value)
+
+
+def add_ddns_server_connectivity_options(option, value=None):
     if "dhcp-ddns" not in world.dhcp_cfg:
         world.dhcp_cfg["dhcp-ddns"] = {}
     if isinstance(option, dict) and value is None:
         world.dhcp_cfg["dhcp-ddns"].update(option)
-    elif value in ["true", "True", "TRUE"]:
-        value = True
-    elif value in ["false", "False", "FALSE"]:
-        value = False
 
-    world.dhcp_cfg["dhcp-ddns"][option] = value
+    world.dhcp_cfg["dhcp-ddns"][option] = change_to_boolean(value)
 
 
 def add_forward_ddns(name, key_name, ip_address, port, hostname=""):

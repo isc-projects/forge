@@ -37,8 +37,9 @@ def test_v6_host_reservation_mysql_all_values_mac():
                                              1)
     srv_control.upload_db_reservation('MySQL')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -125,8 +126,9 @@ def test_v6_host_reservation_mysql_all_values_duid():
     srv_control.upload_db_reservation('MySQL')
 
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -179,8 +181,9 @@ def test_v6_host_reservation_mysql_all_values_duid_2():
     srv_control.ipv6_address_db_backend_reservation('3000::100', '$(EMPTY)', 'MySQL', 1)
     srv_control.upload_db_reservation('MySQL')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

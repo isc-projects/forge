@@ -137,15 +137,16 @@ def test_ddns_ttl_different_levels(dhcp_version, level, ttl):
 
     # dns
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'example.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'example.com')
     if dhcp_version == 'v4':
-        srv_control.add_ddns_server_options('generated-prefix', 'four')
+        srv_control.add_ddns_server_behavioral_options('ddns-generated-prefix', 'four')
         srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
         srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
         srv_control.use_dns_set_number(20)
     else:
-        srv_control.add_ddns_server_options('generated-prefix', 'six')
+        srv_control.add_ddns_server_behavioral_options('ddns-generated-prefix', 'six')
         srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
         srv_control.add_reverse_ddns('1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.', 'EMPTY_KEY')
         srv_control.use_dns_set_number(1)

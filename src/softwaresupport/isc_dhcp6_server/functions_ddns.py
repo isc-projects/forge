@@ -25,10 +25,10 @@ def add_ddns_server(address, port):
 
     world.ddns_main += '\nddns-updates on;\nauthoritative;'
 
-    # add_ddns_server_options("server-ip", address) # don't need it in isc-dhcp
+    # add_ddns_server_behavioral_options("server-ip", address) # don't need it in isc-dhcp
 
 
-def add_ddns_server_options(option, value):
+def add_ddns_server_behavioral_options(option, value):
     world.ddns_add += option + " " + value + ";\n"
 
 

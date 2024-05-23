@@ -792,9 +792,15 @@ def add_ddns_server(address, port):
 
 
 @step(r'DDNS server is configured with (\S+) option set to (\S+).')
-def add_ddns_server_options(option, value):
+def add_ddns_server_behavioral_options(option, value):
     option, value = test_define_value(option, value)
-    ddns.add_ddns_server_options(option, value)
+    ddns.add_ddns_server_behavioral_options(option, value)
+
+
+@step(r'DDNS server is configured with (\S+) option set to (\S+).')
+def add_ddns_server_connectivity_options(option, value):
+    option, value = test_define_value(option, value)
+    ddns.add_ddns_server_connectivity_options(option, value)
 
 
 @step(r'Add forward DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')

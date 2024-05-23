@@ -19,8 +19,9 @@ def test_v4_host_reservation_hostname_hostname_option():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.30-192.168.50.30')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
                                            0,
@@ -55,8 +56,9 @@ def test_v4_host_reservation_hostname_fqdn_option():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.30-192.168.50.30')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
                                            0,
@@ -98,8 +100,9 @@ def test_v4_host_reservation_hostname_hostname_option_and_address():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.20-192.168.50.30')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
                                            0,
@@ -139,8 +142,9 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_2():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.20-192.168.50.30')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('ip-address',
                                            '192.168.50.5',
                                            0,
@@ -180,8 +184,9 @@ def test_v4_host_reservation_hostname_hostname_option_and_address_3():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.30')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
                                            0,
@@ -222,8 +227,9 @@ def test_v4_host_reservation_hostname_multiple_entries():
     # outside of the pool
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.30-192.168.50.30')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
                                            0,
@@ -245,8 +251,9 @@ def test_v4_host_reservation_hostname_duplicated_entries():
     # outside of the pool
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.30-192.168.50.30')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_options('enable-updates', True)
-    srv_control.add_ddns_server_options('qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
                                            0,
