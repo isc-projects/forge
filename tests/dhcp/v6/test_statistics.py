@@ -1058,24 +1058,24 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
 
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-@pytest.mark.parametrize('lease_remove_method', ['wipe', 'del', 'expire'])
+@pytest.mark.parametrize('lease_remove_method', ['del', 'expire'])
 def test_stats_pool_id_assign_reclaim_pd(lease_remove_method, backend):
     """Test checks if pool statistics are updated corectly.
     Test scenario:
     - create 4 pools with different sizes
     - get leases from all pools
     - check if statistics are updated correctly
-    - remove leases from the server (using wipe, del or expire method)
+    - remove leases from the server (using del or expire method)
     - check if statistics are updated correctly
 
     Args:
         lease_remove_method: method of removing leases from server.
         backend: lease backend to use
     """
-    # Skip running test with lease6-wipe in case of database backend
-    if (lease_remove_method == 'wipe' and backend in ['mysql', 'postgresql']):
-        pytest.skip("lease6-wipe not supported in database kea#1045")
-    # lease6-wipe method fails to remove statistics kea#3422
+    # lease6-wipe is not used in test:
+    # - method fails to remove statistics kea#3422
+    # - is not supported in database kea#1045
+    # - is deprecated kea#3427
 
     pool_0_A_delegated = 33
     pool_0_B_delegated = 34
@@ -1127,10 +1127,6 @@ def test_stats_pool_id_assign_reclaim_pd(lease_remove_method, backend):
     if lease_remove_method == 'expire':
         # Wait for leases to expire
         srv_msg.forge_sleep(int(leases_to_get * 0.8 + 5), "seconds")
-    elif lease_remove_method == 'wipe':
-        # wipe those assigned leases
-        cmd = {"command": "lease6-wipe", "arguments": {"subnet-id": 1}}
-        srv_msg.send_ctrl_cmd_via_socket(cmd)
     else:
         # delete those assigned leases
         mac = "02:02:0c:03:0a:00"
