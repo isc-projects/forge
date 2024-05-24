@@ -571,7 +571,7 @@ def test_v4_lease_cmds_wipe(backend):
     # wipe those assigned leases
     cmd = {"command": "lease4-wipe", "arguments": {"subnet-id": 1}}
     resp = srv_msg.send_ctrl_cmd(cmd)
-    assert resp["text"] == "Deleted 2 IPv4 lease(s) from subnet(s) 1"
+    assert resp["text"] == "Deleted 2 IPv4 lease(s) from subnet(s) 1 WARNING: lease4-wipe is deprecated!"
 
     # we shouldn't get leases back after wipe.
     cmd = {"command": "lease4-get", "arguments": {"ip-address": "192.168.50.1"}}
