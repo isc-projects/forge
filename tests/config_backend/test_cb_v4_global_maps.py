@@ -10,7 +10,7 @@ import pytest
 
 from src import srv_msg
 
-from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
+from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds, get_config
 from src.forge_cfg import world
 
 
@@ -31,6 +31,13 @@ def _set_server_tag(backend, tag):
 def _setup_server(backend):
     setup_server_for_config_backend_cmds(backend_type=backend)
     _set_server_tag(backend, "abc")
+
+
+def _reload():
+    # request config reloading
+    cmd = {"command": "config-backend-pull", "arguments": {}}
+    response = srv_msg.send_ctrl_cmd(cmd)
+    assert response == {'result': 0, 'text': 'On demand configuration update successful.'}
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -62,6 +69,13 @@ def test_remote_global_map_compatibility(backend):
                             }},
                         "result": 0,
                         "text": "4 DHCPv4 global parameter(s) successfully set."}
+
+    _reload()
+    config = get_config()
+    assert config["Dhcp4"]["compatibility"]["ignore-dhcp-server-identifier"] is True
+    assert config["Dhcp4"]["compatibility"]["ignore-rai-link-selection"] is True
+    assert config["Dhcp4"]["compatibility"]["lenient-option-parsing"] is True
+    assert config["Dhcp4"]["compatibility"]["exclude-first-last-24"] is True
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -104,6 +118,11 @@ def test_remote_global_map_control_socket(backend):
                             }},
                         "result": 0,
                         "text": "2 DHCPv4 global parameter(s) successfully set."}
+
+    _reload()
+    config = get_config()
+    assert config["Dhcp4"]["control-socket"]["socket-name"] == "/path/to/the/unix/socket-v4"
+    assert config["Dhcp4"]["control-socket"]["socket-type"] == "unix"
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -159,6 +178,17 @@ def test_remote_global_map_ddns(backend):
                         "result": 0,
                         "text": "8 DHCPv4 global parameter(s) successfully set."}
 
+    _reload()
+    config = get_config()
+    assert config["Dhcp4"]["dhcp-ddns"]["enable-updates"] is True
+    assert config["Dhcp4"]["dhcp-ddns"]["max-queue-size"] == 100
+    assert config["Dhcp4"]["dhcp-ddns"]["ncr-format"] == "JSON"
+    assert config["Dhcp4"]["dhcp-ddns"]["ncr-protocol"] == "UDP"
+    assert config["Dhcp4"]["dhcp-ddns"]["sender-ip"] == "192.168.50.100"
+    assert config["Dhcp4"]["dhcp-ddns"]["sender-port"] == 530
+    assert config["Dhcp4"]["dhcp-ddns"]["server-ip"] == "127.0.0.1"
+    assert config["Dhcp4"]["dhcp-ddns"]["server-port"] == 53
+
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_map_ddns_missing_parameter(backend):
@@ -208,6 +238,14 @@ def test_remote_global_map_expired_leases_processing(backend):
                             }},
                         "result": 0,
                         "text": "6 DHCPv4 global parameter(s) successfully set."}
+    _reload()
+    config = get_config()
+    assert config["Dhcp4"]["expired-leases-processing"]["flush-reclaimed-timer-wait-time"] == 1000
+    assert config["Dhcp4"]["expired-leases-processing"]["hold-reclaimed-time"] == 1000
+    assert config["Dhcp4"]["expired-leases-processing"]["max-reclaim-leases"] == 1000
+    assert config["Dhcp4"]["expired-leases-processing"]["max-reclaim-time"] == 1000
+    assert config["Dhcp4"]["expired-leases-processing"]["reclaim-timer-wait-time"] == 1000
+    assert config["Dhcp4"]["expired-leases-processing"]["unwarned-reclaim-cycles"] == 1000
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -252,6 +290,11 @@ def test_remote_global_map_multi_threading(backend):
                             }},
                         "result": 0,
                         "text": "3 DHCPv4 global parameter(s) successfully set."}
+    _reload()
+    config = get_config()
+    assert config["Dhcp4"]["multi-threading"]["enable-multi-threading"] is True
+    assert config["Dhcp4"]["multi-threading"]["thread-pool-size"] == 2
+    assert config["Dhcp4"]["multi-threading"]["packet-queue-size"] == 4
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -294,6 +337,10 @@ def test_remote_global_map_sanity_checks(backend):
                             }},
                         "result": 0,
                         "text": "2 DHCPv4 global parameter(s) successfully set."}
+    _reload()
+    config = get_config()
+    assert config["Dhcp4"]["sanity-checks"]["lease-checks"] == "fix-del"
+    assert config["Dhcp4"]["sanity-checks"]["extended-info-checks"] == "strict"
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -314,6 +361,17 @@ def test_remote_global_map_sanity_checks_missing_parameter(backend):
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_map_dhcp_queue_control(backend):
     _setup_server(backend)
+
+    #  dhcp-queue-control is incompatible with multi-threading
+    cmd = dict(command="remote-global-parameter4-set",
+               arguments={"remote": {"type": backend},
+                          "server-tags": ["abc"],
+                          "parameters": {
+                              "multi-threading.enable-multi-threading": False,
+               }})
+    srv_msg.send_ctrl_cmd(cmd)
+    _reload()
+
     cmd = dict(command="remote-global-parameter4-set",
                arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
@@ -338,6 +396,12 @@ def test_remote_global_map_dhcp_queue_control(backend):
                             }},
                         "result": 0,
                         "text": "3 DHCPv4 global parameter(s) successfully set."}
+
+    _reload()
+    config = get_config()
+    assert config["Dhcp4"]["dhcp-queue-control"]["enable-queue"] is True
+    assert config["Dhcp4"]["dhcp-queue-control"]["queue-type"] == "kea-ring4"
+    assert config["Dhcp4"]["dhcp-queue-control"]["capacity"] == 256
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
