@@ -61,6 +61,7 @@ def test_reservation_mode_in_globals(dhcp_version, backend):
 
     # enable reservations-global and now address should be returned from global reservations
     cfg.set_global_parameter(backend=backend, reservations_global=True)
+    cfg.set_global_parameter(backend=backend, reservations_in_subnet=False)
     get_address(mac_addr="00:00:00:00:00:01", exp_addr='2.2.2.88' if dhcp_version == 'v4' else '2001:db8:1::88')
 
     # now disable reservations altogether and then the address should be returned from subnet pool

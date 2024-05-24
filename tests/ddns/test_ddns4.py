@@ -1388,7 +1388,7 @@ def test_ddns4_notsig_forw_and_rev_add_success_withoutflag_override_client():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.add_ddns_server('127.0.0.1', '53001')
-    srv_control.add_ddns_server_behavioral_options('override-client-update', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-override-client-update', True)
     srv_control.add_ddns_server_connectivity_options('enable-updates', True)
     srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
     srv_control.add_ddns_server_behavioral_options('ddns-generated-prefix', 'four')

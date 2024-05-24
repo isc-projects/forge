@@ -1147,7 +1147,7 @@ def test_ddns6_notsig_forw_and_rev_add_success_withoutflag_override_client():
     srv_control.add_ddns_server('127.0.0.1', '53001')
     srv_control.add_ddns_server_connectivity_options('enable-updates', True)
     srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
-    srv_control.add_ddns_server_behavioral_options('override-client-update', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-override-client-update', True)
     srv_control.add_ddns_server_behavioral_options('ddns-generated-prefix', 'six')
     srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'example.com')
     srv_control.add_forward_ddns('six.example.com.', 'EMPTY_KEY')
