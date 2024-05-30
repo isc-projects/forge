@@ -189,6 +189,7 @@ IFACE2 = ''
 MGMT_ADDRESS = ''
 MGMT_USERNAME = ''
 MGMT_PASSWORD = ''
+# MGMT_PASSWORD_CMD = ''
 
 # The second HA node
 # MGMT_ADDRESS_2 = ''

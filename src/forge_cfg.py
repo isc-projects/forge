@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,6 +24,7 @@ import threading
 import fcntl
 import socket
 import struct
+import subprocess
 import sys
 import cgitb
 import netifaces
@@ -70,6 +71,7 @@ SETTINGS = {
     'MGMT_ADDRESS_3': '',
     'MGMT_USERNAME': None,
     'MGMT_PASSWORD': None,
+    'MGMT_PASSWORD_CMD': '',
     'SAVE_LOGS': True,
     'BIND_LOG_TYPE': 'INFO',
     'BIND_LOG_LVL': 0,
@@ -105,6 +107,8 @@ class ForgeConfiguration:
         self.mgmt_address = None  # will be reconfigured, added to keep pycodestyle quiet
         self.mgmt_address_2 = None
         self.mgmt_address_3 = None
+
+        self._determine_mgmt_password()
 
         self._load_settings()
 
@@ -193,19 +197,37 @@ class ForgeConfiguration:
         # basic validation of configuration
         self.basic_validation()
 
+    def _determine_mgmt_password(self):
+        if hasattr(self, "mgmt_password") and self.mgmt_password is not None:
+            return
+        if not hasattr(self, "mgmt_password_cmd") or self.mgmt_password_cmd is None:
+            return
+        if len(self.mgmt_password_cmd) == 0:
+            return
+        with subprocess.Popen(self.mgmt_password_cmd, shell=True, stdout=subprocess.PIPE) as pipe:
+            output, _ = pipe.communicate()
+            assert pipe.returncode == 0
+            self.mgmt_password = output.decode('utf-8').strip()
+
     def _load_settings(self):
+        # Take configuration parameters from init_all.py.
         for key, default_value in SETTINGS.items():
             if hasattr(init_all, key):
                 value = getattr(init_all, key)
             else:
-                if default_value is None:
-                    raise Exception('Cannot find %s in init_all.py' % key)
                 value = default_value
-            if value is None:
-                raise Exception('Value for %s in init_all.py is None but should be specified' % key)
             value = os.getenv(key, value)
             print(f"setting {key.lower()} = {value}")  # TODO turn it into forge parameter like --debug
             setattr(self, key.lower(), value)
+
+        # Check if mgmt_password can be determined from mgmt_password_cmd.
+        self._determine_mgmt_password()
+
+        # Complain about mandatory parameters.
+        for key, default_value in SETTINGS.items():
+            if hasattr(self, key):
+                if getattr(self, key) is None:
+                    raise Exception(f'Cannot find {key} in init_all.py')
 
     def gethwaddr(self, ifname):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
