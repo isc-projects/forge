@@ -198,11 +198,7 @@ class ForgeConfiguration:
         self.basic_validation()
 
     def _determine_mgmt_password(self):
-        if hasattr(self, "mgmt_password") and self.mgmt_password is not None:
-            return
-        if not hasattr(self, "mgmt_password_cmd") or self.mgmt_password_cmd is None:
-            return
-        if len(self.mgmt_password_cmd) == 0:
+        if not hasattr(self, "mgmt_password_cmd") or self.mgmt_password_cmd is None or len(self.mgmt_password_cmd) == 0:
             return
         with subprocess.Popen(self.mgmt_password_cmd, shell=True, stdout=subprocess.PIPE) as pipe:
             output, _ = pipe.communicate()
@@ -223,11 +219,12 @@ class ForgeConfiguration:
         # Check if mgmt_password can be determined from mgmt_password_cmd.
         self._determine_mgmt_password()
 
-        # Complain about mandatory parameters.
+        # Complain about missing mandatory parameters.
         for key, default_value in SETTINGS.items():
             if hasattr(self, key):
                 if getattr(self, key) is None:
-                    raise Exception(f'Cannot find {key} in init_all.py')
+                    raise Exception(f'{key} is mandatory in init_all.py. '
+                                    'It should have a value and it should not be None.')
 
     def gethwaddr(self, ifname):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
