@@ -576,7 +576,6 @@ def _increase_mac(mac: str):
 
     :param mac: mac address as string
     :return: increased mac address as string
-
     """
     mac = mac.split(":")
     new_mac = (int(mac[0], 16),)

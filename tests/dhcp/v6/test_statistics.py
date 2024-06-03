@@ -854,7 +854,7 @@ def test_stats_6():
 
 def _increase_mac(mac: str):
     """
-    Recalculate mac address by: keep first octet unchanged and increase the second octet by 1.
+    Recalculate mac address by keeping the first two octets unchanged, all the rest are incremented by one.
 
     :param mac: mac address as string
     :return: increased mac address as string
@@ -864,7 +864,7 @@ def _increase_mac(mac: str):
     new_mac += (int(mac[1], 16) + 1,)
     for i in range(2, 6):
         if int(mac[i], 16) + 1 > 255:
-            mac[i] = 1
+            pytest.fail("mac overflow. You may want to adjust parameter to not overflow")
         new_mac += (int(mac[i], 16) + 1,)
     return ':'.join(f'{i:02x}' for i in new_mac)
 
@@ -872,6 +872,8 @@ def _increase_mac(mac: str):
 def _increase_ip(ip: str):
     ip = ip.split(":")
     ip[6] = f'{(int(ip[6], 16) + 1):x}'
+    if ip[6] > 65535:
+        pytest.fail("ip overflow, You may want to adjust parameter to not overflow")
     return ':'.join(f'{i}' for i in ip)
 
 
