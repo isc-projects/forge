@@ -572,20 +572,18 @@ def test_stats_sample_age():
 
 def _increase_mac(mac: str):
     """
-    Recalculate mac address by: keep first octet unchanged (we can change it in test to make sure that
-    consecutive steps will generate different sets, change second octet always by 1, all the rest we can
-    change by one or random number between 3 and 20. Used rand=True to generate test data
+    Recalculate mac address by keeping the first two octets unchanged, all the rest are incremented by one.
 
     :param mac: mac address as string
-    :param rand: whether to use randomness in changing the MAC
     :return: increased mac address as string
+
     """
     mac = mac.split(":")
     new_mac = (int(mac[0], 16),)
     new_mac += (int(mac[1], 16) + 1,)
     for i in range(2, 6):
         if int(mac[i], 16) + 1 > 255:
-            mac[i] = 1
+            pytest.fail("mac overflow. You may want to adjust parameter to not overflow")
         new_mac += (int(mac[i], 16) + 1,)
     return ':'.join(f'{i:02x}' for i in new_mac)
 
@@ -593,6 +591,8 @@ def _increase_mac(mac: str):
 def _increase_ip(ip: str):
     ip = ip.split(".")
     ip[3] = int(ip[3]) + 1
+    if ip[3] > 255:
+        pytest.fail("ip overflow, You may want to adjust parameter to not overflow")
     return '.'.join(f'{i}' for i in ip)
 
 
@@ -743,7 +743,7 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
     assert get_stat('subnet[1].pool[2].cumulative-assigned-addresses')[0] == pool_2_size
     assert get_stat('subnet[1].pool[2].reclaimed-leases')[0] == (pool_2_size if lease_remove_method == 'expire' else 0)
 
-    # Get leases again. We split into pools so we can decline them later.
+    # Get leases again.
     _get_leases(pool_0_A_size, mac="50:02:0c:03:0a:00")
     _get_leases(pool_0_B_size, mac="51:02:0c:03:0a:00")
     _get_leases(pool_1_size, mac="52:02:0c:03:0a:00")

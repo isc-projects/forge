@@ -854,12 +854,9 @@ def test_stats_6():
 
 def _increase_mac(mac: str):
     """
-    Recalculate mac address by: keep first octet unchanged (we can change it in test to make sure that
-    consecutive steps will generate different sets, change second octet always by 1, all the rest we can
-    change by one or random number between 3 and 20. Used rand=True to generate test data
+    Recalculate mac address by: keep first octet unchanged and increase the second octet by 1.
 
     :param mac: mac address as string
-    :param rand: whether to use randomness in changing the MAC
     :return: increased mac address as string
     """
     mac = mac.split(":")
@@ -997,7 +994,7 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
 
     if lease_remove_method == 'expire':
         # Wait for leases to expire
-        srv_msg.forge_sleep(int(leases_to_get * 0.8 + 5), "seconds")
+        srv_msg.forge_sleep(int(leases_to_get * 0.9 + 5), "seconds")
     else:
         # delete those assigned leases
         for number in range(pool_0_A_size):
@@ -1123,7 +1120,7 @@ def test_stats_pool_id_assign_reclaim_pd(lease_remove_method, backend):
 
     if lease_remove_method == 'expire':
         # Wait for leases to expire
-        srv_msg.forge_sleep(int(leases_to_get * 0.8 + 5), "seconds")
+        srv_msg.forge_sleep(int(leases_to_get * 0.9 + 5), "seconds")
     else:
         # delete those assigned leases
         mac = "02:02:0c:03:0a:00"
@@ -1161,7 +1158,7 @@ def test_stats_pool_id_assign_reclaim_pd(lease_remove_method, backend):
     assert get_stat('subnet[1].pd-pool[2].cumulative-assigned-pds')[0] == pool_2_size
     assert get_stat('subnet[1].pd-pool[2].reclaimed-leases')[0] == (pool_2_size if lease_remove_method == 'expire' else 0)
 
-    # Get leases to fill the pools
+    # Get leases again.
     _get_leases(leases_to_get, mac="05:02:0c:03:0a:00", pd=True)
 
     # Subnet statistics checks
