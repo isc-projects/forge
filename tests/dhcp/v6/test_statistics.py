@@ -872,7 +872,7 @@ def _increase_mac(mac: str):
 def _increase_ip(ip: str):
     ip = ip.split(":")
     ip[6] = f'{(int(ip[6], 16) + 1):x}'
-    if ip[6] > 65535:
+    if int(ip[6]) > 65535:
         pytest.fail("ip overflow, You may want to adjust parameter to not overflow")
     return ':'.join(f'{i}' for i in ip)
 
