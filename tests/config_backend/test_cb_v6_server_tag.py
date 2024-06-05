@@ -339,14 +339,15 @@ def test_server_tag_global_map(backend):
 
     cfg.add_subnet(backend=backend, server_tags=["abc"], subnet="2001:db8:1::/64", id=1,
                    pools=[{'pool': "2001:db8:1::1-2001:db8:1::100"}])
-    _set_global_map_parameter(backend, "abc", "expired-leases-processing.hold-reclaimed-time", 345)
+    # apply global map parameter to "all"
+    _set_global_map_parameter(backend, "all", "expired-leases-processing.hold-reclaimed-time", 345)
 
-    # this update should not change anything
+    # this update should not change anything on running server
     _set_global_map_parameter(backend, "xyz", "expired-leases-processing.hold-reclaimed-time", 999)
     xyz = _get_server_config()
     assert xyz["arguments"]["Dhcp6"]["expired-leases-processing"]["hold-reclaimed-time"] == 345
 
-    # this should overwrite "all"
+    # this should overwrite what we have set prevously with "all"
     _set_global_map_parameter(backend, "abc", "expired-leases-processing.hold-reclaimed-time", 655)
     xyz = _get_server_config()
     assert xyz["arguments"]["Dhcp6"]["expired-leases-processing"]["hold-reclaimed-time"] == 655
