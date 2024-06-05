@@ -317,6 +317,52 @@ def test_server_tag_global_parameter4(backend):
     get_address(exp_boot_file_name="/dev/null_xyz")
 
 
+def _set_global_map_parameter(backend, tag, parameter, value):
+    cmd = dict(command="remote-global-parameter4-set",
+               arguments={"remote": {"type": backend},
+                          "server-tags": [tag],
+                          "parameters": {
+                              parameter: value,
+               }})
+    response = srv_msg.send_ctrl_cmd(cmd)
+    # request config reloading
+    cmd = {"command": "config-backend-pull", "arguments": {}}
+    reload = srv_msg.send_ctrl_cmd(cmd)
+    assert reload == {'result': 0, 'text': 'On demand configuration update successful.'}
+    return response
+
+
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
+def test_server_tag_global_map4(backend):
+    cfg = setup_server_for_config_backend_cmds(server_tag="abc", backend_type=backend)
+    _set_server_tag(backend, "xyz")
+    _set_server_tag(backend, "abc")
+
+    cfg.add_subnet(backend=backend, server_tags=["abc"], subnet="192.168.50.0/24", id=1,
+                   pools=[{'pool': "192.168.50.1-192.168.50.100"}])
+    _set_global_map_parameter(backend, "abc", "expired-leases-processing.reclaim-timer-wait-time", 345)
+
+    # this update should not change anything
+    _set_global_map_parameter(backend, "xyz", "expired-leases-processing.reclaim-timer-wait-time", 999)
+    xyz = _get_server_config()
+    assert xyz["arguments"]["Dhcp4"]["expired-leases-processing"]["reclaim-timer-wait-time"] == 345
+
+    # this should overwrite "all"
+    _set_global_map_parameter(backend, "abc", "expired-leases-processing.reclaim-timer-wait-time", 655)
+    xyz = _get_server_config()
+    assert xyz["arguments"]["Dhcp4"]["expired-leases-processing"]["reclaim-timer-wait-time"] == 655
+
+    srv_control.start_srv('DHCP', 'stopped')
+    cfg = setup_server_for_config_backend_cmds(server_tag="xyz", backend_type=backend)
+
+    cfg.add_subnet(backend=backend, server_tags=["xyz"], subnet="192.168.52.0/24", id=3,
+                   pools=[{'pool': "192.168.52.1-192.168.52.100"}])
+
+    # now server "xyz" has two parameters configured, should use "xyz"
+    xyz = _get_server_config()
+    assert xyz["arguments"]["Dhcp4"]["expired-leases-processing"]["reclaim-timer-wait-time"] == 999
+
+
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_server_tag_kea_without_tag(backend):
     # create first configuration, kea has no assigned tag, so it should get config just from "all"

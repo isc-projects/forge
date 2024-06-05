@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -82,7 +82,7 @@ def test_remote_global_map_compatibility(backend):
 def test_remote_global_map_compatibility_missing_parameter(backend):
     _setup_server(backend)
     cmd = dict(command="remote-global-parameter4-set",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "parameters": {
                               "compatibility.ignore-dhcp-server-identifier": True,
@@ -129,7 +129,7 @@ def test_remote_global_map_control_socket(backend):
 def test_remote_global_map_control_socket_missing_parameter(backend):
     _setup_server(backend)
     cmd = dict(command="remote-global-parameter4-set",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "parameters": {
                               "control-socket.socket-name": "/path/to/the/unix/socket-v4",
@@ -194,7 +194,7 @@ def test_remote_global_map_ddns(backend):
 def test_remote_global_map_ddns_missing_parameter(backend):
     _setup_server(backend)
     cmd = dict(command="remote-global-parameter4-set",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "parameters": {
                               "dhcp-ddns.enable-updates": True,
@@ -347,7 +347,7 @@ def test_remote_global_map_sanity_checks(backend):
 def test_remote_global_map_sanity_checks_missing_parameter(backend):
     _setup_server(backend)
     cmd = dict(command="remote-global-parameter4-set",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "parameters": {
                               "sanity-checks.lease-checks": "fix-del",
@@ -408,7 +408,7 @@ def test_remote_global_map_dhcp_queue_control(backend):
 def test_remote_global_map_dhcp_queue_control_missing_parameter(backend):
     _setup_server(backend)
     cmd = dict(command="remote-global-parameter4-set",
-               arguments={"remote": {"type": "mysql"},
+               arguments={"remote": {"type": backend},
                           "server-tags": ["abc"],
                           "parameters": {
                               "dhcp-queue-control.enable-queue": True,
