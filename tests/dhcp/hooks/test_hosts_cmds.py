@@ -2404,6 +2404,7 @@ def test_v6_del_reservation_with_prefix(channel, host_database, query_type):
 
     srv_msg.SARR('2001:db8:1::50', '3000:db8::/34')
 
+    # Out of pool reservations
     res = [
         {
             "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
