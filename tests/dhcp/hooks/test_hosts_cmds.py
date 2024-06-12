@@ -2408,25 +2408,25 @@ def test_v6_del_reservation_with_prefix(channel, host_database, query_type):
         {
             "duid": "00:03:00:01:f6:f5:f4:f3:f2:01",
             "ip-addresses": ["2001:db8:1::101"],
-            "prefixes": ["3000:db8:1:0:1000::/110"],
+            "prefixes": ["4000:db8:1:0:1000::/110"],
             "subnet-id": 1,
         },
         {
             "duid": "00:03:00:01:f6:f5:f4:f3:f2:02",
             "ip-addresses": ["2001:db8:1::102"],
-            "prefixes": ["3000:db8:2:0:1000::/110"],
+            "prefixes": ["4000:db8:2:0:1000::/110"],
             "subnet-id": 1,
         },
         {
             "duid": "00:03:00:01:f6:f5:f4:f3:f2:03",
             "ip-addresses": ["2001:db8:1::103"],
-            "prefixes": ["3000:db8:3:0:1000::/110"],
+            "prefixes": ["4000:db8:3:0:1000::/110"],
             "subnet-id": 1,
         },
         {
             "duid": "00:03:00:01:f6:f5:f4:f3:f2:04",
             "ip-addresses": ["2001:db8:1::104", "2001:db8:1::105"],
-            "prefixes": ["3000:db8:4:0:1000::/110"],
+            "prefixes": ["4000:db8:4:0:1000::/110"],
             "subnet-id": 1,
         },
     ]
@@ -2434,7 +2434,7 @@ def test_v6_del_reservation_with_prefix(channel, host_database, query_type):
     for reservation in res:
         _reservation_add(reservation, target=_get_target(host_database), channel=channel)
 
-    srv_msg.SARR('2001:db8:1::101', '3000:db8:1:0:1000::/110')
+    srv_msg.SARR('2001:db8:1::101', '4000:db8:1:0:1000::/110')
     _get_multiple_iana(['2001:db8:1::104', '2001:db8:1::105'], [2123, 2124], '00:03:00:01:f6:f5:f4:f3:f2:04')
 
     del_res = {
