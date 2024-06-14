@@ -13,7 +13,7 @@
 # pylint: disable=unused-variable
 
 import time
-import random
+import secrets
 import logging
 from locale import str
 
@@ -21,7 +21,7 @@ from scapy.all import sr
 from scapy.layers import dns
 from scapy.layers.inet import IP, UDP
 from scapy.layers.dhcp6 import IPv6
-
+from scapy.packet import Packet
 from src.forge_cfg import world
 
 
@@ -82,7 +82,7 @@ def prepare_query(dns_addr=None, dns_port=None):
 
 
 def send_wait_for_query(choose_must, expect_include, iface=None):
-    world.climsg[0].id = random.randint(0, 65535)
+    world.climsg[0].id = secrets.randbelow(65535)
     if iface is None:
         iface = world.cfg["dns_iface"]
 
@@ -115,12 +115,9 @@ def send_wait_for_query(choose_must, expect_include, iface=None):
     for x in ans:
         a, b = x
         world.srvmsg.append(b.getlayer(2))
-
-        if world.f_cfg.show_packets_from in ['both', 'server']:
-            try:  # that is temp solution until we have good respond system checking!
+        if world.f_cfg.show_packets_from in ['both', 'server'] and len(world.srvmsg) > 0:
+            if isinstance(world.srvmsg[0], Packet):
                 world.srvmsg[0].show()
-            except BaseException:
-                pass
 
     if expect_include:
         # if message was not received but expected, resend query with higher timeout

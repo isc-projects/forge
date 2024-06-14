@@ -936,7 +936,7 @@ def test_rbac_filter_responses():
     assert "network6-get" not in resp2["arguments"], "returned list do contain commands from subnet_cmds hook"
     assert "network4-add" not in resp2["arguments"], "returned list do contain commands from subnet_cmds hook"
 
-    assert len(resp2["arguments"]) < len(resp["arguments"]),\
+    assert len(resp2["arguments"]) < len(resp["arguments"]), \
         "We should get smaller number of commands back in second response"
 
 

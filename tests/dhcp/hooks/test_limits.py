@@ -11,7 +11,7 @@
 
 """Kea Limits Hook tests"""
 import time
-import random
+import secrets
 import pytest
 
 from src import misc
@@ -1301,8 +1301,8 @@ def test_lease_limits_v6_multipleIA(backend):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    ia_1 = random.randint(2000, 7000)
-    pd_1 = random.randint(7001, 9999)
+    ia_1 = secrets.randbelow(5000) + 2000
+    pd_1 = secrets.randbelow(2000) + 5000
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:ff:ff:ff:ff:ff:00')

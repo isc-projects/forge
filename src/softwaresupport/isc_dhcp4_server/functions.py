@@ -15,6 +15,7 @@
 # pylint: disable=unspecified-encoding
 # pylint: disable=unused-argument
 # pylint: disable=unused-import
+# pylint: disable=broad-exception-caught
 
 from src.softwaresupport.multi_server_functions import fabric_send_file, remove_local_file
 from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command, fabric_download_file

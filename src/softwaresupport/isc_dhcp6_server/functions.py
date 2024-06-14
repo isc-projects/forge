@@ -16,13 +16,14 @@
 # pylint: disable=unused-argument
 # pylint: disable=unused-import
 # pylint: disable=unused-variable
+# pylint: disable=broad-exception-caught
 
 import logging
 import os
 from src.forge_cfg import world
 
-from src.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file,\
-    remove_local_file, copy_configuration_file, fabric_sudo_command, fabric_download_file,\
+from src.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, \
+    remove_local_file, copy_configuration_file, fabric_sudo_command, fabric_download_file, \
     fabric_remove_file_command
 from src.softwaresupport.isc_dhcp6_server.functions_ddns import build_ddns_config
 from src.softwaresupport.multi_server_functions import check_local_path_for_downloaded_files

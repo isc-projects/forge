@@ -9,7 +9,7 @@
 
 from multiprocessing import Pool
 from time import time
-import random
+import secrets
 import string
 import pytest
 
@@ -94,11 +94,11 @@ def _get_lease(mac="01:02:0c:03:0a:00", leases_count=10, remote_id=None,
         srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
         for _ in range(addr_count):
-            srv_msg.client_sets_value('Client', 'ia_id', random.randint(1, 9000))
+            srv_msg.client_sets_value('Client', 'ia_id', secrets.randbelow(9000) + 1)
             srv_msg.client_does_include('Client', 'IA-NA')
 
         for _ in range(pd_count):
-            srv_msg.client_sets_value('Client', 'ia_pd', random.randint(1, 9000))
+            srv_msg.client_sets_value('Client', 'ia_pd', secrets.randbelow(9000) + 1)
             srv_msg.client_does_include('Client', 'IA-PD')
 
         srv_msg.client_copy_option('server-id')
@@ -136,7 +136,7 @@ def _get_lease(mac="01:02:0c:03:0a:00", leases_count=10, remote_id=None,
 def _send_leasequery(lq_type, sleep=0, relay_id=None, remote_id=None, lq_address="0::0",
                      duid=None):
     srv_msg.forge_sleep(sleep)
-    srv_msg.client_sets_value('Client', 'tr_id', random.randint(1, 2000))
+    srv_msg.client_sets_value('Client', 'tr_id', secrets.randbelow(2000) + 1)
     if relay_id is not None:
         srv_msg.client_sets_value('Client', 'relay_id', relay_id)
         srv_msg.client_does_include('Client', 'relay-id')
@@ -891,7 +891,7 @@ def test_v6_junk_over_tcp(backend):
 
     wait_for_message_in_log("MT_TCP_LISTENER_MGR_STARTED MtTcpListenerMgr started")
     junk = b''
-    characters_to_send = random.choices(string.printable, k=5000)
+    characters_to_send = ''.join(secrets.choice(string.printable) for _ in range(5000))
     # if that test at one point will fail, we have to know what was sent (no matter of logging level):
     print("String that will be sent to kea:")
     print("".join(characters_to_send))
@@ -1457,7 +1457,7 @@ def test_v4_junk_over_tcp(backend):
 
     wait_for_message_in_log("MT_TCP_LISTENER_MGR_STARTED MtTcpListenerMgr started")
     junk = b''
-    characters_to_send = random.choices(string.printable, k=5000)
+    characters_to_send = ''.join(secrets.choice(string.printable) for _ in range(5000))
     # if that test at one point will fail, we have to know what was sent (no matter of logging level):
     print("String that will be sent to kea:")
     print("".join(characters_to_send))

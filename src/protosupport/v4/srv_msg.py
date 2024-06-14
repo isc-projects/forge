@@ -27,10 +27,9 @@ import os
 import struct
 import socket
 import select
-import random
+import secrets
 
 from time import time
-from random import randint
 
 from scapy.all import get_if_raw_hwaddr, Ether, srp, raw
 from scapy.config import conf
@@ -329,7 +328,7 @@ def build_msg(opts, iface=None):
 
     # transaction id
     if world.cfg["values"]["tr_id"] is None:
-        msg.xid = randint(0, 256*256*256)
+        msg.xid = secrets.randbelow(65355) + 1
     else:
         msg.xid = int(world.cfg["values"]["tr_id"])
     world.cfg["values"]["tr_id"] = msg.xid
@@ -412,7 +411,7 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
     received = b''
 
     socket_list = [socket.socket(socket.AF_INET, socket.SOCK_STREAM) for _ in range(number_of_connections)]
-    new_xid = random.randint(100, 9000)  # to generate transaction id
+    new_xid = secrets.randbelow(9000) + 100  # to generate transaction id
     try:
         for each_socket in socket_list:
             world.blq_trid = new_xid
@@ -743,15 +742,15 @@ def get_all_leases(decode_duid=True):
     lease = {"hwaddr": mac, "address": world.srvmsg[0].yiaddr}
     try:
         lease.update({"client_id": get_option(world.srvmsg[0], 61)[1].hex()})
-    except BaseException:
+    except BaseException:  # pylint: disable=broad-exception-caught
         pass
     try:
         lease.update({"valid_lifetime": get_option(world.srvmsg[0], 51)[1]})
-    except BaseException:
+    except BaseException:  # pylint: disable=broad-exception-caught
         pass
     try:
         lease.update({"server_id": get_option(world.srvmsg[0], 54)[1]})
-    except BaseException:
+    except BaseException:  # pylint: disable=broad-exception-caught
         pass
     return lease
 

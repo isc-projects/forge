@@ -42,14 +42,15 @@ import datetime
 import argparse
 import textwrap
 import functools
-import subprocess
+import subprocess  # nosec
 import configparser
 from botocore.exceptions import ClientError
-from urllib.parse import urljoin
+from urllib.error import URLError, HTTPError
+from urllib.parse import urljoin, urlparse
 from collections import defaultdict
 try:
     import urllib.request
-except BaseException:
+except ImportError:
     pass
 
 log = logging.getLogger()
@@ -446,7 +447,7 @@ shutdown /s /t 25200
 </powershell>
 <persist>true</persist>
     """
-    params = dict(MaxCount=1,
+    params = dict(MaxCount=1,  # pylint: disable=use-dict-literal
                   MinCount=1,
                   InstanceType='t3a.small',
                   ImageId=ami,
@@ -1037,7 +1038,7 @@ def test(args, params):
     cmd %= subcmd
     try:
         execute(cmd, cwd=vagrant_dir, log_prefix='|%s {ts}| ' % client_name)  # , raise_error=False)
-    except BaseException:
+    except ExecutionError:
         # wait for all traces in executed command
         sys.stdout.flush()
         sys.stderr.flush()
@@ -1077,13 +1078,23 @@ def clean(args):
         delete_lxc_bridges(args)
 
 
-def _get_latest_cloud_version(image_tpl):
-    url = 'https://app.vagrantup.com/api/v1/box/' + image_tpl
+def _is_url_permitted(url):
+    # this will fix issue reported by bandit, but I still have to disable reporting this error
+    parsed_url = urlparse(url)
+    return parsed_url.scheme in ('http', 'https')
+
+
+def _get_latest_cloud_version(image_tpl, url='https://app.vagrantup.com/api/v1/box/'):
+    url += image_tpl
     try:
-        with urllib.request.urlopen(url) as response:
-            data = response.read()
-    except BaseException:
-        log.exception('ignored exception')
+        if _is_url_permitted(url):
+            with urllib.request.urlopen(url) as response:  # nosec
+                data = response.read()
+        else:
+            log.error('URL scheme not permitted: %s', url)
+            return 0
+    except (URLError, HTTPError) as e:
+        log.exception('ignored exception: %s', e)
         return 0
     cloud_meta = json.loads(data)
 
@@ -1099,7 +1110,8 @@ def _get_latest_cloud_version(image_tpl):
         if provider_found:
             try:
                 v = int(ver['number'])
-            except BaseException:
+            except (ValueError, TypeError) as e:
+                log.error('ignored exception: %s', e)
                 return ver['number']
             if v > latest_version:
                 latest_version = v

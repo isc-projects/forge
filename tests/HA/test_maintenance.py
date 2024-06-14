@@ -189,14 +189,14 @@ def test_hot_standby_maintenance(backend):
 
     assert leases_server_2 == leases_server_1, \
         "lists of leases got via leases6-get-all command from both servers are not equal!"
-    assert len(leases_server_1) == len(all_leases),\
+    assert len(leases_server_1) == len(all_leases), \
         "number of leases generated via forge traffic differ from leases received via leases6-get-all command"
 
     # we already compared lists leases_server_1 and leases_server_2, so now just leases_server_1 and leases_all
     for lease_forge, lease_command in zip(all_leases, leases_server_1):
-        assert lease_forge['address'] == lease_command['ip-address'],\
+        assert lease_forge['address'] == lease_command['ip-address'], \
             "Incorrect address saved in one of the leases list"
-        assert lease_forge['duid'] == lease_command['duid'],\
+        assert lease_forge['duid'] == lease_command['duid'], \
             "Incorrect duid saved in one of the leases list"
 
 
@@ -370,14 +370,14 @@ def test_load_balancing_maintenance(backend):
     leases_server_1 = sorted(leases_server_1, key=lambda d: d['hw-address'])
     leases_server_2 = sorted(leases_server_2, key=lambda d: d['hw-address'])
 
-    assert leases_server_2 == leases_server_1,\
+    assert leases_server_2 == leases_server_1, \
         "lists of leases got via leases6-get-all command from both servers are not equal!"
-    assert len(leases_server_1) == len(all_leases),\
+    assert len(leases_server_1) == len(all_leases), \
         "number of leases generated via forge traffic differ from leases received via leases6-get-all command"
 
     # we already compared lists leases_server_1 and leases_server_2, so now just leases_server_1 and leases_all
     for lease_forge, lease_command in zip(all_leases, leases_server_1):
-        assert lease_forge['address'] == lease_command['ip-address'],\
+        assert lease_forge['address'] == lease_command['ip-address'], \
             "Incorrect address saved in one of the leases list"
-        assert lease_forge['duid'] == lease_command['duid'],\
+        assert lease_forge['duid'] == lease_command['duid'], \
             "Incorrect duid saved in one of the leases list"

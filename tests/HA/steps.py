@@ -7,7 +7,7 @@
 # pylint: disable=invalid-name,line-too-long
 # pylint: disable=too-many-arguments
 
-import random
+import secrets
 from src import misc
 from src import srv_control
 from src import srv_msg
@@ -148,7 +148,7 @@ def increase_mac(mac: str, rand: bool = False):
     new_mac = (int(mac[0], 16),)
     new_mac += (int(mac[1], 16) + 1,)
     for i in range(2, 6):
-        a = random.randint(3, 20) if rand else 1
+        a = secrets.randbelow(17) + 3 if rand else 1
         if int(mac[i], 16) + a > 255:
             mac[i] = 1
         new_mac += (int(mac[i], 16) + a,)
@@ -176,8 +176,8 @@ def generate_leases(leases_count: int = 1, iana: int = 1, iapd: int = 1,
         for _ in range(leases_count):
             mac = increase_mac(mac)
             duid = "00:03:00:01:" + mac
-            ia_1 = random.randint(2000, 7000)
-            pd_1 = random.randint(7001, 9999)
+            ia_1 = secrets.randbelow(5000) + 2000
+            pd_1 = secrets.randbelow(2000) + 5000
 
             misc.test_procedure()
             srv_msg.client_sets_value('Client', 'DUID', duid)
@@ -315,7 +315,7 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
                 mac = increase_mac(duid[12:])
                 my_duid = duid[:12] + mac
                 duid = my_duid
-            ia_1 = random.randint(1000, 1500)
+            ia_1 = secrets.randbelow(500) + 1000
             misc.test_procedure()
             srv_msg.client_sets_value('Client', 'DUID', my_duid)
             srv_msg.client_does_include('Client', 'client-id')

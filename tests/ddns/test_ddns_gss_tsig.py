@@ -179,7 +179,7 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
     for _ in range(5):
         cmd = dict(command="gss-tsig-get", arguments={"server-id": server_id})
         response = _send_through_socket(cmd)
-        assert response["arguments"]["keys"][index]["status"] != "in error",\
+        assert response["arguments"]["keys"][index]["status"] != "in error", \
             f'Key negotiation filed with status: {response["arguments"]["keys"][index]["tkey-status"]}'
         if response["arguments"]["keys"][index]["status"] == "usable":
             # if all is as we expected we can continue with a test
@@ -388,7 +388,7 @@ def test_ddns4_gss_tsig_fallback(fallback):
     for _ in range(3):
         cmd = dict(command="gss-tsig-get", arguments={"server-id": server_id})
         response = _send_through_socket(cmd)
-        assert response["arguments"]["keys"][0]["status"] != "in error",\
+        assert response["arguments"]["keys"][0]["status"] != "in error", \
             f'Key negotiation filed with status: {response["arguments"]["keys"][0]["tkey-status"]}'
         if response["arguments"]["keys"][0]["status"] == "usable":
             # now we know that key is assigned we can check other values:
@@ -492,7 +492,7 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     for _ in range(5):
         cmd = dict(command="gss-tsig-get", arguments={"server-id": server_id})
         response = _send_through_socket(cmd)
-        assert response["arguments"]["keys"][0]["status"] != "in error",\
+        assert response["arguments"]["keys"][0]["status"] != "in error", \
             f'Key negotiation filed with status: {response["arguments"]["keys"][0]["tkey-status"]}'
         if response["arguments"]["keys"][0]["status"] == "usable":
             # now we know that key is assigned we can check other values:
@@ -589,7 +589,7 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     for _ in range(5):
         cmd = dict(command="gss-tsig-get", arguments={"server-id": server_id})
         response = _send_through_socket(cmd)
-        assert response["arguments"]["keys"][1]["status"] != "in error",\
+        assert response["arguments"]["keys"][1]["status"] != "in error", \
             f'Key negotiation filed with status: {response["arguments"]["keys"][0]["tkey-status"]}'
         if response["arguments"]["keys"][1]["status"] == "usable":
             # now we know that key is assigned we can check other values:

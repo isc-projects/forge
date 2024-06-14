@@ -32,7 +32,7 @@
 # pylint: disable=too-many-arguments
 
 import codecs
-import random
+import secrets
 import os
 import logging
 import select
@@ -400,11 +400,10 @@ def change_message_field(message_filed, value, value_type):
 
 def apply_message_fields_changes():
     for field_details in world.message_fields:
-
         try:
             setattr(world.climsg[0], field_details[0], field_details[1])
-        except BaseException:
-            assert False, "Message does not contain field: %s " % str(field_details[0])
+        except (AttributeError, TypeError) as e:
+            assert False, "Message does not contain field: %s error %s" % (str(field_details[0], e))
 
 
 def add_vendor_suboption(code, data):
@@ -575,7 +574,7 @@ def build_msg(msg_dhcp, iface=None):
 
     # transaction id
     if world.cfg["values"]["tr_id"] is None:
-        msg.trid = random.randint(0, 256*256*256)
+        msg.trid = secrets.randbelow(65535) + 1
     else:
         msg.trid = int(world.cfg["values"]["tr_id"])
     world.cfg["values"]["tr_id"] = msg.trid
@@ -584,7 +583,7 @@ def build_msg(msg_dhcp, iface=None):
     try:
         if len(world.oro.reqopts) > 0:
             msg = add_option_to_msg(msg, world.oro)
-    except BaseException:
+    except BaseException:  # pylint: disable=broad-exception-caught
         pass
 
     # add all rest options to message.
@@ -685,7 +684,7 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
     received = b''
 
     socket_list = [socket.socket(socket.AF_INET6, socket.SOCK_STREAM) for _ in range(number_of_connections)]
-    new_xid = random.randint(100, 3000)  # to generate transaction id
+    new_xid = secrets.randbelow(65355) + 1  # to generate transaction id
     try:
         for each_socket in socket_list:
             each_socket.connect((address, port))

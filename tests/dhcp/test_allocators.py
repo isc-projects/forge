@@ -9,7 +9,7 @@
 
 import ipaddress
 import logging
-from random import randint
+from secrets import randbelow
 import pytest
 
 from src import misc
@@ -61,7 +61,7 @@ def _get_lease_4(allocator: str, mac: str, giaddr: str, all_leases: list = None,
     if len(all_leases) != 0:
         if allocator == 'iterative':
             # we want to have new address to be next from the last received
-            assert ipaddress.ip_address(msg.yiaddr) == ipaddress.ip_address(all_leases[-1]["address"]) + 1,\
+            assert ipaddress.ip_address(msg.yiaddr) == ipaddress.ip_address(all_leases[-1]["address"]) + 1, \
                 f"Received address {msg.yiaddr} is not +1 after previously assigned"
         else:
             # allocator will not guarantee that next address is not +1, but with pool big
@@ -233,11 +233,11 @@ def _get_lease_6(allocator: str, mac: str, relay: str, iaid: int = None, iapd: i
     srv_msg.client_does_include('Client', 'client-id')
     if iaid:
         for _ in range(iaid):
-            srv_msg.client_sets_value('Client', 'ia_id', randint(1000, 9999))
+            srv_msg.client_sets_value('Client', 'ia_id', randbelow(8999) + 1000)
             srv_msg.client_does_include('Client', 'IA-NA')
     if iapd:
         for _ in range(iapd):
-            srv_msg.client_sets_value('Client', 'ia_pd', randint(1000, 9999))
+            srv_msg.client_sets_value('Client', 'ia_pd', randbelow(8999) + 1000)
             srv_msg.client_does_include('Client', 'IA-PD')
 
     srv_msg.client_send_msg('SOLICIT')
@@ -293,11 +293,11 @@ def _get_lease_6(allocator: str, mac: str, relay: str, iaid: int = None, iapd: i
     if allocator:
         if len(new_prefixes) > 1:
             # with 125 delegated length prefix will change by 8!
-            assert _check_multiple_v6_addresses(new_prefixes, offset=8) == allocator,\
+            assert _check_multiple_v6_addresses(new_prefixes, offset=8) == allocator, \
                 f"Looks like assigned prefixes are not with {allocator} allocator: {new_prefixes}"
 
         if len(new_addresses) > 1:
-            assert _check_multiple_v6_addresses(new_addresses) == allocator,\
+            assert _check_multiple_v6_addresses(new_addresses) == allocator, \
                 f"Looks like assigned prefixes are not with {allocator} allocator: {new_addresses}"
 
         # check if previously assigned and new meet allocator requirements
@@ -305,11 +305,11 @@ def _get_lease_6(allocator: str, mac: str, relay: str, iaid: int = None, iapd: i
         old_prefixes = [x for x in all_leases if x['prefix_len'] > 0]
 
         if len(old_prefixes) > 0:
-            assert _check_multiple_v6_addresses(old_prefixes + new_prefixes, offset=8) == allocator,\
+            assert _check_multiple_v6_addresses(old_prefixes + new_prefixes, offset=8) == allocator, \
                 f"Looks like assigned prefixes are not with {allocator} allocator: {old_prefixes + new_prefixes}"
 
         if len(old_addresses) > 0:
-            assert _check_multiple_v6_addresses(old_addresses + new_addresses) == allocator,\
+            assert _check_multiple_v6_addresses(old_addresses + new_addresses) == allocator, \
                 f"Looks like assigned addresses are not with {allocator} allocator: {old_addresses + new_addresses}"
 
     # check if address/prefix belongs to subnets

@@ -6,7 +6,7 @@
 
 """Kea lease get by client-id/hostname/hw-address"""
 
-import random
+import secrets
 import string
 
 import pytest
@@ -260,7 +260,7 @@ def test_control_channel_lease4_get_by_negative():
     cmd = {
         "command": "lease4-get-by-client-id",
         "arguments": {
-            "client-id": ''.join(random.choices(string.hexdigits, k=510)).lower()
+            "client-id": ''.join(secrets.choice(string.hexdigits) for _ in range(512)).lower()
         }
     }
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
@@ -270,7 +270,7 @@ def test_control_channel_lease4_get_by_negative():
     cmd = {
         "command": "lease4-get-by-client-id",
         "arguments": {
-            "client-id": ''.join(random.choices(string.hexdigits, k=512)).lower()
+            "client-id": ''.join(secrets.choice(string.hexdigits) for _ in range(512)).lower()
         }
     }
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
@@ -476,7 +476,7 @@ def test_v6_lease_get_by_negative():
     cmd = {
         "command": "lease6-get-by-duid",
         "arguments": {
-            "duid": ''.join(random.choices(string.hexdigits, k=260)).lower()
+            "duid": ''.join(secrets.choice(string.hexdigits) for _ in range(260)).lower()
         }
     }
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
@@ -486,7 +486,7 @@ def test_v6_lease_get_by_negative():
     cmd = {
         "command": "lease6-get-by-duid",
         "arguments": {
-            "duid": ''.join(random.choices(string.hexdigits, k=262)).lower()
+            "duid": ''.join(secrets.choice(string.hexdigits) for _ in range(262)).lower()
         }
     }
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)

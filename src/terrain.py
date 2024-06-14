@@ -20,9 +20,10 @@ from shutil import rmtree
 import subprocess
 import importlib
 
-from Crypto.Random.random import randint
+from secrets import randbelow
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
+from pytest import FixtureLookupError
 
 from icecream import install
 
@@ -150,13 +151,13 @@ def client_id(mac):
 
 
 def ia_id():
-    world.cfg["ia_id"] = randint(1, 99999)
+    world.cfg["ia_id"] = randbelow(99998) + 1
     if "values" in world.cfg:
         world.cfg["values"]["ia_id"] = world.cfg["ia_id"]
 
 
 def ia_pd():
-    world.cfg["ia_pd"] = randint(1, 99999)
+    world.cfg["ia_pd"] = randbelow(99998) + 1
     if "values" in world.cfg:
         world.cfg["values"]["ia_pd"] = world.cfg["ia_pd"]
 
@@ -384,7 +385,7 @@ def initialize(scenario):
     # or marker presence
     try:
         dhcp_version = scenario._request.getfixturevalue('dhcp_version')
-    except BaseException:
+    except FixtureLookupError:
         dhcp_version = None
         for v in ['v4', 'v6', 'v4_bootp']:
             if scenario.get_closest_marker(v):
@@ -518,7 +519,7 @@ def say_goodbye():
                 # True passed to stop_srv is to hide output in console.
                 try:
                     stop.stop_srv(destination_address=remote_server)
-                except BaseException:
+                except BaseException:  # pylint: disable=broad-exception-caught
                     pass
 
     if world.f_cfg.auto_archive:

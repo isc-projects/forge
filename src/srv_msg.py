@@ -766,10 +766,10 @@ def start_fuzzing():
     Initialize any variables that may be used in fuzz tests.
     """
     world.fuzzing = True
-    seed = random.randint(0, 100)
+    seed = random.randint(0, 100)  # nosec
     print(f'Using seed {seed}.')
     random.seed(seed)
-    world.coin_toss = random.randint(1, 100) % 2 == 0
+    world.coin_toss = random.randint(1, 100) % 2 == 0  # nosec
 
 
 def enable_tcpdump(file_name: str = "my_capture.pcap", iface: str = None,

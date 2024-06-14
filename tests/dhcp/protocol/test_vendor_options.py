@@ -10,7 +10,7 @@
 # pylint: disable=line-too-long
 
 import binascii
-import random
+import secrets
 import socket
 import string
 
@@ -139,11 +139,11 @@ def _dorara(vendor_ids: int, address: str, vivso_suboptions: str):
                              If None, it is expected that the option is not received.
     """
     misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', ''.join(random.choices(string.hexdigits, k=12)).lower())
+    srv_msg.client_sets_value('Client', 'chaddr', ''.join(secrets.choice(string.hexdigits) for _ in range(12)).lower())
     srv_msg.client_requests_option('vivso-suboptions')
     for vendor_id in vendor_ids:
         srv_msg.client_does_include_with_value('vendor_class_id', vendor_id)
-    srv_msg.client_does_include_with_value('client_id', ''.join(random.choices(string.hexdigits, k=16)).lower())
+    srv_msg.client_does_include_with_value('client_id', ''.join(secrets.choice(string.hexdigits) for _ in range(16)).lower())
     srv_msg.client_send_msg('DISCOVER')
 
     srv_msg.send_wait_for_message('MUST', 'OFFER')
@@ -227,12 +227,12 @@ def _sarrrr(vendor_ids: int, address: str, vendor_suboptions: str):
     :param vendor_suboptions: the expected content for option 17.
                               If None, it is expected that the option is not received.
     """
-    duid = random.choices(string.hexdigits, k=12)
+    duid = [secrets.choice(string.hexdigits) for _ in range(12)]
     duid = '00:03:00:01:' + ':'.join(''.join(duid[i:i+2]) for i in range(0, len(duid), 2))
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
-    srv_msg.client_sets_value('Client', 'ia_id', random.randrange(1, 1000000))
+    srv_msg.client_sets_value('Client', 'ia_id', secrets.randbelow(1000000) + 1)
     srv_msg.client_does_include('Client', 'client-id')
     srv_msg.client_does_include('Client', 'IA_Address')
     srv_msg.client_does_include('Client', 'IA-NA')

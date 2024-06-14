@@ -45,8 +45,8 @@ import copy
 import requests
 
 from src.forge_cfg import world
-from src.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file,\
-        fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name,\
+from src.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file, \
+        fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name, \
         save_local_file, fabric_run_command
 
 
@@ -124,7 +124,7 @@ def add_variable(variable_name, variable_val, val_type):
     """
     Define variable and add it to temporary list or to init_all.py file.
     """
-    assert not bool(re.compile('[^A-Z^0-9^_] + ').search(variable_name)),\
+    assert not bool(re.compile('[^A-Z^0-9^_] + ').search(variable_name)), \
         "Variable name contain invalid characters (Allowed are only capital letters, numbers and sign '_')."
 
     if not val_type:
@@ -600,7 +600,7 @@ def _process_ctrl_response(response, exp_result):
         result = json.loads(response)
         if world.f_cfg.forge_verbose:
             log.info(json.dumps(result, sort_keys=True, indent=2, separators=(',', ': ')))
-    except BaseException:
+    except json.JSONDecodeError:
         log.exception('Problem with parsing json:\n"%s"', str(response))
         result = response
 
@@ -611,7 +611,7 @@ def _process_ctrl_response(response, exp_result):
             res = result[0]
         else:
             assert False, 'result is incorrectly formatted'
-        assert 'result' in res and res['result'] == exp_result,\
+        assert 'result' in res and res['result'] == exp_result, \
             f'unexpected result: {res["result"]} we were expecting {exp_result}'
         if res['result'] == 1:
             assert len(res) == 2 and 'text' in res
@@ -630,14 +630,8 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
         log.info(pprint.pformat(command))
     if isinstance(command, dict):
         command = json.dumps(command)
-    command_file = open(world.cfg["test_result_dir"] + '/command_file', 'w')
-    try:
+    with open(world.cfg["test_result_dir"] + '/command_file', 'w') as command_file:
         command_file.write(command)
-    except BaseException:
-        command_file.close()
-        command_file = open(world.cfg["test_result_dir"] + '/command_file', 'wb')  # TODO: why 'w' / 'wb'
-        command_file.write(command)
-    command_file.close()
     fabric_send_file(world.cfg["test_result_dir"] + '/command_file', 'command_file', destination_host=destination_address)
 
     if socket_name is not None:

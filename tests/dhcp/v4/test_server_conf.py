@@ -146,7 +146,7 @@ def test_v4_authoritative(backend, requested_address, authoritative, has_existin
         # If the client got an ACK, the lease should be in the database.
         srv_msg.check_leases([
             {'address': '192.168.50.100', 'hwaddr': 'ff:01:02:03:ff:04', 'valid_lifetime': 4000},
-        ], backend=backend, should_succeed=(expected_response_type == 'ACK'))
+        ], backend=backend, should_succeed=expected_response_type == 'ACK')
 
     # Requesting an address from the pool, but already leased by another client
     # usually results in a NAK.
