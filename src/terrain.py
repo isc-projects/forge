@@ -17,7 +17,6 @@ import os
 import time
 import logging
 from shutil import rmtree
-import subprocess
 import importlib
 
 from secrets import randbelow

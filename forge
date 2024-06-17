@@ -42,7 +42,8 @@ import datetime
 import argparse
 import textwrap
 import functools
-import subprocess  # nosec
+# [B404:blacklist] Consider possible security implications associated with the subprocess module.
+import subprocess  # nosec B404
 import configparser
 from botocore.exceptions import ClientError
 from urllib.error import URLError, HTTPError
@@ -1088,7 +1089,9 @@ def _get_latest_cloud_version(image_tpl, url='https://app.vagrantup.com/api/v1/b
     url += image_tpl
     try:
         if _is_url_permitted(url):
-            with urllib.request.urlopen(url) as response:  # nosec
+            # [B310:blacklist] Audit url open for permitted schemes.
+            # Allowing use of file:/ or custom schemes is often unexpected.
+            with urllib.request.urlopen(url) as response:  # nosec B310
                 data = response.read()
         else:
             log.error('URL scheme not permitted: %s', url)

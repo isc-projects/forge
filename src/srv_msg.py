@@ -766,10 +766,11 @@ def start_fuzzing():
     Initialize any variables that may be used in fuzz tests.
     """
     world.fuzzing = True
-    seed = random.randint(0, 100)  # nosec
+    # [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+    seed = random.randint(0, 100)  # nosec B311
     print(f'Using seed {seed}.')
     random.seed(seed)
-    world.coin_toss = random.randint(1, 100) % 2 == 0  # nosec
+    world.coin_toss = random.randint(1, 100) % 2 == 0  # nosec B311
 
 
 def enable_tcpdump(file_name: str = "my_capture.pcap", iface: str = None,

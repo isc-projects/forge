@@ -4,14 +4,16 @@ variables:
   # B108    hardcoded_tmp_directory
   # B605    start_process_with_a_shell
   # B602    subprocess_popen_with_shell_equals_true
-  BANDIT_SKIPS: 'B101,B104,B108,B605,B602'
+  # B608    hardcoded_sql_expressions
+  # B105    hardcoded_password_string
+  BANDIT_SKIPS: 'B101,B104,B108,B605,B602,B608,B105'
 
   CI_REGISTRY_IMAGE: registry.gitlab.isc.org/isc-projects/forge
 
 bandit:
   image: "${CI_REGISTRY_IMAGE}:latest"
   script:
-    - bandit -s "${BANDIT_SKIPS}" -r ./forge ./tests
+    - bandit -s "${BANDIT_SKIPS}" -r ./forge ./tests ./src
 
 pylint:
   image: "${CI_REGISTRY_IMAGE}:latest"

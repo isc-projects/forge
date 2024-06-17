@@ -360,8 +360,13 @@ class KeaConfiguration:
         # change self.globalparameterList[0]
 
         # assert False, self.final_config_script
-        import xml.dom.minidom
-        xml = xml.dom.minidom.parseString(self.final_config_script)  # or xml.dom.minidom.parseString(xml_string)
+        # Issue: [B408:blacklist] Using xml.dom.minidom to parse untrusted XML data is known to be vulnerable to XML attacks.
+        # Replace xml.dom.minidom with the equivalent defusedxml package, or make sure defusedxml.defuse_stdlib() is called.
+        # Issue: [B318:blacklist] Using xml.dom.minidom.parseString to parse untrusted XML data is known to be vulnerable to XML attacks.
+        # Replace xml.dom.minidom.parseString with its defusedxml equivalent function or make sure defusedxml.defuse_stdlib() is called
+        import xml.dom.minidom  # nosec B408
+        xml = xml.dom.minidom.parseString(self.final_config_script)  # nosec B318
+        # or xml.dom.minidom.parseString(xml_string)
 
         # xml_config = open(world.cfg["cfg_file"]+'XML', 'w')
         # xml_config.write(xml.toprettyxml())

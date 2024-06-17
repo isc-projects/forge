@@ -16,7 +16,8 @@ import os
 import logging
 import tarfile
 import warnings
-import subprocess
+# [B404:blacklist] Consider possible security implications associated with the subprocess module.
+import subprocess  # nosec B404
 from shutil import copy
 
 from fabric.api import get, settings, put, sudo, run, hide

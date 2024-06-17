@@ -24,7 +24,8 @@ import threading
 import fcntl
 import socket
 import struct
-import subprocess
+# [B404:blacklist] Consider possible security implications associated with the subprocess module.
+import subprocess  # nosec B404
 import sys
 import traceback
 import netifaces
