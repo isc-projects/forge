@@ -1,0 +1,11 @@
+# scapy
+git+https://github.com/wwencel/scapy.git@bulk-lease-query
+
+# required by forge
+fabric3
+netifaces
+pytest == 6.2.5
+PyCryptodome
+requests
+boto3
+icecream

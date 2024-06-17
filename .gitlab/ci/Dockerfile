@@ -1,5 +1,7 @@
 FROM python:latest AS gitlab-ci
 
 # Install dependencies.
-COPY activate-venv.sh activate-venv.sh
-RUN ./activate-venv.sh
+COPY requirements.txt requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+RUN pip install bandit pycodestyle pylint semgrep
