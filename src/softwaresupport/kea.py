@@ -1008,6 +1008,7 @@ def add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value):
     :param parameter_value: the parameter's JSON value
     """
 
+    hook_no = None
     # Get the hook number.
     if isinstance(hook_number_or_name, int):
         hook_no = hook_number_or_name - 1

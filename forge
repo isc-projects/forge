@@ -1113,8 +1113,7 @@ def _get_latest_cloud_version(image_tpl, url='https://app.vagrantup.com/api/v1/b
             except (ValueError, TypeError) as e:
                 log.error('ignored exception: %s', e)
                 return ver['number']
-            if v > latest_version:
-                latest_version = v
+            latest_version = max(v, latest_version)
     return latest_version
 
 

@@ -172,9 +172,8 @@ def test_v4_ddns_tuning_basic(backend, hostname_type, option):
     srv_control.start_srv('DHCP', 'started')
 
     # select expected fqdn based on test parametrization
-    if hostname_type == 'basic':
-        fqdn = 'host-ff-01-02-03-ff-04.'
-    elif hostname_type == 'suffix':
+    fqdn = 'host-ff-01-02-03-ff-04.'  # hostname_type is basic
+    if hostname_type == 'suffix':
         fqdn = 'host-ff-01-02-03-ff-04.foo.bar.'
     elif hostname_type == 'empty':
         fqdn = 'test.com.'
@@ -230,9 +229,8 @@ def test_v6_ddns_tuning_basic(backend, hostname_type):
     srv_control.start_srv('DHCP', 'started')
 
     # select expected fqdn based on test parametrization
-    if hostname_type == 'basic':
-        fqdn = 'host-00-03-00-01-66-55-44-33-22-11.'
-    elif hostname_type == 'suffix':
+    fqdn = 'host-00-03-00-01-66-55-44-33-22-11.'  # hostname_type is basic
+    if hostname_type == 'suffix':
         fqdn = 'host-00-03-00-01-66-55-44-33-22-11.foo.bar.'
     elif hostname_type == 'empty':
         fqdn = 'test.com.'
@@ -377,9 +375,8 @@ def test_v6_ddns_tuning_subnets(backend, hostname_type):
     # Acquire leases and test them
     for i in range(1, nbr_of_subnets + 1):
         # select expected hostname based on test parametrization
-        if hostname_type == 'basic':
-            fqdn = f'host{i}-00-03-00-01-66-55-44-33-22-1{i}.'
-        elif hostname_type == 'suffix':
+        fqdn = f'host{i}-00-03-00-01-66-55-44-33-22-1{i}.'  # if hostname_type is basic
+        if hostname_type == 'suffix':
             fqdn = f'host{i}-00-03-00-01-66-55-44-33-22-1{i}.foo.bar.'
         elif hostname_type == 'empty':
             fqdn = f'test{i}.com.'

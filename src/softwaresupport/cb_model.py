@@ -767,7 +767,7 @@ def setup_server_with_radius(destination: str = world.f_cfg.mgmt_address,
 
     if world.proto == 'v4':
         expression = "hexstring(pkt4.mac, ':')"
-    elif world.proto == 'v6':
+    else:
         expression = "substring(hexstring(option[1].hex, ':'), 12, 17)"
 
     default_cfg = {"hooks-libraries": [{

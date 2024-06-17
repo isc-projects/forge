@@ -26,7 +26,7 @@ import socket
 import struct
 import subprocess
 import sys
-import cgitb
+import traceback
 import netifaces
 
 import init_all
@@ -362,7 +362,7 @@ def step(pattern):
             try:
                 return func(*args, **kwargs)
             except BaseException:
-                txt = cgitb.text(sys.exc_info())
+                txt = traceback.format_exc()
                 with open(fout, 'a') as f:
                     f.write(txt)
                 raise

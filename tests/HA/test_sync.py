@@ -161,7 +161,7 @@ def test_HA_hot_standby_multiple_leases_v6(trigger, hook_order: str):
         }
 
     srv_msg.check_leases(set_of_leases_1)
-    srv_msg.check_leases(set_of_leases_2)
+    srv_msg.check_leases(set_of_leases_2)  # pylint: disable=possibly-used-before-assignment
 
     # Check that bulk apply was used. 5 IPv6 leases == 3 IA_NA + 2 IA_PD in each response
     wait_for_message_in_log('Bulk apply of 5 IPv6 leases completed.', 4)
@@ -346,7 +346,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
 
     # Check synced leases.
     srv_msg.check_leases(set_of_leases_1, backend=backend)
-    srv_msg.check_leases(set_of_leases_2, backend=backend)
+    srv_msg.check_leases(set_of_leases_2, backend=backend)  # pylint: disable=possibly-used-before-assignment
 
 
 # ha_sync causes bug in kea primary server in passive-backup mode kea#3276

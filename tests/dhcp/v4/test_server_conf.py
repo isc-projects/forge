@@ -128,14 +128,10 @@ def test_v4_authoritative(backend, requested_address, authoritative, has_existin
 
     # Invariably, when the client is in an INIT-REBOOT case, these are the
     # expected responses.
+    expected_response_type = None
     if init_reboot:
-        if has_existing_lease:
+        if has_existing_lease or authoritative:
             expected_response_type = 'NAK'
-        else:
-            if authoritative:
-                expected_response_type = 'NAK'
-            else:
-                expected_response_type = None
 
     # Requesting an address from the pool, but not leased by any other client
     # usually results in an ACK.
@@ -150,7 +146,7 @@ def test_v4_authoritative(backend, requested_address, authoritative, has_existin
 
     # Requesting an address from the pool, but already leased by another client
     # usually results in a NAK.
-    if requested_address == 'in-pool-leased':
+    elif requested_address == 'in-pool-leased':
         if not init_reboot:
             expected_response_type = 'NAK'
         srv_msg.RA('192.168.50.1', response_type=expected_response_type, init_reboot=init_reboot)
@@ -159,7 +155,7 @@ def test_v4_authoritative(backend, requested_address, authoritative, has_existin
         ], backend=backend, should_succeed=False)
 
     # Requesting an address outside the pool usually results in a silent ignore.
-    if requested_address == 'out-of-pool':
+    elif requested_address == 'out-of-pool':
         if not init_reboot:
             expected_response_type = None
         srv_msg.RA('192.168.50.200', response_type=expected_response_type, init_reboot=init_reboot)

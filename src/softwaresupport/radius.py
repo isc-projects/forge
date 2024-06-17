@@ -78,10 +78,9 @@ def add_reservation(mac: str, attributes=None):
         attributes = []
 
     # User-Name prefix
-    if world.proto == 'v4':
-        # Arbitrary number prepended to the MAC
-        prefix = '11'
-    elif world.proto == 'v6':
+    # Arbitrary number prepended to the MAC
+    prefix = '11'  # for v4
+    if world.proto == 'v6':
         # DUID_LL
         prefix = '00:03:00:01'
 
