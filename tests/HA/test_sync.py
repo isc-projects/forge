@@ -35,13 +35,27 @@ def kill_kea_on_second_system():
 
 
 def _clear_leases_from_server(dhcp_version, backend, server):
+    """srv_control.clear_some_data() does not remove leases freom RUNNING server with memfile.
+    This function is a workaround for this issue.
+    """
     if backend == 'memfile':
-        srv_msg.send_ctrl_cmd({
-            "command": f'lease{dhcp_version[1]}-wipe',
+        leases = srv_msg.send_ctrl_cmd({
+            "command": f'lease{dhcp_version[1]}-get-all',
             "arguments": {
                 "subnets": [1]
             }
-        }, channel='http', address=server, exp_result=0)
+        }, channel='http', address=server, exp_result=0)['arguments']['leases']
+        for lease in leases:
+            command = {
+                "command": f'lease{dhcp_version[1]}-del',
+                "arguments": {
+                    "subnet-id": 1,
+                    "ip-address": lease['ip-address'],
+                }
+            }
+            if dhcp_version == 'v6':
+                command["arguments"]["type"] = lease['type']
+            srv_msg.send_ctrl_cmd(command, channel='http', address=server, exp_result=0)
         srv_msg.send_ctrl_cmd({
             "command": "leases-reclaim",
             "arguments": {
