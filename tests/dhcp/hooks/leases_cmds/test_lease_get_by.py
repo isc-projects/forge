@@ -260,7 +260,7 @@ def test_control_channel_lease4_get_by_negative():
     cmd = {
         "command": "lease4-get-by-client-id",
         "arguments": {
-            "client-id": ''.join(secrets.choice(string.hexdigits) for _ in range(512)).lower()
+            "client-id": ''.join(secrets.choice(string.hexdigits) for _ in range(510)).lower()
         }
     }
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=3)
