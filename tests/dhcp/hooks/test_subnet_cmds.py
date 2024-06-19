@@ -403,7 +403,7 @@ def test_hook_v4_subnet_cmds_del_shared_network():
     cfg = _config_get()
     hash_2 = cfg["hash"]
     assert (
-        len(cfg["Dhcp4"]["hared-networks"][0]["subnet4"]) == 0
+        len(cfg["Dhcp4"]["shared-networks"][0]["subnet4"]) == 0
     ), "There should be no subnets"
 
     assert hash_1 == hash_2, "Config hash should be the same"
@@ -1907,7 +1907,7 @@ def test_hook_v6_subnet_cmds_del_shared_network():
     cfg = _config_get()
     hash_2 = cfg["hash"]
     assert (
-        len(cfg["Dhcp6"]["hared-networks"][0]["subnet6"]) == 0
+        len(cfg["Dhcp6"]["shared-networks"][0]["subnet6"]) == 0
     ), "There should be no subnets"
 
     assert hash_1 == hash_2, "Config hash should be the same"
