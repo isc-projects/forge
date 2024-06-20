@@ -378,16 +378,15 @@ def _clear_remainings():
                 functions.clear_all(destination_address=remote_server)
 
 
-# @before.each_scenario
-def initialize(scenario):
+def initialize(request):
     # try to automagically detect DHCP version based on fixture presence
     # or marker presence
     try:
-        dhcp_version = scenario._request.getfixturevalue('dhcp_version')
+        dhcp_version = request.getfixturevalue('dhcp_version')
     except FixtureLookupError:
         dhcp_version = None
         for v in ['v4', 'v6', 'v4_bootp']:
-            if scenario.get_closest_marker(v):
+            if request.node.get_closest_marker(v):
                 dhcp_version = v
                 break
 
@@ -410,13 +409,13 @@ def initialize(scenario):
 
     world.cfg["cfg_file_2"] = "second_server.cfg"
     world.reservation_backend = ""
-    test_result_dir = str(scenario.name).replace(".", "_").replace('[', '_').replace(']', '_').replace('/', '_')
+    test_result_dir = str(request.node.name).replace(".", "_").replace('[', '_').replace(']', '_').replace('/', '_')
     world.cfg["test_result_dir"] = os.path.join('tests_results', test_result_dir)
     world.cfg["subnet"] = ""
     world.cfg["server-id"] = ""
     world.cfg["csv-format"] = "true"
     world.cfg["tr_id"] = None
-    world.name = scenario.name
+    world.name = request.node.name
     world.srvopts = []
     world.pref = None
     world.time = None

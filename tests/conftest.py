@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2019-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,8 +23,13 @@ def get_number_of_tests(request):
 
 
 def pytest_runtest_setup(item):
+    pass
+
+
+@pytest.fixture(autouse=True)
+def initialize_terrain(request):
     from src import terrain
-    terrain.initialize(item)
+    terrain.initialize(request)
 
 
 def pytest_runtest_teardown(item, nextitem):
