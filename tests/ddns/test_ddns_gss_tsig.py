@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,6 +8,7 @@
 
 # pylint: disable=line-too-long
 # pylint: disable=too-many-branches
+# pylint: disable=unused-argument
 
 import pytest
 
@@ -217,7 +218,7 @@ def run_around_each_test(request):
 @pytest.mark.tsig
 @pytest.mark.gss
 @pytest.mark.parametrize("system_and_domain", [('linux', 'example.com'), ('windows', '2019'), ('windows', '2016')])
-def test_ddns_gss_tsig_manual_expiration(system_and_domain):
+def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     """
     Simple scenario to check if we are just able to add and remove records from forward and reverse zones with
     automatically and manually generated key.

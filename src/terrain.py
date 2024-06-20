@@ -18,12 +18,11 @@ import time
 import logging
 from shutil import rmtree
 import importlib
-
 from secrets import randbelow
+
+import pytest
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
-from pytest import FixtureLookupError
-
 from icecream import install
 
 from . import dependencies
@@ -383,12 +382,16 @@ def initialize(request):
     # or marker presence
     try:
         dhcp_version = request.getfixturevalue('dhcp_version')
-    except FixtureLookupError:
+    except pytest.FixtureLookupError:
         dhcp_version = None
         for v in ['v4', 'v6', 'v4_bootp']:
             if request.node.get_closest_marker(v):
+                if dhcp_version is not None:
+                    pytest.fail('This test has two or more version markers, but does not have a dhcp_version argument. '
+                                'This would end up parameterizing the test only with a single version and is likely '
+                                'not what you want. Fix your test and either add a dhcp_version argument or leave it '
+                                'with a single version marker.')
                 dhcp_version = v
-                break
 
     # Declare all default values
     declare_all(dhcp_version)

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,6 +7,7 @@
 """Kea leases manipulation commands"""
 
 # pylint: disable=line-too-long
+# pylint: disable=unused-argument
 
 import time
 import pytest
@@ -51,7 +52,7 @@ def _get_lease(addr='192.168.50.1', mac="ff:01:02:03:ff:04"):
 @pytest.mark.hook
 @pytest.mark.lease_cmds
 @pytest.mark.parametrize("channel", ['socket', 'http'])
-def test_lease_cmds_list(channel):
+def test_lease_cmds_list(dhcp_version, channel):
     """
     Check if with loaded hook, lease commands are available
     @param channel: we accept socket or http

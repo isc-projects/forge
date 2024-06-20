@@ -2357,7 +2357,8 @@ def test_remote_class_set_non_existing_params(dhcp_version, backend):  # pylint:
 
 @pytest.mark.v4
 @pytest.mark.v6
-def remote_class_set_all_parameters(dhcp_version, backend):
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
+def test_remote_class_set_all_parameters(dhcp_version, backend):
     _setup_server(backend)
     # let's first set simple class
     _set_class(backend, {"client-classes": [{"name": "foo"}]})
