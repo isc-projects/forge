@@ -1,8 +1,10 @@
-# Copyright (C) 2019-2022 Internet Systems Consortium.
+# Copyright (C) 2019-2024 Internet Systems Consortium.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# pylint: disable=unused-argument
 
 '''Simple test for BOOTP'''
 
@@ -18,7 +20,7 @@ from src.forge_cfg import world
 @pytest.mark.v4
 @pytest.mark.v4_bootp
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_bootp_basic_request_reply(backend):
+def test_bootp_basic_request_reply(dhcp_version, backend):
     '''Checks that two separate clients can get separate leases from the same pool
     through BOOTP and DHCP respectively.
 
@@ -46,7 +48,7 @@ def test_bootp_basic_request_reply(backend):
 @pytest.mark.v4_bootp
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('bootp_first', [False, True])
-def test_bootp_basic_request_reply_same_chaddr(backend, bootp_first):
+def test_bootp_basic_request_reply_same_chaddr(dhcp_version, backend, bootp_first):
     '''Checks that the same client can get the same lease by switching from
     BOOTP to DHCP and from DHCP to BOOTP.
 
@@ -75,7 +77,7 @@ def test_bootp_basic_request_reply_same_chaddr(backend, bootp_first):
 @pytest.mark.v4
 @pytest.mark.v4_bootp
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
-def test_bootp_basic_request_reply_classes(backend):
+def test_bootp_basic_request_reply_classes(dhcp_version, backend):
     '''Checks that two separate clients can get separate leases through BOOTP
     and DHCP respectively from separate pools matched by the special BOOTP
     client class.

@@ -1,8 +1,10 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# pylint: disable=unused-argument
 
 import copy
 import pytest
@@ -50,7 +52,7 @@ def _bump_subnets(shared_networks: bool = False):
 @pytest.mark.v4
 @pytest.mark.v4_bootp
 @pytest.mark.parametrize('subnet_scope', ['subnet', 'shared-network'])
-def test_overlapping_pools(subnet_scope: str):
+def test_overlapping_pools(dhcp_version, subnet_scope: str):
     """
     Check that overlapping pools belonging to the same subnet result in a configuration error.
     :param subnet_scope: subnet-level pools or shared-network-level pools
@@ -199,7 +201,7 @@ def test_overlapping_ia_pd_pools(subnet_scope: str):
 @pytest.mark.v4
 @pytest.mark.v4_bootp
 @pytest.mark.parametrize('subnet_scope', [['subnet'], ['shared-network'], ['subnet', 'shared-network']])
-def test_overlapping_pools_in_different_subnets(subnet_scope):
+def test_overlapping_pools_in_different_subnets(dhcp_version, subnet_scope):
     """
     Check the behavior of overlapping pools belonging to different subnets. Currently, at subnet
     level, leases are only given from one subnet. At shared network level, all pools from all
@@ -527,7 +529,7 @@ def test_overlapping_ia_pd_pools_in_different_subnets(subnet_scope):
 @pytest.mark.v4
 @pytest.mark.v4_bootp
 @pytest.mark.parametrize('subnet_scope', [['subnet'], ['shared-network'], ['subnet', 'shared-network']])
-def test_overlapping_pools_outside_subnets(subnet_scope):
+def test_overlapping_pools_outside_subnets(dhcp_version, subnet_scope):
     """
     Check the behavior of overlapping pools belonging to different subnets. The pools are outside
     the network range of the subnet they belong to. Currently, at subnet level, leases are only
