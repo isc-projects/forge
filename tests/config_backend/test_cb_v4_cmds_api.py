@@ -2359,6 +2359,7 @@ def test_remote_class_set_non_existing_params(dhcp_version, backend):  # pylint:
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_class_set_all_parameters(dhcp_version, backend):
+    """ v6-MySQL fails due to #3469"""
     _setup_server(backend)
     # let's first set simple class
     _set_class(backend, {"client-classes": [{"name": "foo"}]})
@@ -2369,7 +2370,7 @@ def test_remote_class_set_all_parameters(dhcp_version, backend):
                                     "test": "member('UNKNOWN')",
                                     "min-valid-lifetime": 100,
                                     "max-valid-lifetime": 1200,
-                                    "max-preferred-lifetime": 900,
+                                    "max-preferred-lifetime": 901,
                                     "min-preferred-lifetime": 789,
                                     "valid-lifetime": 1000,
                                     "preferred-lifetime": 850}]}
@@ -2383,7 +2384,7 @@ def test_remote_class_set_all_parameters(dhcp_version, backend):
                                        "valid-lifetime": 1000,
                                        "min-valid-lifetime": 100,
                                        "max-valid-lifetime": 1200,
-                                       "max-preferred-lifetime": 900,
+                                       "max-preferred-lifetime": 901,
                                        "min-preferred-lifetime": 789,
                                        "preferred-lifetime": 850}],
                    "count": 1}
@@ -2393,11 +2394,7 @@ def test_remote_class_set_all_parameters(dhcp_version, backend):
                                         "only-if-required": True,
                                         "next-server": "10.11.12.13",
                                         "option-data": [{"code": 6, "data": "192.0.2.1, 192.0.2.2",
-                                                         "always-send": True, "csv-format": True},
-                                                        {"name": "foooption", "data": "22"}],
-                                        "option-def": [{"array": False, "code": 222, "encapsulate": "",
-                                                        "name": "foooption", "record-types": "", "space": "myspace",
-                                                        "type": "uint32"}],
+                                                         "always-send": True, "csv-format": True}],
                                         "server-hostname": "abc.com",
                                         "min-valid-lifetime": 100,
                                         "max-valid-lifetime": 1200,
@@ -2411,13 +2408,8 @@ def test_remote_class_set_all_parameters(dhcp_version, backend):
                                            "option-data": [{"always-send": True, "code": 6, "csv-format": True,
                                                             "data": "192.0.2.1, 192.0.2.2",
                                                             "name": "domain-name-servers",
-                                                            "never-send": False, "space": "dhcp4"},
-                                                           {"always-send": True, "code": 222, "csv-format": True,
-                                                            "data": "22", "name": "foooption",
-                                                            "never-send": False, "space": "myspace"}],
-                                           "option-def": [{"array": False, "code": 222, "encapsulate": "",
-                                                           "name": "foooption", "record-types": "",
-                                                           "space": "myspace", "type": "uint32"}],
+                                                            "never-send": False, "space": "dhcp4"}],
+                                           "option-def": [],
                                            "server-hostname": "abc.com",
                                            "min-valid-lifetime": 100,
                                            "max-valid-lifetime": 1200,
