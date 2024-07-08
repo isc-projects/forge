@@ -675,7 +675,7 @@ def test_v4_lease_cmds_lease_add_negative():
                          "state": 8,
                          "hw-address": "1a:1b:1c:1d:1e:1f"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Invalid state value: 8, supported values are: 0 (default), 1 (declined) and 2 (expired-reclaimed)"
+    assert resp["text"] == "Invalid state value: 8, supported values are: 0 (default), 1 (declined), 2 (expired-reclaimed) and 3 (released)"
 
 
 @pytest.mark.v4

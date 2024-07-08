@@ -308,8 +308,8 @@ def test_v6_lease_affinity(backend):
 
     lease_ccch = srv_msg.send_ctrl_cmd(cmd)  # get leases from command control channel
     for lease in lease_ccch['arguments']['leases']:
-        # release do not change state of a lease
-        assert lease['state'] == 0, f"Address is not in proper state! {lease} it's cant be 2 or 3"
+        # release changes state to relesed (3)
+        assert lease['state'] == 3, f"Address is not in proper state! {lease}"
         assert lease['valid-lft'] == 0, f"Address has incorrect valid lifetime {lease}"
 
     # and ask for it again
