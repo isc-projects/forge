@@ -328,7 +328,7 @@ def test_v4_host_reservation_empty(backend):
         })
         assert response == {
             "result": 0,
-            "text": "Host added."
+            "text": 'Host added. subnet-id not specified, assumed global (subnet-id 0).'
         }
 
     # Send KNOWN MAC as first transaction
