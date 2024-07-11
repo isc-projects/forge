@@ -8,8 +8,13 @@
 
 import pytest
 
+from src import misc
+from src import srv_control
+from src.forge_cfg import world
+
 from src.protosupport.dhcp4_scen import get_address
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
+
 
 pytestmark = [pytest.mark.hook,
               pytest.mark.v4,
@@ -119,3 +124,129 @@ def test_options_inherit(backend):
 # def test_options_inherit_custom_option(backend):
 #     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 # for now I don't know how to test custom option without tweaking scapy, TODO figure it out!
+
+
+@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'client-classes'])
+def test_suboptions_configfile(parameter):
+    """Control tests using config file.
+    Kea is configured with option 43 and suboption 61 in shared-networks, subnet and client-classes.
+    Forge tests if client gets suboption value.
+    Test for Kea#3481
+
+    """
+    misc.test_setup()
+    config = {
+        'shared-networks': [
+            {
+                "interface": "enp0s9",
+                "name": "floor13",
+                "option-data": [],
+                "relay": {
+                        "ip-addresses": []
+                },
+                "subnet4": [
+                    {
+                        "4o6-interface": "",
+                        "4o6-interface-id": "",
+                        "4o6-subnet": "",
+                        "id": 1,
+                        "interface": "enp0s9",
+                        "option-data": [],
+                        "pools": [
+                            {
+                                "option-data": [],
+                                "pool": "192.168.50.1-192.168.50.100"
+                            }
+                        ],
+                        "relay": {
+                            "ip-addresses": []
+                        },
+                        "reservations": [],
+                        "subnet": "192.168.50.0/24"
+                    }
+                ]
+            }
+        ],
+    }
+    if parameter == "shared-networks":
+        config["shared-networks"][0]["option-data"] = [{
+            "always-send": True,
+            "code": 43,
+        },
+            {
+            "code": 61,
+                "data": "FF3D0408080808",
+                "space": "vendor-encapsulated-options-space"
+        }]
+    elif parameter == "subnet":
+        config["shared-networks"][0]["subnet4"][0]["option-data"] = [{
+            "always-send": True,
+            "code": 43,
+        },
+            {
+            "code": 61,
+                "data": "FF3D0408080808",
+                "space": "vendor-encapsulated-options-space"
+        }]
+    else:
+        config["client-classes"] = [
+            {
+                "name": "ALL",
+                "option-data": [{
+                    "always-send": True,
+                    "code": 43,
+                },
+                    {
+                    "code": 61,
+                    "data": "FF3D0408080808",
+                    "space": "vendor-encapsulated-options-space"
+                }]
+            }
+        ]
+
+    world.dhcp_cfg.update(config)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Hex data: 3D - option number "61", 07 - length , FF3D0408080808 - suboption 61 value.
+    get_address(req_opts=[43], exp_option={"code": 43, "data": "HEX:3D07FF3D0408080808"})
+
+
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
+@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'client-classes'])
+def test_suboptions(parameter, backend):
+    """
+    Kea is configured with empty option 43.
+    Suboption 61 is added to config backend in shared-networks, subnet or client-classes
+    Forge tests if client gets suboption value.
+    Test for Kea#3481
+    """
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
+    if parameter == "shared-networks":
+        network_cfg, _ = cfg.add_network(backend=backend,
+                                         option_data=[{"code": 43, "always-send": True,
+                                                       "name": "vendor-encapsulated-options",
+                                                       "space": "dhcp4"},
+                                                      {"code": 61, "data": "FF3D0408080808",
+                                                       "space": "vendor-encapsulated-options-space"}])
+        cfg.add_subnet(backend=backend, network=network_cfg)
+
+    elif parameter == "subnet":
+        network_cfg, _ = cfg.add_network(backend=backend)
+        cfg.add_subnet(backend=backend, network=network_cfg,
+                       option_data=[{"code": 43, "always-send": True,
+                                     "name": "vendor-encapsulated-options",
+                                     "space": "dhcp4"},
+                                    {"code": 61, "data": "FF3D0408080808",
+                                     "space": "vendor-encapsulated-options-space"}])
+
+    else:
+        network_cfg, _ = cfg.add_network(backend=backend)
+        cfg.add_subnet(backend=backend, network=network_cfg)
+        cfg.add_class(backend=backend, name="ALL", option_data=[{"code": 43, "always-send": True,
+                                                                 "name": "vendor-encapsulated-options",
+                                                                 "space": "dhcp4"},
+                                                                {"code": 61, "data": "FF3D0408080808",
+                                                                 "space": "vendor-encapsulated-options-space"}])
+
+    get_address(req_opts=[43], exp_option={"code": 43, "data": "HEX:3D07FF3D0408080808"})
