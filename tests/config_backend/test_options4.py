@@ -191,7 +191,8 @@ def test_suboptions_configfile(parameter):
     else:
         config["client-classes"] = [
             {
-                "name": "ALL",
+                "name": "option-class",
+                "test": "member('ALL')",
                 "option-data": [{
                     "always-send": True,
                     "code": 43,
@@ -243,10 +244,11 @@ def test_suboptions(parameter, backend):
     else:
         network_cfg, _ = cfg.add_network(backend=backend)
         cfg.add_subnet(backend=backend, network=network_cfg)
-        cfg.add_class(backend=backend, name="ALL", option_data=[{"code": 43, "always-send": True,
-                                                                 "name": "vendor-encapsulated-options",
-                                                                 "space": "dhcp4"},
-                                                                {"code": 61, "data": "FF3D0408080808",
-                                                                 "space": "vendor-encapsulated-options-space"}])
+        cfg.add_class(backend=backend, name="option-class", test="member('ALL')",
+                      option_data=[{"code": 43, "always-send": True,
+                                    "name": "vendor-encapsulated-options",
+                                    "space": "dhcp4"},
+                                   {"code": 61, "data": "FF3D0408080808",
+                                    "space": "vendor-encapsulated-options-space"}])
 
     get_address(req_opts=[43], exp_option={"code": 43, "data": "HEX:3D07FF3D0408080808"})

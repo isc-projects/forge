@@ -8,6 +8,11 @@
 
 import pytest
 
+from src import misc
+from src import srv_control
+from src import srv_msg
+from src.forge_cfg import world
+
 from src.protosupport.dhcp4_scen import get_address
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
@@ -120,3 +125,242 @@ def test_options_inherit(backend):
                                      "name": "dns-servers", "space": "dhcp6"})
 
     get_address(req_opts=23, exp_option={"code": 23, "data": "2001::34"})
+
+
+@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'client-classes'])
+def test_suboptions_configfile(parameter):
+    """Control tests using config file.
+    Kea is configured with option 160 and suboption 1 in shared-networks, subnet and client-classes.
+    Forge tests if client gets suboption value.
+    Test for Kea#3481
+
+    """
+    misc.test_setup()
+    config = {
+        'shared-networks': [
+            {
+                "interface": "enp0s9",
+                "name": "floor13",
+                "option-data": [],
+                "relay": {
+                        "ip-addresses": []
+                },
+                "subnet6": [
+                    {
+                        "id": 1,
+                        "interface": "enp0s9",
+                        "option-data": [],
+                        "pools": [
+                            {
+                                "option-data": [],
+                                "pool": "2001:db8:1::1-2001:db8:1::100"
+                            }
+                        ],
+                        "relay": {
+                            "ip-addresses": []
+                        },
+                        "reservations": [],
+                        "subnet": "2001:db8:1::/64"
+                    }
+                ]
+            }
+        ],
+    }
+
+    config["option-def"] = [
+        {
+            "name": "container",
+            "code": 160,
+            "space": "dhcp6",
+            "type": "empty",
+            "array": False,
+            "record-types": "",
+            "encapsulate": "isc"
+        },
+        {
+            "name": "subopt1",
+            "code": 1,
+            "space": "isc",
+            "type": "uint16",
+            "record-types": "",
+            "array": False,
+            "encapsulate": ""
+        }
+    ]
+
+    if parameter == "shared-networks":
+        config["shared-networks"][0]["option-data"] = [
+            {
+                "name": "container",
+                "code": 160,
+                "space": "dhcp6"
+            },
+            {
+                "name": "subopt1",
+                "code": 1,
+                "space": "isc",
+                "data": "12345"
+            }]
+    elif parameter == "subnet":
+
+        config["shared-networks"][0]["subnet6"][0]["option-data"] = [
+            {
+                "name": "container",
+                "code": 160,
+                "space": "dhcp6"
+            },
+            {
+                "name": "subopt1",
+                "code": 1,
+                "space": "isc",
+                "data": "12345"
+            }]
+    else:
+        config["client-classes"] = [
+            {
+                "name": "option-class",
+                "test": "member('ALL')",
+                "option-data": [
+                    {
+                        "name": "container",
+                        "code": 160,
+                        "space": "dhcp6"
+                    },
+                    {
+                        "name": "subopt1",
+                        "code": 1,
+                        "space": "isc",
+                        "data": "12345"
+                    }]
+            }
+        ]
+
+    world.dhcp_cfg.update(config)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # TODO: This is not working...
+    get_address(req_opts=[160], exp_option={"code": 160, "data": "3D07FF3D0408080808"})
+
+
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
+@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'client-classes'])
+def test_suboptions(parameter, backend):
+    """
+    Kea is configured with empty option 160.
+    Suboption 1 is added to config backend in shared-networks, subnet or client-classes
+    Forge tests if client gets suboption value.
+    Test for Kea#3481
+    """
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
+
+    if parameter == "shared-networks":
+        network_cfg, _ = cfg.add_network(backend=backend,
+                                         option_data=[
+                                             {
+                                                 "always-send": True,
+                                                 "csv-format": False,
+                                                 "code": 160,
+                                                 "space": "dhcp6",
+                                                 "data": "",
+                                                 "never-send": False
+                                             },
+                                             {
+                                                 "always-send": True,
+                                                 "csv-format": False,
+                                                 "code": 1,
+                                                 "space": "isc",
+                                                 "data": "012345"
+                                             }])
+        cfg.add_subnet(backend=backend, network=network_cfg)
+
+    elif parameter == "subnet":
+        network_cfg, _ = cfg.add_network(backend=backend)
+        cfg.add_subnet(backend=backend, network=network_cfg,
+                       option_data=[
+                           {
+                               "always-send": True,
+                               "csv-format": False,
+                               "code": 160,
+                               "space": "dhcp6",
+                               "data": "",
+                               "never-send": False
+                           },
+                           {
+                               "always-send": True,
+                               "csv-format": False,
+                               "code": 1,
+                               "space": "isc",
+                               "data": "012345"
+                           }])
+
+    else:
+        network_cfg, _ = cfg.add_network(backend=backend)
+        cfg.add_subnet(backend=backend, network=network_cfg)
+        cfg.add_class(backend=backend, name="option-class", test="member('ALL')",
+                      option_data=[
+                          {
+                              "always-send": True,
+                              "csv-format": False,
+                              "code": 160,
+                              "space": "dhcp6",
+                              "data": "",
+                              "never-send": False
+                          },
+                          {
+                              "always-send": True,
+                              "csv-format": False,
+                              "code": 1,
+                              "space": "isc",
+                              "data": "012345"
+                          }])
+
+    option_defs1 = [
+        {
+            "name": "container",
+            "code": 160,
+            "space": "dhcp6",
+            "type": "empty",
+            "array": False,
+            "record-types": "",
+            "encapsulate": "isc"
+        }
+    ]
+
+    cmd = {"command": "remote-option-def6-set",
+           "arguments": {"remote": {"type": backend},
+                         'server-tags': ['ALL'],
+                         "option-defs": option_defs1}
+           }
+    srv_msg.send_ctrl_cmd(cmd)
+
+    option_defs2 = [
+        {
+            "name": "subopt1",
+            "code": 1,
+            "space": "isc",
+            "type": "uint16",
+            "record-types": "",
+            "array": False,
+            "encapsulate": ""
+        }
+    ]
+    cmd = {"command": "remote-option-def6-set",
+           "arguments": {"remote": {"type": backend},
+                         'server-tags': ['ALL'],
+                         "option-defs": option_defs2}
+           }
+    srv_msg.send_ctrl_cmd(cmd)
+
+    cmd = {"command": "config-backend-pull",
+           "arguments": {}
+           }
+    srv_msg.send_ctrl_cmd(cmd)
+
+    cmd = {"command": "config-get",
+           "arguments": {}
+           }
+    srv_msg.send_ctrl_cmd(cmd)
+
+    # TODO: This is not working...
+    get_address(req_opts=[160], exp_option={"code": 160, "data": "12345"})
