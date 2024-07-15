@@ -336,8 +336,8 @@ def test_suboptions(parameter, order, backend):
     else:
         # When adding options in reverse, Kea does not return 'name' in option-data in config-get.
         # This interferes with response checking in Forge and is not the goal of this test.
-        for i, _ in enumerate(option_data):
-            option_data[i].pop('name')
+        for option in option_data:
+            option.pop('name')
         # Add option data 160 and suboption data to specific place.
         _send_option_data(option_data, parameter, backend, cfg)
         # Add option 160 definition to config backend
