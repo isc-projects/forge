@@ -126,86 +126,56 @@ def test_options_inherit(backend):
 # for now I don't know how to test custom option without tweaking scapy, TODO figure it out!
 
 
-@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'client-classes'])
+@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'global', 'client-classes', 'pool'])
 def test_suboptions_configfile(parameter):
     """Control tests using config file.
-    Kea is configured with option 43 and suboption 61 in shared-networks, subnet and client-classes.
+    Kea is configured with option 43 and suboption 61 in diferent places.
     Forge tests if client gets suboption value.
     Test for Kea#3481
 
     """
     misc.test_setup()
-    config = {
-        'shared-networks': [
-            {
-                "interface": "enp0s9",
-                "name": "floor13",
-                "option-data": [],
-                "relay": {
-                        "ip-addresses": []
-                },
-                "subnet4": [
-                    {
-                        "4o6-interface": "",
-                        "4o6-interface-id": "",
-                        "4o6-subnet": "",
-                        "id": 1,
-                        "interface": "enp0s9",
-                        "option-data": [],
-                        "pools": [
-                            {
-                                "option-data": [],
-                                "pool": "192.168.50.1-192.168.50.100"
-                            }
-                        ],
-                        "relay": {
-                            "ip-addresses": []
-                        },
-                        "reservations": [],
-                        "subnet": "192.168.50.0/24"
-                    }
-                ]
-            }
-        ],
-    }
-    if parameter == "shared-networks":
-        config["shared-networks"][0]["option-data"] = [{
-            "always-send": True,
-            "code": 43,
-        },
-            {
-            "code": 61,
-                "data": "FF3D0408080808",
-                "space": "vendor-encapsulated-options-space"
-        }]
-    elif parameter == "subnet":
-        config["shared-networks"][0]["subnet4"][0]["option-data"] = [{
-            "always-send": True,
-            "code": 43,
-        },
-            {
-            "code": 61,
-                "data": "FF3D0408080808",
-                "space": "vendor-encapsulated-options-space"
-        }]
-    else:
-        config["client-classes"] = [
-            {
-                "name": "option-class",
-                "test": "member('ALL')",
-                "option-data": [{
-                    "always-send": True,
-                    "code": 43,
-                },
-                    {
-                    "code": 61,
-                    "data": "FF3D0408080808",
-                    "space": "vendor-encapsulated-options-space"
-                }]
-            }
-        ]
+    option_data = [{
+        "always-send": True,
+        "code": 43,
+        "csv-format": False
+    },
+        {
+        "code": 61,
+        "data": "FF3D0408080808",
+                "space": "vendor-encapsulated-options-space",
+                "csv-format": False
+    }]
 
-    world.dhcp_cfg.update(config)
+    if parameter == "shared-networks":
+        srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.100", id=1)
+        srv_control.shared_subnet('192.168.50.0/24', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', 'floor13', 0)
+        world.dhcp_cfg['shared-networks'][0]['option-data'] = option_data
+
+    elif parameter == "subnet":
+        srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.100", id=1, option_data=option_data)
+        srv_control.shared_subnet('192.168.50.0/24', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', 'floor13', 0)
+    elif parameter == "pool":
+        srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.100", id=1)
+        srv_control.shared_subnet('192.168.50.0/24', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', 'floor13', 0)
+        world.dhcp_cfg['shared-networks'][0]['subnet4'][0]['pools'][0]['option-data'] = option_data
+    elif parameter == "global":
+        srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.100", id=1)
+        srv_control.shared_subnet('192.168.50.0/24', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', 'floor13', 0)
+        srv_control.set_conf_parameter_global('option-data', option_data)
+    else:
+        srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.100", id=1)
+        srv_control.shared_subnet('192.168.50.0/24', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', 'floor13', 0)
+        srv_control.create_new_class('option-class')
+        srv_control.add_test_to_class(1, 'test', 'member(\'ALL\')')
+        srv_control.add_test_to_class(1, 'option-data', option_data[0])
+        srv_control.add_test_to_class(1, 'option-data', option_data[1])
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -214,11 +184,11 @@ def test_suboptions_configfile(parameter):
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
-@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'client-classes'])
+@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'global', 'pool', 'client-classes'])
 def test_suboptions(parameter, backend):
     """
     Kea is configured with empty option 43.
-    Suboption 61 is added to config backend in shared-networks, subnet or client-classes
+    Suboption 61 is added to config backend in all posible ways.
     Forge tests if client gets suboption value.
     Test for Kea#3481
     """
@@ -240,6 +210,22 @@ def test_suboptions(parameter, backend):
                                      "space": "dhcp4"},
                                     {"code": 61, "data": "FF3D0408080808",
                                      "space": "vendor-encapsulated-options-space"}])
+    elif parameter == "pool":
+        network_cfg, _ = cfg.add_network(backend=backend)
+        cfg.add_subnet(backend=backend, network=network_cfg,
+                       pool_option_data=[{"code": 43, "always-send": True,
+                                          "name": "vendor-encapsulated-options",
+                                          "space": "dhcp4"},
+                                         {"code": 61, "data": "FF3D0408080808",
+                                          "space": "vendor-encapsulated-options-space"}])
+    elif parameter == "global":
+        network_cfg, _ = cfg.add_network(backend=backend)
+        cfg.add_subnet(backend=backend, network=network_cfg)
+        cfg.add_option({"backend": backend, "code": 43, "always-send": True,
+                        "name": "vendor-encapsulated-options",
+                        "space": "dhcp4", "csv-format": False, "data": ""},
+                       {"backend": backend, "code": 61, "data": "FF3D0408080808",
+                        "space": "vendor-encapsulated-options-space", "csv-format": False})
 
     else:
         network_cfg, _ = cfg.add_network(backend=backend)

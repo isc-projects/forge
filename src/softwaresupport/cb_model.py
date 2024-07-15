@@ -38,6 +38,7 @@ def _reload():
     cmd = {"command": "config-backend-pull", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {'result': 0, 'text': 'On demand configuration update successful.'}
+    return response
 
 
 class ConfigElem(object):
@@ -366,37 +367,52 @@ class ConfigModel(ConfigElem):
         self.subnet_id += 1
         return self.subnet_id
 
-    def add_option(self, **kwargs):
-        backend = None
-        server_tags = None
-        option = {"code": 0,
-                  "data": None,
-                  "csv-format": None,
-                  "name": None,
-                  "space": None}
-        for param, val in kwargs.items():
-            if val is None:
-                continue
-            if param == "server_tags":
-                server_tags = _to_list(val)
-                continue
-            if param == "backend":
-                backend = val
-                continue
-            param = param.replace('_', '-')
-            option[param] = val
-        self.cfg["option-data"] = [option]
+    def add_option(self, *args, **kwargs):
+        """Add option using config backend command and update local configuration.
+        Function accepts option parameters as arguments or as a list of dictionares.
+        """
+        # check if we have list of dictionaries or arguments
+        if len(args) > 0:
+            options = list(args)
+            x=0
+            for item in options:
+                options[x] = list(item.items())
+                x += 1
+        else:
+            options = [kwargs.items()]
 
-        if "server_tags" in kwargs:
-            del kwargs["server_tags"]
-        if "backend" in kwargs:
-            del kwargs["backend"]
+        self.cfg["option-data"] = []
+        for item in options:
+            backend = None
+            server_tags = None
+            option = {"code": 0,
+                    "data": None,
+                    "csv-format": None,
+                    "space": None}
+            for param, val in item:
+                if val is None:
+                    continue
+                if param == "server_tags":
+                    server_tags = _to_list(val)
+                    continue
+                if param == "backend":
+                    backend = val
+                    continue
+                param = param.replace('_', '-')
+                option[param] = val
+            self.cfg["option-data"].append(option)
 
-        # send command
-        response = global_option_set([option], db_type=backend, server_tags=server_tags)
-        assert response["result"] == 0
+            if "server_tags" in item:
+                del item["server_tags"]
+            if "backend" in item:
+                del item["backend"]
 
-        # request config reloading and check result
+            # send command
+            response = global_option_set([option], db_type=backend, server_tags=server_tags)
+            assert response["result"] == 0
+
+            # request config reloading and check result
+
         config = self.reload_and_check()
 
         return config

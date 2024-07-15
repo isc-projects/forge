@@ -127,49 +127,16 @@ def test_options_inherit(backend):
     get_address(req_opts=23, exp_option={"code": 23, "data": "2001::34"})
 
 
-@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'client-classes'])
+@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'pool', 'global', 'client-classes'])
 def test_suboptions_configfile(parameter):
     """Control tests using config file.
     Kea is configured with option 160 and suboption 1 in shared-networks, subnet and client-classes.
     Forge tests if client gets suboption value.
     Test for Kea#3481
-
     """
     misc.test_setup()
-    # prepare base config
-    config = {
-        'shared-networks': [
-            {
-                "interface": "enp0s9",
-                "name": "floor13",
-                "option-data": [],
-                "relay": {
-                        "ip-addresses": []
-                },
-                "subnet6": [
-                    {
-                        "id": 1,
-                        "interface": "enp0s9",
-                        "option-data": [],
-                        "pools": [
-                            {
-                                "option-data": [],
-                                "pool": "2001:db8:1::1-2001:db8:1::100"
-                            }
-                        ],
-                        "relay": {
-                            "ip-addresses": []
-                        },
-                        "reservations": [],
-                        "subnet": "2001:db8:1::/64"
-                    }
-                ]
-            }
-        ],
-    }
-
-    # add option definitions
-    config["option-def"] = [
+    # Option definitions.
+    option_def = [
         {
             "name": "container",
             "code": 160,
@@ -189,178 +156,192 @@ def test_suboptions_configfile(parameter):
             "encapsulate": ""
         }
     ]
-
-    # Add option 160 to shared-networks, subnet or client-classes
-    if parameter == "shared-networks":
-        config["shared-networks"][0]["option-data"] = [
-            {
-                "name": "container",
-                "code": 160,
-                "space": "dhcp6"
-            },
-            {
-                "name": "subopt1",
-                "code": 1,
-                "space": "isc",
-                "data": "012345"
-            }]
-    elif parameter == "subnet":
-        config["shared-networks"][0]["subnet6"][0]["option-data"] = [
-            {
-                "name": "container",
-                "code": 160,
-                "space": "dhcp6"
-            },
-            {
-                "name": "subopt1",
-                "code": 1,
-                "space": "isc",
-                "data": "012345"
-            }]
-    else:
-        config["client-classes"] = [
-            {
-                "name": "option-class",
-                "test": "member('ALL')",
-                "option-data": [
-                    {
-                        "name": "container",
-                        "code": 160,
-                        "space": "dhcp6"
-                    },
-                    {
-                        "name": "subopt1",
-                        "code": 1,
-                        "space": "isc",
-                        "data": "012345"
-                    }]
-            }
-        ]
-
-    # Upload config and start server
-    world.dhcp_cfg.update(config)
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    # Check if Forge makes SARR exchange with included suboption
-    get_address(req_opts=[160], exp_option={"code": 160, "data": "00010003012345"})
-
-
-@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
-@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'client-classes'])
-def test_suboptions(parameter, backend):
-    """
-    Kea is configured with empty option 160.
-    Suboption 1 is added to config backend in shared-networks, subnet or client-classes
-    Forge tests if client gets suboption value.
-    Test for Kea#3481
-    """
-    # Prepare and start Kea
-    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
-
-    # Add option 160 and suboption data to shared-networks, subnet or client-classes
-    if parameter == "shared-networks":
-        network_cfg, _ = cfg.add_network(backend=backend,
-                                         option_data=[
-                                             {
-                                                 "always-send": True,
-                                                 "csv-format": False,
-                                                 "code": 160,
-                                                 "space": "dhcp6",
-                                                 "data": "",
-                                                 "never-send": False
-                                             },
-                                             {
-                                                 "always-send": True,
-                                                 "csv-format": False,
-                                                 "code": 1,
-                                                 "space": "isc",
-                                                 "data": "012345"
-                                             }])
-        cfg.add_subnet(backend=backend, network=network_cfg)
-    elif parameter == "subnet":
-        network_cfg, _ = cfg.add_network(backend=backend)
-        cfg.add_subnet(backend=backend, network=network_cfg,
-                       option_data=[
-                           {
-                               "always-send": True,
-                               "csv-format": False,
-                               "code": 160,
-                               "space": "dhcp6",
-                               "data": "",
-                               "never-send": False
-                           },
-                           {
-                               "always-send": True,
-                               "csv-format": False,
-                               "code": 1,
-                               "space": "isc",
-                               "data": "012345"
-                           }])
-    else:
-        network_cfg, _ = cfg.add_network(backend=backend)
-        cfg.add_subnet(backend=backend, network=network_cfg)
-        cfg.add_class(backend=backend, name="option-class", test="member('ALL')",
-                      option_data=[
-                          {
-                              "always-send": True,
-                              "csv-format": False,
-                              "code": 160,
-                              "space": "dhcp6",
-                              "data": "",
-                              "never-send": False
-                          },
-                          {
-                              "always-send": True,
-                              "csv-format": False,
-                              "code": 1,
-                              "space": "isc",
-                              "data": "012345"
-                          }])
-
-    # Add option 160 definition to config backend
-    option_defs1 = [
+    option_data = [
         {
             "name": "container",
             "code": 160,
-            "space": "dhcp6",
-            "type": "empty",
-            "array": False,
-            "record-types": "",
-            "encapsulate": "isc"
-        }
-    ]
-    cmd = {"command": "remote-option-def6-set",
-           "arguments": {"remote": {"type": backend},
-                         'server-tags': ['ALL'],
-                         "option-defs": option_defs1}
-           }
-    srv_msg.send_ctrl_cmd(cmd)
-
-    # Add suboption definition to config backend
-    option_defs2 = [
+            "space": "dhcp6"
+        },
         {
             "name": "subopt1",
             "code": 1,
             "space": "isc",
-            "type": "binary",
-            "record-types": "",
-            "array": False,
-            "encapsulate": ""
-        }
-    ]
+            "data": "012345"
+        }]
+
+    # Prepare option definitions.
+    srv_control.set_conf_parameter_global('option-def', option_def)
+
+    # Prepare networks and add options-data.
+    if parameter == "shared-networks":
+        srv_control.config_srv_subnet("2001:db8:1::/64", "2001:db8:1::1-2001:db8:1::100", id=1)
+        srv_control.shared_subnet('2001:db8:1::/64', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', 'floor13', 0)
+        world.dhcp_cfg['shared-networks'][0]['option-data'] = option_data
+    elif parameter == "subnet":
+        srv_control.config_srv_subnet("2001:db8:1::/64", "2001:db8:1::1-2001:db8:1::100", id=1, option_data=option_data)
+        srv_control.shared_subnet('2001:db8:1::/64', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', 'floor13', 0)
+    elif parameter == "pool":
+        srv_control.config_srv_subnet("2001:db8:1::/64", "2001:db8:1::1-2001:db8:1::100", id=1)
+        srv_control.shared_subnet('2001:db8:1::/64', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', 'floor13', 0)
+        world.dhcp_cfg['shared-networks'][0]['subnet6'][0]['pools'][0]['option-data'] = option_data
+    elif parameter == "global":
+        srv_control.config_srv_subnet("2001:db8:1::/64", "2001:db8:1::1-2001:db8:1::100", id=1)
+        srv_control.shared_subnet('2001:db8:1::/64', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', 'floor13', 0)
+        srv_control.set_conf_parameter_global('option-data', option_data)
+    else:
+        srv_control.config_srv_subnet("2001:db8:1::/64", "2001:db8:1::1-2001:db8:1::100", id=1)
+        srv_control.shared_subnet('2001:db8:1::/64', 0)
+        srv_control.set_conf_parameter_shared_subnet('name', 'floor13', 0)
+        srv_control.create_new_class('option-class')
+        srv_control.add_test_to_class(1, 'test', 'member(\'ALL\')')
+        srv_control.add_test_to_class(1, 'option-data', option_data[0])
+        srv_control.add_test_to_class(1, 'option-data', option_data[1])
+
+    srv_control.open_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Check if Forge makes SARR exchange with included suboption.
+    get_address(req_opts=[160], exp_option={"code": 160, "data": "00010003012345"})
+
+
+def _send_option_def(option_defs, backend):
+    """Helper function for test_suboptions() test
+    Adds option definitions using confing backend commands.
+    """
+    # Add option 160 definition to config backend.
     cmd = {"command": "remote-option-def6-set",
            "arguments": {"remote": {"type": backend},
                          'server-tags': ['ALL'],
-                         "option-defs": option_defs2}
+                         "option-defs": option_defs[0]}
            }
     srv_msg.send_ctrl_cmd(cmd)
 
-    # Refresh config from config backend
+    # Add suboption definition to config backend.
+    cmd = {"command": "remote-option-def6-set",
+           "arguments": {"remote": {"type": backend},
+                         'server-tags': ['ALL'],
+                         "option-defs": option_defs[1]}
+           }
+    srv_msg.send_ctrl_cmd(cmd)
+
+        # Refresh config from config backend.
     cmd = {"command": "config-backend-pull",
            "arguments": {}
            }
     srv_msg.send_ctrl_cmd(cmd)
+    return [option_defs[0][0], option_defs[1][0]]
 
-    # Check if Forge makes SARR exchange with included suboption
+
+def _send_option_data(option_data, parameter, backend, cfg):
+    """Helper function for test_suboptions() test
+    Adds networks, subnets, classes and option data using confing backend commands.
+    """
+    # Add option 160 and suboption data to specific place.
+    if parameter == "shared-networks":
+        network_cfg, _ = cfg.add_network(backend=backend,
+                                         option_data=option_data)
+        cfg.add_subnet(backend=backend, network=network_cfg)
+    elif parameter == "subnet":
+        network_cfg, _ = cfg.add_network(backend=backend)
+        cfg.add_subnet(backend=backend, network=network_cfg,
+                       option_data=option_data)
+    elif parameter == "pool":
+        network_cfg, _ = cfg.add_network(backend=backend)
+        cfg.add_subnet(backend=backend, network=network_cfg,
+                       pool_option_data=option_data)
+    elif parameter == "client-classes":
+        network_cfg, _ = cfg.add_network(backend=backend)
+        cfg.add_subnet(backend=backend, network=network_cfg)
+        cfg.add_class(backend=backend, name="option-class", test="member('ALL')",
+                      option_data=option_data)
+    else:
+        network_cfg, _ = cfg.add_network(backend=backend)
+        cfg.add_subnet(backend=backend, network=network_cfg)
+        # add_option() required adding backend parameter.
+        for i, _ in enumerate(option_data):
+            option_data[i]["backend"] = backend
+        cfg.add_option(option_data[0], option_data[1])
+
+
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
+@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'client-classes', 'global'])
+@pytest.mark.parametrize('order', ['normal', 'reverse'])
+def test_suboptions(parameter, order, backend):
+    """
+    Kea is configured with empty data in option 160 and suboption using config backend commands.
+    Suboption and option definition is added to config backend in all posible places.
+    Forge tests if client gets suboption value.
+
+    order: Set order of adding Option-def and option-data
+
+    Test for Kea#3481
+    """
+    option_data = [
+        {
+            "always-send": True,
+            "csv-format": False,
+            "code": 160,
+            "space": "dhcp6",
+            "data": "",
+            "never-send": False,
+            "name": "container"
+        },
+        {
+            "always-send": True,
+            "csv-format": False,
+            "code": 1,
+            "space": "isc",
+            "data": "012345",
+            "name": "subopt1"
+        }]
+
+    option_defs = [
+        [
+            {
+                "name": "container",
+                "code": 160,
+                "space": "dhcp6",
+                "type": "empty",
+                "array": False,
+                "record-types": "",
+                "encapsulate": "isc"
+            }
+        ],
+        [
+            {
+                "name": "subopt1",
+                "code": 1,
+                "space": "isc",
+                "type": "binary",
+                "record-types": "",
+                "array": False,
+                "encapsulate": ""
+            }
+        ]
+    ]
+
+    # Prepare and start Kea
+    cfg = setup_server_for_config_backend_cmds(backend_type=backend)
+
+    if order == 'normal':
+        # Add option 160 definition to config backend.
+        cfg.cfg["option-def"] = _send_option_def(option_defs, backend)
+        # Add option data 160 and suboption data to specific place.
+        _send_option_data(option_data, parameter, backend, cfg)
+    else:
+        # When adding options in reverse, Kea does not return 'name' in option-data in config-get.
+        # This interferes with response checking in Forge and is not the goal of this test.
+        for i, _ in enumerate(option_data):
+            option_data[i].pop('name')
+        # Add option data 160 and suboption data to specific place.
+        _send_option_data(option_data, parameter, backend, cfg)
+        # Add option 160 definition to config backend
+        cfg.cfg["option-def"] = _send_option_def(option_defs, backend)
+
+    # Check if Forge makes SARR exchange with included suboption.
     get_address(req_opts=[160], exp_option={"code": 160, "data": "00010003012345"})
