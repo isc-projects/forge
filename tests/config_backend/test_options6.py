@@ -229,7 +229,7 @@ def _send_option_def(option_defs, backend):
            }
     srv_msg.send_ctrl_cmd(cmd)
 
-        # Refresh config from config backend.
+    # Refresh config from config backend.
     cmd = {"command": "config-backend-pull",
            "arguments": {}
            }

@@ -374,10 +374,8 @@ class ConfigModel(ConfigElem):
         # check if we have list of dictionaries or arguments
         if len(args) > 0:
             options = list(args)
-            x=0
-            for item in options:
-                options[x] = list(item.items())
-                x += 1
+            for i, item in enumerate(options):
+                options[i] = list(item.items())
         else:
             options = [kwargs.items()]
 
@@ -386,9 +384,9 @@ class ConfigModel(ConfigElem):
             backend = None
             server_tags = None
             option = {"code": 0,
-                    "data": None,
-                    "csv-format": None,
-                    "space": None}
+                      "data": None,
+                      "csv-format": None,
+                      "space": None}
             for param, val in item:
                 if val is None:
                     continue
