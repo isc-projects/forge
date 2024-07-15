@@ -1151,7 +1151,6 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
 
     # Ensure the option code is an integer.
     opt_code = get_option_code(opt_code)
-
     data_type = str(data_type)
     expected_value = str(expected_value)
     initial_data_type = data_type
@@ -1167,7 +1166,6 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
     assert x, "Expected option {opt_descr}, but it is not present in the message.".format(**locals())
     # test all collected options,:
     # couple tweaks to make checking smoother
-
     if opt_code == 9:
         convert_relayed_message(x)
     else:
@@ -1182,6 +1180,10 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
                 if tmp_field is None:
                     data_type = values_equivalent.get(opt_code)
                     tmp_field = each.fields.get(data_type)
+                    # if everything failed, read raw data
+                    if tmp_field is None:
+                        data_type = 'data'
+                        tmp_field = each.fields.get(data_type).hex() if each.fields.get(data_type) is not None else None
                 if type(tmp_field) is list:
                     if len(tmp_field):
                         if isinstance(tmp_field[0], str):

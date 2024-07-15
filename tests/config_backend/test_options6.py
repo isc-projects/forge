@@ -136,6 +136,7 @@ def test_suboptions_configfile(parameter):
 
     """
     misc.test_setup()
+    # prepare base config
     config = {
         'shared-networks': [
             {
@@ -167,6 +168,7 @@ def test_suboptions_configfile(parameter):
         ],
     }
 
+    # add option definitions
     config["option-def"] = [
         {
             "name": "container",
@@ -181,13 +183,14 @@ def test_suboptions_configfile(parameter):
             "name": "subopt1",
             "code": 1,
             "space": "isc",
-            "type": "uint16",
+            "type": "binary",
             "record-types": "",
             "array": False,
             "encapsulate": ""
         }
     ]
 
+    # Add option 160 to shared-networks, subnet or client-classes
     if parameter == "shared-networks":
         config["shared-networks"][0]["option-data"] = [
             {
@@ -199,10 +202,9 @@ def test_suboptions_configfile(parameter):
                 "name": "subopt1",
                 "code": 1,
                 "space": "isc",
-                "data": "12345"
+                "data": "012345"
             }]
     elif parameter == "subnet":
-
         config["shared-networks"][0]["subnet6"][0]["option-data"] = [
             {
                 "name": "container",
@@ -213,7 +215,7 @@ def test_suboptions_configfile(parameter):
                 "name": "subopt1",
                 "code": 1,
                 "space": "isc",
-                "data": "12345"
+                "data": "012345"
             }]
     else:
         config["client-classes"] = [
@@ -230,17 +232,18 @@ def test_suboptions_configfile(parameter):
                         "name": "subopt1",
                         "code": 1,
                         "space": "isc",
-                        "data": "12345"
+                        "data": "012345"
                     }]
             }
         ]
 
+    # Upload config and start server
     world.dhcp_cfg.update(config)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # TODO: This is not working...
-    get_address(req_opts=[160], exp_option={"code": 160, "data": "3D07FF3D0408080808"})
+    # Check if Forge makes SARR exchange with included suboption
+    get_address(req_opts=[160], exp_option={"code": 160, "data": "00010003012345"})
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -252,8 +255,10 @@ def test_suboptions(parameter, backend):
     Forge tests if client gets suboption value.
     Test for Kea#3481
     """
+    # Prepare and start Kea
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
+    # Add option 160 and suboption data to shared-networks, subnet or client-classes
     if parameter == "shared-networks":
         network_cfg, _ = cfg.add_network(backend=backend,
                                          option_data=[
@@ -273,7 +278,6 @@ def test_suboptions(parameter, backend):
                                                  "data": "012345"
                                              }])
         cfg.add_subnet(backend=backend, network=network_cfg)
-
     elif parameter == "subnet":
         network_cfg, _ = cfg.add_network(backend=backend)
         cfg.add_subnet(backend=backend, network=network_cfg,
@@ -293,7 +297,6 @@ def test_suboptions(parameter, backend):
                                "space": "isc",
                                "data": "012345"
                            }])
-
     else:
         network_cfg, _ = cfg.add_network(backend=backend)
         cfg.add_subnet(backend=backend, network=network_cfg)
@@ -315,6 +318,7 @@ def test_suboptions(parameter, backend):
                               "data": "012345"
                           }])
 
+    # Add option 160 definition to config backend
     option_defs1 = [
         {
             "name": "container",
@@ -326,7 +330,6 @@ def test_suboptions(parameter, backend):
             "encapsulate": "isc"
         }
     ]
-
     cmd = {"command": "remote-option-def6-set",
            "arguments": {"remote": {"type": backend},
                          'server-tags': ['ALL'],
@@ -334,12 +337,13 @@ def test_suboptions(parameter, backend):
            }
     srv_msg.send_ctrl_cmd(cmd)
 
+    # Add suboption definition to config backend
     option_defs2 = [
         {
             "name": "subopt1",
             "code": 1,
             "space": "isc",
-            "type": "uint16",
+            "type": "binary",
             "record-types": "",
             "array": False,
             "encapsulate": ""
@@ -352,15 +356,11 @@ def test_suboptions(parameter, backend):
            }
     srv_msg.send_ctrl_cmd(cmd)
 
+    # Refresh config from config backend
     cmd = {"command": "config-backend-pull",
            "arguments": {}
            }
     srv_msg.send_ctrl_cmd(cmd)
 
-    cmd = {"command": "config-get",
-           "arguments": {}
-           }
-    srv_msg.send_ctrl_cmd(cmd)
-
-    # TODO: This is not working...
-    get_address(req_opts=[160], exp_option={"code": 160, "data": "12345"})
+    # Check if Forge makes SARR exchange with included suboption
+    get_address(req_opts=[160], exp_option={"code": 160, "data": "00010003012345"})
