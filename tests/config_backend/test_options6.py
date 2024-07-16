@@ -240,7 +240,7 @@ def _send_option_data(option_data, parameter, backend, cfg):
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
-@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'client-classes', 'global'])
+@pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'pool','client-classes', 'global'])
 @pytest.mark.parametrize('order', ['normal'])  # 'reverse'
 # "Reverse option declaration test are skipped due to lack of design of Kea behavior"
 def test_suboptions(parameter, order, backend):
