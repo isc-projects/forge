@@ -193,48 +193,45 @@ def test_suboptions(parameter, backend):
     Test for Kea#3481
     """
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
+
+    option_data = [{
+        "code": 43,
+        "always-send": True,
+        "name": "vendor-encapsulated-options",
+        "space": "dhcp4",
+        "csv-format": False,
+        "data": ""
+    },
+        {
+        "code": 61,
+        "data": "FF3D0408080808",
+        "space": "vendor-encapsulated-options-space",
+        "csv-format": False
+    }]
+
     if parameter == "shared-networks":
         network_cfg, _ = cfg.add_network(backend=backend,
-                                         option_data=[{"code": 43, "always-send": True,
-                                                       "name": "vendor-encapsulated-options",
-                                                       "space": "dhcp4"},
-                                                      {"code": 61, "data": "FF3D0408080808",
-                                                       "space": "vendor-encapsulated-options-space"}])
+                                         option_data=option_data)
         cfg.add_subnet(backend=backend, network=network_cfg)
-
     elif parameter == "subnet":
         network_cfg, _ = cfg.add_network(backend=backend)
         cfg.add_subnet(backend=backend, network=network_cfg,
-                       option_data=[{"code": 43, "always-send": True,
-                                     "name": "vendor-encapsulated-options",
-                                     "space": "dhcp4"},
-                                    {"code": 61, "data": "FF3D0408080808",
-                                     "space": "vendor-encapsulated-options-space"}])
+                       option_data=option_data)
     elif parameter == "pool":
         network_cfg, _ = cfg.add_network(backend=backend)
         cfg.add_subnet(backend=backend, network=network_cfg,
-                       pool_option_data=[{"code": 43, "always-send": True,
-                                          "name": "vendor-encapsulated-options",
-                                          "space": "dhcp4"},
-                                         {"code": 61, "data": "FF3D0408080808",
-                                          "space": "vendor-encapsulated-options-space"}])
+                       pool_option_data=option_data)
     elif parameter == "global":
         network_cfg, _ = cfg.add_network(backend=backend)
         cfg.add_subnet(backend=backend, network=network_cfg)
-        cfg.add_option({"backend": backend, "code": 43, "always-send": True,
-                        "name": "vendor-encapsulated-options",
-                        "space": "dhcp4", "csv-format": False, "data": ""},
-                       {"backend": backend, "code": 61, "data": "FF3D0408080808",
-                        "space": "vendor-encapsulated-options-space", "csv-format": False})
-
+        # add_option() required adding backend parameter.
+        for i, _ in enumerate(option_data):
+            option_data[i]["backend"] = backend
+        cfg.add_option(option_data[0], option_data[1])
     else:
         network_cfg, _ = cfg.add_network(backend=backend)
         cfg.add_subnet(backend=backend, network=network_cfg)
         cfg.add_class(backend=backend, name="option-class", test="member('ALL')",
-                      option_data=[{"code": 43, "always-send": True,
-                                    "name": "vendor-encapsulated-options",
-                                    "space": "dhcp4"},
-                                   {"code": 61, "data": "FF3D0408080808",
-                                    "space": "vendor-encapsulated-options-space"}])
+                      option_data=option_data)
 
     get_address(req_opts=[43], exp_option={"code": 43, "data": "HEX:3D07FF3D0408080808"})

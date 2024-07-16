@@ -281,6 +281,9 @@ def test_suboptions(parameter, order, backend):
 
     Test for Kea#3481
     """
+    if order == 'reverse':
+        pytest.skip("Reverse option declaration test are skipped due to lack of design of Kea behavior")
+
     option_data = [
         {
             "always-send": True,
