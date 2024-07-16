@@ -414,7 +414,6 @@ class ConfigModel(ConfigElem):
         config = self.reload_and_check()
         return config
 
-
     def add_option_def(self, *args, **kwargs):
         """Add option definition using config backend command and update local configuration.
         Function accepts option parameters as arguments or as a list of dictionares.
@@ -456,7 +455,6 @@ class ConfigModel(ConfigElem):
         # request config reloading and check result
         config = self.reload_and_check()
         return config
-
 
     def del_option(self, **kwargs):
         server_tags = None
