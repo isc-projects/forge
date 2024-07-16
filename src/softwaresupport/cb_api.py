@@ -26,6 +26,13 @@ def global_option_set(options, db_type='', server_tags=None):
     return response
 
 
+def global_option_def_set(option_defs, db_type='', server_tags=None):
+    cmd = f'remote-option-def{world.proto[1]}-set'
+    kwargs = {"option-defs": option_defs}
+    response = send_cmd(cmd, db_type, server_tags, **kwargs)
+    return response
+
+
 def client_class_set(classes, db_type='', server_tags=None):
     if not isinstance(classes, list):
         classes = [classes]

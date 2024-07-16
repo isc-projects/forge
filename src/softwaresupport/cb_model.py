@@ -20,6 +20,7 @@ from src.protosupport.multi_protocol_functions import substitute_vars
 
 from .cb_api import global_parameter_set, subnet_set, network_set, client_class_set
 from .cb_api import subnet_del_by_prefix, global_option_set, global_option_del, client_class_del
+from .cb_api import global_option_def_set
 
 
 log = logging.getLogger('forge')
@@ -409,11 +410,53 @@ class ConfigModel(ConfigElem):
             response = global_option_set([option], db_type=backend, server_tags=server_tags)
             assert response["result"] == 0
 
-            # request config reloading and check result
-
+        # request config reloading and check result
         config = self.reload_and_check()
-
         return config
+
+
+    def add_option_def(self, *args, **kwargs):
+        """Add option definition using config backend command and update local configuration.
+        Function accepts option parameters as arguments or as a list of dictionares.
+        """
+        # check if we have list of dictionaries or arguments
+        if len(args) > 0:
+            options = list(args)
+            for i, item in enumerate(options):
+                options[i] = list(item.items())
+        else:
+            options = [kwargs.items()]
+
+        self.cfg["option-def"] = []
+        for item in options:
+            backend = None
+            server_tags = None
+            option = {}
+            for param, val in item:
+                if val is None:
+                    continue
+                if param == "server_tags":
+                    server_tags = _to_list(val)
+                    continue
+                if param == "backend":
+                    backend = val
+                    continue
+                param = param.replace('_', '-')
+                option[param] = val
+            self.cfg["option-def"].append(option)
+            if "server_tags" in item:
+                del item["server_tags"]
+            if "backend" in item:
+                del item["backend"]
+
+            # send command
+            response = global_option_def_set([option], db_type=backend, server_tags=server_tags)
+            assert response["result"] == 0
+
+        # request config reloading and check result
+        config = self.reload_and_check()
+        return config
+
 
     def del_option(self, **kwargs):
         server_tags = None

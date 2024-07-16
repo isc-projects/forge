@@ -10,7 +10,6 @@ import pytest
 
 from src import misc
 from src import srv_control
-from src import srv_msg
 from src.forge_cfg import world
 
 from src.protosupport.dhcp4_scen import get_address
@@ -209,34 +208,6 @@ def test_suboptions_configfile(parameter):
     get_address(req_opts=[160], exp_option={"code": 160, "data": "00010003012345"})
 
 
-def _send_option_def(option_defs, backend):
-    """Helper function for test_suboptions() test
-    Adds option definitions using confing backend commands.
-    """
-    # Add option 160 definition to config backend.
-    cmd = {"command": "remote-option-def6-set",
-           "arguments": {"remote": {"type": backend},
-                         'server-tags': ['ALL'],
-                         "option-defs": option_defs[0]}
-           }
-    srv_msg.send_ctrl_cmd(cmd)
-
-    # Add suboption definition to config backend.
-    cmd = {"command": "remote-option-def6-set",
-           "arguments": {"remote": {"type": backend},
-                         'server-tags': ['ALL'],
-                         "option-defs": option_defs[1]}
-           }
-    srv_msg.send_ctrl_cmd(cmd)
-
-    # Refresh config from config backend.
-    cmd = {"command": "config-backend-pull",
-           "arguments": {}
-           }
-    srv_msg.send_ctrl_cmd(cmd)
-    return [option_defs[0][0], option_defs[1][0]]
-
-
 def _send_option_data(option_data, parameter, backend, cfg):
     """Helper function for test_suboptions() test
     Adds networks, subnets, classes and option data using confing backend commands.
@@ -270,7 +241,8 @@ def _send_option_data(option_data, parameter, backend, cfg):
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 @pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'client-classes', 'global'])
-@pytest.mark.parametrize('order', ['normal', 'reverse'])
+@pytest.mark.parametrize('order', ['normal']) # 'reverse'
+# "Reverse option declaration test are skipped due to lack of design of Kea behavior"
 def test_suboptions(parameter, order, backend):
     """
     Kea is configured with empty data in option 160 and suboption using config backend commands.
@@ -281,9 +253,6 @@ def test_suboptions(parameter, order, backend):
 
     Test for Kea#3481
     """
-    if order == 'reverse':
-        pytest.skip("Reverse option declaration test are skipped due to lack of design of Kea behavior")
-
     option_data = [
         {
             "always-send": True,
@@ -304,36 +273,33 @@ def test_suboptions(parameter, order, backend):
         }]
 
     option_defs = [
-        [
-            {
-                "name": "container",
-                "code": 160,
-                "space": "dhcp6",
-                "type": "empty",
-                "array": False,
-                "record-types": "",
-                "encapsulate": "isc"
-            }
-        ],
-        [
-            {
-                "name": "subopt1",
-                "code": 1,
-                "space": "isc",
-                "type": "binary",
-                "record-types": "",
-                "array": False,
-                "encapsulate": ""
-            }
-        ]
-    ]
+        {
+            "backend": backend,
+            "name": "container",
+            "code": 160,
+            "space": "dhcp6",
+            "type": "empty",
+            "array": False,
+            "record-types": "",
+            "encapsulate": "isc"
+        },
+        {
+            "backend": backend,
+            "name": "subopt1",
+            "code": 1,
+            "space": "isc",
+            "type": "binary",
+            "record-types": "",
+            "array": False,
+            "encapsulate": ""
+        }]
 
     # Prepare and start Kea
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 
     if order == 'normal':
-        # Add option 160 definition to config backend.
-        cfg.cfg["option-def"] = _send_option_def(option_defs, backend)
+        # Add option 160 and 1 definition to config backend.
+        cfg.add_option_def(option_defs[0], option_defs[1])
         # Add option data 160 and suboption data to specific place.
         _send_option_data(option_data, parameter, backend, cfg)
     else:
@@ -343,8 +309,8 @@ def test_suboptions(parameter, order, backend):
             option.pop('name')
         # Add option data 160 and suboption data to specific place.
         _send_option_data(option_data, parameter, backend, cfg)
-        # Add option 160 definition to config backend
-        cfg.cfg["option-def"] = _send_option_def(option_defs, backend)
+        # Add option 160 and 1 definition to config backend
+        cfg.add_option_def(option_defs[0], option_defs[1])
 
     # Check if Forge makes SARR exchange with included suboption.
     get_address(req_opts=[160], exp_option={"code": 160, "data": "00010003012345"})
