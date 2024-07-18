@@ -373,12 +373,7 @@ class ConfigModel(ConfigElem):
         Function accepts option parameters as arguments or as a list of dictionares.
         """
         # check if we have list of dictionaries or arguments
-        if len(args) > 0:
-            options = list(args)
-            for i, item in enumerate(options):
-                options[i] = list(item.items())
-        else:
-            options = [kwargs.items()]
+        options = [list(item.items()) for item in args] if args else [list(kwargs.items())]
 
         self.cfg["option-data"] = []
         for item in options:
@@ -402,9 +397,9 @@ class ConfigModel(ConfigElem):
             self.cfg["option-data"].append(option)
 
             if "server_tags" in item:
-                del item["server_tags"]
+                item.remove("server_tags")
             if "backend" in item:
-                del item["backend"]
+                item.remove("backend")
 
             # send command
             response = global_option_set([option], db_type=backend, server_tags=server_tags)
@@ -419,12 +414,7 @@ class ConfigModel(ConfigElem):
         Function accepts option parameters as arguments or as a list of dictionares.
         """
         # check if we have list of dictionaries or arguments
-        if len(args) > 0:
-            options = list(args)
-            for i, item in enumerate(options):
-                options[i] = list(item.items())
-        else:
-            options = [kwargs.items()]
+        options = [list(item.items()) for item in args] if args else [list(kwargs.items())]
 
         self.cfg["option-def"] = []
         for item in options:
@@ -444,9 +434,9 @@ class ConfigModel(ConfigElem):
                 option[param] = val
             self.cfg["option-def"].append(option)
             if "server_tags" in item:
-                del item["server_tags"]
+                item.remove("server_tags")
             if "backend" in item:
-                del item["backend"]
+                item.remove("backend")
 
             # send command
             response = global_option_def_set([option], db_type=backend, server_tags=server_tags)

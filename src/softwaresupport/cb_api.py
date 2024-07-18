@@ -27,6 +27,8 @@ def global_option_set(options, db_type='', server_tags=None):
 
 
 def global_option_def_set(option_defs, db_type='', server_tags=None):
+    if not isinstance(option_defs, list):
+        option_defs = [option_defs]
     cmd = f'remote-option-def{world.proto[1]}-set'
     kwargs = {"option-defs": option_defs}
     response = send_cmd(cmd, db_type, server_tags, **kwargs)
