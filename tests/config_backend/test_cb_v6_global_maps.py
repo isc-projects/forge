@@ -84,6 +84,7 @@ def test_remote_global_map_compatibility_missing_parameter(backend):
     assert response == {"result": 1, "text": "unknown parameter 'compatibility.unknown-parameter'"}
 
 
+@pytest.mark.disabled  # control-socket.socket-name was removed in Kea 2.7.1 kea#3479
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_map_control_socket(backend):
     _setup_server(backend)
@@ -116,6 +117,7 @@ def test_remote_global_map_control_socket(backend):
     assert config["Dhcp6"]["control-socket"]["socket-type"] == "unix"
 
 
+@pytest.mark.disabled  # control-socket.socket-name was removed in Kea 2.7.1 kea#3479
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_remote_global_map_control_socket_missing_parameter(backend):
     _setup_server(backend)
