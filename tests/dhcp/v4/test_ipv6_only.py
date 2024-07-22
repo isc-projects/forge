@@ -49,8 +49,9 @@ def _check_ipv6_only_response(ip_address, client, send108, expect_include, send_
     if expect_include:
         srv_msg.response_check_option_content(108, 'value', '1800')
     srv_msg.response_check_content('yiaddr', ip_address)
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    if ip_address != '0.0.0.0':
+        srv_msg.response_check_include_option(1)
+        srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
 
 @pytest.mark.v4
@@ -149,12 +150,14 @@ def test_ipv6_only_preferred(level):
         # Verify that IPv6-only-preferred is not returned if not requested
         _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
         # shared network, second subnet, first pool
-        _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=False)
+        _check_ipv6_only_response('0.0.0.0', '02', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.2', '02', send108=False, expect_include=False)
         # shared network, second subnet, second pool
-        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=False)
+        _check_ipv6_only_response('0.0.0.0', '03', send108=True, expect_include=True)
+        _check_ipv6_only_response('192.168.51.11', '03', send108=False, expect_include=False)
         # shared network, third subnet
-        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True)
-        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True, send_rapid_commit=True)
+        _check_ipv6_only_response('0.0.0.0', '04', send108=True, expect_include=True)
+        _check_ipv6_only_response('0.0.0.0', '04', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.52.1', '04', send108=False, expect_include=False)
         # first subnet - host reservation
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
@@ -169,16 +172,16 @@ def test_ipv6_only_preferred(level):
         # Verify that IPv6-only-preferred is not returned if not requested
         _check_ipv6_only_response('192.168.51.1', '01', send108=False, expect_include=False)
         # shared network, second subnet, first pool
-        _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=True)
-        _check_ipv6_only_response('192.168.51.2', '02', send108=True, expect_include=True, send_rapid_commit=True)
+        _check_ipv6_only_response('0.0.0.0', '02', send108=True, expect_include=True)
+        _check_ipv6_only_response('0.0.0.0', '02', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.51.2', '02', send108=False, expect_include=False)
         # shared network, second subnet, second pool
-        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True)
-        _check_ipv6_only_response('192.168.51.11', '03', send108=True, expect_include=True, send_rapid_commit=True)
+        _check_ipv6_only_response('0.0.0.0', '03', send108=True, expect_include=True)
+        _check_ipv6_only_response('0.0.0.0', '03', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.51.11', '03', send108=False, expect_include=False)
         # shared network, third subnet
-        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True)
-        _check_ipv6_only_response('192.168.52.1', '04', send108=True, expect_include=True, send_rapid_commit=True)
+        _check_ipv6_only_response('0.0.0.0', '04', send108=True, expect_include=True)
+        _check_ipv6_only_response('0.0.0.0', '04', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.52.1', '04', send108=False, expect_include=False)
         # first subnet - host reservation
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=False)
