@@ -732,7 +732,7 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
     init_cfg = {"interfaces-config": {"interfaces": [interface]},
                 "lease-database": {"type": "memfile"},
                 "control-sockets": [{"socket-type": 'unix',
-                                   "socket-name": world.f_cfg.run_join('control_socket')}]}
+                                     "socket-name": world.f_cfg.run_join('control_socket')}]}
 
     for param, val in kwargs.items():
         if val is None or param == 'check-config':
