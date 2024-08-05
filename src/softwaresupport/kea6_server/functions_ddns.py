@@ -152,7 +152,7 @@ def ddns_open_control_channel_socket(socket_name=None):
     else:
         socket_path = world.f_cfg.run_join('ddns_control_socket')
 
-    world.ddns_cfg["control-socket"] = {"socket-type": "unix", "socket-name": socket_path}
+    world.ddns_cfg["control-sockets"] = [{"socket-type": "unix", "socket-name": socket_path}]
 
 
 def ddns_add_gss_tsig(addr, dns_system,
