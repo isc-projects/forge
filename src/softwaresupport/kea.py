@@ -525,7 +525,7 @@ def open_control_channel_socket(socket_name=None):
         socket_path = world.f_cfg.run_join(socket_name)
     else:
         socket_path = world.f_cfg.run_join('control_socket')
-    world.dhcp_cfg["control-socket"] = {"socket-type": "unix", "socket-name": socket_path}
+    world.dhcp_cfg["control-sockets"] = [{"socket-type": "unix", "socket-name": socket_path}]
 
 
 def create_new_class(class_name):

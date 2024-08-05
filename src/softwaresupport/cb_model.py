@@ -669,7 +669,7 @@ def _compare_dicts(rcvd_dict, exp_dict):
         if k in ['id', 'config-control', 'lease-database', 'server-tag', 'server-tags',
                  'interfaces-config', 'dhcp-queue-control', 'dhcp-ddns',
                  'hooks-libraries', 'sanity-checks', 'expired-leases-processing',
-                 'control-socket', 'host-reservation-identifiers', 'relay',
+                 'control-sockets', 'host-reservation-identifiers', 'relay',
                  'hostname-char-set', 'statistic-default-sample-count',
                  'multi-threading', 'ip-reservations-unique',
                  'ddns-use-conflict-resolution',
@@ -731,8 +731,8 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
     config_model_args = {}
     init_cfg = {"interfaces-config": {"interfaces": [interface]},
                 "lease-database": {"type": "memfile"},
-                "control-socket": {"socket-type": 'unix',
-                                   "socket-name": world.f_cfg.run_join('control_socket')}}
+                "control-sockets": [{"socket-type": 'unix',
+                                   "socket-name": world.f_cfg.run_join('control_socket')}]}
 
     for param, val in kwargs.items():
         if val is None or param == 'check-config':

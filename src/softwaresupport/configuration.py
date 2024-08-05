@@ -219,10 +219,10 @@ class KeaConfiguration:
             self.add_to_xml_script('/option-data-list')
 
         # control socket
-        self.add_to_xml_script('control-socket')
+        self.add_to_xml_script('control-sockets')
         self.add_to_xml_script('socket-name', tmp.socket_name)
         self.add_to_xml_script('socket-type', tmp.socket_type)
-        self.add_to_xml_script('/control-socket')
+        self.add_to_xml_script('/control-sockets')
 
         # lease database
         self.add_to_xml_script('lease-database')
