@@ -91,7 +91,7 @@ OPTIONS = {"client-id": 1,
            "client-arch-type": 61,
            "erp-local-domain-name": 65,
            "client-link-layer-addr": 79,
-           "v6-dnr": 144}
+           "OPTION_V6_DNR": 144}
 
 
 def get_option_code(opt_code) -> int:
@@ -1185,6 +1185,8 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
                     if tmp_field is None:
                         data_type = 'data'
                         tmp_field = each.fields.get(data_type).hex() if each.fields.get(data_type) is not None else None
+                if data_type == "svcparams":
+                    tmp_field = each.fields.get(data_type).hex()
                 if type(tmp_field) is list:
                     if len(tmp_field):
                         if isinstance(tmp_field[0], str):
