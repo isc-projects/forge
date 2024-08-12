@@ -252,9 +252,8 @@ def test_control_channel_http_change_socket_during_reconfigure():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel(socket_name='control_socket2')
-    srv_control.add_http_control_channel('$(SRV4_ADDR)',
-                                      socket_name='control_socket2')
+    srv_control.add_http_control_channel(socket_name='control_socket2')
+    srv_control.add_http_control_channel('$(SRV4_ADDR)', socket_name='control_socket2')
 
     # reconfigure dhcp6 (new subnet, new socket)
     srv_control.build_config_files()

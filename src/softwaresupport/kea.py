@@ -1152,6 +1152,7 @@ def update_expired_leases_processing(param):
         assert False, "Please use 'default' to remove expired leases configuration or use dict to pass params " \
                       "and values inside 'expired-leases-processing'"
 
+
 def enable_https(certificate: CreateCert, required=False):
     if world.f_cfg.control_agent:
         world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
@@ -1160,7 +1161,7 @@ def enable_https(certificate: CreateCert, required=False):
         world.ca_cfg["Control-agent"]["cert-required"] = required
     else:
         if "control-sockets" not in world.dhcp_cfg:
-                assert False, "Control sockets must be configured before enabling HTTPS"
+            assert False, "Control sockets must be configured before enabling HTTPS"
         for socket in world.dhcp_cfg["control-sockets"]:
             if socket["socket-type"] == "http":
                 socket["socket-type"] = "https"
@@ -1171,6 +1172,7 @@ def enable_https(certificate: CreateCert, required=False):
                 break
         else:
             assert False, "No http control socket found"
+
 
 # Start kea-ctrl-agent if it's enabled
 def add_http_control_channel(host_address, host_port, socket_name='control_socket'):
@@ -1183,20 +1185,21 @@ def add_http_control_channel(host_address, host_port, socket_name='control_socke
 
         server_socket_type = f'dhcp{world.proto[1]}'
         world.ca_cfg["Control-agent"] = {'http-host': host_address,
-                                        'http-port':  int(host_port),
-                                        'control-sockets': {server_socket_type: {"socket-type": "unix",
-                                                                                "socket-name": world.f_cfg.run_join(socket_name)}},
-                                        "loggers": [
+                                         'http-port':  int(host_port),
+                                         'control-sockets': {server_socket_type: {"socket-type": "unix",
+                                                                                  "socket-name": world.f_cfg.run_join(socket_name)}},
+                                         "loggers": [
                                             {"debuglevel": 99, "name": "kea-ctrl-agent",
-                                            "output-options": [{"output": logging_file_path}],
-                                            "severity": "DEBUG"}]}
+                                             "output-options": [{"output": logging_file_path}],
+                                             "severity": "DEBUG"}]}
     else:
         if "control-sockets" not in world.dhcp_cfg:
             world.dhcp_cfg["control-sockets"] = []
         world.dhcp_cfg["control-sockets"].append({"socket-type": "http",
-                                                "socket-name": world.f_cfg.run_join(socket_name),
-                                                "socket-address": host_address,
-                                                "socket-port": int(host_port)})
+                                                  "socket-name": world.f_cfg.run_join(socket_name),
+                                                  "socket-address": host_address,
+                                                  "socket-port": int(host_port)})
+
 
 def config_srv_id(id_type, id_value):
     if world.proto == 'v4':
@@ -1305,6 +1308,7 @@ def _set_kea_ctrl_config():
         kea_ctrl_agent_config_file={path}/etc/kea/kea-ctrl-agent.conf
         ctrl_agent=yes
         '''.format(**locals())
+
 
 def configure_multi_threading(enable_mt, pool=0, queue=0):
     world.dhcp_cfg.update({"multi-threading": {"enable-multi-threading": enable_mt,

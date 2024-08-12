@@ -215,7 +215,7 @@ def test_control_channel_socket_change_socket_during_reconfigure():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
-    srv_control.open_control_channel('control_socket2')
+    srv_control.add_http_control_channel('control_socket2')
 
     srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')

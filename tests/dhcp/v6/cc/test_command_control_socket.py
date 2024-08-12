@@ -233,7 +233,7 @@ def test_control_channel_socket_change_socket_during_reconfigure():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel('control_socket2')
+    srv_control.add_http_control_channel('control_socket2')
 
     srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
@@ -351,7 +351,7 @@ def test_control_channel_socket_config_test():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
-    srv_control.open_control_channel('control_socket_ANOTHER_ONE')
+    srv_control.add_http_control_channel('control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
@@ -368,7 +368,7 @@ def test_control_channel_socket_config_test():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
-    srv_control.open_control_channel('control_socket_ANOTHER_ONE')
+    srv_control.add_http_control_channel('control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')

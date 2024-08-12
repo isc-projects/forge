@@ -194,7 +194,6 @@ def test_rbac_cert_issuer():
     else:
         world.dhcp_cfg["hooks-libraries"] = hook
 
-
     # configure it via config-set
     cmd = {"command": "config-set",
            "arguments": world.ca_cfg if world.f_cfg.control_agent else {f'Dhcp{world.proto[1]}': world.dhcp_cfg}}
@@ -291,7 +290,6 @@ def test_rbac_remote_address(tls):
     else:
         world.dhcp_cfg["hooks-libraries"] = hook
 
-
     # configure it via config-set
     cmd = {"command": "config-set",
            "arguments": world.ca_cfg if world.f_cfg.control_agent else {f'Dhcp{world.proto[1]}': world.dhcp_cfg}}
@@ -340,17 +338,17 @@ def test_rbac_basic_authentication(tls):
     auth = {"authentication": {
             "type": "basic",
             "clients":
-            [
-                {
-                    "user": "admin",
-                    "password": "1234"
-                },
-                {
-                    "user": "admin2",
-                    "password": "1234"
-                }
-            ]
-        }}
+                [
+                    {
+                        "user": "admin",
+                        "password": "1234"
+                    },
+                    {
+                        "user": "admin2",
+                        "password": "1234"
+                    }
+                ]
+            }}
 
     if world.f_cfg.control_agent:
         world.ca_cfg["Control-agent"].update(auth)

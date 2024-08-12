@@ -824,7 +824,7 @@ def test_stats_6():
     srv_control.config_srv_another_subnet_no_interface('3000:100::/64',
                                                        '3000:100::5-3000:100::ff')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.open_control_channel('control_socket2')
+    srv_control.add_http_control_channel('control_socket2')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',
@@ -840,7 +840,7 @@ def test_stats_6():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 92)
-    srv_control.open_control_channel('control_socket2')
+    srv_control.add_http_control_channel('control_socket2')
     srv_control.start_srv('DHCP', 'reconfigured')
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',
