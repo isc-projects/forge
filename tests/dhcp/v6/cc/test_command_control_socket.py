@@ -22,7 +22,7 @@ from src.forge_cfg import world
 def test_control_channel_socket_dhcp_disable_timer():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -76,7 +76,7 @@ def test_control_channel_socket_dhcp_disable_timer():
 def test_control_channel_socket_dhcp_disable():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -113,7 +113,7 @@ def test_control_channel_socket_dhcp_disable():
 def test_control_channel_socket_dhcp_disable_and_enable():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -167,7 +167,7 @@ def test_control_channel_socket_dhcp_disable_and_enable():
 def test_control_channel_socket_config_set_basic():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -188,7 +188,7 @@ def test_control_channel_socket_config_set_basic():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
 
     srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
@@ -213,7 +213,7 @@ def test_control_channel_socket_config_set_basic():
 def test_control_channel_socket_change_socket_during_reconfigure():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -264,7 +264,7 @@ def test_control_channel_socket_after_restart_load_config_file():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -284,7 +284,7 @@ def test_control_channel_socket_after_restart_load_config_file():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_config_files()
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
@@ -324,7 +324,7 @@ def test_control_channel_socket_after_restart_load_config_file():
 def test_control_channel_socket_config_get():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
 
     srv_control.build_and_send_config_files()
 
@@ -340,7 +340,7 @@ def test_control_channel_socket_config_get():
 def test_control_channel_socket_config_test():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     # To global section of the config add file line: "expired-leases-processing":{"flush-reclaimed-timer-wait-time": 0,"hold-reclaimed-time": 0,"max-reclaim-leases": 100,"max-reclaim-time": 0,"reclaim-timer-wait-time": 0,"unwarned-reclaim-cycles": 5}
     # To global section of the config add file line: "expired-leases-processing":{"flush-reclaimed-timer-wait-time": 0,"hold-reclaimed-time": 0,"max-reclaim-leases": 100,"max-reclaim-time": 0,"reclaim-timer-wait-time": 0,"unwarned-reclaim-cycles": 5}
 
@@ -390,7 +390,7 @@ def test_control_channel_socket_config_write():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -410,7 +410,7 @@ def test_control_channel_socket_config_write():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
 
     srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_socket({"command": "config-set", "arguments": world.dhcp_cfg})
@@ -458,7 +458,7 @@ def test_control_channel_socket_config_reload():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -480,7 +480,7 @@ def test_control_channel_socket_config_reload():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     # Generate server configuration file.
     srv_control.build_and_send_config_files()
 
@@ -522,7 +522,7 @@ def test_control_channel_socket_config_reload():
 def test_control_channel_socket_big_config_file():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1300,7 +1300,7 @@ def test_control_channel_socket_big_config_file():
                                      'time-servers',
                                      '2001:558:ff18:16:10:253:175:76')
     srv_control.config_srv_opt_space('vendor-4491', 'time-offset', '-10000')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
 
     srv_control.configure_loggers('kea-dhcp6.dhcp6', 'INFO', 'None')
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'INFO', 'None')

@@ -167,8 +167,8 @@ def test_v4_ddns_tuning_basic(backend, hostname_type, option):
         # set suffix for ddns
         world.dhcp_cfg['ddns-qualifying-suffix'] = 'foo.bar.'
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -225,8 +225,8 @@ def test_v6_ddns_tuning_basic(backend, hostname_type):
         # set suffix for ddns
         world.dhcp_cfg['ddns-qualifying-suffix'] = 'foo.bar.'
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -294,8 +294,8 @@ def test_v4_ddns_tuning_subnets(backend, hostname_type, option):
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -371,8 +371,8 @@ def test_v6_ddns_tuning_subnets(backend, hostname_type):
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -439,8 +439,8 @@ def test_v4_ddns_tuning_skip(backend, option):
                                       "'host-'+hexstring(pkt4.mac,'-')+'.four.example.com.'")
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -518,8 +518,8 @@ def test_v6_ddns_tuning_skip(backend):
                                       "'host-'+hexstring(option[1].hex, '-')+'.four.example.com.'")
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

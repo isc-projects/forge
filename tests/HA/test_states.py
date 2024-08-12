@@ -68,8 +68,8 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     else:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
@@ -98,8 +98,8 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.1',
                                       world.f_cfg.server2_iface)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
@@ -246,8 +246,8 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     else:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -278,8 +278,8 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.1',
                                       world.f_cfg.server2_iface)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -402,8 +402,8 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     else:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -434,8 +434,8 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.1',
                                       world.f_cfg.server2_iface)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
@@ -590,8 +590,8 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     else:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -622,8 +622,8 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.1',
                                       world.f_cfg.server2_iface)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -805,8 +805,8 @@ def test_HA_ha_reset(dhcp_version, mode):
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     else:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(config[mode])
@@ -831,8 +831,8 @@ def test_HA_ha_reset(dhcp_version, mode):
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.1',
                                       world.f_cfg.server2_iface)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(config[mode])

@@ -170,7 +170,7 @@ def open_control_channel_socket(socket_type, socket_name):
     pass
 
 
-def agent_control_channel(host_address, host_port, socket_type, socket_name):
+def add_http_control_channel(host_address, host_port, socket_type, socket_name):
     pass
 
 

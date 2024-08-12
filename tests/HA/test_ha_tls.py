@@ -77,8 +77,8 @@ def test_ha_tls_with_ca(dhcp_version, backend):
         srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     else:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     # Configure Control Agent to use TLS.
     srv_control.enable_https(certificate, False)
 
@@ -115,8 +115,8 @@ def test_ha_tls_with_ca(dhcp_version, backend):
                                       '192.168.50.1-192.168.50.200',
                                       world.f_cfg.server2_iface)
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     # Configure Control Agent to use TLS.
     srv_control.enable_https(certificate, False)
 

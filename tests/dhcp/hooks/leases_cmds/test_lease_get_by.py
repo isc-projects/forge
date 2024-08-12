@@ -81,7 +81,7 @@ def test_control_channel_lease4_get_by_positive(backend):
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
 
     srv_control.add_ddns_server('127.0.0.1', 53001)
     srv_control.add_ddns_server_connectivity_options('enable-updates', True)
@@ -222,8 +222,8 @@ def test_control_channel_lease4_get_by_negative():
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -356,8 +356,8 @@ def test_v6_lease_get_by_positive(backend):
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::5-2001:db8:2::6')
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -431,8 +431,8 @@ def test_v6_lease_get_by_negative():
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

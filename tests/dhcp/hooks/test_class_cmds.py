@@ -30,8 +30,8 @@ def _setup_server_for_class_cmds(dhcp_version):
         srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_client_classification(0, 'Client_Class_1')
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
 
     srv_control.add_hooks('libdhcp_class_cmds.so')
 

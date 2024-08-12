@@ -99,7 +99,7 @@ def _get_address_and_update_ddns(duid=None, fqdn=None, address=None, arpa=None):
 @pytest.mark.ddns
 def test_ddns6_all_levels_lease4_del_with_dns():
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
@@ -191,7 +191,7 @@ def test_ddns6_all_levels_lease4_del_with_dns():
 @pytest.mark.ddns
 def test_ddns6_all_levels_lease4_del_without_dns():
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',

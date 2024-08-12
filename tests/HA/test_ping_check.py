@@ -110,8 +110,8 @@ def test_v4_ping_check_basic_ha(ha_state):
     # Increase timeout of DORA messages to account for ping check.
     world.cfg['wait_interval'] += 1
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     srv_control.add_hooks('libdhcp_ping_check.so')
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", 1)
@@ -139,8 +139,8 @@ def test_v4_ping_check_basic_ha(ha_state):
         srv_control.new_pool(f'{ip_address}/32', 0)
 
     world.cfg['wait_interval'] += 1
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_ping_check.so')
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", 1)
@@ -231,8 +231,8 @@ def test_v4_ping_check_requests_ha(ha_state):
     # Increase timeout of DORA messages to account for ping check.
     world.cfg['wait_interval'] += 1
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     srv_control.add_hooks('libdhcp_ping_check.so')
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", requests)
@@ -258,8 +258,8 @@ def test_v4_ping_check_requests_ha(ha_state):
     srv_control.config_srv_subnet(ciaddr.network, ip_address, world.f_cfg.server2_iface)
 
     world.cfg['wait_interval'] += 1
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_ping_check.so')
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", requests)
@@ -332,8 +332,8 @@ def test_v4_ping_check_timeout_ha(ha_state):
     # Increase timeout of DORA messages to account for ping check.
     world.cfg['wait_interval'] += 1
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     srv_control.add_hooks('libdhcp_ping_check.so')
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", 1)
@@ -359,8 +359,8 @@ def test_v4_ping_check_timeout_ha(ha_state):
     srv_control.config_srv_subnet(ciaddr.network, ip_address, world.f_cfg.server2_iface)
 
     world.cfg['wait_interval'] += 1
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_ping_check.so')
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", 1)
@@ -452,8 +452,8 @@ def test_v4_ping_check_cltt_ha(ha_state):
     # Increase timeout of DORA messages to account for ping check.
     world.cfg['wait_interval'] += 1
     srv_control.set_conf_parameter_global('decline-probation-period', probation_period)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     srv_control.add_hooks('libdhcp_ping_check.so')
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", 1)
@@ -480,8 +480,8 @@ def test_v4_ping_check_cltt_ha(ha_state):
 
     world.cfg['wait_interval'] += 1
     srv_control.set_conf_parameter_global('decline-probation-period', probation_period)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_ping_check.so')
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", 1)

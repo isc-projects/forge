@@ -23,8 +23,8 @@ from src.forge_cfg import world
 def test_control_channel_keashell_dhcp_disable_timer():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('127.0.0.1')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('127.0.0.1')
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -78,8 +78,8 @@ def test_control_channel_keashell_dhcp_disable_timer():
 def test_control_channel_keashell_dhcp_disable():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('127.0.0.1')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('127.0.0.1')
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -117,8 +117,8 @@ def test_control_channel_keashell_dhcp_disable():
 def test_control_channel_keashell_dhcp_disable_and_enable():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('127.0.0.1')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('127.0.0.1')
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -171,8 +171,8 @@ def test_control_channel_keashell_dhcp_disable_and_enable():
 def test_control_channel_keashell_set_config_basic():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('127.0.0.1')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('127.0.0.1')
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -218,8 +218,8 @@ def test_control_channel_keashell_after_restart_load_config_file():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('127.0.0.1')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('127.0.0.1')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep(2, 'seconds')
@@ -278,8 +278,8 @@ def test_control_channel_keashell_after_restart_load_config_file():
 def test_control_channel_keashell_get_config():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('127.0.0.1')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('127.0.0.1')
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -293,8 +293,8 @@ def test_control_channel_keashell_get_config():
 def test_control_channel_keashell_test_config():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('127.0.0.1')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('127.0.0.1')
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -396,8 +396,8 @@ def test_control_channel_keashell_write_config():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('127.0.0.1')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('127.0.0.1')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
     srv_msg.forge_sleep(2, 'seconds')
@@ -418,7 +418,7 @@ def test_control_channel_keashell_write_config():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.agent_control_channel('localhost')
+    srv_control.add_http_control_channel('localhost')
 
     srv_control.build_config_files()
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp6 config-set <<<\'"Dhcp6": { "control-sockets": [{ "socket-name": "%s", "socket-type": "unix" }], "decline-probation-period": 86400, "dhcp-ddns": { "always-include-fqdn": false, "enable-updates": false, "generated-prefix": "myhost", "max-queue-size": 1024, "ncr-format": "JSON", "ncr-protocol": "UDP", "override-client-update": false, "override-no-update": false, "qualifying-suffix": "", "replace-client-name": "never", "sender-ip": "0.0.0.0", "sender-port": 0, "server-ip": "127.0.0.1", "server-port": 53001 }, "dhcp4o6-port": 0, "expired-leases-processing": { "flush-reclaimed-timer-wait-time": 25, "hold-reclaimed-time": 3600, "max-reclaim-leases": 100, "max-reclaim-time": 250, "reclaim-timer-wait-time": 10, "unwarned-reclaim-cycles": 5 }, "hooks-libraries": [  ], "host-reservation-identifiers": [ "hw-address", "duid" ], "interfaces-config": { "interfaces": [ "$(SERVER_IFACE)" ], "re-detect": true }, "lease-database": { "type": "memfile" }, "mac-sources": [ "any" ], "option-data": [  ], "option-def": [  ], "relay-supplied-options": [ "65" ], "server-id": { "enterprise-id": 0, "htype": 0, "identifier": "", "persist": true, "time": 0, "type": "LLT" }, "shared-networks": [  ], "subnet6": [ { "id": 1, "interface": "$(SERVER_IFACE)", "option-data": [  ], "pd-pools": [  ], "pools": [ { "option-data": [  ], "pool": "2001:db8:1::1-2001:db8:1::1" } ], "preferred-lifetime": 3000, "rapid-commit": false, "rebind-timer": 2000, "relay": { "ip-addresses": ["::"] }, "renew-timer": 1000, "reservations-global": false, "reservations-in-subnet": true, "reservations-out-of-pool": false, "reservations": [  ], "subnet": "2001:db8:1::/64", "valid-lifetime": 4000 } ] }\'' % world.f_cfg.run_join('control_socket'))  # TODO: why generated config is not taken?
@@ -466,8 +466,8 @@ def test_control_channel_socket_reload_config():
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::1')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('127.0.0.1')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('127.0.0.1')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -488,8 +488,8 @@ def test_control_channel_socket_reload_config():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('127.0.0.1')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('127.0.0.1')
     srv_control.build_and_send_config_files()
 
     srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp6 config-reload <<<\'\'')

@@ -88,8 +88,8 @@ def test_HA_hot_standby_multiple_leases_v6(trigger, hook_order: str):
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
@@ -114,8 +114,8 @@ def test_HA_hot_standby_multiple_leases_v6(trigger, hook_order: str):
                                   world.f_cfg.server2_iface)
     srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
 
     load_hook_libraries('v6', hook_order)
 
@@ -212,8 +212,8 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     elif dhcp_version in ['v4', 'v4_bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.dhcpsrv', 'DEBUG', 99)
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
@@ -247,8 +247,8 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
                                       '192.168.50.1-192.168.50.200',
                                       world.f_cfg.server2_iface)
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.dhcpsrv', 'DEBUG', 99)
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
@@ -392,8 +392,8 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
         srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
     elif dhcp_version in ['v4', 'v4_bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
 
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -419,8 +419,8 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
                                       '192.168.50.1-192.168.50.200',
                                       world.f_cfg.server2_iface)
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
 
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -515,8 +515,8 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
         world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.20-192.168.50.30",
                                                       "client-classes": ["HA_server2"]})
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
 
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -551,8 +551,8 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.20-192.168.50.30",
                                                       "client-classes": ["HA_server2"]})
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
 
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -637,8 +637,8 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version: str, backend: s
         world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.120",
                                                       "client-classes": ["HA_server2"]})
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
 
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -701,8 +701,8 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version: str, backend:
         world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.120",
                                                       "client-classes": ["HA_server2"]})
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
 
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -737,8 +737,8 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version: str, backend:
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.120",
                                                       "client-classes": ["HA_server2"]})
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
 
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -868,8 +868,8 @@ def test_HA_and_RADIUS(dhcp_version: str,
     srv_control.define_temporary_lease_db_backend(backend)
 
     # Start kea-ctrl-agent and configure the control socket in Kea.
-    srv_control.agent_control_channel()
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
 
     # Load necessary hook libraries.
     load_hook_libraries(dhcp_version, hook_order)
@@ -931,8 +931,8 @@ def test_HA_and_RADIUS(dhcp_version: str,
     srv_control.define_temporary_lease_db_backend(backend)
 
     # Start kea-ctrl-agent and configure the control socket in Kea.
-    srv_control.agent_control_channel(host_address=world.f_cfg.mgmt_address_2)
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel(host_address=world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
 
     # Load necessary hook libraries.
     load_hook_libraries(dhcp_version, hook_order)

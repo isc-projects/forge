@@ -177,7 +177,7 @@ def test_ddns4_gloabl():
 @pytest.mark.ddns
 def test_ddns4_all_levels_resend_command():
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
@@ -264,7 +264,7 @@ def test_ddns4_all_levels_resend_command():
 @pytest.mark.ddns
 def test_ddns4_all_levels_resend_without_ddns():
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',

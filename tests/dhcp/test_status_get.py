@@ -25,8 +25,8 @@ def test_status_get_basic(channel, dhcp_version):
     """ Tests if server responds with expected arguments without checking their content.
     """
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -49,8 +49,8 @@ def test_status_get_reload(channel, dhcp_version):
     """ Tests if server changes last configuration reload timer after config reload.
     """
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -74,8 +74,8 @@ def test_status_get_restart(channel, dhcp_version):
     Test also checks if PID is the same as reported by OS
     """
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -110,8 +110,8 @@ def test_status_get_multi_threading_disabled(channel, dhcp_version):
     """
     misc.test_setup()
     srv_control.configure_multi_threading(False)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -135,8 +135,8 @@ def test_status_get_multi_threading_explicit_setting(dhcp_version):
     """
     misc.test_setup()
     srv_control.configure_multi_threading(True, 5, 50)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -158,8 +158,8 @@ def test_status_get_multi_threading_default_setting(dhcp_version):
     """
     misc.test_setup()
     world.f_cfg.auto_multi_threading_configuration = False
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -179,8 +179,8 @@ def test_status_get_multi_threading_enabled(channel, dhcp_version):
     Test also checks if certain arguments are returned properly in status when multi-threading is enabled.
     """
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     world.dhcp_cfg['multi-threading'] = {'enable-multi-threading': True, 'packet-queue-size': 21, 'thread-pool-size': 3}
     srv_control.build_and_send_config_files()
 
@@ -210,8 +210,8 @@ def test_status_get_multi_threading_queue(channel, dhcp_version):
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

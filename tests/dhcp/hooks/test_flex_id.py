@@ -823,7 +823,7 @@ def test_v6_flexid_libreload():
     srv_control.add_parameter_to_hook("libdhcp_flex_id.so",
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -889,7 +889,7 @@ def test_v6_flexid_reconfigure_1():
     srv_control.add_parameter_to_hook("libdhcp_flex_id.so",
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -927,7 +927,7 @@ def test_v6_flexid_reconfigure_1():
     srv_control.add_parameter_to_hook("libdhcp_flex_id.so",
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')
@@ -970,7 +970,7 @@ def test_v6_flexid_reconfigure_2():
     srv_control.add_parameter_to_hook("libdhcp_flex_id.so",
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1008,7 +1008,7 @@ def test_v6_flexid_reconfigure_2():
     srv_control.add_parameter_to_hook("libdhcp_flex_id.so",
                                       'identifier-expression',
                                       'substring(relay6[0].option[18].hex,0,8)')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'reconfigured')

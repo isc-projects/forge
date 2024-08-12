@@ -47,8 +47,8 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
         srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     else:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
@@ -78,8 +78,8 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.200',
                                       world.f_cfg.server2_iface)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
@@ -159,8 +159,8 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
         srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
@@ -202,8 +202,8 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
 
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER2_IFACE)"', 0)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
@@ -281,8 +281,8 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
         world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.130",
                                                       "client-classes": ["HA_server2"]})
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
@@ -316,8 +316,9 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
         world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.130",
                                                       "client-classes": ["HA_server2"]})
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
@@ -405,8 +406,8 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
         world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.130",
                                                       "client-classes": ["HA_server2"]})
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
@@ -440,8 +441,8 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
         world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.130",
                                                       "client-classes": ["HA_server2"]})
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 

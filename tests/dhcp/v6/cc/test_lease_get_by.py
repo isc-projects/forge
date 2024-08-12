@@ -93,7 +93,7 @@ def test_control_channel_lease6_get_by():
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
 
     srv_control.add_ddns_server('127.0.0.1', 53001)
     srv_control.add_ddns_server_connectivity_options('enable-updates', True)

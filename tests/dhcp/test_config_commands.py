@@ -426,8 +426,8 @@ def test_config_commands_usercontext(scope, dhcp_version):
     """
 
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -505,8 +505,8 @@ def test_config_commands_empty_reservations(dhcp_version):
     """
 
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -586,8 +586,8 @@ def test_config_hash_get(dhcp_version):
     """
 
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

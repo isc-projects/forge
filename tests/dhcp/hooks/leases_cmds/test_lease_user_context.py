@@ -35,8 +35,8 @@ def test_v4_lease_user_context(backend, channel):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -95,8 +95,8 @@ def test_v4_lease_user_context_negative(channel):
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -138,8 +138,8 @@ def test_v4_lease_extended_info(backend):
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -208,8 +208,8 @@ def test_v6_lease_user_context(backend, channel):
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -276,8 +276,8 @@ def test_v6_lease_user_context_negative(channel):
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -329,8 +329,8 @@ def test_v6_lease_extended_info(backend):
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 

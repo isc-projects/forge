@@ -33,8 +33,8 @@ def test_ca_list():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -63,8 +63,8 @@ def test_ca_config_get_set():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -95,8 +95,8 @@ def test_ca_config_set():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -169,8 +169,8 @@ def test_ca_config_test():
     # let's check minimal configuration
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -236,8 +236,8 @@ def test_ca_config_reload():
     # let's check minimal configuration
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -256,8 +256,8 @@ def test_ca_config_reload():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     srv_control.build_and_send_config_files()
 
     cmd = dict(command='config-reload', arguments={})
@@ -291,8 +291,8 @@ def test_ca_build_report():
     # let's check minimal configuration
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -317,8 +317,8 @@ def test_ca_config_write():
     # let's check minimal configuration
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -347,8 +347,8 @@ def test_ca_shutdown():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -367,8 +367,8 @@ def test_ca_version_get():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -392,8 +392,8 @@ def test_ca_config_hash_get():
     # after CA will be removed anyway
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

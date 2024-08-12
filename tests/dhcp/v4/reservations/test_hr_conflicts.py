@@ -55,7 +55,7 @@ def test_v4_host_reservation_conflicts_duplicate_mac_reservations(backend):
         log_contains(r'failed to add new host using the HW address')
     else:
         srv_control.add_hooks('libdhcp_host_cmds.so')
-        srv_control.open_control_channel()
+        srv_control.add_unix_socket()
         srv_control.dump_db_reservation(backend)
         srv_control.new_db_backend_reservation(backend, 'hw-address', 'ff:01:02:03:ff:11')
         srv_control.update_db_backend_reservation('hostname', 'reserved-hostname', backend, 1)
@@ -78,8 +78,8 @@ def test_v4_host_reservation_conflicts_duplicate_mac_reservations_command_contro
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.enable_db_backend_reservation(backend)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -95,8 +95,8 @@ def test_v4_host_reservation_allowed_duplicate_mac_reservations_command_control(
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.set_conf_parameter_global('ip-reservations-unique', False)
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.enable_db_backend_reservation(backend)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -134,8 +134,8 @@ def test_v4_host_reservation_duplicate_ip_reservations_allowed(backend):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_host_cmds.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.enable_db_backend_reservation(backend)
     # allow non-unique IP address in multiple reservations
     srv_control.set_conf_parameter_global('ip-reservations-unique', False)
@@ -282,8 +282,8 @@ def test_v4_host_reservation_conflicts_duplicate_reservations_different_subnets(
 def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_used_address(backend):
 
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -318,8 +318,8 @@ def test_v4_host_reservation_conflicts_reconfigure_server_with_reservation_of_us
     srv_msg.send_wait_for_message('MUST', 'ACK')
 
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.3')
     if backend == 'memfile':
         srv_control.host_reservation_in_subnet('ip-address',
@@ -354,8 +354,8 @@ def test_v4_host_reservation_conflicts_reserve_assigned_address_to_different_cli
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     if backend == 'memfile':
         srv_control.host_reservation_in_subnet('ip-address',
                                                '192.168.50.2',
@@ -404,8 +404,8 @@ def test_v4_host_reservation_conflicts_reserve_assigned_address_to_different_cli
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.3')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     if backend == 'memfile':
         srv_control.host_reservation_in_subnet('ip-address',
                                                '192.168.50.2',
@@ -439,8 +439,8 @@ def test_v4_host_reservation_conflicts_change_reserved_address_during_reconfigur
     misc.test_setup()
     # reconfigure different address for same MAC from outside of the pool
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.9')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     if backend == 'memfile':
         srv_control.host_reservation_in_subnet('ip-address',
                                                '192.168.50.10',
@@ -475,8 +475,8 @@ def test_v4_host_reservation_conflicts_change_reserved_address_during_reconfigur
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.9')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     if backend == 'memfile':
         srv_control.host_reservation_in_subnet('ip-address',
                                                '192.168.50.30',
@@ -518,8 +518,8 @@ def test_v4_host_reservation_conflicts_change_reserved_address_during_reconfigur
 def test_v4_host_reservation_conflicts_reconfigure_server_add_reservation_for_host_that_has_lease(backend):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -541,8 +541,8 @@ def test_v4_host_reservation_conflicts_reconfigure_server_add_reservation_for_ho
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     if backend == 'memfile':
         srv_control.host_reservation_in_subnet('ip-address',
                                                '192.168.50.50',
@@ -611,8 +611,8 @@ def test_v4_host_reservation_conflicts_renew_address_using_different_mac_that_ha
     srv_control.set_time('rebind-timer', 50)
     srv_control.set_time('valid-lifetime', 500)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -640,8 +640,8 @@ def test_v4_host_reservation_conflicts_renew_address_using_different_mac_that_ha
     srv_control.set_time('rebind-timer', 50)
     srv_control.set_time('valid-lifetime', 500)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.10')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     if backend == 'memfile':
         srv_control.host_reservation_in_subnet('ip-address',
                                                '192.168.50.5',
@@ -697,8 +697,8 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
     srv_control.set_time('rebind-timer', 50)
     srv_control.set_time('valid-lifetime', 500)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     if backend == 'memfile':
         srv_control.host_reservation_in_subnet('ip-address',
                                                '192.168.50.5',
@@ -739,8 +739,8 @@ def test_v4_host_reservation_conflicts_renew_address_which_reservation_changed_d
     srv_control.set_time('rebind-timer', 50)
     srv_control.set_time('valid-lifetime', 500)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.60')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     if backend == 'memfile':
         srv_control.host_reservation_in_subnet('ip-address',
                                                '192.168.50.50',
@@ -797,8 +797,8 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
     srv_control.set_time('rebind-timer', 4)
     srv_control.set_time('valid-lifetime', 500)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     if backend == 'memfile':
         srv_control.host_reservation_in_subnet('ip-address',
                                                '192.168.50.5',
@@ -839,8 +839,8 @@ def test_v4_host_reservation_conflicts_rebind_address_which_reservation_changed_
     srv_control.set_time('rebind-timer', 4)
     srv_control.set_time('valid-lifetime', 500)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     if backend == 'memfile':
         srv_control.host_reservation_in_subnet('ip-address',
                                                '192.168.50.50',
@@ -903,9 +903,9 @@ def test_v4_switch_ip_reservations_unique(channel, host_backend):
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1 - 192.168.50.50')
     srv_control.set_conf_parameter_global('ip-reservations-unique', False)
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     if channel == 'http':
-        srv_control.agent_control_channel()
+        srv_control.add_http_control_channel()
     srv_control.enable_db_backend_reservation('memfile' if host_backend == 'memory' else host_backend)
     dhcp_cfg = copy.deepcopy(world.dhcp_cfg)
     srv_control.build_and_send_config_files()

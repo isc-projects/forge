@@ -176,7 +176,7 @@ def test_ddns6_subnet():
 @pytest.mark.ddns
 def test_ddns6_all_levels_resend_command():
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
@@ -266,7 +266,7 @@ def test_ddns6_all_levels_resend_command():
 @pytest.mark.ddns
 def test_ddns6_all_levels_resend_without_ddns():
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',

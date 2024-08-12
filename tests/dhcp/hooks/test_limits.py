@@ -227,8 +227,8 @@ def test_rate_limits_subnet(dhcp_version, backend, unit):
             "rate-limit": f"{limit} packets per {unit}"
         }}})
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
 
     srv_control.build_and_send_config_files()
@@ -297,8 +297,8 @@ def test_rate_limits_class(dhcp_version, backend, unit):
         srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
 
     # define test duration in seconds
@@ -399,8 +399,8 @@ def test_rate_limits_builtin_class(dhcp_version, backend, unit):
         srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
 
     # define test duration in seconds
@@ -505,8 +505,8 @@ def test_rate_limits_mix(dhcp_version, backend):
         "limits": {
             "rate-limit": f"{limit} packets per minute"
         }}})
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
 
     # hook configuration in user context for classes with limit
@@ -664,8 +664,8 @@ def test_lease_limits_subnet(dhcp_version, backend):
             "prefix-limit": limit
         }}})
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -826,8 +826,8 @@ def test_lease_limits_class(dhcp_version, backend):
         ]
     world.dhcp_cfg["client-classes"] = classes
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -983,8 +983,8 @@ def test_lease_limits_builtin_class(dhcp_version, backend):
         ]
     world.dhcp_cfg["client-classes"] = classes
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -1151,8 +1151,8 @@ def test_lease_limits_mix(dhcp_version, backend):
         ]
     world.dhcp_cfg["client-classes"] = classes
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -1303,8 +1303,8 @@ def test_lease_limits_v6_multipleIA(backend):
             "prefix-limit": limit
         }}})
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -1415,8 +1415,8 @@ def test_rate_limits_in_template_class(dhcp_version, backend, unit):
 
     world.dhcp_cfg["client-classes"] = classes
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
 
     srv_control.build_and_send_config_files()
@@ -1536,8 +1536,8 @@ def test_lease_limits_template_class(dhcp_version, backend):
     srv_control.config_client_classification(0, 'SPAWN_mac_vendor_aa:bb:cc')
     srv_control.config_client_classification(1, 'SPAWN_mac_vendor_11:22:33')
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_limits.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()

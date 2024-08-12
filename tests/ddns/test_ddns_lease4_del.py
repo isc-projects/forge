@@ -98,7 +98,7 @@ def _get_address_and_update_ddns(mac=None, fqdn=None, address=None, arpa=None):
 @pytest.mark.ddns
 def test_ddns4_all_levels_lease4_del_with_dns():
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
@@ -184,7 +184,7 @@ def test_ddns4_all_levels_lease4_del_with_dns():
 @pytest.mark.ddns
 def test_ddns4_all_levels_lease4_del_without_dns():
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',

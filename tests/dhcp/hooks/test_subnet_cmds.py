@@ -151,8 +151,8 @@ def test_hook_v4_subnet_get():
     srv_control.config_srv(
         "streettalk-directory-assistance-server", 1, "199.1.1.1,200.1.1.2"
     )
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks("libdhcp_subnet_cmds.so")
     srv_control.build_and_send_config_files()
 
@@ -214,8 +214,8 @@ def test_hook_v4_subnet_cmds_add():
     misc.test_setup()
     srv_control.config_srv_subnet("$(EMPTY)", "$(EMPTY)")
     srv_control.config_srv_opt("domain-name-servers", "199.199.199.1,100.100.100.1")
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks("libdhcp_subnet_cmds.so")
     srv_control.build_and_send_config_files()
 
@@ -284,8 +284,8 @@ def test_hook_v4_subnet_cmds_del():
     misc.test_setup()
     srv_control.config_srv_subnet("192.168.51.0/24", "192.168.51.1-192.168.51.1")
     srv_control.config_srv_opt("domain-name-servers", "199.199.199.1,100.100.100.1")
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks("libdhcp_subnet_cmds.so")
     srv_control.build_and_send_config_files()
 
@@ -352,8 +352,8 @@ def test_hook_v4_subnet_cmds_del_shared_network():
     srv_control.shared_subnet("192.168.51.0/24", 0)
     srv_control.set_conf_parameter_shared_subnet("name", '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet("interface", world.f_cfg.server_iface, 0)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks("libdhcp_subnet_cmds.so")
     srv_control.build_and_send_config_files()
 
@@ -423,8 +423,8 @@ def test_hook_v4_subnet_cmds_add_with_options():
     misc.test_setup()
     srv_control.config_srv_subnet("192.168.50.0/24", "$(EMPTY)")
     srv_control.config_srv_opt("domain-name-servers", "199.199.199.1,100.100.100.1")
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks("libdhcp_subnet_cmds.so")
     srv_control.build_and_send_config_files()
 
@@ -508,8 +508,8 @@ def test_hook_v4_subnet_cmds_add_conflict():
     misc.test_setup()
     srv_control.config_srv_subnet("192.168.51.0/24", "192.168.51.1-192.168.51.3")
     srv_control.config_srv_opt("domain-name-servers", "199.199.199.1,100.100.100.1")
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks("libdhcp_subnet_cmds.so")
     srv_control.build_and_send_config_files()
 
@@ -558,8 +558,8 @@ def test_hook_v4_subnet_cmds_add_and_del():
     """
     misc.test_setup()
     srv_control.config_srv_subnet("$(EMPTY)", "$(EMPTY)")
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks("libdhcp_subnet_cmds.so")
     srv_control.build_and_send_config_files()
 
@@ -602,9 +602,9 @@ def test_hook_v4_subnet_grow_subnet_command(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     if channel == 'http':
-        srv_control.agent_control_channel()
+        srv_control.add_http_control_channel()
 
     srv_control.build_and_send_config_files()
 
@@ -707,7 +707,7 @@ def test_hook_v4_subnet_grow_subnet_command(channel):
 def test_hook_v4_subnet_grow_cb_command(channel):
     misc.test_setup()
     if channel == 'http':
-        srv_control.agent_control_channel()
+        srv_control.add_http_control_channel()
 
     setup_server_for_config_backend_cmds(config_control={'config-fetch-wait-time': 1}, force_reload=False)
 
@@ -832,8 +832,8 @@ def test_hook_v4_subnet_delta_add(backend):
     Forge makes DORA exchanges to verify returned parameters.
     """
     misc.test_setup()
-    srv_control.agent_control_channel()
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     if backend == 'memfile':
@@ -987,8 +987,8 @@ def test_hook_v4_subnet_delta_add_negative(backend):
     Forge makes DORA exchanges to verify returned parameters.
     """
     misc.test_setup()
-    srv_control.agent_control_channel()
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     if backend == 'memfile':
@@ -1173,8 +1173,8 @@ def test_hook_v4_subnet_delta_del(backend):
     Forge makes DORA exchanges to verify returned parameters.
     """
     misc.test_setup()
-    srv_control.agent_control_channel()
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     if backend == 'memfile':
@@ -1335,8 +1335,8 @@ def test_hook_v4_subnet_delta_del_negative(backend):
     Forge makes DORA exchanges to verify returned parameters.
     """
     misc.test_setup()
-    srv_control.agent_control_channel()
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     if backend == 'memfile':
@@ -1527,7 +1527,7 @@ def test_hook_v6_subnet_cmds_list():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.config_srv_another_subnet_no_interface('1000::/32', '1000::5-1000::5')
     srv_control.config_srv_another_subnet_no_interface('3000::/100', '3000::5-3000::5')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -1544,7 +1544,7 @@ def test_hook_v6_subnet_cmds_get_by_id():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.config_srv_another_subnet_no_interface('1000::/32', '1000::5-1000::5')
     srv_control.config_srv_another_subnet_no_interface('3000::/100', '3000::5-3000::5')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -1561,7 +1561,7 @@ def test_hook_v6_subnet_cmds_get_by_subnet():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.config_srv_another_subnet_no_interface('1000::/32', '1000::5-1000::5')
     srv_control.config_srv_another_subnet_no_interface('3000::/100', '3000::5-3000::5')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -1578,7 +1578,7 @@ def test_hook_v6_subnet_cmds_add():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -1625,7 +1625,7 @@ def test_hook_v6_subnet_cmds_add_with_options():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -1690,7 +1690,7 @@ def test_hook_v6_subnet_cmds_add_conflict():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -1793,8 +1793,8 @@ def test_hook_v6_subnet_cmds_del():
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks("libdhcp_subnet_cmds.so")
     srv_control.build_and_send_config_files()
 
@@ -1856,8 +1856,8 @@ def test_hook_v6_subnet_cmds_del_shared_network():
     srv_control.shared_subnet('2001:db8:1::/64', 0)
     srv_control.set_conf_parameter_shared_subnet("name", '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet("interface", world.f_cfg.server_iface, 0)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks("libdhcp_subnet_cmds.so")
     srv_control.build_and_send_config_files()
 
@@ -1923,7 +1923,7 @@ def test_hook_v6_subnet_cmds_del_global_options():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -1983,7 +1983,7 @@ def test_hook_v6_subnet_cmds_add_and_del():
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
 
@@ -2050,9 +2050,9 @@ def test_hook_v6_subnet_grow_subnet_command(channel):
     misc.test_setup()
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     if channel == 'http':
-        srv_control.agent_control_channel()
+        srv_control.add_http_control_channel()
 
     srv_control.build_and_send_config_files()
 
@@ -2153,7 +2153,7 @@ def test_hook_v6_subnet_grow_subnet_command(channel):
 def test_hook_v6_subnet_grow_cb_command(channel):
     misc.test_setup()
     if channel == 'http':
-        srv_control.agent_control_channel()
+        srv_control.add_http_control_channel()
 
     setup_server_for_config_backend_cmds(config_control={'config-fetch-wait-time': 1}, force_reload=False)
 
@@ -2275,8 +2275,8 @@ def test_hook_v6_subnet_delta_add(backend):
     Forge makes SARR exchanges to verify returned parameters.
     """
     misc.test_setup()
-    srv_control.agent_control_channel()
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     if backend == 'memfile':
@@ -2432,8 +2432,8 @@ def test_hook_v6_subnet_delta_add_negative(backend):
     Forge makes SARR exchanges to verify returned parameters.
     """
     misc.test_setup()
-    srv_control.agent_control_channel()
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     if backend == 'memfile':
@@ -2619,8 +2619,8 @@ def test_hook_v6_subnet_delta_del(backend):
     Forge makes SARR exchanges to verify returned parameters.
     """
     misc.test_setup()
-    srv_control.agent_control_channel()
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     if backend == 'memfile':
@@ -2782,8 +2782,8 @@ def test_hook_v6_subnet_delta_del_negative(backend):
     Forge makes SARR exchanges to verify returned parameters.
     """
     misc.test_setup()
-    srv_control.agent_control_channel()
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
 
     if backend == 'memfile':

@@ -19,8 +19,8 @@ from src.forge_cfg import world
 @pytest.mark.v4
 def test_ca_basic_authentication():
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     auth = {
         "authentication": {
             "type": "basic",

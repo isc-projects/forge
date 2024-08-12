@@ -60,8 +60,8 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, mode: str):
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff', id=1)
     elif dhcp_version in ['v4', 'v4_bootp']:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200', id=1)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.dhcpsrv', 'DEBUG', 99)
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
@@ -98,8 +98,8 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, mode: str):
                                       '192.168.50.1-192.168.50.200',
                                       world.f_cfg.server2_iface, id=1)
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.dhcpsrv', 'DEBUG', 99)
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')

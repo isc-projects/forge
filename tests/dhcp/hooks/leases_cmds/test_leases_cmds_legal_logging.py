@@ -32,7 +32,7 @@ def test_v4_lease_cmds_legal_logging_update():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.config_srv_another_subnet_no_interface('10.0.0.0/24', '10.0.0.5-10.0.0.5')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -85,7 +85,7 @@ def test_v4_lease_cmds_legal_logging_add():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -118,7 +118,7 @@ def test_v4_lease_cmds_legal_logging_del_using_address():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -185,7 +185,7 @@ def test_v4_lease_cmds_legal_logging_del_using_hw_address():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -256,7 +256,7 @@ def test_v4_lease_cmds_legal_logging_wipe():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
@@ -357,7 +357,7 @@ def test_v6_lease_cmds_legal_logging_add():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.config_srv_opt('preference', '123')
     srv_control.config_srv_opt('domain-search', 'domain1.example.com,domain2.isc.org')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
@@ -410,7 +410,7 @@ def test_v6_lease_cmds_legal_logging_del_using_address():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
@@ -487,7 +487,7 @@ def test_v6_lease_cmds_legal_logging_del_using_duid():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
@@ -569,7 +569,7 @@ def test_v6_lease_cmds_legal_logging_wipe():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
@@ -673,7 +673,7 @@ def test_v6_lease_cmds_legal_logging_update():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()

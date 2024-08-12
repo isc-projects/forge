@@ -106,7 +106,7 @@ def test_lease_cache_incorrect_values(dhcp_version, parameter, value):
     # both for v4 and v6, we don't need to repeat this tests in v4 set
     ver = int(world.proto[1])
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     if ver == 4:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
@@ -127,7 +127,7 @@ def test_lease_cache_disabled(backend, parameter):
     # - "cache-threshold": 0 which means disabled according to docs, but kea fail to start gitlab #1796
     # - "cache-max-age": 0 means disabled
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     world.dhcp_cfg.update(parameter)
     world.dhcp_cfg.update({"preferred-lifetime": 10, "rebind-timer": 10,
                            "renew-timer": 10, "valid-lifetime": 10})
@@ -159,7 +159,7 @@ def test_lease_cache_disabled(backend, parameter):
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_lease_cache_enabled(backend, parameter):
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.define_temporary_lease_db_backend(backend)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
@@ -238,7 +238,7 @@ def test_lease_cache_different_levels(backend):
     srv_control.add_test_to_class(2, 'test', 'option[1].hex == 0x00030001112233445566')
     srv_control.create_new_class('Client_Class_3')
     srv_control.add_test_to_class(3, 'test', 'option[1].hex == 0x00030001111122222211')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.define_temporary_lease_db_backend(backend)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
@@ -345,7 +345,7 @@ def test_lease_cache_different_levels(backend):
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_lease_cache_ddns(parameter, backend):
     misc.test_setup()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.define_temporary_lease_db_backend(backend)

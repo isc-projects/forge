@@ -1173,7 +1173,7 @@ def enable_https(certificate: CreateCert, required=False):
             assert False, "No http control socket found"
 
 # Start kea-ctrl-agent if it's enabled
-def agent_control_channel(host_address, host_port, socket_name='control_socket'):
+def add_http_control_channel(host_address, host_port, socket_name='control_socket'):
     if world.f_cfg.control_agent:
         if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
             logging_file = 'kea-ctrl-agent.log'

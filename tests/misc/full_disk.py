@@ -185,8 +185,8 @@ def test_v6_full_disk_testing_pgsql():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::500')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     # decide what you want to do:
     # set memfile and log location to created ramdisk
     # world.dhcp_cfg["lease-database"] = {"type": "memfile", "name": "/tmp/kea_ram_disk/dhcp.leases"}
@@ -228,8 +228,8 @@ def test_v6_full_disk_testing_memfile():
 
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::500')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     # set memfile and log location to created ramdisk
     world.dhcp_cfg["lease-database"] = {"type": "memfile", "name": "/tmp/kea_ram_disk/dhcp.leases"}
     world.dhcp_cfg["loggers"] = [{"debuglevel": 99,
@@ -268,8 +268,8 @@ def test_v4_full_disk_testing():
 
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.150')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     # set memfile and log location to created ramdisk
     world.dhcp_cfg["lease-database"] = {"type": "memfile", "name": "/tmp/kea_ram_disk/dhcp.leases"}
     world.dhcp_cfg["loggers"] = [{"debuglevel": 99,

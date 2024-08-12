@@ -31,8 +31,8 @@ def test_v4_leasequery_ip(backend, rai_version):
     srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
@@ -133,8 +133,8 @@ def test_v4_leasequery_mac(backend, rai_version):
                                                        '192.168.60.0-192.168.60.1')
     srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
@@ -236,8 +236,8 @@ def test_v4_leasequery_client(backend, rai_version):
                                                        '192.168.60.0-192.168.60.1')
     srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
@@ -336,8 +336,8 @@ def test_v4_leasequery_denied():
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Adding different ip than forge machine
@@ -410,8 +410,8 @@ def test_v6_negative(backend):
     srv_control.config_srv_prefix('2001:db8:3::', 0, 126, 128)
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
@@ -595,8 +595,8 @@ def test_v6_negative(backend):
     srv_control.config_srv_prefix('2001:db8:3::', 0, 126, 128)
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     srv_control.add_parameter_to_hook('libdhcp_lease_query.so', {"requesters": ["3300::11"]})
@@ -641,8 +641,8 @@ def test_v6_get_leases(backend):
     srv_control.config_srv_prefix('2001:db8:3::', 0, 126, 128)
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
@@ -842,8 +842,8 @@ def test_v6_query_address_get_back_prefix(backend):
     srv_control.config_srv_prefix('2001:db8:3::', 0, 110, 112)
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip

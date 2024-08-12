@@ -55,7 +55,7 @@ def test_v4_all_hooks_start():
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server2","url":"http://$(MGMT_ADDRESS):8080/","role":"secondary","auto-failover":true}')
 
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -98,8 +98,8 @@ def test_v4_all_hooks_test_cooperation():
     # To HA hook configuration add peers with value: {"name":"server1","url":"http://$(MGMT_ADDRESS):8080/","role":"primary","auto-failover":true}
     # To HA hook configuration add peers with value: {"name":"server2","url":"http://$(MGMT_ADDRESS_2):8080/","role":"secondary","auto-failover":true}
 
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(host_port='8080')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(host_port='8080')
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')

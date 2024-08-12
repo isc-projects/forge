@@ -631,14 +631,14 @@ def add_option_to_defined_class(class_no, option, option_value):
 
 
 @step(r'Server has control channel (\S+).')
-def open_control_channel(socket_name=None):
+def add_unix_socket(socket_name=None):
     dhcp.open_control_channel_socket(socket_name)
 
 
 @step(r'Server has control agent configured on HTTP connection with address (\S+):(\S+) and socket (\S+) path: (\S+).')
-def agent_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, socket_name='control_socket'):
+def add_http_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, socket_name='control_socket'):
     host_address, host_port = test_define_value(host_address, host_port)
-    dhcp.agent_control_channel(host_address, host_port, socket_name)
+    dhcp.add_http_control_channel(host_address, host_port, socket_name)
 
 
 def disable_leases_affinity():
@@ -799,7 +799,7 @@ def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address,
 
 # DDNS server
 @step(r'DDNS server has control channel (\S+).')
-def ddns_open_control_channel(socket_name=None):
+def ddns_add_unix_socket(socket_name=None):
     ddns.ddns_open_control_channel_socket(socket_name)
 
 

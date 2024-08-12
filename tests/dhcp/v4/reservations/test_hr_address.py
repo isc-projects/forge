@@ -311,8 +311,8 @@ def test_v4_host_reservation_empty(backend):
             'reservations-in-subnet': False
         })
         srv_control.enable_db_backend_reservation(backend)
-        srv_control.open_control_channel()
-        srv_control.agent_control_channel()
+        srv_control.add_unix_socket()
+        srv_control.add_http_control_channel()
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')

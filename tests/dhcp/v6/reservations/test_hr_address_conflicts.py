@@ -628,9 +628,9 @@ def test_v6_switch_ip_reservations_unique(channel, host_backend):
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::50:1 - 2001:db8::50:50')
     srv_control.set_conf_parameter_global('ip-reservations-unique', False)
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     if channel == 'http':
-        srv_control.agent_control_channel()
+        srv_control.add_http_control_channel()
     srv_control.enable_db_backend_reservation('memfile' if host_backend == 'memory' else host_backend)
     dhcp_cfg = copy.deepcopy(world.dhcp_cfg)
     srv_control.build_and_send_config_files()

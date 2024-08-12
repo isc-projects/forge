@@ -38,6 +38,7 @@ def _create_pgsql_dump():
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 96)
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_cb_cmds.so')
+    srv_control.add_hooks('libdhcp_pgsql.so')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS)')
     srv_control.enable_db_backend_reservation('PostgreSQL')
@@ -114,8 +115,8 @@ def test_v6_upgrade_pgsql_db():
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 96)
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     hosts = {"hosts-databases": [{"user": tmp_user_name,
                                   "password": "$(DB_PASSWD)",
                                   "name": tmp_db_name,

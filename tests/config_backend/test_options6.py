@@ -200,7 +200,7 @@ def test_suboptions_configfile(parameter):
         srv_control.add_test_to_class(1, 'option-data', option_data[0])
         srv_control.add_test_to_class(1, 'option-data', option_data[1])
 
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

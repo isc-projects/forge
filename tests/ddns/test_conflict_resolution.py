@@ -26,8 +26,8 @@ def basic_configuration(version, lft) -> None:
     :type lft: int
     """
     # control channel
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address)
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.set_time("renew-timer", 10)
     srv_control.set_time("rebind-timer", 10)
     if version == 6:

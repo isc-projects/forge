@@ -52,8 +52,8 @@ def test_rbac_cert_subject():
     client_key_3 = certificate.download('kea_client_2_key.pem')
 
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # Configure Control Agent to use TLS.
     srv_control.enable_https(certificate, True)
     hook = [{
@@ -142,8 +142,8 @@ def test_rbac_cert_issuer():
     client_key = certificate.download('client_key')
 
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # Configure Control Agent to use TLS.
     srv_control.enable_https(certificate, True)
     hook = [{
@@ -224,8 +224,8 @@ def test_rbac_remote_address(tls):
         client_key = certificate.download('client_key')
 
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # Configure Control Agent to use TLS.
     if tls:
         srv_control.enable_https(certificate, True)
@@ -331,8 +331,8 @@ def test_rbac_basic_authentication(tls):
         client_key = certificate.download('client_key')
 
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # Configure Control Agent to use TLS.
     if tls:
         srv_control.enable_https(certificate, True)
@@ -460,8 +460,8 @@ def _preconfigure_test():
     :return: list, part of a Control Agent configuration
     """
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
 
     auth = {
         "authentication": {
@@ -1097,8 +1097,8 @@ def test_creating_access_list_for_multiple_use_cases():
     Define multiple ACLs in "access-control-lists" and then use those in different roles
     """
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     auth = {"authentication": {
         "type": "basic",
         "clients":
@@ -1201,8 +1201,8 @@ def test_mixed_roles():
     Test all access lists types and logic in one single ACL
     """
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     auth = {"authentication": {
         "type": "basic",
         "clients":

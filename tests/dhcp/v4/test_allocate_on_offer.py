@@ -65,8 +65,8 @@ def test_basic_configuration(backend, level, allocator):
     srv_control.set_time('rebind-timer', 2)
     srv_control.set_time('valid-lifetime', vlt)
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2', allocator=allocator)
@@ -134,8 +134,8 @@ def test_ha_configuration():
     srv_control.set_time('rebind-timer', 2)
     srv_control.set_time('valid-lifetime', vlt)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     world.dhcp_cfg.update({'offer-lifetime': offer_lifetime})
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -161,10 +161,10 @@ def test_ha_configuration():
 
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2', world.f_cfg.server2_iface)
     world.dhcp_cfg.update({'offer-lifetime': offer_lifetime})
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
-    srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
 
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
@@ -238,8 +238,8 @@ def test_with_lease_affinity(backend):
     srv_control.set_time('rebind-timer', 2)
     srv_control.set_time('valid-lifetime', vlt)
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2', offer_lifetime=offer_lifetime)

@@ -107,7 +107,7 @@ def test_stats_basic():
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.disable_leases_affinity()
     srv_control.enable_db_backend_reservation('MySQL')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -390,7 +390,7 @@ def test_stats_basic():
 def test_stats_remove_reset():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -466,7 +466,7 @@ def test_stats_remove_reset():
 def test_stats_reconfigure():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::a')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -486,7 +486,7 @@ def test_stats_reconfigure():
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::2')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
 
     # reconfigure (reload) server, stats should be preserved
@@ -508,7 +508,7 @@ def test_stats_reconfigure():
 def test_stats_sample_count():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1 - 2001:db8:1::a')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -536,7 +536,7 @@ def test_stats_sample_count():
 def test_stats_sample_age():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1 - 2001:db8:1::a')
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -571,7 +571,7 @@ def test_stats_6():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.config_srv_prefix('3001::', 0, 90, 92)
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.start_srv('DHCP', 'started')
 
     misc.test_procedure()
@@ -971,7 +971,7 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.define_temporary_lease_db_backend(backend)
     srv_control.disable_leases_affinity()
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1096,8 +1096,8 @@ def test_stats_pool_id_assign_reclaim_pd(lease_remove_method, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.define_temporary_lease_db_backend(backend)
     srv_control.disable_leases_affinity()
-    srv_control.agent_control_channel()
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1212,7 +1212,7 @@ def test_stats_pool_id_decline(backend):
     srv_control.add_line({"decline-probation-period": int(leases_to_get * 0.4 + 1)})
     srv_control.disable_leases_affinity()
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
+    srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

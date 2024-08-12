@@ -293,8 +293,8 @@ def test_v6_multiple_networks(backend):  # pylint: disable=too-many-branches
 
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
@@ -528,8 +528,8 @@ def test_v6_assign_and_reply_simultaneously(backend):
     srv_control.config_srv_prefix('2001:db8:2::', 0, 64, 128)
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
@@ -640,8 +640,8 @@ def test_v6_message_build(backend):
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
@@ -707,8 +707,8 @@ def test_v6_negative(backend):
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
@@ -864,8 +864,8 @@ def test_v6_junk_over_tcp(backend):
     srv_control.config_srv_prefix('2001:db8:2::', 0, 64, 128)
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
@@ -949,8 +949,8 @@ def test_v6_multiple_relays(backend):
 
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
     # Set permitted requester to forge machine ip
@@ -1035,8 +1035,8 @@ def test_v4_check_messages_correctness(backend):
 
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
 
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
@@ -1249,8 +1249,8 @@ def test_v4_multiple_networks(backend):
 
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
 
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
@@ -1347,8 +1347,8 @@ def test_v4_negative(backend):
 
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
 
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
@@ -1445,8 +1445,8 @@ def test_v4_junk_over_tcp(backend):
 
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
 
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
@@ -1527,8 +1527,8 @@ def test_v4_assign_and_reply_simultaneously(backend):
 
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.define_temporary_lease_db_backend(backend)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
 
     # adding hook and required parameters
     srv_control.add_hooks('libdhcp_lease_query.so')
