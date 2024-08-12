@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium.
+# Copyright (C) 2022-2024 Internet Systems Consortium.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -55,10 +55,7 @@ def test_rbac_cert_subject():
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     # Configure Control Agent to use TLS.
-    world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
-    world.ca_cfg["Control-agent"]["cert-file"] = certificate.server_cert
-    world.ca_cfg["Control-agent"]["key-file"] = certificate.server_key
-    world.ca_cfg["Control-agent"]["cert-required"] = True
+    srv_control.enable_https(certificate, True)
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
         "parameters": {
@@ -89,7 +86,11 @@ def test_rbac_cert_subject():
         }
     }]
 
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -144,10 +145,7 @@ def test_rbac_cert_issuer():
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
     # Configure Control Agent to use TLS.
-    world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
-    world.ca_cfg["Control-agent"]["cert-file"] = certificate.server_cert
-    world.ca_cfg["Control-agent"]["key-file"] = certificate.server_key
-    world.ca_cfg["Control-agent"]["cert-required"] = True
+    srv_control.enable_https(certificate, True)
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
         "parameters": {
@@ -168,7 +166,11 @@ def test_rbac_cert_issuer():
         }
     }]
 
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -187,10 +189,15 @@ def test_rbac_cert_issuer():
 
     # let's change config for different ca issuer
     hook[0]["parameters"]["roles"][0]["name"] = "NOT_KEA"
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
 
     # configure it via config-set
-    cmd = {"command": "config-set", "arguments": world.ca_cfg}
+    cmd = {"command": "config-set",
+           "arguments": world.ca_cfg if world.f_cfg.control_agent else {f'Dhcp{world.proto[1]}': world.dhcp_cfg}}
     resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert, client_key))
 
     # and now all commands will fail:
@@ -221,10 +228,7 @@ def test_rbac_remote_address(tls):
     srv_control.agent_control_channel()
     # Configure Control Agent to use TLS.
     if tls:
-        world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
-        world.ca_cfg["Control-agent"]["cert-file"] = certificate.server_cert
-        world.ca_cfg["Control-agent"]["key-file"] = certificate.server_key
-        world.ca_cfg["Control-agent"]["cert-required"] = True
+        srv_control.enable_https(certificate, True)
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
         "parameters": {
@@ -246,7 +250,11 @@ def test_rbac_remote_address(tls):
         }
     }]
 
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -278,10 +286,15 @@ def test_rbac_remote_address(tls):
 
     # let's change config for different ca issuer
     hook[0]["parameters"]["roles"][0]["name"] = "192.168.51.33"
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
 
     # configure it via config-set
-    cmd = {"command": "config-set", "arguments": world.ca_cfg}
+    cmd = {"command": "config-set",
+           "arguments": world.ca_cfg if world.f_cfg.control_agent else {f'Dhcp{world.proto[1]}': world.dhcp_cfg}}
     resp = srv_msg.send_ctrl_cmd(cmd,
                                  'https' if tls else 'http',
                                  service='agent',
@@ -322,12 +335,9 @@ def test_rbac_basic_authentication(tls):
     srv_control.agent_control_channel()
     # Configure Control Agent to use TLS.
     if tls:
-        world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
-        world.ca_cfg["Control-agent"]["cert-file"] = certificate.server_cert
-        world.ca_cfg["Control-agent"]["key-file"] = certificate.server_key
-        world.ca_cfg["Control-agent"]["cert-required"] = tls
+        srv_control.enable_https(certificate, True)
 
-    world.ca_cfg["Control-agent"].update({"authentication": {
+    auth = {"authentication": {
             "type": "basic",
             "clients":
             [
@@ -340,7 +350,12 @@ def test_rbac_basic_authentication(tls):
                     "password": "1234"
                 }
             ]
-        }})
+        }}
+
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"].update(auth)
+    else:
+        world.dhcp_cfg.update(auth)
 
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
@@ -372,7 +387,11 @@ def test_rbac_basic_authentication(tls):
         }
     }]
 
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -443,24 +462,30 @@ def _preconfigure_test():
     misc.test_setup()
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
-    world.ca_cfg["Control-agent"].update({"authentication": {
-        "type": "basic",
-        "clients":
-            [
-                {
-                    "user": "admin",
-                    "password": "1234"
-                },
-                {
-                    "user": "admin2",
-                    "password": "1234"
-                },
-                {
-                    "user": "admin3",
-                    "password": "1234"
-                }
-            ]
-    }})
+
+    auth = {
+        "authentication": {
+            "type": "basic",
+            "clients":
+                [
+                    {
+                        "user": "admin",
+                        "password": "1234"
+                    },
+                    {
+                        "user": "admin2",
+                        "password": "1234"
+                    },
+                    {
+                        "user": "admin3",
+                        "password": "1234"
+                    }
+                ]}}
+
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"].update(auth)
+    else:
+        world.dhcp_cfg.update(auth)
 
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
@@ -525,7 +550,11 @@ def test_rbac_access_by_read_write(make_sure_file_is_correct):
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -584,7 +613,11 @@ def test_rbac_access_by_name_removed_file(make_sure_file_is_correct):
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -631,7 +664,11 @@ def test_rbac_access_by_name_removed_file_2(make_sure_file_is_correct):
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
 
     # start without dhcp-disable file, agent should log an error and exit
@@ -662,7 +699,11 @@ def test_rbac_access_by_name_removed_file_2(make_sure_file_is_correct):
         }
     )
 
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -698,7 +739,11 @@ def test_rbac_access_by_all_none():
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -726,7 +771,11 @@ def test_rbac_access_by_all_none():
     ]
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'restarted')
@@ -748,7 +797,11 @@ def test_rbac_access_by_all_none():
     ]
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'restarted')
@@ -768,7 +821,11 @@ def test_rbac_access_by_all_none():
     ]
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'restarted')
@@ -801,7 +858,11 @@ def test_rbac_access_by_hook_name():
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -842,7 +903,11 @@ def test_rbac_access_by_commands_with_other_list():
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -865,7 +930,11 @@ def test_rbac_access_by_commands_with_other_list():
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'restarted')
 
@@ -899,7 +968,11 @@ def test_rbac_filter_responses():
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -923,7 +996,11 @@ def test_rbac_filter_responses():
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -951,7 +1028,11 @@ def test_default_role():
         "reject-commands": "WRITE",
     }})
 
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -974,7 +1055,11 @@ def test_unknown_role():
         "reject-commands": "WRITE",
     }})
 
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -991,7 +1076,11 @@ def test_unknown_role():
         "list-match-first": "accept"
     }})
 
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'restarted')
 
@@ -1010,7 +1099,7 @@ def test_creating_access_list_for_multiple_use_cases():
     misc.test_setup()
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
-    world.ca_cfg["Control-agent"].update({"authentication": {
+    auth = {"authentication": {
         "type": "basic",
         "clients":
             [
@@ -1027,7 +1116,11 @@ def test_creating_access_list_for_multiple_use_cases():
                     "password": "1234"
                 }
             ]
-    }})
+    }}
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"].update(auth)
+    else:
+        world.dhcp_cfg.update(auth)
 
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
@@ -1061,7 +1154,11 @@ def test_creating_access_list_for_multiple_use_cases():
         }
     }]
 
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1106,7 +1203,7 @@ def test_mixed_roles():
     misc.test_setup()
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
-    world.ca_cfg["Control-agent"].update({"authentication": {
+    auth = {"authentication": {
         "type": "basic",
         "clients":
             [
@@ -1115,7 +1212,12 @@ def test_mixed_roles():
                     "password": "1234"
                 }
             ]
-    }})
+    }}
+
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"].update(auth)
+    else:
+        world.dhcp_cfg.update(auth)
 
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
@@ -1137,7 +1239,11 @@ def test_mixed_roles():
         }
     }]
 
-    world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
+    else:
+        world.dhcp_cfg["hooks-libraries"] = hook
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

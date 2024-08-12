@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium.
+# Copyright (C) 2022-2024 Internet Systems Consortium.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -41,11 +41,7 @@ def test_ca_tls_basic(dhcp_version, client_cert_required):
     misc.test_setup()
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
-    # Configure Control Agent to use TLS.
-    world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
-    world.ca_cfg["Control-agent"]["cert-file"] = certificate.server_cert
-    world.ca_cfg["Control-agent"]["key-file"] = certificate.server_key
-    world.ca_cfg["Control-agent"]["cert-required"] = client_cert_required
+    srv_control.enable_https(certificate, client_cert_required)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -93,11 +89,7 @@ def test_ca_tls_basic_negative(dhcp_version, client_cert_required):
     misc.test_setup()
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
-    # Configure Control Agent to use TLS.
-    world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
-    world.ca_cfg["Control-agent"]["cert-file"] = certificate.server_cert
-    world.ca_cfg["Control-agent"]["key-file"] = certificate.server_key
-    world.ca_cfg["Control-agent"]["cert-required"] = client_cert_required
+    srv_control.enable_https(certificate, client_cert_required)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

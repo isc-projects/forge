@@ -284,7 +284,6 @@ def declare_all(dhcp_version=None):
     world.dns_enable = False
     world.dhcp_enable = False
     world.ddns_enable = False
-    world.ctrl_enable = False
     world.fuzzing = False
 
     world.radius_authorize_file = None

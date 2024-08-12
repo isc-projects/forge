@@ -883,3 +883,7 @@ def print_cfg(service='DHCP'):
 
 def generate_certificate():
     return dhcp.generate_certificate()
+
+
+def enable_https(cert_class, required):
+    dhcp.enable_https(cert_class, required)

@@ -80,10 +80,7 @@ def test_ha_tls_with_ca(dhcp_version, backend):
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS)')
     # Configure Control Agent to use TLS.
-    world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
-    world.ca_cfg["Control-agent"]["cert-file"] = certificate.server_cert
-    world.ca_cfg["Control-agent"]["key-file"] = certificate.server_key
-    world.ca_cfg["Control-agent"]["cert-required"] = False
+    srv_control.enable_https(certificate, False)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -121,10 +118,7 @@ def test_ha_tls_with_ca(dhcp_version, backend):
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
     # Configure Control Agent to use TLS.
-    world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
-    world.ca_cfg["Control-agent"]["cert-file"] = certificate.server2_cert
-    world.ca_cfg["Control-agent"]["key-file"] = certificate.server2_key
-    world.ca_cfg["Control-agent"]["cert-required"] = False
+    srv_control.enable_https(certificate, False)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')

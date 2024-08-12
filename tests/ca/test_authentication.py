@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium.
+# Copyright (C) 2022-2024 Internet Systems Consortium.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,12 +17,12 @@ from src.forge_cfg import world
 
 
 @pytest.mark.v4
-@pytest.mark.ca
 def test_ca_basic_authentication():
     misc.test_setup()
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
-    world.ca_cfg["Control-agent"].update({"authentication": {
+    auth = {
+        "authentication": {
             "type": "basic",
             "clients":
             [
@@ -32,7 +32,12 @@ def test_ca_basic_authentication():
                     "password": "1234"
                 }
             ]
-        }})
+        }}
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"].update(auth)
+    else:
+        world.dhcp_cfg.update(auth)
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

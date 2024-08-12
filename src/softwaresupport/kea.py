@@ -528,7 +528,11 @@ def open_control_channel_socket(socket_name=None):
         socket_path = world.f_cfg.run_join(socket_name)
     else:
         socket_path = world.f_cfg.run_join('control_socket')
-    world.dhcp_cfg["control-sockets"] = [{"socket-type": "unix", "socket-name": socket_path}]
+
+    if "control-sockets" not in world.dhcp_cfg:
+        world.dhcp_cfg["control-sockets"] = []
+
+    world.dhcp_cfg["control-sockets"].append({"socket-type": "unix", "socket-name": socket_path})
 
 
 def create_new_class(class_name):
@@ -1148,26 +1152,51 @@ def update_expired_leases_processing(param):
         assert False, "Please use 'default' to remove expired leases configuration or use dict to pass params " \
                       "and values inside 'expired-leases-processing'"
 
-
-# Start kea-ctrl-agent.
-def agent_control_channel(host_address, host_port, socket_name='control_socket'):
-    if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
-        logging_file = 'kea-ctrl-agent.log'
-        logging_file_path = world.f_cfg.log_join(logging_file)
+def enable_https(certificate: CreateCert, required=False):
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
+        world.ca_cfg["Control-agent"]["cert-file"] = certificate.server_cert
+        world.ca_cfg["Control-agent"]["key-file"] = certificate.server_key
+        world.ca_cfg["Control-agent"]["cert-required"] = required
     else:
-        logging_file_path = 'stdout'
+        if "control-sockets" not in world.dhcp_cfg:
+                assert False, "Control sockets must be configured before enabling HTTPS"
+        for socket in world.dhcp_cfg["control-sockets"]:
+            if socket["socket-type"] == "http":
+                socket["socket-type"] = "https"
+                socket.update({"trust-anchor": certificate.ca_cert,
+                               "cert-file": certificate.server_cert,
+                               "key-file": certificate.server_key,
+                               "cert-required": required})
+                break
+        else:
+            assert False, "No http control socket found"
 
-    world.ctrl_enable = True
-    server_socket_type = f'dhcp{world.proto[1]}'
-    world.ca_cfg["Control-agent"] = {'http-host': host_address,
-                                     'http-port':  int(host_port),
-                                     'control-sockets': {server_socket_type: {"socket-type": "unix",
-                                                                              "socket-name": world.f_cfg.run_join(socket_name)}},
-                                     "loggers": [
-                                         {"debuglevel": 99, "name": "kea-ctrl-agent",
-                                          "output-options": [{"output": logging_file_path}],
-                                          "severity": "DEBUG"}]}
+# Start kea-ctrl-agent if it's enabled
+def agent_control_channel(host_address, host_port, socket_name='control_socket'):
+    if world.f_cfg.control_agent:
+        if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
+            logging_file = 'kea-ctrl-agent.log'
+            logging_file_path = world.f_cfg.log_join(logging_file)
+        else:
+            logging_file_path = 'stdout'
 
+        server_socket_type = f'dhcp{world.proto[1]}'
+        world.ca_cfg["Control-agent"] = {'http-host': host_address,
+                                        'http-port':  int(host_port),
+                                        'control-sockets': {server_socket_type: {"socket-type": "unix",
+                                                                                "socket-name": world.f_cfg.run_join(socket_name)}},
+                                        "loggers": [
+                                            {"debuglevel": 99, "name": "kea-ctrl-agent",
+                                            "output-options": [{"output": logging_file_path}],
+                                            "severity": "DEBUG"}]}
+    else:
+        if "control-sockets" not in world.dhcp_cfg:
+            world.dhcp_cfg["control-sockets"] = []
+        world.dhcp_cfg["control-sockets"].append({"socket-type": "http",
+                                                "socket-name": world.f_cfg.run_join(socket_name),
+                                                "socket-address": host_address,
+                                                "socket-port": int(host_port)})
 
 def config_srv_id(id_type, id_value):
     if world.proto == 'v4':
@@ -1252,27 +1281,30 @@ def _set_kea_ctrl_config():
         kea4 = 'yes'
     if world.ddns_enable:
         ddns = 'yes'
-    if world.ctrl_enable:
-        ctrl_agent = 'yes'
+
     world.cfg["keactrl"] = '''kea_config_file={path}/etc/kea/kea.conf
     dhcp4_srv={path}/sbin/kea-dhcp4
     dhcp6_srv={path}/sbin/kea-dhcp6
     dhcp_ddns_srv={path}/sbin/kea-dhcp-ddns
-    ctrl_agent_srv={path}/sbin/kea-ctrl-agent
     netconf_srv={path}/sbin/kea-netconf
     kea_dhcp4_config_file={path}/etc/kea/kea-dhcp4.conf
     kea_dhcp6_config_file={path}/etc/kea/kea-dhcp6.conf
     kea_dhcp_ddns_config_file={path}/etc/kea/kea-dhcp-ddns.conf
-    kea_ctrl_agent_config_file={path}/etc/kea/kea-ctrl-agent.conf
     kea_netconf_config_file={path}/etc/kea/kea-netconf.conf
     dhcp4={kea4}
     dhcp6={kea6}
     dhcp_ddns={ddns}
     kea_verbose=no
     netconf=no
-    ctrl_agent={ctrl_agent}
     '''.format(**locals())
 
+    if world.f_cfg.control_agent:
+        world.cfg["keactrl"] += '''
+
+        ctrl_agent_srv={path}/sbin/kea-ctrl-agent
+        kea_ctrl_agent_config_file={path}/etc/kea/kea-ctrl-agent.conf
+        ctrl_agent=yes
+        '''.format(**locals())
 
 def configure_multi_threading(enable_mt, pool=0, queue=0):
     world.dhcp_cfg.update({"multi-threading": {"enable-multi-threading": enable_mt,
@@ -1359,7 +1391,7 @@ def _cfg_write():
         with open("kea-dhcp-ddns.conf", 'w') as conf_file:
             conf_file.write(json.dumps(world.ddns_cfg, indent=4, sort_keys=False))
 
-    if world.ctrl_enable:
+    if world.f_cfg.control_agent:
         add_variable("AGENT_CONFIG", json.dumps(world.ca_cfg), False)
         world.ca_cfg = sort_container(world.ca_cfg)
         with open("kea-ctrl-agent.conf", 'w') as conf_file:
@@ -1433,7 +1465,7 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
                      destination_host=destination_address,
                      mode="0o666")
 
-    if world.ctrl_enable:
+    if world.f_cfg.control_agent:
         fabric_send_file("kea-ctrl-agent.conf",
                          world.f_cfg.etc_join("kea-ctrl-agent.conf"),
                          destination_host=destination_address,
@@ -1454,7 +1486,7 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
                             f'kea-dhcp{world.proto[1]}.conf', destination_host=destination_address)
     remove_local_file(f'kea-dhcp{world.proto[1]}.conf')
 
-    if world.ctrl_enable:
+    if world.f_cfg.control_agent:
         copy_configuration_file("kea-ctrl-agent.conf", "kea-ctrl-agent.conf", destination_host=destination_address)
         remove_local_file("kea-ctrl-agent.conf")
 
@@ -1586,7 +1618,7 @@ def _restart_kea_with_systemctl(destination_address):
     cmd = cmd_tpl.format(service=service_name)
     fabric_sudo_command(cmd, destination_host=destination_address)
 
-    if world.ctrl_enable:
+    if world.f_cfg.control_agent:
         if world.server_system == 'redhat':
             service_name = 'kea-ctrl-agent'
         else:
@@ -1613,7 +1645,7 @@ def _restart_kea_with_openrc(destination_address):
     cmd = cmd_tpl.format(service=service_name)
     fabric_sudo_command(cmd, destination_host=destination_address)
 
-    if world.ctrl_enable:
+    if world.f_cfg.control_agent:
         service_name = 'kea-ctrl-agent'
         cmd = cmd_tpl.format(service=service_name)
         fabric_sudo_command(cmd, destination_host=destination_address)
@@ -1643,7 +1675,7 @@ def _reload_kea_with_systemctl(destination_address):
     cmd = cmd_tpl.format(service=service_name, sentence='initiate server reconfiguration')
     fabric_sudo_command(cmd, destination_host=destination_address)
 
-    if world.ctrl_enable:
+    if world.f_cfg.control_agent:
         if world.server_system == 'redhat':
             service_name = 'kea-ctrl-agent'
         else:
@@ -1672,7 +1704,7 @@ def _reload_kea_with_openrc(destination_address):
     cmd = cmd_tpl.format(service=service_name, pid=pid)
     fabric_sudo_command(cmd, destination_host=destination_address)
 
-    if world.ctrl_enable:
+    if world.f_cfg.control_agent:
         pid = fabric_sudo_command(f'pidof {service_name}', destination_host=destination_address)
         cmd = cmd_tpl.format(service=service_name, pid=pid)
         fabric_sudo_command(cmd, destination_host=destination_address)
@@ -1973,7 +2005,7 @@ def save_logs(destination_address: str = world.f_cfg.mgmt_address):
 
     save_dhcp_logs(local_dest_dir, destination_address)
 
-    if world.ctrl_enable:
+    if world.f_cfg.control_agent:
         save_ctrl_logs(local_dest_dir, destination_address)
 
     if world.ddns_enable:

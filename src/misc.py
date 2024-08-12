@@ -38,7 +38,7 @@ def set_world():
     world.dhcp_cfg = {"option-data": [],
                       "hooks-libraries": [],
                       "shared-networks": []}
-    world.ca_cfg = {}
+    world.ca_cfg = {"Control-agent": {}}
     if "isc_dhcp" in world.cfg["dhcp_under_test"]:
         world.subcfg = [["", "", "", "", "", "", ""]]
         world.cfg["conf_time"] = ""

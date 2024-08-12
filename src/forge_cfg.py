@@ -127,6 +127,10 @@ class ForgeConfiguration:
         # easy comparison between single and multi, or use as fixture
         self.multi_threading_enabled = True
 
+        # disable usage of Control Agent
+        # to remove all related code just search for `world.f_cfg.control_agent`
+        self.control_agent = False
+    
         if self.install_method == 'native':
             self.software_install_path = '/usr'
 
