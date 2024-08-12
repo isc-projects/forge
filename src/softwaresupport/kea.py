@@ -1284,30 +1284,27 @@ def _set_kea_ctrl_config():
         kea4 = 'yes'
     if world.ddns_enable:
         ddns = 'yes'
+    if world.f_cfg.control_agent and world.ca_cfg["Control-agent"] != {}:
+        ctrl_agent = 'yes'
 
     world.cfg["keactrl"] = '''kea_config_file={path}/etc/kea/kea.conf
     dhcp4_srv={path}/sbin/kea-dhcp4
     dhcp6_srv={path}/sbin/kea-dhcp6
+    ctrl_agent_srv={path}/sbin/kea-ctrl-agent
     dhcp_ddns_srv={path}/sbin/kea-dhcp-ddns
     netconf_srv={path}/sbin/kea-netconf
     kea_dhcp4_config_file={path}/etc/kea/kea-dhcp4.conf
     kea_dhcp6_config_file={path}/etc/kea/kea-dhcp6.conf
+    kea_ctrl_agent_config_file={path}/etc/kea/kea-ctrl-agent.conf
     kea_dhcp_ddns_config_file={path}/etc/kea/kea-dhcp-ddns.conf
     kea_netconf_config_file={path}/etc/kea/kea-netconf.conf
     dhcp4={kea4}
     dhcp6={kea6}
     dhcp_ddns={ddns}
+    ctrl_agent={ctrl_agent}
     kea_verbose=no
     netconf=no
     '''.format(**locals())
-
-    if world.f_cfg.control_agent:
-        world.cfg["keactrl"] += '''
-
-        ctrl_agent_srv={path}/sbin/kea-ctrl-agent
-        kea_ctrl_agent_config_file={path}/etc/kea/kea-ctrl-agent.conf
-        ctrl_agent=yes
-        '''.format(**locals())
 
 
 def configure_multi_threading(enable_mt, pool=0, queue=0):
