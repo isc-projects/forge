@@ -811,7 +811,8 @@ def test_v4_classification_vendor_different_levels(level):
 @pytest.mark.v4
 @pytest.mark.classification
 def test_v4_subnet_selection_with_class_reservations():
-
+    """Check if client class in global reservation is working correctly after subnet selection.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', id=1)
     srv_control.config_srv_another_subnet_no_interface('192.168.60.0/24', '192.168.60.1-192.168.60.10', id=2)
@@ -931,7 +932,8 @@ def test_v4_subnet_selection_with_class_reservations():
 @pytest.mark.v4
 @pytest.mark.classification
 def test_v4_pool_selection_with_class_reservations():
-
+    """Check if client class in global reservation is working correctly after subnet selection.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', id=1)
     srv_control.new_pool('192.168.50.21-192.168.50.30', 0,)
