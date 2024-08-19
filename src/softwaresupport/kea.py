@@ -565,6 +565,11 @@ def config_client_classification(subnet, option_value):
     world.dhcp_cfg[sub][int(subnet)]["client-class"] = option_value
 
 
+def config_pool_client_classification(subnet, pool, option_value):
+    sub = f'subnet{world.proto[1]}'
+    world.dhcp_cfg[sub][int(subnet)]['pools'][int(pool)]["client-class"] = option_value
+
+
 def config_require_client_classification(subnet, option_value):
     sub = f'subnet{world.proto[1]}'
     subnet = int(subnet)

@@ -590,6 +590,11 @@ def config_client_classification(subnet, option_value):
     dhcp.config_client_classification(subnet, option_value)
 
 
+@step(r'Server is configured with client-classification option in pool (\d+) with name (\S+).')
+def config_pool_client_classification(subnet, pool, option_value):
+    dhcp.config_pool_client_classification(subnet, pool, option_value)
+
+
 @step(r'Server is configured with require-client-classification option in subnet (\d+) with name (\S+).')
 def config_require_client_classification(subnet, option_value):
     dhcp.config_require_client_classification(subnet, option_value)
