@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -813,7 +813,7 @@ def test_v4_classification_vendor_different_levels(level):
 @pytest.mark.parametrize('backend', ['configfile', 'MySQL', 'PostgreSQL'])
 @pytest.mark.parametrize('level', ['subnet', 'pool'])
 def test_v4_network_selection_with_class_reservations(backend, level):
-    """Check if client class in global reservation is working correctly after subnet selection.
+    """Check if client class in global reservation is working correctly after subnet/pool selection.
     """
     misc.test_setup()
     # configure subnet(s) and pool(s)

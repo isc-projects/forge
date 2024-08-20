@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,6 +13,8 @@ import pytest
 from src import misc
 from src import srv_control
 from src import srv_msg
+
+from src.forge_cfg import world
 
 
 @pytest.mark.v6
@@ -966,3 +968,139 @@ def test_v6_classification_vendor_different_levels(level):
 
     for i in ["a", "b", "c"]:
         _get_address(duid=f"00:03:00:01:00:00:00:00:11:0{i.upper()}", address=f"2001:db8:{i}::1", class_id=f'subnet-{i}')
+
+
+@pytest.mark.v6
+@pytest.mark.classification
+@pytest.mark.parametrize('backend', ['configfile', 'MySQL', 'PostgreSQL'])
+@pytest.mark.parametrize('level', ['subnet', 'pool'])
+def test_v6_network_selection_with_class_reservations(backend, level):
+    """Check if client class in global reservation is working correctly after subnet/pool selection.
+    """
+    misc.test_setup()
+    # configure subnet(s) and pool(s)
+    if level == 'subnet':
+        srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::10', id=1)
+        srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64', '2001:db8:b::1-2001:db8:b::10', id=2)
+    else:  # level == 'pool
+        srv_control.config_srv_subnet('2001:db8::/32', '2001:db8:a::1-2001:db8:a::10', id=1)
+        srv_control.new_pool('2001:db8:b::1-2001:db8:b::10', 0)
+
+    # Define "reserved" and "normal" class
+    srv_control.create_new_class('reserved_class')
+    srv_control.add_option_to_defined_class(1, 'dns-servers', '2001:db8::888')
+
+    srv_control.create_new_class('normal_clients')
+    srv_control.add_option_to_defined_class(2, 'dns-servers', '2001:db4::444')
+    srv_control.add_test_to_class(2, 'test', 'not member(\'reserved_class\')')
+
+    # Add class to subnet or pool
+    if level == 'subnet':
+        srv_control.config_client_classification(0, 'reserved_class')
+        srv_control.config_client_classification(1, 'normal_clients')
+    else:  # level == 'pool'
+        srv_control.config_pool_client_classification(0, 0, 'reserved_class')
+        srv_control.config_pool_client_classification(0, 1, 'normal_clients')
+
+    # Enable global reservations
+    world.dhcp_cfg.update({
+        "reservations-global": True,
+        "reservations-in-subnet": False
+    })
+
+    # Define reservation for "reserved" class in configfile or database
+    if backend == 'configfile':
+        world.dhcp_cfg.update({
+            "reservations": [
+                {
+                    "client-classes": [
+                        "reserved_class"
+                    ],
+                    "duid": "00:03:00:01:66:55:44:33:f2:f1"
+                }
+            ]
+        })
+    else:  # backend == 'MySQL' or backend == 'PostgreSQL'
+        srv_control.enable_db_backend_reservation(backend)
+        srv_control.new_db_backend_reservation(backend, 'duid', '00:03:00:01:66:55:44:33:f2:f1')
+        srv_control.update_db_backend_reservation('dhcp6_subnet_id', 0, backend, 1)
+        srv_control.update_db_backend_reservation('dhcp6_client_classes', 'reserved_class', backend, 1)
+        srv_control.upload_db_reservation(backend)
+
+    # Configure shared network
+    if level == 'subnet':
+        srv_control.shared_subnet('2001:db8:a::/64', 0)
+        srv_control.shared_subnet('2001:db8:b::/64', 0)
+    else:  # level == 'pool'
+        srv_control.shared_subnet('2001:db8::/32', 0)
+
+    srv_control.set_conf_parameter_shared_subnet('name', 'name-abc', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '$(SERVER_IFACE)', 0)
+
+    # Start Kea
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Send SARR for client without reservation.
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "DUID", "00:03:00:01:66:55:44:33:f2:f5")
+    srv_msg.client_does_include("Client", "client-id")
+    srv_msg.client_does_include("Client", "IA-NA")
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg("SOLICIT")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "ADVERTISE")
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, "sub-option", 5)
+    srv_msg.response_check_suboption_content(5, 3, "addr", "2001:db8:b::1")
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db4::444')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "DUID", "00:03:00:01:66:55:44:33:f2:f5")
+    srv_msg.client_copy_option("IA_NA")
+    srv_msg.client_copy_option("server-id")
+    srv_msg.client_does_include("Client", "client-id")
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg("REQUEST")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "REPLY")
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, "sub-option", 5)
+    srv_msg.response_check_suboption_content(5, 3, "addr", "2001:db8:b::1")
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db4::444')
+
+    # Send SARR for client with reservation.
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "DUID", "00:03:00:01:66:55:44:33:f2:f1")
+    srv_msg.client_does_include("Client", "client-id")
+    srv_msg.client_does_include("Client", "IA-NA")
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg("SOLICIT")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "ADVERTISE")
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, "sub-option", 5)
+    srv_msg.response_check_suboption_content(5, 3, "addr", "2001:db8:a::1")
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::888')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "DUID", "00:03:00:01:66:55:44:33:f2:f1")
+    srv_msg.client_copy_option("IA_NA")
+    srv_msg.client_copy_option("server-id")
+    srv_msg.client_does_include("Client", "client-id")
+    srv_msg.client_requests_option(23)
+    srv_msg.client_send_msg("REQUEST")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "REPLY")
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, "sub-option", 5)
+    srv_msg.response_check_suboption_content(5, 3, "addr", "2001:db8:a::1")
+    srv_msg.response_check_include_option(23)
+    srv_msg.response_check_option_content(23, 'addresses', '2001:db8::888')
