@@ -810,12 +810,19 @@ def test_v4_classification_vendor_different_levels(level):
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_subnet_selection_with_class_reservations():
+@pytest.mark.parametrize('backend', ['configfile', 'MySQL', 'PostgreSQL'])
+@pytest.mark.parametrize('level', ['subnet', 'pool'])
+def test_v4_network_selection_with_class_reservations(backend, level):
     """Check if client class in global reservation is working correctly after subnet selection.
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', id=1)
-    srv_control.config_srv_another_subnet_no_interface('192.168.60.0/24', '192.168.60.1-192.168.60.10', id=2)
+    # configure subnet(s) and pool(s)
+    if level == 'subnet':
+        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', id=1)
+        srv_control.config_srv_another_subnet_no_interface('192.168.60.0/24', '192.168.60.1-192.168.60.10', id=2)
+    else:  # level == 'pool
+        srv_control.config_srv_subnet('192.168.0.0/16', '192.168.50.1-192.168.50.10', id=1)
+        srv_control.new_pool('192.168.60.1-192.168.60.10', 0)
 
     # Define "reserved" and "normal" class
     srv_control.create_new_class('reserved_class')
@@ -825,29 +832,50 @@ def test_v4_subnet_selection_with_class_reservations():
     srv_control.add_test_to_class(2, 'server-hostname', 'hal9000')
     srv_control.add_test_to_class(2, 'test', 'not member(\'reserved_class\')')
 
-    srv_control.config_client_classification(0, 'reserved_class')
-    srv_control.config_client_classification(1, 'normal_clients')
+    # Add class to subnet or pool
+    if level == 'subnet':
+        srv_control.config_client_classification(0, 'reserved_class')
+        srv_control.config_client_classification(1, 'normal_clients')
+    else:  # level == 'pool'
+        srv_control.config_pool_client_classification(0, 0, 'reserved_class')
+        srv_control.config_pool_client_classification(0, 1, 'normal_clients')
 
-    # Define reservation for "reserved" class
+    # Enable global reservations
     world.dhcp_cfg.update({
-        "reservations": [
-            {
-                "client-classes": [
-                    "reserved_class"
-                ],
-                "hw-address": "ff:01:02:03:ff:04"
-            }
-        ],
         "reservations-global": True,
         "reservations-in-subnet": False
     })
 
+    # Define reservation for "reserved" class in configfile or database
+    if backend == 'configfile':
+        world.dhcp_cfg.update({
+            "reservations": [
+                {
+                    "client-classes": [
+                        "reserved_class"
+                    ],
+                    "hw-address": "ff:01:02:03:ff:04"
+                }
+            ]
+        })
+    else:  # backend == 'MySQL' or backend == 'PostgreSQL'
+        srv_control.enable_db_backend_reservation(backend)
+        srv_control.new_db_backend_reservation(backend, 'hw-address', 'ff:01:02:03:ff:04')
+        srv_control.update_db_backend_reservation('dhcp4_subnet_id', 0, backend, 1)
+        srv_control.update_db_backend_reservation('dhcp4_client_classes', 'reserved_class', backend, 1)
+        srv_control.upload_db_reservation(backend)
+
     # Configure shared network
-    srv_control.shared_subnet('192.168.50.0/24', 0)
-    srv_control.shared_subnet('192.168.60.0/24', 0)
+    if level == 'subnet':
+        srv_control.shared_subnet('192.168.50.0/24', 0)
+        srv_control.shared_subnet('192.168.60.0/24', 0)
+    else:  # level == 'pool'
+        srv_control.shared_subnet('192.168.0.0/16', 0)
+
     srv_control.set_conf_parameter_shared_subnet('name', 'name-abc', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '$(SERVER_IFACE)', 0)
 
+    # Start Kea
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -865,7 +893,6 @@ def test_v4_subnet_selection_with_class_reservations():
     srv_msg.response_check_include_option(54)
     srv_msg.response_check_include_option(61)
     srv_msg.response_check_content('sname', 'hal9000')
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
     srv_msg.response_check_option_content(61, 'value', '00010203040506')
 
@@ -874,7 +901,6 @@ def test_v4_subnet_selection_with_class_reservations():
     srv_msg.client_does_include_with_value('client_id', '00010203040506')
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', '192.168.60.1')
-    srv_msg.client_does_include_with_value('vendor_class_id', 'my-own-class')
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
@@ -885,10 +911,8 @@ def test_v4_subnet_selection_with_class_reservations():
     srv_msg.response_check_include_option(54)
     srv_msg.response_check_include_option(61)
     srv_msg.response_check_content('sname', 'hal9000')
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
     srv_msg.response_check_option_content(61, 'value', '00010203040506')
-
 
     # Send DORA for client with reservation.
     misc.test_procedure()
@@ -904,7 +928,6 @@ def test_v4_subnet_selection_with_class_reservations():
     srv_msg.response_check_include_option(54)
     srv_msg.response_check_include_option(61)
     srv_msg.response_check_content('sname', 'Johny5')
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
     srv_msg.response_check_option_content(61, 'value', '00030405060708')
 
@@ -913,7 +936,6 @@ def test_v4_subnet_selection_with_class_reservations():
     srv_msg.client_does_include_with_value('client_id', '00030405060708')
     srv_msg.client_copy_option('server_id')
     srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
-    srv_msg.client_does_include_with_value('vendor_class_id', 'my-own-class')
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('REQUEST')
 
@@ -924,126 +946,5 @@ def test_v4_subnet_selection_with_class_reservations():
     srv_msg.response_check_include_option(54)
     srv_msg.response_check_include_option(61)
     srv_msg.response_check_content('sname', 'Johny5')
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
-    srv_msg.response_check_option_content(61, 'value', '00030405060708')
-
-
-@pytest.mark.v4
-@pytest.mark.classification
-def test_v4_pool_selection_with_class_reservations():
-    """Check if client class in global reservation is working correctly after subnet selection.
-    """
-    misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', id=1)
-    srv_control.new_pool('192.168.50.21-192.168.50.30', 0,)
-
-    # Define "reserved" and "normal" class
-    srv_control.create_new_class('reserved_class')
-    srv_control.add_test_to_class(1, 'server-hostname', 'Johny5')
-
-    srv_control.create_new_class('normal_clients')
-    srv_control.add_test_to_class(2, 'server-hostname', 'hal9000')
-    srv_control.add_test_to_class(2, 'test', 'not member(\'reserved_class\')')
-
-    srv_control.config_pool_client_classification(0, 0, 'reserved_class')
-    srv_control.config_pool_client_classification(0, 1, 'normal_clients')
-
-    # Define reservation for "reserved" class
-    world.dhcp_cfg.update({
-        "reservations": [
-            {
-                "client-classes": [
-                    "reserved_class"
-                ],
-                "hw-address": "ff:01:02:03:ff:04"
-            }
-        ],
-        "reservations-global": True,
-        "reservations-in-subnet": False
-    })
-
-    # Configure shared network
-    srv_control.shared_subnet('192.168.50.0/24', 0)
-    srv_control.set_conf_parameter_shared_subnet('name', 'name-abc', 0)
-    srv_control.set_conf_parameter_shared_subnet('interface', '$(SERVER_IFACE)', 0)
-
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    # Send DORA for client without reservation.
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:05')
-    srv_msg.client_does_include_with_value('client_id', '00010203040506')
-    srv_msg.client_requests_option(1)
-    srv_msg.client_send_msg('DISCOVER')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.response_check_content('yiaddr', '192.168.50.21')
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_include_option(54)
-    srv_msg.response_check_include_option(61)
-    srv_msg.response_check_content('sname', 'hal9000')
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
-    srv_msg.response_check_option_content(61, 'value', '00010203040506')
-
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:05')
-    srv_msg.client_does_include_with_value('client_id', '00010203040506')
-    srv_msg.client_copy_option('server_id')
-    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.21')
-    srv_msg.client_does_include_with_value('vendor_class_id', 'my-own-class')
-    srv_msg.client_requests_option(1)
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ACK')
-    srv_msg.response_check_content('yiaddr', '192.168.50.21')
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_include_option(54)
-    srv_msg.response_check_include_option(61)
-    srv_msg.response_check_content('sname', 'hal9000')
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
-    srv_msg.response_check_option_content(61, 'value', '00010203040506')
-
-
-    # Send DORA for client with reservation.
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_does_include_with_value('client_id', '00030405060708')
-    srv_msg.client_requests_option(1)
-    srv_msg.client_send_msg('DISCOVER')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.response_check_content('yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_include_option(54)
-    srv_msg.response_check_include_option(61)
-    srv_msg.response_check_content('sname', 'Johny5')
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
-    srv_msg.response_check_option_content(61, 'value', '00030405060708')
-
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
-    srv_msg.client_does_include_with_value('client_id', '00030405060708')
-    srv_msg.client_copy_option('server_id')
-    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
-    srv_msg.client_does_include_with_value('vendor_class_id', 'my-own-class')
-    srv_msg.client_requests_option(1)
-    srv_msg.client_send_msg('REQUEST')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ACK')
-    srv_msg.response_check_content('yiaddr', '192.168.50.1')
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_include_option(54)
-    srv_msg.response_check_include_option(61)
-    srv_msg.response_check_content('sname', 'Johny5')
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
     srv_msg.response_check_option_content(61, 'value', '00030405060708')
