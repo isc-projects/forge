@@ -355,8 +355,8 @@ case "$command" in
         setup_forge
         elapsed_time=$(($(date +%s) - startTime))
         print_summary
-        log "Testing environemnt created in: $elapsed_time seconds"
-        log "Python init script created in: init.py"
+        log "Testing environment created in: $elapsed_time seconds"
+        log "Python init script created in: init_all.py"
         log "Testing environment configuration saved in: incus.json file"
         ;;
     delete)
