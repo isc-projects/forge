@@ -18,7 +18,6 @@ from src import misc
 def test_v4_dnr():
     """
     Check if Kea return option Discovery of Network-designated Resolvers (162, DNR) as configured.
-    Using example from documentation.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50')
@@ -62,7 +61,6 @@ def test_v4_dnr():
 def test_v6_dnr():
     """
     Check if Kea return option Discovery of Network-designated Resolvers (144, DNR) as configured.
-    Using example from documentation.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::10')
