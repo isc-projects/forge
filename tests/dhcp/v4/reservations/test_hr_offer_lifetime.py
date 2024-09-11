@@ -15,6 +15,8 @@ from src import misc
 from src.forge_cfg import world
 
 
+# Bug reported in kea#3555. After it gets solved, this test should pass and
+# there are some comments with the buggy behavior that can be removed.
 @pytest.mark.v4
 @pytest.mark.host_reservation
 def test_v4_reservation_with_offer_lifetime():
@@ -85,7 +87,7 @@ def test_v4_reservation_with_offer_lifetime():
     # This should have happened:
     srv_msg.DORA('192.1.2.0', chaddr='01:02:03:04:ff:04')
     srv_msg.DORA('192.1.2.104', chaddr='01:02:03:04:ff:05')
-    # This is the buggy behavior:
+    # This is the buggy behavior in kea#3555:
     # srv_msg.DO('192.1.2.0', chaddr='01:02:03:04:ff:04')
     # srv_msg.RA('192.1.2.0', response_type='NAK', chaddr='01:02:03:04:ff:04')
     # srv_msg.RA('192.1.2.0', response_type='NAK', chaddr='01:02:03:04:ff:04')
