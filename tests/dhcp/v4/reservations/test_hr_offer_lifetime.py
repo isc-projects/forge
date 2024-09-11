@@ -25,36 +25,19 @@ def test_v4_reservation_with_offer_lifetime():
     # Baseline test case first. Settle what happens when the identifier changes
     # for a reservation.
 
-    world.dhcp_cfg.update({
-        'subnet4': [
-            {
-                'id': 1,
-                'pools': [
-                    {
-                        'pool': '192.1.2.0/24'
-                    }
-                ],
-                'reservations': [
-                    {
-                        'hw-address': '01:02:03:04:ff:02',
-                        'ip-address': '192.1.2.102'
-                    },
-                    {
-                        'hw-address': '01:02:03:04:ff:04',
-                        'ip-address': '192.1.2.104'
-                    },
-                    {
-                        'hw-address': '01:02:03:04:ff:06',
-                        'ip-address': '192.1.2.106'
-                    }
-                ],
-                'subnet': '192.1.2.0/24'
-            }
-        ]
-    })
-    dhcp_cfg = copy.deepcopy(world.dhcp_cfg)
+
+    srv_control.config_srv_subnet('192.1.2.0/24', '192.1.2.0/24', id=1)
+    srv_control.host_reservation_in_subnet('ip-address', '192.1.2.102', 0,
+                                           'hw-address', '01:02:03:04:ff:02')
+    srv_control.host_reservation_in_subnet('ip-address', '192.1.2.104', 0,
+                                           'hw-address', '01:02:03:04:ff:04')
+    srv_control.host_reservation_in_subnet('ip-address', '192.1.2.106', 0,
+                                           'hw-address', '01:02:03:04:ff:06')
+
+
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+    dhcp_cfg = copy.deepcopy(world.dhcp_cfg['Dhcp4'])
 
     # Client gets reserved address. Nothing special.
     srv_msg.DORA('192.1.2.102', chaddr='01:02:03:04:ff:02')
