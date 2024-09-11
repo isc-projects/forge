@@ -25,7 +25,6 @@ def test_v4_reservation_with_offer_lifetime():
     # Baseline test case first. Settle what happens when the identifier changes
     # for a reservation.
 
-
     srv_control.config_srv_subnet('192.1.2.0/24', '192.1.2.0/24', id=1)
     srv_control.host_reservation_in_subnet('ip-address', '192.1.2.102', 0,
                                            'hw-address', '01:02:03:04:ff:02')
@@ -33,7 +32,6 @@ def test_v4_reservation_with_offer_lifetime():
                                            'hw-address', '01:02:03:04:ff:04')
     srv_control.host_reservation_in_subnet('ip-address', '192.1.2.106', 0,
                                            'hw-address', '01:02:03:04:ff:06')
-
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -45,9 +43,9 @@ def test_v4_reservation_with_offer_lifetime():
     # Change reservation identifier.
     world.dhcp_cfg = copy.deepcopy(dhcp_cfg)
     world.dhcp_cfg['subnet4'][0]['reservations'][0]['hw-address'] = '01:02:03:04:ff:03'
-    dhcp_cfg = copy.deepcopy(world.dhcp_cfg)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+    dhcp_cfg = copy.deepcopy(world.dhcp_cfg['Dhcp4'])
 
     # At first, if the reserved client tries to get a lease before the previous
     # lease was expired or released, it gets it the from the dynamic pool.
@@ -64,9 +62,9 @@ def test_v4_reservation_with_offer_lifetime():
     # Add offer-lifetime.
     world.dhcp_cfg = copy.deepcopy(dhcp_cfg)
     world.dhcp_cfg['offer-lifetime'] = 20
-    dhcp_cfg = copy.deepcopy(world.dhcp_cfg)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+    dhcp_cfg = copy.deepcopy(world.dhcp_cfg['Dhcp4'])
 
     # All clients get their current leases.
     srv_msg.DORA('192.1.2.1', chaddr='01:02:03:04:ff:02')
@@ -76,9 +74,9 @@ def test_v4_reservation_with_offer_lifetime():
     # Change reservation identifier.
     world.dhcp_cfg = copy.deepcopy(dhcp_cfg)
     world.dhcp_cfg['subnet4'][0]['reservations'][1]['hw-address'] = '01:02:03:04:ff:05'
-    dhcp_cfg = copy.deepcopy(world.dhcp_cfg)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+    dhcp_cfg = copy.deepcopy(world.dhcp_cfg['Dhcp4'])
 
     # Clients get their current leases. Old reservation gets dynamic address.
     # New reservation gets reserved address.
@@ -96,9 +94,9 @@ def test_v4_reservation_with_offer_lifetime():
     # Remove offer lifetime.
     world.dhcp_cfg = copy.deepcopy(dhcp_cfg)
     del world.dhcp_cfg['offer-lifetime']
-    dhcp_cfg = copy.deepcopy(world.dhcp_cfg)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+    dhcp_cfg = copy.deepcopy(world.dhcp_cfg['Dhcp4'])
 
     # All clients get their current leases.
     srv_msg.DORA('192.1.2.1', chaddr='01:02:03:04:ff:02')
@@ -118,6 +116,7 @@ def test_v4_reservation_with_offer_lifetime():
     world.dhcp_cfg['subnet4'][0]['reservations'][2]['hw-address'] = '01:02:03:04:ff:07'
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+    dhcp_cfg = copy.deepcopy(world.dhcp_cfg['Dhcp4'])
 
     # Clients get their current leases. Old reservation gets dynamic address.
     # New reservation gets reserved address.
