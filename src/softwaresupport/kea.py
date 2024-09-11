@@ -30,6 +30,7 @@ from src.forge_cfg import world
 from src.misc import merge_containers
 from src.protosupport.multi_protocol_functions import add_variable, substitute_vars
 from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
+from src.protosupport.multi_protocol_functions import sort_container
 from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
 from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command
@@ -1322,15 +1323,18 @@ def _cfg_write():
     if world.ddns_enable:
         world.ddns_cfg = {"DhcpDdns": world.ddns_cfg}
         add_variable("DDNS_CONFIG", json.dumps(world.ddns_cfg), False)
+        world.ddns_cfg = sort_container(world.ddns_cfg)
         with open("kea-dhcp-ddns.conf", 'w') as conf_file:
             conf_file.write(json.dumps(world.ddns_cfg, indent=4, sort_keys=False))
 
     if world.ctrl_enable:
         add_variable("AGENT_CONFIG", json.dumps(world.ca_cfg), False)
+        world.ca_cfg = sort_container(world.ca_cfg)
         with open("kea-ctrl-agent.conf", 'w') as conf_file:
             conf_file.write(json.dumps(world.ca_cfg, indent=4, sort_keys=False))
 
     add_variable("DHCP_CONFIG", json.dumps(world.dhcp_cfg), False)
+    world.dhcp_cfg = sort_container(world.dhcp_cfg)
     with open(f'kea-dhcp{world.proto[1]}.conf', 'w') as conf_file:
         conf_file.write(json.dumps(world.dhcp_cfg, indent=4, sort_keys=False))
 
