@@ -466,7 +466,7 @@ def host_reservation(reservation_type, reserved_value, unique_host_value_type, u
                                                                                                     reserved_value,
                                                                                                     unique_host_value_type,
                                                                                                     unique_host_value)
-    dhcp.host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, None)
+    dhcp.host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, 'global')
 
 
 # shared-subnet cfg

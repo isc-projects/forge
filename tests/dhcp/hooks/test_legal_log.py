@@ -15,7 +15,7 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 from src.forge_cfg import world
-from src.protosupport.multi_protocol_functions import file_contains_line_n_times
+from src.protosupport.multi_protocol_functions import file_contains_line_n_times, file_doesnt_contain_line
 from src.softwaresupport.multi_server_functions import fabric_sudo_command
 
 
@@ -23,10 +23,10 @@ from src.softwaresupport.multi_server_functions import fabric_sudo_command
 MESSAGE_COUNT = 3
 
 
-def _send_client_requests(count, ia_pd=False):
+def _send_client_requests(count, ia_pd=False, duid='00:03:00:01:f6:f5:f4:f3:f2:04'):
     for _ in range(count):
         misc.test_procedure()
-        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+        srv_msg.client_sets_value('Client', 'DUID', duid)
         srv_msg.client_does_include('Client', 'client-id')
         srv_msg.client_does_include('Client', 'IA-NA')
         if ia_pd:
@@ -41,7 +41,7 @@ def _send_client_requests(count, ia_pd=False):
         srv_msg.response_check_option_content(3, 'sub-option', 5)
 
         misc.test_procedure()
-        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+        srv_msg.client_sets_value('Client', 'DUID', duid)
         srv_msg.client_copy_option('server-id')
         srv_msg.client_copy_option('IA_NA')
         if ia_pd:
@@ -55,10 +55,10 @@ def _send_client_requests(count, ia_pd=False):
         srv_msg.response_check_option_content(3, 'sub-option', 5)
 
 
-def _send_client_renews(count):
+def _send_client_renews(count, duid='00:03:00:01:f6:f5:f4:f3:f2:04'):
     for _ in range(count):
         misc.test_procedure()
-        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+        srv_msg.client_sets_value('Client', 'DUID', duid)
         srv_msg.client_copy_option('server-id')
         srv_msg.client_copy_option('IA_NA')
         srv_msg.client_does_include('Client', 'client-id')
@@ -72,10 +72,10 @@ def _send_client_renews(count):
         srv_msg.response_check_option_content(3, 'sub-option', 5)
 
 
-def _send_client_rebinds(count):
+def _send_client_rebinds(count, duid='00:03:00:01:f6:f5:f4:f3:f2:04'):
     for _ in range(count):
         misc.test_procedure()
-        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+        srv_msg.client_sets_value('Client', 'DUID', duid)
         srv_msg.client_copy_option('server-id')
         srv_msg.client_copy_option('IA_NA')
         srv_msg.client_does_include('Client', 'client-id')
@@ -352,9 +352,26 @@ def _wait_till_elapsed(start, seconds):
         pass
 
 
+def _add_guarded_subnet_with_logging_off6(class_test=False):
+    # Create guarded subnet with classs and reservation to check if it is not logged
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:20::/64', '2001:db8:20::5-2001:db8:20::50',
+                                                       client_class='50', id=5,
+                                                       user_context={"legal-logging": False})
+    srv_control.config_srv_prefix('2001:db8:30::', 0, 90, 94)
+    srv_control.create_new_class('50')
+    if class_test:
+        srv_control.add_test_to_class(1, 'test', 'vendor[4491].option[1026].hex == 0xf6f5f4f3f205')
+    reservations = [{"duid": "00:03:00:01:f6:f5:f4:f3:f2:05",
+                     "client-classes": ["50"]}]
+    world.dhcp_cfg.update({'reservations': reservations})
+    world.dhcp_cfg['early-global-reservations-lookup'] = True
+    world.dhcp_cfg['reservations-global'] = True
+
+
 @pytest.mark.v6
 @pytest.mark.legal_logging
-def test_v6_legal_log_address_assigned_duid():
+@pytest.mark.parametrize('mode', ['global', 'subnet'])
+def test_v6_legal_log_address_assigned_duid(mode):
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
@@ -363,25 +380,36 @@ def test_v6_legal_log_address_assigned_duid():
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50', id=10)
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+    if mode == 'subnet':
+        _add_guarded_subnet_with_logging_off6()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     _send_client_requests(MESSAGE_COUNT)
+    if mode == 'subnet':
+        _send_client_requests(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
 
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    if mode == 'subnet':
+        file_doesnt_contain_line(world.f_cfg.data_join('kea-legal*.txt'),
+                                 'Address: 2001:db8:20::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                 'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:05 '
+                                 'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
+        srv_msg.check_leases({'address': '2001:db8:20::5', "duid": "00:03:00:01:f6:f5:f4:f3:f2:05"})
 
 
 @pytest.mark.v6
 @pytest.mark.legal_logging
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
-def test_v6_legal_log_address_assigned_duid_db(backend):
+@pytest.mark.parametrize('mode', ['global', 'subnet'])
+def test_v6_legal_log_address_assigned_duid_db(backend, mode):
     srv_msg.remove_from_db_table('logs', backend)
 
     misc.test_setup()
@@ -389,8 +417,10 @@ def test_v6_legal_log_address_assigned_duid_db(backend):
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50', id=10)
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+    if mode == 'subnet':
+        _add_guarded_subnet_with_logging_off6()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
@@ -400,16 +430,26 @@ def test_v6_legal_log_address_assigned_duid_db(backend):
     srv_control.start_srv('DHCP', 'started')
 
     _send_client_requests(MESSAGE_COUNT)
+    if mode == 'subnet':
+        _send_client_requests(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
 
     srv_msg.table_contains_line_n_times('logs', backend, MESSAGE_COUNT,
                                         'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                         'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    if mode == 'subnet':
+        srv_msg.table_contains_line_n_times('logs', backend, 0,
+                                            'Address: 2001:db8:20::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                            'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:05 '
+                                            'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
+        srv_msg.check_leases({'address': '2001:db8:20::5',
+                              "duid": "00:03:00:01:f6:f5:f4:f3:f2:05"})
 
 
 @pytest.mark.v6
 @pytest.mark.legal_logging
-def test_v6_legal_log_address_renewed_duid():
+@pytest.mark.parametrize('mode', ['global', 'subnet'])
+def test_v6_legal_log_address_renewed_duid(mode):
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
@@ -418,8 +458,10 @@ def test_v6_legal_log_address_renewed_duid():
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50', id=10)
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+    if mode == 'subnet':
+        _add_guarded_subnet_with_logging_off6()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -428,17 +470,29 @@ def test_v6_legal_log_address_renewed_duid():
 
     _send_client_renews(MESSAGE_COUNT)
 
+    if mode == 'subnet':
+        _send_client_requests(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
+        _send_client_renews(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
+
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
                                'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
+    if mode == 'subnet':
+        file_doesnt_contain_line(world.f_cfg.data_join('kea-legal*.txt'),
+                                 'Address: 2001:db8:20::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                 'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:05 '
+                                 'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
+        srv_msg.check_leases({'address': '2001:db8:20::5', "duid": "00:03:00:01:f6:f5:f4:f3:f2:05"})
+
 
 @pytest.mark.v6
 @pytest.mark.legal_logging
+@pytest.mark.parametrize('mode', ['global', 'subnet'])
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
-def test_v6_legal_log_address_renewed_duid_db(backend):
+def test_v6_legal_log_address_renewed_duid_db(backend, mode):
     misc.test_procedure()
     srv_msg.remove_from_db_table('logs', backend)
 
@@ -447,8 +501,10 @@ def test_v6_legal_log_address_renewed_duid_db(backend):
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50', id=10)
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+    if mode == 'subnet':
+        _add_guarded_subnet_with_logging_off6()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
@@ -461,15 +517,27 @@ def test_v6_legal_log_address_renewed_duid_db(backend):
 
     _send_client_renews(MESSAGE_COUNT)
 
+    if mode == 'subnet':
+        _send_client_requests(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
+        _send_client_renews(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
+
     srv_msg.table_contains_line_n_times('logs', backend, 2 * MESSAGE_COUNT,
                                         'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                         'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    if mode == 'subnet':
+        srv_msg.table_contains_line_n_times('logs', backend, 0,
+                                            'Address: 2001:db8:20::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                            'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:05 '
+                                            'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
+        srv_msg.check_leases({'address': '2001:db8:20::5',
+                              "duid": "00:03:00:01:f6:f5:f4:f3:f2:05"})
 
 
 @pytest.mark.v6
 @pytest.mark.legal_logging
-def test_v6_legal_log_address_rebind_duid():
+@pytest.mark.parametrize('mode', ['global', 'subnet'])
+def test_v6_legal_log_address_rebind_duid(mode):
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
@@ -478,8 +546,10 @@ def test_v6_legal_log_address_rebind_duid():
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50', id=10)
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+    if mode == 'subnet':
+        _add_guarded_subnet_with_logging_off6()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -488,17 +558,28 @@ def test_v6_legal_log_address_rebind_duid():
 
     _send_client_rebinds(MESSAGE_COUNT)
 
+    if mode == 'subnet':
+        _send_client_requests(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
+        _send_client_rebinds(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
+
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
     file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
                                'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    if mode == 'subnet':
+        file_doesnt_contain_line(world.f_cfg.data_join('kea-legal*.txt'),
+                                 'Address: 2001:db8:20::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                 'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:05 '
+                                 'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
+        srv_msg.check_leases({'address': '2001:db8:20::5', "duid": "00:03:00:01:f6:f5:f4:f3:f2:05"})
 
 
 @pytest.mark.v6
 @pytest.mark.legal_logging
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
-def test_v6_legal_log_address_rebind_duid_db(backend):
+@pytest.mark.parametrize('mode', ['global', 'subnet'])
+def test_v6_legal_log_address_rebind_duid_db(backend, mode):
     misc.test_procedure()
     srv_msg.remove_from_db_table('logs', backend)
 
@@ -507,8 +588,10 @@ def test_v6_legal_log_address_rebind_duid_db(backend):
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('preferred-lifetime', 400)
     srv_control.set_time('valid-lifetime', 600)
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50', id=10)
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+    if mode == 'subnet':
+        _add_guarded_subnet_with_logging_off6()
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
     srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
@@ -521,10 +604,21 @@ def test_v6_legal_log_address_rebind_duid_db(backend):
 
     _send_client_rebinds(MESSAGE_COUNT)
 
+    if mode == 'subnet':
+        _send_client_requests(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
+        _send_client_rebinds(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
+
     srv_msg.table_contains_line_n_times('logs', backend, 2 * MESSAGE_COUNT,
                                         'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                         'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                         'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
+    if mode == 'subnet':
+        srv_msg.table_contains_line_n_times('logs', backend, 0,
+                                            'Address: 2001:db8:20::5 has been assigned for 0 hrs 10 mins 0 secs '
+                                            'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:05 '
+                                            'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
+        srv_msg.check_leases({'address': '2001:db8:20::5',
+                              "duid": "00:03:00:01:f6:f5:f4:f3:f2:05"})
 
 
 @pytest.mark.v6

@@ -922,11 +922,8 @@ def host_reservation(reservation_type, reserved_value, unique_host_value_type, u
     unique_host_value -- the value for the reservation's identifier
     subnet -- the ordinal number of the subnet under which the reservation will
         be made. Careful, this is not the subnet ID. Subnet 0 is the first subnet.
+        Can also hold the value 'global'.
     """
-    sub = f'subnet{world.proto[1]}'
-    if "reservations" not in world.dhcp_cfg[sub][subnet]:
-        world.dhcp_cfg[sub][subnet]["reservations"] = []
-
     # v6 for ip-address reservation and prefixes using different format and names:
     if world.proto[1] == '6':
         if reservation_type in ["ip-address", "prefix", "prefixes"]:
@@ -934,14 +931,24 @@ def host_reservation(reservation_type, reserved_value, unique_host_value_type, u
             if reservation_type[-2:] != "es":
                 reservation_type += "es"
             # add reservation as list if it's prefix or address
-            world.dhcp_cfg[sub][subnet]["reservations"].append({unique_host_value_type: unique_host_value,
-                                                                reservation_type: [reserved_value]})
+            reservation = ({unique_host_value_type: unique_host_value,
+                            reservation_type: [reserved_value]})
         else:
-            world.dhcp_cfg[sub][subnet]["reservations"].append({unique_host_value_type: unique_host_value,
-                                                                reservation_type: reserved_value})
+            reservation = ({unique_host_value_type: unique_host_value,
+                            reservation_type: reserved_value})
     else:
-        world.dhcp_cfg[sub][subnet]["reservations"].append({unique_host_value_type: unique_host_value,
-                                                            reservation_type: reserved_value})
+        reservation = ({unique_host_value_type: unique_host_value,
+                        reservation_type: reserved_value})
+
+    if subnet == 'global':
+        if "reservations" not in world.dhcp_cfg:
+            world.dhcp_cfg["reservations"] = []
+        world.dhcp_cfg["reservations"].append(reservation)
+    else:
+        sub = f'subnet{world.proto[1]}'
+        if "reservations" not in world.dhcp_cfg[sub][subnet]:
+            world.dhcp_cfg[sub][subnet]["reservations"] = []
+        world.dhcp_cfg[sub][subnet]["reservations"].append(reservation)
 
 
 def host_reservation_extension(reservation_number, subnet, reservation_type, reserved_value):
