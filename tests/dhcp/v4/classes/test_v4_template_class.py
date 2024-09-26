@@ -141,7 +141,7 @@ def test_v4_spawn_class_2():
     # new pkts:
     assert 2 == get_line_count_in_log(f'client packet belongs to an unconfigured class:'
                                       f' SPAWN_my_vendor_client_id_{new_cli_id[24:29]}')
-    assert 2 == get_line_count_in_log(f'client packet has been assigned to the following classes: ALL, my_vendor_client_id, SPAWN_my_vendor_client_id_{new_cli_id[24:29]}, UNKNOWN')
+    assert 2 == get_line_count_in_log(f'client packet has been assigned to the following classes: ALL, SPAWN_my_vendor_client_id_{new_cli_id[24:29]}, my_vendor_client_id, UNKNOWN')
 
 
 @pytest.mark.v4
