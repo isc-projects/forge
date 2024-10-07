@@ -33,7 +33,7 @@ def _create_pgsql_dump():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_cb_cmds.so')
-    srv_control.add_hooks('libdhcp_mysql_cb.so')
+    srv_control.add_hooks('libdhcp_mysql.so')
     srv_control.open_control_channel()
     srv_control.agent_control_channel('$(MGMT_ADDRESS)')
     srv_control.enable_db_backend_reservation('PostgreSQL')

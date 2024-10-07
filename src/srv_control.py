@@ -354,6 +354,16 @@ def define_temporary_lease_db_backend_credentials(db_type, tmp_db_user, tmp_db_p
     world.f_cfg.db_user = tmp_db_user
 
 
+def add_database_hook(db_type):
+    """add_database_hook Check if database hook was added to configuration. If not it will add it.
+
+    :param db_type: mysql, pgsql, postrges or memfile
+    :type db_type: str
+
+    """
+    dhcp.add_database_hook(db_type)
+
+
 # START Reservation backend section
 @step(r'Use (\S+) reservation system.')
 def enable_db_backend_reservation(db_type, clear=True):
@@ -370,6 +380,8 @@ def enable_db_backend_reservation(db_type, clear=True):
         pass
     else:
         assert False, "Database type not recognised."
+    # let's add hooks
+    add_database_hook(db_type)
 
 
 @step(r'Create new (\S+) reservation identified by (\S+) (\S+).')

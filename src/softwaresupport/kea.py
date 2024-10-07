@@ -985,6 +985,7 @@ def _config_db_backend():
                                             "host": world.f_cfg.db_host,
                                             "user": world.f_cfg.db_user,
                                             "password": world.f_cfg.db_passwd}
+    add_database_hook(world.f_cfg.db_type)
 
 
 def add_hooks(library_path):
@@ -994,7 +995,33 @@ def add_hooks(library_path):
                                                       "high-availability": [{"peers": [],
                                                                              "state-machine": {"states": []}}]}})
     else:
+        # we might test if library is already in the list, but it would prevent us from writing negative tests
         world.dhcp_cfg["hooks-libraries"].append({"library": library_path})
+
+
+def check_hook_presence(hook):
+    """
+    Check if hook whose path matches one of the patterns given as parameters is present.
+
+    :param hook_patterns: list of patterns used to match library paths
+    """
+    for hook_library in world.dhcp_cfg['hooks-libraries']:
+        if re.search(hook, hook_library['library']):
+            return True
+    return False
+
+
+def add_database_hook(db_type):
+    db_type = db_type.lower()
+    if db_type in ["memfile", ""]:
+        return
+    if db_type == 'potgresql':
+        db_type = 'pgsql'
+
+    if check_hook_presence(f'libdhcp_{db_type}.so'):
+        return
+
+    add_hooks(f'libdhcp_{db_type}.so')
 
 
 def delete_hooks(hook_patterns):

@@ -95,7 +95,7 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
                                         "max-reconnect-tries": retries,
                                         "reconnect-wait-time": wait_time,
                                         "on-fail": "stop-retry-exit"}
-
+    srv_control.add_database_hook(backend)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
 
@@ -203,7 +203,7 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
                                         "max-reconnect-tries": retries,
                                         "reconnect-wait-time": wait_time,
                                         "on-fail": "serve-retry-exit"}
-
+    srv_control.add_database_hook(backend)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
 
@@ -312,7 +312,7 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
                                         "max-reconnect-tries": retries,
                                         "reconnect-wait-time": wait_time,
                                         "on-fail": "serve-retry-continue"}
-
+    srv_control.add_database_hook(backend)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
 
@@ -433,7 +433,7 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
                                         "max-reconnect-tries": retries,
                                         "reconnect-wait-time": wait_time,
                                         "on-fail": "stop-retry-exit"}
-
+    srv_control.add_database_hook(backend)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
 
@@ -530,7 +530,7 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
                                         "max-reconnect-tries": retries,
                                         "reconnect-wait-time": wait_time,
                                         "on-fail": "serve-retry-exit"}
-
+    srv_control.add_database_hook(backend)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
 
@@ -631,7 +631,7 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
                                         "max-reconnect-tries": retries,
                                         "reconnect-wait-time": wait_time,
                                         "on-fail": "serve-retry-continue"}
-
+    srv_control.add_database_hook(backend)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
 
@@ -730,7 +730,7 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
     srv_control.add_parameter_to_hook(1, 'max-reconnect-tries', retries)
     srv_control.add_parameter_to_hook(1, 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook(1, 'on-fail', 'stop-retry-exit')
-
+    srv_control.add_database_hook(backend)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
 
@@ -831,7 +831,7 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
     srv_control.add_parameter_to_hook(1, 'max-reconnect-tries', retries)
     srv_control.add_parameter_to_hook(1, 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook(1, 'on-fail', 'serve-retry-exit')
-
+    srv_control.add_database_hook(backend)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
 
@@ -941,7 +941,7 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
     srv_control.add_parameter_to_hook(1, 'max-reconnect-tries', retries)
     srv_control.add_parameter_to_hook(1, 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook(1, 'on-fail', 'serve-retry-continue')
-
+    srv_control.add_database_hook(backend)
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
 
