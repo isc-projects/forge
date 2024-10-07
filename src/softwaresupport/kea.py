@@ -1015,7 +1015,7 @@ def add_database_hook(db_type):
     db_type = db_type.lower()
     if db_type in ["memfile", ""]:
         return
-    if db_type == 'potgresql':
+    if db_type == 'postgresql':
         db_type = 'pgsql'
 
     if check_hook_presence(f'libdhcp_{db_type}.so'):

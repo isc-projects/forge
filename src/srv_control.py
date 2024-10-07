@@ -341,6 +341,7 @@ def build_database(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
 def define_temporary_lease_db_backend(lease_db_type):
     lease_db_type = test_define_value(lease_db_type)[0]
     world.f_cfg.db_type = lease_db_type
+    dhcp.add_database_hook(lease_db_type)
 
 
 @step(r'Credentials for (\S+) database. User: (\S+); Passwd: (\S+); DB-name: (\S+); Host: (\S+);')
