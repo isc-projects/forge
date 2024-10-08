@@ -307,10 +307,10 @@ def delete_hooks(hook_patterns):
 
 
 @step(r'To hook no. (\d+) add parameter named (\S+) with value: (.+)')
-def add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value=None):
+def add_parameter_to_hook(hook_name, parameter_name, parameter_value=None):
     if not isinstance(parameter_name, dict):
         parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
-    dhcp.add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value)
+    dhcp.add_parameter_to_hook(hook_name, parameter_name, parameter_value)
 
 
 @step(r'Add High-Availability hook library located (\S+).')

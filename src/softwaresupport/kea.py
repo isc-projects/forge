@@ -1036,27 +1036,25 @@ def delete_hooks(hook_patterns):
                 del world.dhcp_cfg['hooks-libraries'][i]
 
 
-def add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value):
+def add_parameter_to_hook(hook_name, parameter_name, parameter_value):
     """
-    Determine the hook library with number {hook_number_or_name} if it's an int,
-    or that contains pattern {hook_number_or_name} if it's a str.
-    Add to the hook library's parameters: "{parameter_name}": {parameter_value}
+    Add configure parameters to hook library. Use hook library name.
 
     Other usage is to pass full dictionary as second argument and parameter_value set to None,
     this way passed dictionary will be saved in parameters of particular hook
 
-    :param hook_number_or_name: hook index starting with 1 or pattern contained in the library name
+    :param hook_name: hook library name
     :param parameter_name: the parameter's JSON key
     :param parameter_value: the parameter's JSON value
     """
 
     hook_no = None
     # Get the hook number.
-    if isinstance(hook_number_or_name, int):
-        hook_no = hook_number_or_name - 1
-    if isinstance(hook_number_or_name, str):
+    if isinstance(hook_name, int):
+        assert False, "Please use hook library name to add parameter to hook"
+    if isinstance(hook_name, str):
         for i, hook_library in enumerate(world.dhcp_cfg['hooks-libraries']):
-            if re.search(hook_number_or_name, hook_library['library']):
+            if re.search(hook_name, hook_library['library']):
                 hook_no = i
 
     if "parameters" not in world.dhcp_cfg["hooks-libraries"][hook_no].keys():
@@ -1073,23 +1071,21 @@ def add_parameter_to_hook(hook_number_or_name, parameter_name, parameter_value):
     world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"][parameter_name] = parameter_value
 
 
-def delete_parameter_from_hook(hook_number_or_name, parameter_name: str):
+def delete_parameter_from_hook(hook_name, parameter_name: str):
     """
-    Determine the hook library with number {hook_number_or_name} if it's an int,
-    or that contains pattern {hook_number_or_name} if it's a str.
-    Remove {parameter_name} from the hook library's parameters.
+    Remove parameter from the hook configuration, use hook library name.
 
-    :param hook_number_or_name: hook index starting with 1 or pattern contained in the library name
+    :param hook_name: hook pattern contained in the library name
     :param parameter_name: the parameter's JSON key
     """
 
     # Get the hook number.
     hook_no = None
-    if isinstance(hook_number_or_name, int):
-        hook_no = hook_number_or_name - 1
-    if isinstance(hook_number_or_name, str):
+    if isinstance(hook_name, int):
+        assert False, "Please use hook library name to delete parameter from hook"
+    if isinstance(hook_name, str):
         for i, hook_library in enumerate(world.dhcp_cfg['hooks-libraries']):
-            if re.search(hook_number_or_name, hook_library['library']):
+            if re.search(hook_name, hook_library['library']):
                 hook_no = i
     if hook_no is None:
         return

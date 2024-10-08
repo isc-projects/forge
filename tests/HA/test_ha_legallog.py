@@ -92,10 +92,10 @@ def test_ha_legallog(dhcp_version, backend):
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_hooks('libdhcp_legal_log.so')
     if backend != 'file':
-        srv_control.add_parameter_to_hook(3, 'name', '$(DB_NAME)')
-        srv_control.add_parameter_to_hook(3, 'password', '$(DB_PASSWD)')
-        srv_control.add_parameter_to_hook(3, 'type', backend)
-        srv_control.add_parameter_to_hook(3, 'user', '$(DB_USER)')
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
 
     # Configure HA hook to use TLS.
     srv_control.update_ha_hook_parameter(HA_CONFIG)
@@ -133,10 +133,10 @@ def test_ha_legallog(dhcp_version, backend):
     srv_control.add_ha_hook('libdhcp_ha.so')
     srv_control.add_hooks('libdhcp_legal_log.so')
     if backend != 'file':
-        srv_control.add_parameter_to_hook(3, 'name', '$(DB_NAME)')
-        srv_control.add_parameter_to_hook(3, 'password', '$(DB_PASSWD)')
-        srv_control.add_parameter_to_hook(3, 'type', backend)
-        srv_control.add_parameter_to_hook(3, 'user', '$(DB_USER)')
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
 
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,

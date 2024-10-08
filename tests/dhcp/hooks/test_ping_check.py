@@ -66,11 +66,11 @@ def test_v4_ping_check_basic():
     world.cfg['wait_interval'] += 1
 
     srv_control.add_hooks('libdhcp_ping_check.so')
-    srv_control.add_parameter_to_hook(1, "enable-ping-check", True)
-    srv_control.add_parameter_to_hook(1, "min-ping-requests", 1)
-    srv_control.add_parameter_to_hook(1, "reply-timeout", 100)
-    srv_control.add_parameter_to_hook(1, "ping-cltt-secs", 60)
-    srv_control.add_parameter_to_hook(1, "ping-channel-threads", 0)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", 1)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "reply-timeout", 100)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", 60)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -122,11 +122,11 @@ def test_v4_ping_check_requests():
     # Number of PING requests to try
     requests = 5
     srv_control.add_hooks('libdhcp_ping_check.so')
-    srv_control.add_parameter_to_hook(1, "enable-ping-check", True)
-    srv_control.add_parameter_to_hook(1, "min-ping-requests", requests)
-    srv_control.add_parameter_to_hook(1, "reply-timeout", 100)
-    srv_control.add_parameter_to_hook(1, "ping-cltt-secs", 60)
-    srv_control.add_parameter_to_hook(1, "ping-channel-threads", 0)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", requests)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "reply-timeout", 100)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", 60)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -155,11 +155,11 @@ def test_v4_ping_check_timeout():
     # Timeout for ping-check
     timeout = 2000
     srv_control.add_hooks('libdhcp_ping_check.so')
-    srv_control.add_parameter_to_hook(1, "enable-ping-check", True)
-    srv_control.add_parameter_to_hook(1, "min-ping-requests", 1)
-    srv_control.add_parameter_to_hook(1, "reply-timeout", timeout)
-    srv_control.add_parameter_to_hook(1, "ping-cltt-secs", 60)
-    srv_control.add_parameter_to_hook(1, "ping-channel-threads", 0)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", 1)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "reply-timeout", timeout)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", 60)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -210,11 +210,11 @@ def test_v4_ping_check_cltt():
     # Timeout for ping-check
     ping_cltt = 2
     srv_control.add_hooks('libdhcp_ping_check.so')
-    srv_control.add_parameter_to_hook(1, "enable-ping-check", True)
-    srv_control.add_parameter_to_hook(1, "min-ping-requests", 1)
-    srv_control.add_parameter_to_hook(1, "reply-timeout", 100)
-    srv_control.add_parameter_to_hook(1, "ping-cltt-secs", ping_cltt)
-    srv_control.add_parameter_to_hook(1, "ping-channel-threads", 0)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", 1)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "reply-timeout", 100)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", ping_cltt)
+    srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

@@ -437,7 +437,7 @@ def test_v4_add_reservation_flex_id(channel, host_database):
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
-    srv_control.add_parameter_to_hook(2, 'identifier-expression', 'option[60].hex')
+    srv_control.add_parameter_to_hook("libdhcp_flex_id.so", 'identifier-expression', 'option[60].hex')
 
     srv_control.enable_db_backend_reservation(host_database)
 
@@ -2573,7 +2573,7 @@ def test_v6_add_reservation_flex_id(channel, host_database):
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
-    srv_control.add_parameter_to_hook(2, 'identifier-expression', 'relay6[0].option[18].hex')
+    srv_control.add_parameter_to_hook("libdhcp_flex_id.so", 'identifier-expression', 'relay6[0].option[18].hex')
 
     srv_control.enable_db_backend_reservation(host_database)
 

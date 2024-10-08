@@ -336,9 +336,9 @@ def test_v4_lease_agent_option(backend, option, stash):
     # relay id suboption code is 12
     # remote id suboption code is 2
     srv_control.add_hooks("libdhcp_flex_id.so")
-    srv_control.add_parameter_to_hook(
-        1, "identifier-expression", f"relay4[{12 if option == 'relay_id' else 2}].hex"
-    )
+    srv_control.add_parameter_to_hook("libdhcp_flex_id.so",
+                                      "identifier-expression",
+                                      f"relay4[{12 if option == 'relay_id' else 2}].hex")
 
     srv_control.define_temporary_lease_db_backend(backend)
     srv_control.enable_db_backend_reservation(backend)

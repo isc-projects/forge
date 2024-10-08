@@ -158,7 +158,8 @@ def test_v4_ddns_tuning_basic(backend, hostname_type, option):
 
     # Import hook and set parameters.
     srv_control.add_hooks('libdhcp_ddns_tuning.so')
-    srv_control.add_parameter_to_hook(1, "hostname-expr",
+    srv_control.add_parameter_to_hook('libdhcp_ddns_tuning.so',
+                                      "hostname-expr",
                                       "" if hostname_type == 'empty' else "'host-'+hexstring(pkt4.mac,'-')")
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
@@ -215,7 +216,8 @@ def test_v6_ddns_tuning_basic(backend, hostname_type):
     # Import hook and set parameters.
     srv_control.add_hooks('libdhcp_ddns_tuning.so')
 
-    srv_control.add_parameter_to_hook(1, "hostname-expr",
+    srv_control.add_parameter_to_hook("libdhcp_ddns_tuning.so",
+                                      "hostname-expr",
                                       "" if hostname_type == 'empty' else "'host-'+hexstring(option[1].hex, '-')")
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
@@ -276,7 +278,8 @@ def test_v4_ddns_tuning_subnets(backend, hostname_type, option):
 
     # Import hook and set parameters.
     srv_control.add_hooks('libdhcp_ddns_tuning.so')
-    srv_control.add_parameter_to_hook(1, "hostname-expr",
+    srv_control.add_parameter_to_hook("libdhcp_ddns_tuning.so",
+                                      "hostname-expr",
                                       "" if hostname_type == 'empty' else "'host0-'+hexstring(pkt4.mac,'-')")
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -352,7 +355,8 @@ def test_v6_ddns_tuning_subnets(backend, hostname_type):
 
     # Import hook and ser parameters.
     srv_control.add_hooks('libdhcp_ddns_tuning.so')
-    srv_control.add_parameter_to_hook(1, "hostname-expr",
+    srv_control.add_parameter_to_hook("libdhcp_ddns_tuning.so",
+                                      "hostname-expr",
                                       "" if hostname_type == 'empty' else "'host1-'+hexstring(option[1].hex, '-')")
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -430,7 +434,9 @@ def test_v4_ddns_tuning_skip(backend, option):
 
     # Import hook and set parameters.
     srv_control.add_hooks('libdhcp_ddns_tuning.so')
-    srv_control.add_parameter_to_hook(1, "hostname-expr", "'host-'+hexstring(pkt4.mac,'-')+'.four.example.com.'")
+    srv_control.add_parameter_to_hook("libdhcp_ddns_tuning.so",
+                                      "hostname-expr",
+                                      "'host-'+hexstring(pkt4.mac,'-')+'.four.example.com.'")
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
     srv_control.open_control_channel()
@@ -507,7 +513,8 @@ def test_v6_ddns_tuning_skip(backend):
 
     # Import hook and set parameters.
     srv_control.add_hooks('libdhcp_ddns_tuning.so')
-    srv_control.add_parameter_to_hook(1, "hostname-expr",
+    srv_control.add_parameter_to_hook("libdhcp_ddns_tuning.so",
+                                      "hostname-expr",
                                       "'host-'+hexstring(option[1].hex, '-')+'.four.example.com.'")
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 

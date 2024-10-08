@@ -33,7 +33,7 @@ def test_v4_all_hooks_start():
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.10')
     srv_control.add_line({"host-reservation-identifiers": ["flex-id", "hw-address"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook(1, 'identifier-expression', 'option[60].hex')
+    srv_control.add_parameter_to_hook("libdhcp_flex_id.so", 'identifier-expression', 'option[60].hex')
     # legal log
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -78,7 +78,7 @@ def test_v4_all_hooks_test_cooperation():
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.10')
     srv_control.add_line({"host-reservation-identifiers": ["flex-id", "hw-address"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook(1, 'identifier-expression', 'option[60].hex')
+    srv_control.add_parameter_to_hook("libdhcp_flex_id.so", 'identifier-expression', 'option[60].hex')
     # legal log
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')

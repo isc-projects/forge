@@ -202,8 +202,8 @@ def test_run_script_leases4_committed():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
@@ -298,8 +298,8 @@ def test_run_script_lease4_renew():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
     srv_control.open_control_channel()
@@ -378,8 +378,8 @@ def test_run_script_lease4_expire():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
     srv_control.open_control_channel()
@@ -486,8 +486,8 @@ def test_run_script_lease4_release():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
     srv_control.open_control_channel()
@@ -595,8 +595,8 @@ def test_run_script_lease4_decline():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
     srv_control.open_control_channel()
@@ -680,8 +680,8 @@ def test_run_script_lease4_recover():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # Configure decline time
     srv_control.set_conf_parameter_global('decline-probation-period', 0)
@@ -805,8 +805,8 @@ def test_run_script_leases6_committed():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
@@ -890,8 +890,8 @@ def test_run_script_lease6_renew():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
@@ -963,8 +963,8 @@ def test_run_script_lease6_expire():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
     srv_control.open_control_channel()
@@ -1064,8 +1064,8 @@ def test_run_script_lease6_release():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
     srv_control.open_control_channel()
@@ -1158,8 +1158,8 @@ def test_run_script_lease6_decline():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
     srv_control.open_control_channel()
@@ -1240,8 +1240,8 @@ def test_run_script_lease6_recover():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # Configure decline time
     srv_control.set_conf_parameter_global('decline-probation-period', 0)
@@ -1348,8 +1348,8 @@ def test_run_script_lease6_rebind():
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook(1, 'name', world.f_cfg.data_join('script.sh'))
-    srv_control.add_parameter_to_hook(1, 'sync', False)
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')

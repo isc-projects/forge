@@ -422,10 +422,10 @@ def test_v6_legal_log_address_assigned_duid_db(backend, mode):
     if mode == 'subnet':
         _add_guarded_subnet_with_logging_off6()
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -506,10 +506,10 @@ def test_v6_legal_log_address_renewed_duid_db(backend, mode):
     if mode == 'subnet':
         _add_guarded_subnet_with_logging_off6()
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -593,10 +593,10 @@ def test_v6_legal_log_address_rebind_duid_db(backend, mode):
     if mode == 'subnet':
         _add_guarded_subnet_with_logging_off6()
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -663,10 +663,10 @@ def test_v6_legal_log_address_assigned_docsis_modem_db(backend):
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.add_line({"mac-sources": ["docsis-modem"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -723,10 +723,10 @@ def test_v6_legal_log_address_assigned_docsis_cmts_db(backend):
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.add_line({"mac-sources": ["docsis-cmts"]})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -785,10 +785,10 @@ def test_v6_legal_log_address_assigned_relay_db(backend):
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -824,7 +824,7 @@ def test_v6_legal_log_with_flex_id_address_assigned():
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook(2,
+    srv_control.add_parameter_to_hook("libdhcp_flex_id.so",
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
@@ -860,12 +860,12 @@ def test_v6_legal_log_with_flex_id_address_assigned_db(backend):
     srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '2001:db8:1::f')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.add_hooks('libdhcp_flex_id.so')
-    srv_control.add_parameter_to_hook(2,
+    srv_control.add_parameter_to_hook("libdhcp_flex_id.so",
                                       'identifier-expression',
                                       'vendor[4491].option[1026].hex')
     srv_control.add_line({"host-reservation-identifiers": ["duid", "flex-id"]})
@@ -905,7 +905,7 @@ def test_v6_legal_log_parser_format():
                      "int32totext(pkt6.transid) +" \
                      "addrtotext(relay6[0].linkaddr) +" \
                      "0x0a"
-    srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", "request-parser-format", request_format)
     response_format = "pkt.iface +" \
                       "addrtotext(pkt.src) +" \
                       "addrtotext(pkt.dst) +" \
@@ -914,7 +914,7 @@ def test_v6_legal_log_parser_format():
                       "int32totext(pkt6.msgtype) +" \
                       "int32totext(pkt6.transid) +" \
                       "addrtotext(relay6[0].linkaddr)"
-    srv_control.add_parameter_to_hook(1, "response-parser-format", response_format)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", "response-parser-format", response_format)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -968,7 +968,7 @@ def test_v6_legal_log_parser_format_via_relay():
                      "addrtotext(relay6[0].linkaddr) + " \
                      "addrtotext(relay6[0].peeraddr) + " \
                      "0x0a"
-    srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", "request-parser-format", request_format)
     response_format = "pkt.iface +" \
                       "addrtotext(pkt.src) +" \
                       "addrtotext(pkt.dst) +" \
@@ -978,7 +978,7 @@ def test_v6_legal_log_parser_format_via_relay():
                       "int32totext(pkt6.transid) +" \
                       "addrtotext(relay6[0].linkaddr) + " \
                       "addrtotext(relay6[0].peeraddr)"
-    srv_control.add_parameter_to_hook(1, "response-parser-format", response_format)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", "response-parser-format", response_format)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1035,7 +1035,7 @@ def test_v6_legal_log_parser_format_dual_ip():
                      "int32totext(pkt6.transid) +" \
                      "addrtotext(relay6[0].linkaddr) +" \
                      "0x0a"
-    srv_control.add_parameter_to_hook(1, "request-parser-format", request_format)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", "request-parser-format", request_format)
     response_format = "pkt.iface +" \
                       "ifelse(option[3].option[5].exists, addrtotext(substring(option[3].option[5].hex, 0, 16)),'none') +" \
                       "ifelse(option[25].option[26].exists, addrtotext(substring(option[25].option[26].hex, 9, 16)), 'none') +" \
@@ -1046,7 +1046,7 @@ def test_v6_legal_log_parser_format_dual_ip():
                       "int32totext(pkt6.msgtype) +" \
                       "int32totext(pkt6.transid) +" \
                       "addrtotext(relay6[0].linkaddr)"
-    srv_control.add_parameter_to_hook(1, "response-parser-format", response_format)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", "response-parser-format", response_format)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1174,10 +1174,10 @@ def test_v4_legal_log_assigned_address_db(backend):
     srv_control.set_time('valid-lifetime', 600)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1227,10 +1227,10 @@ def test_v4_legal_log_assigned_address_without_client_id_db(backend):
     srv_control.set_time('valid-lifetime', 600)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1308,10 +1308,10 @@ def test_v4_legal_log_assigned_address_via_relay_db(backend):
     srv_control.set_time('valid-lifetime', 600)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1361,10 +1361,10 @@ def test_v4_legal_log_renew_state_db(backend):
     srv_control.set_time('valid-lifetime', 600)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1413,10 +1413,10 @@ def test_v4_legal_log_rebind_state_db(backend):
     srv_control.set_time('valid-lifetime', 600)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     srv_control.add_hooks('libdhcp_legal_log.so')
-    srv_control.add_parameter_to_hook(1, 'name', '$(DB_NAME)')
-    srv_control.add_parameter_to_hook(1, 'password', '$(DB_PASSWD)')
-    srv_control.add_parameter_to_hook(1, 'type', backend)
-    srv_control.add_parameter_to_hook(1, 'user', '$(DB_USER)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', backend)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'user', '$(DB_USER)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -1451,8 +1451,8 @@ def test_legal_log_rotation(dhcp_version):
 
     srv_control.add_hooks('libdhcp_legal_log.so')
     # Configure log rotation
-    srv_control.add_parameter_to_hook(1, 'time-unit', 'second')
-    srv_control.add_parameter_to_hook(1, 'count', 20 if dhcp_version == 'v4' else 15)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'time-unit', 'second')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'count', 20 if dhcp_version == 'v4' else 15)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1523,7 +1523,7 @@ def test_legal_log_basename(dhcp_version):
 
     srv_control.add_hooks('libdhcp_legal_log.so')
     # set custom name
-    srv_control.add_parameter_to_hook(1, 'base-name', 'custom-log')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'base-name', 'custom-log')
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1585,12 +1585,12 @@ def test_legal_log_rotate_actions(dhcp_version):
 
     srv_control.add_hooks('libdhcp_legal_log.so')
     # Configure log rotation
-    srv_control.add_parameter_to_hook(1, 'time-unit', 'second')
-    srv_control.add_parameter_to_hook(1, 'count', 20 if dhcp_version == 'v4' else 15)
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'time-unit', 'second')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'count', 20 if dhcp_version == 'v4' else 15)
 
     # Configure log rotation actions
-    srv_control.add_parameter_to_hook(1, 'prerotate', world.f_cfg.data_join('script_pre.sh'))
-    srv_control.add_parameter_to_hook(1, 'postrotate', world.f_cfg.data_join('script_post.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'prerotate', world.f_cfg.data_join('script_pre.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'postrotate', world.f_cfg.data_join('script_post.sh'))
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
