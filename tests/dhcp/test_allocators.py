@@ -329,7 +329,7 @@ def test_v6_allocators(backend, scope):
     """
     Test allocators in v6, addresses as well as prefixes. Checks:
     - randomness between addresses/prefixes assigned in single exchange (one client)
-    - randomness between addresses/prefixes assigned in multiple exchanges (multiple clinets)
+    - randomness between addresses/prefixes assigned in multiple exchanges (multiple clients)
     - correctness of address/prefix assigned (if it fits subnet)
     """
     misc.test_setup()

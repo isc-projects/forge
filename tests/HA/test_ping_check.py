@@ -20,11 +20,11 @@ from .steps import get_status_HA, wait_until_ha_state, send_increased_elapsed_ti
 
 # Set of IP addresses to be used in testing. Number corresponds to the shift in last field from CIADDR.
 IPADDRESSES = [
-    -1,  # Empty IP address before CIADDR - can be modified
+    -10,  # Empty IP address before CIADDR - can be modified
     0,  # CIADDR
-    1,  # Empty IP address after CIADDR - can be modified
-    2,  # IP address after CIADDR that will be added do forge interface to respond to PING - can be modified
-    3  # Empty IP address after CIADDR - can be modified
+    -11,  # Empty IP address after CIADDR - can be modified
+    -12,  # IP address after CIADDR that will be added to forge interface to respond to PING - can be modified
+    -13  # Empty IP address after CIADDR - can be modified
 ]
 
 
@@ -62,7 +62,6 @@ HA_CONFIG = {
 
 @pytest.mark.usefixtures('prepare_pingcheck_env')
 @pytest.mark.v4
-@pytest.mark.hook
 @pytest.mark.ha
 @pytest.mark.parametrize('ha_state', ['standby', 'partnerdown'])
 def test_v4_ping_check_basic_ha(ha_state):
@@ -292,7 +291,6 @@ def test_v4_ping_check_requests_ha(ha_state):
 
 
 @pytest.mark.v4
-@pytest.mark.hook
 @pytest.mark.ha
 @pytest.mark.parametrize('ha_state', ['standby', 'partnerdown'])
 def test_v4_ping_check_timeout_ha(ha_state):
@@ -410,7 +408,6 @@ def test_v4_ping_check_timeout_ha(ha_state):
 
 
 @pytest.mark.v4
-@pytest.mark.hook
 @pytest.mark.ha
 @pytest.mark.parametrize('ha_state', ['standby', 'partnerdown', 'interrupted'])
 def test_v4_ping_check_cltt_ha(ha_state):

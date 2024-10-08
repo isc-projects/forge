@@ -19,11 +19,11 @@ from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_c
 
 # Set of IP addresses to be used in testing. Number corresponds to the shift in last field from CIADDR.
 IPADDRESSES = [
-    -1,  # Empty IP address before CIADDR - can be modified
+    -10,  # Empty IP address before CIADDR - can be modified
     0,  # CIADDR
-    1,  # Empty IP address after CIADDR - can be modified
-    2,  # IP address after CIADDR that will be added do forge interface to respond to PING - can be modified
-    3  # Empty IP address after CIADDR - can be modified
+    -11,  # Empty IP address after CIADDR - can be modified
+    -12,  # IP address after CIADDR that will be added do forge interface to respond to PING - can be modified
+    -13  # Empty IP address after CIADDR - can be modified
 ]
 
 

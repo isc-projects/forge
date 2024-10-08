@@ -508,7 +508,7 @@ def execute_shell_cmd(path, save_results=True, dest=world.f_cfg.mgmt_address, ex
         myfile.close()
 
     if exp_failed:
-        assert not result.succeeded
+        assert result.failed
     else:
         assert result.succeeded
 

@@ -290,6 +290,7 @@ def send_cmd(cmd, address=world.f_cfg.mgmt_address, exp_result=0, exp_failed=Fal
 
 
 @pytest.mark.v4
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns4_conflict_resolution_check_with_dhcid(level):
@@ -624,6 +625,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
 
 
 @pytest.mark.v4
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 @pytest.mark.parametrize(
@@ -739,6 +741,7 @@ def test_ddns4_conflict_resolution(level, conflict):
 
 
 @pytest.mark.v6
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns6_conflict_resolution_check_with_dhcid(level):
@@ -901,7 +904,7 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
         pass
 
     _check_address_record(
-        "abc-client-1.six.example.com.",
+        "abc-client-2-2.six.example.com.",
         "0.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.c.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.",
     )
     _check_fqdn_record("abc-client-1.six.example.com.", "2001:db8:c::10", version=6)
@@ -931,6 +934,7 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
 
 
 @pytest.mark.v6
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
@@ -1115,6 +1119,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
 
 
 @pytest.mark.v6
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 @pytest.mark.parametrize(
@@ -1233,6 +1238,7 @@ def test_ddns6_conflict_resolution(level, conflict):
 
 
 @pytest.mark.v6
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns6_conflict_resolution_simple_scenario(level):

@@ -135,11 +135,12 @@ def fabric_remove_file_command(remote_path,
 
 
 def fabric_is_file(remote_path, destination_host=world.f_cfg.mgmt_address):
-    try:
-        fabric_sudo_command(f'test -f {remote_path}', destination_host=destination_host)
-    except SystemExit:
-        return False
-    return True
+    result = fabric_sudo_command(
+        f'test -f {remote_path}',
+        destination_host=destination_host,
+        ignore_errors=True
+    )
+    return result.succeeded
 
 
 def remove_local_file(file_local):

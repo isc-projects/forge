@@ -53,6 +53,8 @@ if __name__ == '__main__':
                 if key == 'eth1':
                     save_to_init_all("CLIENT_IPV6_ADDR_GLOBAL", ipv6_global)
                     save_to_init_all("CLNT4_ADDR", ipv4)
+                    save_to_init_all("GIADDR4", ipv4)
+                    save_to_init_all("CIADDR", ipv4)
                 else:
                     save_to_init_all(f"CLNT4_ADDR_{key[-1]}", ipv4)
                 continue
@@ -72,6 +74,7 @@ if __name__ == '__main__':
                     if device['name'] == 'kea-1' :
                         save_to_init_all("SRV4_ADDR", ipv4)
                         save_to_init_all("DNS4_ADDR", ipv4)
+                        save_to_init_all("DNS6_ADDR", ipv6_global)
                         save_to_init_all("SRV_IPV6_ADDR_GLOBAL", ipv6_global)
                         save_to_init_all("SRV_IPV6_ADDR_LINK_LOCAL", ipv6_link_local)
                     # this can be used in the future with different names
