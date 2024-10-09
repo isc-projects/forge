@@ -1001,9 +1001,9 @@ def add_hooks(library_path):
 
 def check_hook_presence(hook):
     """
-    Check if hook whose path matches one of the patterns given as parameters is present.
+    Check if hook whose path matches the pattern given as parameter is present.
 
-    :param hook_patterns: list of patterns used to match library paths
+    :param hook: pattern used to match library paths
     """
     for hook_library in world.dhcp_cfg['hooks-libraries']:
         if re.search(hook, hook_library['library']):
