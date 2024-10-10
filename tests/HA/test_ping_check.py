@@ -7,6 +7,7 @@
 """Kea4 Ping Check hook HA tests"""
 
 import os
+import ipaddress
 import pytest
 
 from src import misc
@@ -18,26 +19,50 @@ from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_c
 from .steps import get_status_HA, wait_until_ha_state, send_increased_elapsed_time
 
 
-# Set of IP addresses to be used in testing. Number corresponds to the shift in last field from CIADDR.
-IPADDRESSES = [
-    -1,  # Empty IP address before CIADDR - can be modified
-    0,  # CIADDR
-    1,  # Empty IP address after CIADDR - can be modified
-    2,  # IP address after CIADDR that will be added do forge interface to respond to PING - can be modified
-    3  # Empty IP address after CIADDR - can be modified
-]
+def generate_ip_address_shift():
+    """Function searches for IP addresses that can be used for ping check.
+    """
+    # shift_list
+        # 1 Empty IP address before CIADDR
+        # 2 New CIADDR
+        # 3 Empty IP address after CIADDR
+        # 4 IP address after CIADDR that will be added do forge interface to respond to PING
+        # 5 Empty IP address after CIADDR
+
+
+    ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
+    srv4_addr = ipaddress.IPv4Interface(f'{world.f_cfg.srv4_addr}/24')
+    # chceck if srv4_addr is bigger than ciaddr by 10 to fit new ip
+    if srv4_addr.ip > ciaddr.ip+10:
+        return [1, 2, 3, 4, 5]
+    # if not, check if srv4_addr is bigger than ciaddr and if ciaddr - 10 is in the same subnet
+    if srv4_addr.ip > ciaddr.ip:
+        if (ciaddr - 10).network.subnet_of(ciaddr.network):
+            return [-5, -4, -3, -2, -1]
+        else:
+            return [11, 12, 13, 14, 15]
+    if srv4_addr.ip < ciaddr.ip-10:
+        return [-5, -4, -3, -2, -1]
+    if (ciaddr + 10).network.subnet_of(ciaddr.network):
+        return [1, 2, 3, 4, 5]
+    return [-15,-14,-13,-12,-11]
 
 
 # Fixture to configure additional IP address for tests.
 @pytest.fixture()
 def prepare_pingcheck_env():
-    ciaddr = world.f_cfg.ciaddr
+    ip_address_shift = generate_ip_address_shift()
+    ciaddr = ipaddress.ip_address(world.f_cfg.ciaddr)
     # Assign responding IP address to forge interface
-    new_ip = ".".join(ciaddr.split(".")[0:-1] + [str(int(ciaddr.split(".")[-1]) + IPADDRESSES[3])])
+    new_ip = ciaddr + ip_address_shift[3]
     command = os.system(f'ip address replace {new_ip}/24 dev {world.f_cfg.iface}')
+    # Assing new address to forge to use instead of ciaddr
+    new_ciaddr_ip = ciaddr + ip_address_shift[1]
+    command = os.system(f'ip address replace {new_ciaddr_ip}/24 dev {world.f_cfg.iface}')
     assert command == 0
     yield
     command = os.system(f'ip address del {new_ip}/24 dev {world.f_cfg.iface}')
+    command = os.system(f'ip address del {new_ciaddr_ip}/24 dev {world.f_cfg.iface}')
     assert command == 0
 
 
@@ -72,17 +97,15 @@ def test_v4_ping_check_basic_ha(ha_state):
     CIADDR and IPADDRESSES[3] addresses will respond to ping.
     'partnerdown' parameter tests if feature works with primary server down.
     """
-    # Create subnet CIADDR and new ips.
-    ciaddr = world.f_cfg.ciaddr
-    subnet = '.'.join(ciaddr.split('.')[0:-1]+['0/24'])
-    ip_addresses = []
-    # Generate IP addresses from IPADDRESSES table.
-    for i in IPADDRESSES:
-        ip_addresses.append(".".join(ciaddr.split(".")[0:-1] + [str(int(ciaddr.split(".")[-1]) + i)]))
-    # HA SERVER 1
     misc.test_setup()
-    srv_control.config_srv_subnet(subnet, None)
-
+    # Create subnet CIADDR and new ips.
+    ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
+    srv_control.config_srv_subnet(ciaddr.network, None)
+    # Generate IP addresses from ip_addresses table.
+    ip_address_shift = generate_ip_address_shift()
+    ip_addresses = []
+    for i in ip_address_shift:
+        ip_addresses.append(ciaddr.ip + i)
     # Create pools from ip addresses
     for ip_address in ip_addresses:
         srv_control.new_pool(f'{ip_address}/32', 0)
@@ -114,7 +137,7 @@ def test_v4_ping_check_basic_ha(ha_state):
     # HA SERVER 2
     misc.test_setup()
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
-    srv_control.config_srv_subnet(subnet, None, world.f_cfg.server2_iface)
+    srv_control.config_srv_subnet(ciaddr.network, None, world.f_cfg.server2_iface)
     for ip_address in ip_addresses:
         srv_control.new_pool(f'{ip_address}/32', 0)
 
@@ -198,16 +221,16 @@ def test_v4_ping_check_requests_ha(ha_state):
     'partnerdown' parametr tests if feature works with primary server down.
     """
     # Create subnet and pool
-    ciaddr = world.f_cfg.ciaddr
-    subnet = '.'.join(ciaddr.split('.')[0:-1]+['0/24'])
-    ip_address = ".".join(ciaddr.split(".")[0:-1]+[str(int(ciaddr.split(".")[-1])+IPADDRESSES[2])])
+    ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
+    ip_address_shift = generate_ip_address_shift()
+    ip_address = ciaddr + ip_address_shift[2]
 
     # Number of PING requests to try
     requests = 5
 
     # HA SERVER 1
     misc.test_setup()
-    srv_control.config_srv_subnet(subnet, f'{ip_address}/32')
+    srv_control.config_srv_subnet(ciaddr.network, ip_address)
     # Increase timeout of DORA messages to account for ping check.
     world.cfg['wait_interval'] += 1
 
@@ -235,7 +258,7 @@ def test_v4_ping_check_requests_ha(ha_state):
     # HA SERVER 2
     misc.test_setup()
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
-    srv_control.config_srv_subnet(subnet, f'{ip_address}/32', world.f_cfg.server2_iface)
+    srv_control.config_srv_subnet(ciaddr.network, ip_address, world.f_cfg.server2_iface)
 
     world.cfg['wait_interval'] += 1
     srv_control.open_control_channel()
@@ -280,14 +303,14 @@ def test_v4_ping_check_requests_ha(ha_state):
         srv_msg.forge_sleep(2, 'seconds')
 
     # Send DORA for new client.
-    srv_msg.DORA(ip_address, chaddr='ff:01:02:03:ff:04')
+    srv_msg.DORA(ip_address.ip, chaddr='ff:01:02:03:ff:04')
 
     # Verify that proper number of PINGs was sent.
     log_server = world.f_cfg.mgmt_address_2 if ha_state == 'partnerdown' else world.f_cfg.mgmt_address
     for r in range(requests):
-        log_contains(f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address}, id 1, sequence {r+1}',
+        log_contains(f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address.ip}, id 1, sequence {r+1}',
                      destination=log_server)
-    log_doesnt_contain(f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address}, id 1, sequence {requests+1}',
+    log_doesnt_contain(f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address.ip}, id 1, sequence {requests+1}',
                        destination=log_server)
 
 
@@ -303,13 +326,13 @@ def test_v4_ping_check_timeout_ha(ha_state):
     # Timeout for ping-check
     timeout = 2000
     # Create subnet and pool
-    ciaddr = world.f_cfg.ciaddr
-    subnet = '.'.join(ciaddr.split('.')[0:-1]+['0/24'])
-    ip_address = ".".join(ciaddr.split(".")[0:-1]+[str(int(ciaddr.split(".")[-1])+IPADDRESSES[2])])
+    ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
+    ip_address_shift = generate_ip_address_shift()
+    ip_address = ciaddr + ip_address_shift[2]
 
     # HA SERVER 1
     misc.test_setup()
-    srv_control.config_srv_subnet(subnet, f'{ip_address}/32')
+    srv_control.config_srv_subnet(ciaddr.network, ip_address)
     # Increase timeout of DORA messages to account for ping check.
     world.cfg['wait_interval'] += 1
 
@@ -337,7 +360,7 @@ def test_v4_ping_check_timeout_ha(ha_state):
     # HA SERVER 2
     misc.test_setup()
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
-    srv_control.config_srv_subnet(subnet, f'{ip_address}/32', world.f_cfg.server2_iface)
+    srv_control.config_srv_subnet(ciaddr.network, ip_address, world.f_cfg.server2_iface)
 
     world.cfg['wait_interval'] += 1
     srv_control.open_control_channel()
@@ -395,18 +418,19 @@ def test_v4_ping_check_timeout_ha(ha_state):
     log_server = world.f_cfg.mgmt_address_2 if ha_state == 'partnerdown' else world.f_cfg.mgmt_address
     # Verify that ping was send and Kea is waiting for response.
     log_contains(
-        f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address}, id 1, sequence 1', destination=log_server)
-    log_doesnt_contain(f'PING_CHECK_MGR_REPLY_TIMEOUT_EXPIRED for {ip_address}, ECHO REQUEST 1 of 1, '
+        f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address.ip}, id 1, sequence 1', destination=log_server)
+    log_doesnt_contain(f'PING_CHECK_MGR_REPLY_TIMEOUT_EXPIRED for {ip_address.ip}, ECHO REQUEST 1 of 1, '
                        f'reply-timeout {timeout}', destination=log_server)
-    log_doesnt_contain(f'PING_CHECK_MGR_LEASE_FREE_TO_USE address {ip_address} is free to use', destination=log_server)
+    log_doesnt_contain(f'PING_CHECK_MGR_LEASE_FREE_TO_USE address {ip_address.ip} is free to use',
+                       destination=log_server)
 
     # Wait for reply timeout.
     srv_msg.forge_sleep(timeout+1000, 'milliseconds')
 
     # Verify that Kea timed out waiting for response.
-    log_contains(f'PING_CHECK_MGR_REPLY_TIMEOUT_EXPIRED for {ip_address}, ECHO REQUEST 1 of 1, '
+    log_contains(f'PING_CHECK_MGR_REPLY_TIMEOUT_EXPIRED for {ip_address.ip}, ECHO REQUEST 1 of 1, '
                  f'reply-timeout {timeout}', destination=log_server)
-    log_contains(f'PING_CHECK_MGR_LEASE_FREE_TO_USE address {ip_address} is free to use', destination=log_server)
+    log_contains(f'PING_CHECK_MGR_LEASE_FREE_TO_USE address {ip_address.ip} is free to use', destination=log_server)
 
 
 @pytest.mark.v4
@@ -423,13 +447,13 @@ def test_v4_ping_check_cltt_ha(ha_state):
     # Timeout for ping-check
     ping_cltt = 2 if ha_state != 'interrupted' else 10
     # Create subnet and pool
-    ciaddr = world.f_cfg.ciaddr
-    subnet = '.'.join(ciaddr.split('.')[0:-1]+['0/24'])
-    ip_address = ".".join(ciaddr.split(".")[0:-1]+[str(int(ciaddr.split(".")[-1])+IPADDRESSES[2])])
+    ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
+    ip_address_shift = generate_ip_address_shift()
+    ip_address = ciaddr + ip_address_shift[2]
 
     # HA SERVER 1
     misc.test_setup()
-    srv_control.config_srv_subnet(subnet, f'{ip_address}/32')
+    srv_control.config_srv_subnet(ciaddr.network, ip_address)
     # Increase timeout of DORA messages to account for ping check.
     world.cfg['wait_interval'] += 1
     srv_control.set_conf_parameter_global('decline-probation-period', probation_period)
@@ -457,7 +481,7 @@ def test_v4_ping_check_cltt_ha(ha_state):
     # HA SERVER 2
     misc.test_setup()
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
-    srv_control.config_srv_subnet(subnet, f'{ip_address}/32', world.f_cfg.server2_iface)
+    srv_control.config_srv_subnet(ciaddr.network, ip_address, world.f_cfg.server2_iface)
 
     world.cfg['wait_interval'] += 1
     srv_control.set_conf_parameter_global('decline-probation-period', probation_period)
@@ -503,14 +527,14 @@ def test_v4_ping_check_cltt_ha(ha_state):
         srv_msg.forge_sleep(2, 'seconds')
 
     # Send DORA for new client.
-    srv_msg.DORA(ip_address, chaddr='ff:01:02:03:ff:04')
+    srv_msg.DORA(ip_address.ip, chaddr='ff:01:02:03:ff:04')
 
     log_server = world.f_cfg.mgmt_address_2 if ha_state == 'partnerdown' else world.f_cfg.mgmt_address
     # Verify that only one PING was send.
     log_contains(
-        f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address}, id 1, sequence 1', destination=log_server)
+        f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address.ip}, id 1, sequence 1', destination=log_server)
     log_doesnt_contain(
-        f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address}, id 1, sequence 2', destination=log_server)
+        f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address.ip}, id 1, sequence 2', destination=log_server)
 
     if ha_state == 'interrupted':
         # Shutdown primary server and wait for 'partner-down' status
@@ -522,18 +546,18 @@ def test_v4_ping_check_cltt_ha(ha_state):
         log_server = world.f_cfg.mgmt_address_2
 
     # Send discover before ping-cltt elapses.
-    srv_msg.DO(ip_address, chaddr='ff:01:02:03:ff:04')
+    srv_msg.DO(ip_address.ip, chaddr='ff:01:02:03:ff:04')
 
     # Verify that no new PINGs were sent.
     log_doesnt_contain(
-        f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address}, id 1, sequence 2', destination=log_server)
+        f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address.ip}, id 1, sequence 2', destination=log_server)
 
     # Wait for ping-cltt to elapse
     srv_msg.forge_sleep(ping_cltt, 'seconds')
 
     # Send discover after ping-cltt elapsed.
-    srv_msg.DO(ip_address, chaddr='ff:01:02:03:ff:04')
+    srv_msg.DO(ip_address.ip, chaddr='ff:01:02:03:ff:04')
 
     # Verify that new PINGs was sent.
     log_contains(
-        f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address}, id 1, sequence 2', destination=log_server)
+        f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address.ip}, id 1, sequence 2', destination=log_server)
