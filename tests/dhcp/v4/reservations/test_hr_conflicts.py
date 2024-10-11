@@ -244,6 +244,7 @@ def test_v4_host_reservation_duplicate_ip_reservations_allowed(backend):
 @pytest.mark.parametrize("backend", ['memfile', 'MySQL', 'PostgreSQL'])
 def test_v4_host_reservation_conflicts_duplicate_reservations_different_subnets(backend):
     misc.test_setup()
+    srv_control.enable_db_backend_reservation(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
     if backend == 'memfile':
         srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',

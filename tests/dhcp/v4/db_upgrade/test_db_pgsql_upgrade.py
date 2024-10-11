@@ -115,6 +115,7 @@ def test_v4_upgrade_pgsql_db():
                                  "type": "postgresql"}}
     world.dhcp_cfg.update(hosts)
     world.dhcp_cfg.update(leases)
+    srv_control.add_database_hook('pgsql')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
