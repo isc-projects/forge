@@ -905,9 +905,9 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
 
     _check_address_record(
         "abc-client-2-2.six.example.com.",
-        "0.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.c.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.",
+        "0.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.b.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.",
     )
-    _check_fqdn_record("abc-client-1.six.example.com.", "2001:db8:c::10", version=6)
+    _check_fqdn_record("abc-client-2-2.six.example.com.", "2001:db8:b::10", version=6)
 
     # now check if we can overwrite static record
     _get_address6(
