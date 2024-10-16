@@ -371,7 +371,7 @@ function install_kea_pkgs() {
             "alpine")
                 # this is bad, nexus do not provide alpine repo, just raw, we need to first download all pkgs and than install them
                 pkg_version=${pkg_version/isc/r}
-                local 
+                local
                 rm -rf alpine_pkgs
                 mkdir alpine_pkgs
                 pkgs=(
@@ -382,6 +382,8 @@ function install_kea_pkgs() {
                     "isc-kea-admin"
                     "isc-kea-ctrl-agent"
                     "isc-kea-common"
+                    "isc-kea-mysql"
+                    "isc-kea-pgsql"
                     "isc-kea-premium-cb-cmds"
                     "isc-kea-premium-class-cmds"
                     "isc-kea-premium-ddns-tuning"
@@ -398,7 +400,7 @@ function install_kea_pkgs() {
                     "isc-kea-premium-ping-check"
                 )
                 for pkg in "${pkgs[@]}"; do
-                    wget -P alpine_pkgs https://packages.aws.isc.org/repository/kea-"$usedSystem"-"$osVersion"/isc"${pkg_version: -14}"/v"$osVersion"/"$arch"/"$pkg"-"$pkg_version".apk 
+                    wget -P alpine_pkgs https://packages.aws.isc.org/repository/kea-"$usedSystem"-"$osVersion"/isc"${pkg_version: -14}"/v"$osVersion"/"$arch"/"$pkg"-"$pkg_version".apk
                 done
                 incus file push -q -p -r alpine_pkgs kea-"$node"//tmp/.
                 for i in "${!pkgs[@]}"; do
@@ -439,7 +441,7 @@ function install_kea_tarball() {
         log "Installing kea from the source code on node kea-$node - $usedSystem $osVersion"
         incus exec kea-"$node" -- rm -rf /tmp/kea
         incus file push -r -q "$2" kea-"$node"//tmp/.
-        incus exec kea-"$node" --cwd=/tmp/kea -- python3 hammer.py build -p local -w ccache,forge,install,mysql,pgsql,shell,gssapi,netconf -x docs,perfdhcp,unittest --ccache-dir /ccache # 
+        incus exec kea-"$node" --cwd=/tmp/kea -- python3 hammer.py build -p local -w ccache,forge,install,mysql,pgsql,shell,gssapi,netconf -x docs,perfdhcp,unittest --ccache-dir /ccache #
     done
     printf '\nINSTALL_METHOD="make"\n' >> init_all.py
 }
