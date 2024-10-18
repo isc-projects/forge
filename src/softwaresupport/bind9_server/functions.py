@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -205,8 +205,8 @@ def start_srv(success, destination_address=world.f_cfg.mgmt_address):
         fabric_sudo_command("systemctl status %s | grep 'Active: active (running)'" % srv_name,
                             destination_host=destination_address)
     else:
-        fabric_sudo_command("ps ax | grep 'named -c'",
-                            destination_host=destination_address)
+        processes = fabric_sudo_command("ps ax", destination_host=destination_address)
+        assert "named -c" in processes, "Expected named to be started, but it is not."
 
 
 def save_leases(destination_address=world.f_cfg.mgmt_address):
