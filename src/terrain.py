@@ -340,8 +340,7 @@ def test_start():
     # let's assume x86_64 is the default architecture
     world.server_architecture = 'x86_64'
     # chech what architecture system is returning
-    result = fabric_run_command('arch',
-                                hide_all=True, ignore_errors=True)
+    result = fabric_run_command('uname -m', hide_all=True, ignore_errors=True)
     if result.succeeded:
         world.server_architecture = result.stdout.rstrip()
         print(f'server running on {world.server_architecture} architecture')
