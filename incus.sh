@@ -472,10 +472,16 @@ function get_kea_pkg_version() {
     printf ''
 }
 
+function upload_pytest() {
+    # no arguments needed
+    rm -rf tests_results
+    incus file push -r -q . kea-forge//home/forge/.
+}
+
 function setup_forge() {
     # no arguments needed
     log "Setting up forge in kea-forge - ubuntu"
-    incus file push -r -q . kea-forge/home/forge/
+    upload_pytest
     incus exec kea-forge -- sudo -u forge python3 -m venv /home/forge/venv-client-node
     incus exec kea-forge -- sudo -u forge /home/forge/venv-client-node/bin/pip install -r /home/forge/requirements.txt
     create_forge_init
@@ -483,11 +489,23 @@ function setup_forge() {
 }
 
 function run_pytest() {
-    # The first argument is a node name
-    log "Upload init_all.py"
+    # Check arguments, if --upload-pytest is present, upload the pytest files to kea-forge
+    # than run pytest with the rest of the arguments
+
+    local args=("$@")
+    local new_args=()
+
+    for arg in "${args[@]}"; do
+        if [[ "$arg" == "--upload-pytest" ]]; then
+            log "Uploading forge source code to kea-forge"
+            upload_pytest
+        else
+            new_args+=("$arg")
+        fi
+    done
     incus file push init_all.py kea-forge/home/forge/init_all.py
-    log "Running pytest"
-    incus exec kea-forge --cwd=/home/forge -- sudo /home/forge/venv-client-node/bin/pytest "$@"
+    log "Running pytest.."
+    incus exec kea-forge --cwd=/home/forge -- sudo /home/forge/venv-client-node/bin/pytest "${new_args[@]}"
     get_results
 }
 
@@ -549,6 +567,7 @@ DB_HOST = ""
 FABRIC_PTY = False
 MULTI_THREADING_ENABLED = True
 FORGE_VERBOSE = False
+DISABLE_DB_SETUP = False
 EOF
 
 if [[ "$usedSystem" == "fedora" ]]; then
@@ -568,8 +587,11 @@ function help() {
     printf "            %s install-kea-pkgs ubuntu/24.04 2 2.7.3-isc20240903092214\n" "$0"
     printf "       %s install-kea-tarball <number-of-kea-nodes> <path-to-source-code>\n" "$0"
     printf "            %s install-kea-tarball 2 ~/kea\n" "$0"
+    printf "       %s update-pytest\n" "$0"
     printf "       %s run-pytest <pytest-arguments>\n" "$0"
     printf "            %s run-pytest -vv tests/dhcp/test_options.py::test_v4_never_send_various_combinations\n" "$0"
+    printf "            to reupload forge before executing tests add --upload-pytest option to run-pytest\n"
+    printf "            %s run-pytest -vv tests/dhcp/test_options.py::test_v4_never_send_various_combinations --upload-pytest\n" "$0"
     exit 1
 }
 
@@ -660,6 +682,10 @@ case "$command" in
         ;;
     install-kea-tarball)
         install_kea_tarball "$@"
+        ;;
+    update-pytest)
+        rm -rf tests_results
+        incus file push -r -q . kea-forge/home/forge/
         ;;
     run-pytest)
         run_pytest "$@"
