@@ -38,10 +38,10 @@ function install_base_pkgs() {
     # let's check it when we gonna need it
     case "$usedSystem" in
         "ubuntu"|"debian")
-            install_pkgs "$1" bind9 curl freeradius gnupg net-tools openssh-server socat tcpdump vim
+            install_pkgs "$1" bind9 ccache curl freeradius gnupg net-tools openssh-server socat tcpdump vim
             ;;
         "fedora"|"rhel")
-            install_pkgs "$1" bind freeradius net-tools openssh-server socat tcpdump vim
+            install_pkgs "$1" bind ccache freeradius net-tools openssh-server socat tcpdump vim
             ;;
         "alpine")
             install_pkgs "$1" bash bind curl freeradius gnupg net-tools openssl openssh python3 socat sudo tcpdump vim
@@ -91,7 +91,6 @@ function prepare_node() {
         install_base_pkgs kea-"$2"
         prepare_freeradius kea-"$2"
         # TODO take hammer from any branch
-        mount_ccache kea-"$2"
         incus exec kea-"$2" -- curl -s -L https://gitlab.isc.org/isc-projects/kea/-/raw/master/hammer.py -o /tmp/hammer.py
         log "Running hammer, output in /tmp/kea-$2-hammer.log"
         # This is a neat trick, commands executed by hammer are still printed to stdout
@@ -440,7 +439,14 @@ function remove_kea_pkgs() {
 function mount_ccache() {
     # The first argument is a node name
     log "Mounting ccache on node $1 using path /mnt/ccache/${usedSystem}/${osVersion}"
-    incus config device add "$1" ccache disk source=/mnt/ccache/"${usedSystem}/${osVersion}"/amd64 path=/ccache readonly=true
+    incus config device add "$1" ccache disk source=/mnt/ccache/"${usedSystem}/${osVersion}"/amd64 path=/ccache readonly=false
+    cat << EOF > ccache.conf
+cache_dir = /ccache
+temporary_dir = /tmp/ccache/
+compiler_check = content
+EOF
+    incus exec "$1" -- mkdir -p .ccache
+    incus file push -q ccache.conf "$1"//root/.ccache/ccache.conf
 }
 
 function install_kea_tarball() {
@@ -650,6 +656,7 @@ case "$command" in
         for i in $(seq 1 "$numberOfNodes"); do
             create_user kea-"$i"
             migrate_rsa_key kea-"$i"
+            mount_ccache kea-"$i"
         done
         configure_internal_network "$numberOfNodes" "$numberOfNetworks"
         incus list --format json | jq > incus.json
