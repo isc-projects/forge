@@ -7,6 +7,7 @@
 '''DHCPv4 RAI options'''
 
 import pytest
+import ipaddress
 
 from src import misc
 from src import srv_control
@@ -63,7 +64,7 @@ def test_v4_rai_option11_server_identifier_override():
     # for now we will keep testing implemented part of this feature
     # srv_msg.response_check_option_content(54, 'value', address)
     srv_msg.response_check_include_option(82)
-    srv_msg.response_check_option_content(82, 'value', "0b04c0a832fd")
+    srv_msg.response_check_option_content(82, 'value', rai_content)
 
 
 @pytest.mark.v4
