@@ -7,7 +7,6 @@
 '''DHCPv4 RAI options'''
 
 import pytest
-import ipaddress
 
 from src import misc
 from src import srv_control
