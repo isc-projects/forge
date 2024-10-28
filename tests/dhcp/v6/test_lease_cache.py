@@ -209,10 +209,13 @@ def test_lease_cache_enabled(backend, parameter):
     _assign_lease("00:03:00:01:01:02:03:04:05:06", address)
     assign_time = _get_cltt_from_lease(address)
 
+    # we need sleep to be sure we get different value than before
+    srv_msg.forge_sleep(1, "seconds")
+
     # renewed address with new fqdn should have higher CLTT - new entry to db
     _renew_address("00:03:00:01:01:02:03:04:05:06", address, fqdn="abc")
     renew_time = _get_cltt_from_lease(address)
-    assert renew_time > assign_time, "Received CLTT should be equal to previous value"
+    assert renew_time > assign_time, "Received CLTT should be higher than on assign"
 
     # we need sleep to get different value than before
     srv_msg.forge_sleep(2, "seconds")
