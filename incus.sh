@@ -52,6 +52,15 @@ function install_base_pkgs() {
     esac
 }
 
+function prepare_freeradius() {
+    node=$1
+    if [[ "$usedSystem" == "fedora" ]]; then
+        log "Preparing FreeRadius Certificates on $node - $usedSystem $osVersion"
+        incus exec "$node" -- mkdir -p /etc/raddb/certs/dh
+        incus exec "$node" -- /etc/raddb/certs/bootstrap
+    fi
+}
+
 function get_os() {
     # The first argument is OS name/OS version
     oldIFS=$IFS
@@ -80,6 +89,7 @@ function prepare_node() {
     else
         update kea-"$2"
         install_base_pkgs kea-"$2"
+        prepare_freeradius kea-"$2"
         # TODO take hammer from any branch
         mount_ccache kea-"$2"
         incus exec kea-"$2" -- curl -s -L https://gitlab.isc.org/isc-projects/kea/-/raw/master/hammer.py -o /tmp/hammer.py
