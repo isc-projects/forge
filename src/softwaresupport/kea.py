@@ -576,10 +576,10 @@ def config_pool_client_classification(subnet, pool, option_value):
 def config_require_client_classification(subnet, option_value):
     sub = f'subnet{world.proto[1]}'
     subnet = int(subnet)
-    if "require-client-classes" not in world.dhcp_cfg[sub][subnet]:
-        world.dhcp_cfg[sub][subnet]["require-client-classes"] = []
+    if "evaluate-additional-classes" not in world.dhcp_cfg[sub][subnet]:
+        world.dhcp_cfg[sub][subnet]["evaluate-additional-classes"] = []
 
-    world.dhcp_cfg[sub][subnet]["require-client-classes"].append(option_value)
+    world.dhcp_cfg[sub][subnet]["evaluate-additional-classes"].append(option_value)
 
 
 def set_time(which_time, value, subnet=None):

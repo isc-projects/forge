@@ -214,7 +214,7 @@ def test_remote_subnet6_set_all_values(backend):
     cmd = dict(command="remote-subnet6-set", arguments={"remote": {"type": backend},
                                                         "server-tags": ["abc"],
                                                         "subnets": [{"shared-network-name": "",
-                                                                     "require-client-classes": ["XYZ"],
+                                                                     "evaluate-additional-classes": ["XYZ"],
                                                                      "id": 2, "interface": "$(SERVER_IFACE)",
                                                                      "pools": [{"pool": "2001:db8:1::1-2001:db8:1::10",
                                                                                 "option-data": [{"code": 7,
@@ -286,9 +286,7 @@ def test_remote_subnet6_get_all_values(backend):
                 ],
                 'rebind-timer': 500,
                 'renew-timer': 200,
-                'require-client-classes': [
-                    'XYZ'
-                ],
+                'evaluate-additional-classes': ['XYZ'],
                 'reservations-global': False,
                 'reservations-in-subnet': True,
                 'reservations-out-of-pool': False,
@@ -378,9 +376,7 @@ def test_remote_subnet6_get_all_values(backend):
                         'ip-addresses': []
                     },
                     'renew-timer': 200,
-                    'require-client-classes': [
-                        'XYZ'
-                    ],
+                    'evaluate-additional-classes': ['XYZ'],
                     'reservations-global': False,
                     'reservations-in-subnet': True,
                     'reservations-out-of-pool': False,
@@ -812,7 +808,7 @@ def test_remote_subnet6_get_by_prefix(backend):
                                                                      "reservations-global": False,
                                                                      "reservations-in-subnet": True,
                                                                      "reservations-out-of-pool": False,
-                                                                     "require-client-classes": ["XYZ"],
+                                                                     "evaluate-additional-classes": ["XYZ"],
                                                                      "subnet": "2001:db8:1::/64", "id": 1,
                                                                      "valid-lifetime": 1000}]})
     response = srv_msg.send_ctrl_cmd(cmd)
@@ -828,7 +824,7 @@ def test_remote_subnet6_get_by_prefix(backend):
         "count": 1,
         "subnets": [{
             "metadata": {"server-tags": ["abc"]},
-            "require-client-classes": ["XYZ"],
+            "evaluate-additional-classes": ["XYZ"],
             "shared-network-name": None,
             "id": 1,
             "interface": srv_msg.get_server_interface(),
@@ -994,7 +990,7 @@ def test_remote_network6_get_all_values(backend):
                                                          "shared-networks": [{
                                                              "name": "net1",
                                                              "client-class": "abc",
-                                                             "require-client-classes": ["XYZ"],
+                                                             "evaluate-additional-classes": ["XYZ"],
                                                              "rebind-timer": 200,
                                                              "renew-timer": 100,
                                                              "calculate-tee-times": True,
@@ -1026,7 +1022,7 @@ def test_remote_network6_get_all_values(backend):
                                                            "reservations-in-subnet": False,
                                                            "interface": srv_msg.get_server_interface(),
                                                            "metadata": {"server-tags": ["abc"]},
-                                                           "require-client-classes": ["XYZ"],
+                                                           "evaluate-additional-classes": ["XYZ"],
                                                            "calculate-tee-times": True,
                                                            "t1-percent": 0.5,
                                                            "t2-percent": 0.8,

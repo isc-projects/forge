@@ -324,9 +324,7 @@ def test_remote_subnet4_get_all_values(backend):
                     ]
                 },
                 'renew-timer': 200,
-                'require-client-classes': [
-                    'XYZ'
-                ],
+                "evaluate-additional-classes": ["XYZ"],
                 'reservations-global': False,
                 'reservations-in-subnet': True,
                 'reservations-out-of-pool': False,
@@ -414,9 +412,7 @@ def test_remote_subnet4_get_all_values(backend):
                         ]
                     },
                     'renew-timer': 200,
-                    'require-client-classes': [
-                        'XYZ'
-                    ],
+                    "evaluate-additional-classes": ["XYZ"],
                     'reservations-global': False,
                     'reservations-in-subnet': True,
                     'reservations-out-of-pool': False,
@@ -647,7 +643,7 @@ def test_remote_subnet4_get_by_id(backend):
                                                         "subnets": [{"4o6-interface": "eth9",
                                                                      "shared-network-name": "",
                                                                      "4o6-interface-id": "interf-id",
-                                                                     "require-client-classes": ["XYZ"],
+                                                                     "evaluate-additional-classes": ["XYZ"],
                                                                      "4o6-subnet": "2000::/64",
                                                                      "authoritative": False,
                                                                      "boot-file-name": "file-name",
@@ -686,7 +682,7 @@ def test_remote_subnet4_get_by_id(backend):
                                                    "metadata": {"server-tags": ["abc"]},
                                                    "shared-network-name": None,
                                                    "4o6-interface-id": "interf-id",
-                                                   "require-client-classes": ["XYZ"],
+                                                   "evaluate-additional-classes": ["XYZ"],
                                                    "4o6-subnet": "2000::/64", "authoritative": False,
                                                    "boot-file-name": "file-name", "id": 2,
                                                    "interface": srv_msg.get_server_interface(),
@@ -950,7 +946,6 @@ def test_remote_network4_get_all_values(backend):
                                                              "rebind-timer": 200,
                                                              "renew-timer": 100,
                                                              "calculate-tee-times": True,
-                                                             "require-client-classes": ["XYZ"],
                                                              "t1-percent": 0.5,
                                                              "t2-percent": 0.8,
                                                              "valid-lifetime": 300,
@@ -959,6 +954,7 @@ def test_remote_network4_get_all_values(backend):
                                                              "match-client-id": True,
                                                              "user-context": {"some weird network": 55},
                                                              "interface": "$(SERVER_IFACE)",
+                                                             "evaluate-additional-classes": ["XYZ"],
                                                              "option-data": [{"code": 6,
                                                                               "data": '192.0.2.1',
                                                                               "always-send": True,
@@ -979,12 +975,12 @@ def test_remote_network4_get_all_values(backend):
                                                            "reservations-in-subnet": False,  # new since 1.9.1
                                                            "interface": srv_msg.get_server_interface(),
                                                            "metadata": {"server-tags": ["abc"]},
-                                                           "require-client-classes": ["XYZ"],
                                                            "calculate-tee-times": True,
                                                            "t1-percent": 0.5,
                                                            "t2-percent": 0.8,
                                                            "match-client-id": True,
                                                            "name": "net1",
+                                                           "evaluate-additional-classes": ["XYZ"],
                                                            "option-data": [{"always-send": True, "code": 6,
                                                                             "csv-format": True, "data": "192.0.2.1",
                                                                             "name": "domain-name-servers",
@@ -2365,9 +2361,9 @@ def test_remote_class_set_all_parameters(dhcp_version, backend):
     _set_class(backend, {"client-classes": [{"name": "foo"}]})
     # and now we will overwrite this with another one, with all parameters
     send_arg = {"client-classes": [{"name": "foo",
-                                    "only-if-required": True,
                                     "option-data": [{"code": 7, "data": "123", "always-send": True}],
                                     "test": "member('UNKNOWN')",
+                                    "only-in-additional-list": True,
                                     "min-valid-lifetime": 100,
                                     "max-valid-lifetime": 1200,
                                     "max-preferred-lifetime": 901,
@@ -2376,7 +2372,7 @@ def test_remote_class_set_all_parameters(dhcp_version, backend):
                                     "preferred-lifetime": 850}]}
     receive_arg = {"client-classes": [{"metadata": {"server-tags": ["abc"]},
                                        "name": "foo",
-                                       "only-if-required": True,
+                                       "only-in-additional-list": True,
                                        "option-data": [{"always-send": True, "code": 7, "csv-format": True,
                                                         "data": "123", "name": "preference",
                                                         "never-send": False, "space": "dhcp6"}],
@@ -2391,7 +2387,7 @@ def test_remote_class_set_all_parameters(dhcp_version, backend):
     if dhcp_version == 'v4':
         send_arg = {"client-classes": [{"boot-file-name": "/var/something",
                                         "name": "foo",
-                                        "only-if-required": True,
+                                        "only-in-additional-list": True,
                                         "next-server": "10.11.12.13",
                                         "option-data": [{"code": 6, "data": "192.0.2.1, 192.0.2.2",
                                                          "always-send": True, "csv-format": True}],
@@ -2403,7 +2399,7 @@ def test_remote_class_set_all_parameters(dhcp_version, backend):
         receive_arg = {"client-classes": [{"boot-file-name": "/var/something",
                                            "metadata": {"server-tags": ["abc"]},
                                            "name": "foo",
-                                           "only-if-required": True,
+                                           "only-in-additional-list": True,
                                            "next-server": "10.11.12.13",
                                            "option-data": [{"always-send": True, "code": 6, "csv-format": True,
                                                             "data": "192.0.2.1, 192.0.2.2",

@@ -297,7 +297,7 @@ def test_v4_upgrade_mysql_db():
                                        "space": "dhcp4"}]
     assert network["rebind-timer"] == 200
     assert network["renew-timer"] == 100
-    assert network["require-client-classes"] == ["XYZ"]
+    assert network["evaluate-additional-classes"] == ["XYZ"]
     assert network["user-context"] == {"some weird network": 55}
     assert network["valid-lifetime"] == 300
 

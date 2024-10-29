@@ -610,7 +610,7 @@ def test_config_hash_get(dhcp_version):
         "encapsulate": "opt",
         "name": "optionX",
         "record-types": "",
-        "space": f"dhcp{dhcp_version[1]}",
+        "space": "option122",
         "type": "empty"
     }]
 

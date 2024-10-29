@@ -274,7 +274,7 @@ class KeaConfiguration:
                     self.add_to_xml_script('/option-data-list')
 
                 # uses dhcp:subnet-client-class;
-                # uses dhcp:subnet-require-client-classes;
+                # uses dhcp:subnet-evaluate-additional-classes;
                 if self.getreservationlength() > 0:
                     self.add_to_xml_script('reservations')
                     for each_reservation in self.reservationList:
@@ -315,7 +315,7 @@ class KeaConfiguration:
                             self.add_to_xml_script('start-address', each_pool.start_address)
                             self.add_to_xml_script('end-address', each_pool.end_address)
                             self.add_to_xml_script('pool-client-class', each_pool.pool_client_class)
-                            self.add_to_xml_script('pool-require-client-classes', each_pool.pool_require_client_classes)
+                            self.add_to_xml_script('pool-evaluate-additional-classes', each_pool.pool_evaluate_additional_classes)
                             self.add_to_xml_script('pool-user-context', each_pool.pool_user_context)
                             # options in pools
                             if self.getoptionlength() > 0:
@@ -439,7 +439,7 @@ class ConfigurationPool:
         self.start_address = address.split("-")[0]
         self.end_address = address.split("-")[1]
         self.pool_client_class = ""
-        self.pool_require_client_classes = ""
+        self.pool_evaluate_additional_classes = ""
         self.pool_user_context = ""
         # relations
         self.subnet_id = int(subnet_id) if subnet_id is not None else world.configClass.getsubnetlength()
