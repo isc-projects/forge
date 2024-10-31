@@ -44,7 +44,7 @@ function install_base_pkgs() {
             install_pkgs "$1" bind ccache freeradius net-tools openssh-server socat tcpdump vim
             ;;
         "alpine")
-            install_pkgs "$1" bash bind curl freeradius gnupg net-tools openssl openssh python3 socat sudo tcpdump vim
+            install_pkgs "$1" bash bind ccache curl freeradius gnupg net-tools openssl openssh python3 socat sudo tcpdump vim
             ;;
         *)
         printf "Not in the list"
@@ -439,7 +439,14 @@ function remove_kea_pkgs() {
 function mount_ccache() {
     # The first argument is a node name
     log "Mounting ccache on node $1 using path /mnt/ccache/${usedSystem}/${osVersion}"
-    incus config device add "$1" ccache disk source=/mnt/ccache/"${usedSystem}/${osVersion}"/amd64 path=/ccache readonly=false
+    case "$usedSystem" in
+        "alpine")
+        incus config device add "$1" ccache disk source=/mnt/ccache-alp-bsd/"${usedSystem}/${osVersion}"/amd64 path=/ccache readonly=false
+        ;;
+        *)
+        incus config device add "$1" ccache disk source=/mnt/ccache/"${usedSystem}/${osVersion}"/amd64 path=/ccache readonly=false
+        ;;
+    esac
     cat << EOF > ccache.conf
 cache_dir = /ccache
 temporary_dir = /tmp/ccache/
