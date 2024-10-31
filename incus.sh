@@ -441,10 +441,10 @@ function mount_ccache() {
     log "Mounting ccache on node $1 using path /mnt/ccache/${usedSystem}/${osVersion}"
     case "$usedSystem" in
         "alpine")
-        incus config device add "$1" ccache disk source=/mnt/ccache-alp-bsd/"${usedSystem}/${osVersion}/${arch}" path=/ccache readonly=false
+        incus config device add "$1" ccache disk source=/mnt/ccache-alp-bsd/"${usedSystem}/${osVersion}/amd64" path=/ccache readonly=false
         ;;
         *)
-        incus config device add "$1" ccache disk source=/mnt/ccache/"${usedSystem}/${osVersion}/${arch}" path=/ccache readonly=false
+        incus config device add "$1" ccache disk source=/mnt/ccache/"${usedSystem}/${osVersion}/amd64" path=/ccache readonly=false
         ;;
     esac
     cat << EOF > ccache.conf
