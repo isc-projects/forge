@@ -439,14 +439,8 @@ function remove_kea_pkgs() {
 function mount_ccache() {
     # The first argument is a node name
     log "Mounting ccache on node $1 using path /mnt/ccache/${usedSystem}/${osVersion}"
-    case "$usedSystem" in
-        "alpine")
-        incus config device add "$1" ccache disk source=/mnt/ccache-alp-bsd/"${usedSystem}/${osVersion}/amd64" path=/ccache readonly=false
-        ;;
-        *)
-        incus config device add "$1" ccache disk source=/mnt/ccache/"${usedSystem}/${osVersion}/amd64" path=/ccache readonly=false
-        ;;
-    esac
+    #TODO change amd64 to $arch but make sure it either arm64 or aarch64
+    incus config device add "$1" ccache disk source=/mnt/ccache/"${usedSystem}/${osVersion}/amd64" path=/ccache readonly=false
     cat << EOF > ccache.conf
 cache_dir = /ccache
 temporary_dir = /tmp/ccache/
