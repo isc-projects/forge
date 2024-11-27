@@ -1423,6 +1423,7 @@ def _write_cfg2(cfg):
     with open(world.cfg["cfg_file_2"], 'w') as cfg_file:
         cfg_file.write(world.cfg["keactrl"])
 
+
 def check_if_http_socket_is_used():
     """check_if_http_socket_is_used check if http socket is used in configuration (control-sockets)
 
@@ -1434,6 +1435,7 @@ def check_if_http_socket_is_used():
             if socket["socket-type"] == "http" and socket["socket-address"] != "":
                 return True
     return False
+
 
 def build_config_files(cfg=None):
     # check if control agent is disabled and if http socket is used
