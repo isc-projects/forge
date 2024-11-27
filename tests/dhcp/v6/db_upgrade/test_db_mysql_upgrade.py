@@ -45,8 +45,7 @@ def _create_mysql_dump():
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_cb_cmds.so')
     srv_control.add_hooks('libdhcp_mysql.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_http_control_channel()
     world.reservation_backend = "mysql"
     srv_control.define_temporary_lease_db_backend('mysql')
     cb_config = {"config-databases": [{"user": "$(DB_USER)",
@@ -190,8 +189,7 @@ def test_v6_upgrade_mysql_db():
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_hooks('libdhcp_cb_cmds.so')
     srv_control.add_hooks('libdhcp_mysql.so')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel('$(MGMT_ADDRESS)')
+    srv_control.add_http_control_channel()
     hosts = {"hosts-databases": [{"user": tmp_user_name,
                                   "password": "$(DB_PASSWD)",
                                   "name": tmp_db_name,

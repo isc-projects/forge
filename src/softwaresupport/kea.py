@@ -24,6 +24,7 @@ import glob
 import json
 import logging
 
+from pytest import skip
 from src import srv_msg
 
 from src.forge_cfg import world
@@ -1196,7 +1197,6 @@ def add_http_control_channel(host_address, host_port, socket_name='control_socke
         if "control-sockets" not in world.dhcp_cfg:
             world.dhcp_cfg["control-sockets"] = []
         world.dhcp_cfg["control-sockets"].append({"socket-type": "http",
-                                                  "socket-name": world.f_cfg.run_join(socket_name),
                                                   "socket-address": host_address,
                                                   "socket-port": int(host_port)})
 
@@ -1423,8 +1423,23 @@ def _write_cfg2(cfg):
     with open(world.cfg["cfg_file_2"], 'w') as cfg_file:
         cfg_file.write(world.cfg["keactrl"])
 
+def check_if_http_socket_is_used():
+    """check_if_http_socket_is_used check if http socket is used in configuration (control-sockets)
+
+    :return: True if http socket is used, False otherwise
+    :rtype: boolean
+    """
+    if "control-sockets" in world.dhcp_cfg:
+        for socket in world.dhcp_cfg["control-sockets"]:
+            if socket["socket-type"] == "http" and socket["socket-address"] != "":
+                return True
+    return False
 
 def build_config_files(cfg=None):
+    # check if control agent is disabled and if http socket is used
+    if not world.f_cfg.control_agent and not check_if_http_socket_is_used():
+        skip("HTTP socket is not configured, skipping entire test.")
+
     substitute_vars(world.dhcp_cfg)
     if world.proto == 'v4':
         add_defaults4()

@@ -31,7 +31,7 @@ def test_v4_flexid_libreload():
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook("libdhcp_flex_id.so", 'identifier-expression', 'option[60].hex')
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -71,7 +71,7 @@ def test_v4_flexid_reconfigure():
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook("libdhcp_flex_id.so", 'identifier-expression', 'option[60].hex')
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -95,7 +95,7 @@ def test_v4_flexid_reconfigure():
     srv_control.add_line({"host-reservation-identifiers": ["flex-id"]})
     srv_control.add_hooks('libdhcp_flex_id.so')
     srv_control.add_parameter_to_hook("libdhcp_flex_id.so", 'identifier-expression', 'option[60].hex')
-    srv_control.open_control_channel()
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
     wait_for_message_in_log('DHCP4_DYNAMIC_RECONFIGURATION', 1)
