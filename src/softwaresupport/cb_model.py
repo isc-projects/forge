@@ -732,7 +732,10 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
     init_cfg = {"interfaces-config": {"interfaces": [interface]},
                 "lease-database": {"type": "memfile"},
                 "control-sockets": [{"socket-type": 'unix',
-                                     "socket-name": world.f_cfg.run_join('control_socket')}]}
+                                     "socket-name": world.f_cfg.run_join('control_socket')},
+                                     {"socket-type": "http",
+                                      "socket-address": world.f_cfg.mgmt_address,
+                                      "socket-port": 8000}]}
 
     for param, val in kwargs.items():
         if val is None or param == 'check-config':
@@ -747,7 +750,8 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
 
     cfg = ConfigModel(init_cfg, **config_model_args)
 
-    srv_control.add_http_control_channel()  # to force enabling ctrl-agent
+    # it's needed to fulfill check_if_http_socket_is_used in src/softwaresupport/kea.py
+    srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files(cfg=cfg.get_dict(), dest=destination)
     srv_control.start_srv('DHCP', 'started')
 
