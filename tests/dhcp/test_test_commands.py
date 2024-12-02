@@ -307,7 +307,7 @@ def test_subnet6_select_test_negative(channel):
          "bad 'link' entry: Failed to convert string to address 'foobar': Invalid argument"],
         [{"classes": 1}, 1, "'classes' entry must be a list"],
         [{"classes": "foo"}, 1, "'classes' entry must be a list"],
-        [{"classes": [ 1 ]}, 1, "'classes' entry must be a list of strings"],
+        [{"classes": [1]}, 1, "'classes' entry must be a list of strings"],
     ]
 
     for case in test_cases:
