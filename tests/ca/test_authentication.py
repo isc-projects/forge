@@ -16,6 +16,12 @@ from src import srv_control
 from src.forge_cfg import world
 
 
+@pytest.fixture(autouse=True)
+def skip_if_ca_disabled():
+    if not world.f_cfg.control_agent:
+        pytest.skip('This test requires CA to be enabled')
+
+
 @pytest.mark.v4
 def test_ca_basic_authentication():
     misc.test_setup()

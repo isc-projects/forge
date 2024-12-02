@@ -23,6 +23,12 @@ from src.forge_cfg import world
 # but due to discovered bug https://gitlab.isc.org/isc-projects/kea/-/issues/2475 I choose to go with reconfigure
 
 
+@pytest.fixture(autouse=True)
+def skip_if_ca_disabled():
+    if not world.f_cfg.control_agent:
+        pytest.skip('This test requires CA to be enabled')
+
+
 @pytest.mark.v4
 @pytest.mark.ca
 def test_rbac_cert_subject():

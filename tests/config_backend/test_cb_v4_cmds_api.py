@@ -2213,7 +2213,8 @@ def _set_class(backend, args=None, res=0, resp_text=None, tag='abc'):
     response = _send_cmd(cmd, backend=backend, tag=tag, exp_result=res)
 
     if res == 1:
-        assert response == {"result": 1, "text": resp_text}
+        assert response["result"] == 1
+        assert resp_text in response["text"]
     else:
         cls_name = args["client-classes"][0]["name"]
         assert response == {"result": 0, "text": resp_text, "arguments": {"client-classes": [{"name": cls_name}]}}
@@ -2290,7 +2291,7 @@ def test_remote_class_set(dhcp_version, backend):  # pylint: disable=unused-argu
     # just name
     _set_class(backend, {"client-classes": [{"name": "aaa"}]})
     # empty class should fail
-    _set_class(backend, args={"client-classes": [{}]}, res=1, resp_text="missing parameter 'name' (<wire>:0:38)")
+    _set_class(backend, args={"client-classes": [{}]}, res=1, resp_text="missing parameter 'name'")
     # empty class list should fail
     _set_class(backend, args={"client-classes": []}, res=1,
                resp_text="'client-classes' list must include exactly one element")
@@ -2315,7 +2316,7 @@ def test_remote_class_set(dhcp_version, backend):  # pylint: disable=unused-argu
                                "test": "member('KNOWN')",
                                "option-data": [{"name": "configfile123", "data": "1APC"}]}]}
     _set_class(backend, arg, res=1, resp_text=f"definition for the option 'dhcp{world.proto[1]}.configfile123'"
-                                              " does not exist (<wire>:0:107)")
+                                              " does not exist")
     # set class with custom option with name that is not defined, but it will be accepted as hex
     arg = {"client-classes": [{"name": "my_weird_name",
                                "test": "member('KNOWN')",

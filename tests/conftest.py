@@ -30,6 +30,7 @@ def pytest_runtest_setup(item):
 def initialize_terrain(request):
     from src import terrain
     terrain.initialize(request)
+    world.f_cfg.control_agent = not request.config.getoption("--without-ca")
 
 
 def pytest_runtest_teardown(item, nextitem):
@@ -129,6 +130,8 @@ def pytest_unconfigure(config):
 def pytest_addoption(parser):
     parser.addoption("--iters-factor", action="store", default=1,
                      help="iterations factor, initial iterations in tests are multiplied by this value, default 1")
+    parser.addoption("--without-ca", action="store_true", default=False,
+                     help="Disable CA settings in the test suite")
 
 
 @pytest.fixture

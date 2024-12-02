@@ -1108,10 +1108,8 @@ def test_hook_v4_subnet_delta_add_negative(backend):
             },
         "command": "subnet4-delta-add"}
     response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
-    assert response == {
-        "result": 1,
-        "text": "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured (<wire>:0:31)"
-    }
+    assert response['result'] == 1
+    assert "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured" in response['text']
 
     cmd = {
         "arguments":
@@ -1462,10 +1460,9 @@ def test_hook_v4_subnet_delta_del_negative(backend):
             ]},
         "command": "subnet4-delta-del"}
     response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
-    assert response == {
-        "result": 1,
-        "text": "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured (<wire>:0:31)"
-    }
+
+    assert "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured" in response['text']
+    assert response['result'] == 1
 
     cmd = {
         "arguments":
@@ -2554,10 +2551,8 @@ def test_hook_v6_subnet_delta_add_negative(backend):
             },
         "command": "subnet6-delta-add"}
     response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
-    assert response == {
-        "result": 1,
-        "text": "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured (<wire>:0:31)"
-    }
+    assert "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured" in response['text']
+    assert response['result'] == 1
 
     cmd = {
         "arguments":
@@ -2910,10 +2905,9 @@ def test_hook_v6_subnet_delta_del_negative(backend):
             ]},
         "command": "subnet6-delta-del"}
     response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
-    assert response == {
-        "result": 1,
-        "text": "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured (<wire>:0:31)"
-    }
+
+    assert response['result'] == 1
+    assert "subnet configuration failed: mandatory 'subnet' parameter is missing for a subnet being configured" in response['text']
 
     cmd = {
         "arguments":

@@ -127,9 +127,8 @@ class ForgeConfiguration:
         # easy comparison between single and multi, or use as fixture
         self.multi_threading_enabled = True
 
-        # self.control_agent = False to disable control agent
-        # to remove all related code just search for `world.f_cfg.control_agent`
-        self.control_agent = False
+        # value of --without-ca pytest option determines if control agent is used, by default CA is used
+        self.control_agent = ''
 
         if self.install_method == 'native':
             self.software_install_path = '/usr'
