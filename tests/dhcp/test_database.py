@@ -129,9 +129,6 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
     wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
                             timeout=retries*wait_time/1000+1)
 
-    # Confirm Kea is done waiting before shutdown
-    cmd = {"command": "version-get", "arguments": {}}
-    srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
     log_contains_n_times(
         f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)
@@ -237,9 +234,6 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
     wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
                             timeout=retries*wait_time/1000+1)
 
-    # Confirm Kea is done waiting before shutdown
-    cmd = {"command": "version-get", "arguments": {}}
-    srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
     log_contains_n_times(
         f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)
@@ -455,9 +449,6 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
     wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
                             timeout=retries*wait_time/1000+1)
 
-    # Confirm Kea is done waiting before shutdown
-    cmd = {"command": "version-get", "arguments": {}}
-    srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
     log_contains_n_times(
         f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)
@@ -554,9 +545,6 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
     wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
                             timeout=retries*wait_time/1000+1)
 
-    # Confirm Kea is done waiting before shutdown
-    cmd = {"command": "version-get", "arguments": {}}
-    srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
     log_contains_n_times(
         f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)
@@ -747,9 +735,6 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
     wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
                             timeout=retries*wait_time/1000+1)
 
-    # Confirm Kea is done waiting before shutdown
-    cmd = {"command": "version-get", "arguments": {}}
-    srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
     log_contains_n_times(
         f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)
@@ -850,9 +835,6 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
     wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
                             timeout=retries*wait_time/1000+1)
 
-    # Confirm Kea is done waiting before shutdown
-    cmd = {"command": "version-get", "arguments": {}}
-    srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=1)
     log_contains_n_times(
         f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)

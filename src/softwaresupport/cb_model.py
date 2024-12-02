@@ -733,9 +733,9 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
                 "lease-database": {"type": "memfile"},
                 "control-sockets": [{"socket-type": 'unix',
                                      "socket-name": world.f_cfg.run_join('control_socket')},
-                                     {"socket-type": "http",
-                                      "socket-address": world.f_cfg.mgmt_address,
-                                      "socket-port": 8000}]}
+                                    {"socket-type": "http",
+                                     "socket-address": world.f_cfg.mgmt_address,
+                                     "socket-port": 8000}]}
 
     for param, val in kwargs.items():
         if val is None or param == 'check-config':

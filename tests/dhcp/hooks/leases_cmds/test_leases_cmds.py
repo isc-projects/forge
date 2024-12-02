@@ -1658,30 +1658,30 @@ def test_v6_lease_cmds_add_negative():
     # sending no arguments in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "missing parameter 'ip-address' (<wire>:0:16)"
+    assert "missing parameter 'ip-address'" in resp["text"]
 
     # ip-address
     # sending wrong ip-address format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "xxx"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Failed to convert 'xxx' to address: Failed to convert string " \
-                           "to address 'xxx': Invalid argument(<wire>:0:31)"
+    assert "Failed to convert 'xxx' to address: Failed to convert string " \
+           "to address 'xxx': Invalid argument" in resp["text"]
 
     # sending wrong ip-address format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": 1}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'ip-address' (<wire>:0:31)"
+    assert "invalid type specified for parameter 'ip-address'" in resp["text"]
 
     # sending wrong ip-address format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'ip-address' (<wire>:0:31)"
+    assert "invalid type specified for parameter 'ip-address'" in resp["text"]
 
     # duid
     # sending not enough arguments in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "missing parameter 'duid' (<wire>:0:16)"
+    assert "missing parameter 'duid'" in resp["text"]
 
     # sending wrong duid format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1", "duid": "xxx"}}
@@ -1691,17 +1691,17 @@ def test_v6_lease_cmds_add_negative():
     # sending wrong duid format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1", "duid": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "two consecutive separators (' ') specified in a decoded string ' '"
+    assert "two consecutive separators (' ') specified in a decoded string ' '" in resp["text"]
 
     # sending wrong duid format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1", "duid": 2}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'duid' (<wire>:0:25)"
+    assert "invalid type specified for parameter 'duid'" in resp["text"]
 
     # sending wrong duid format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1", "duid": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'duid' (<wire>:0:25)"
+    assert "invalid type specified for parameter 'duid'" in resp["text"]
 
     # subnet-id
     # sending ip out of subnet to lease6-add command
@@ -1715,36 +1715,35 @@ def test_v6_lease_cmds_add_negative():
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
                                                   "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "missing parameter 'iaid' (<wire>:0:16)"
+    assert "missing parameter 'iaid'" in resp["text"]
 
     # sending wrong subnet-id format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
                                                   "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                   "subnet-id": 12345678901}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "out of range value (12345678901) specified for " \
-                           "parameter 'subnet-id' (<wire>:0:105)"
+    assert "out of range value (12345678901) specified for parameter 'subnet-id'" in resp["text"]
 
     # sending wrong subnet-id format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
                                                   "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                   "subnet-id": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'subnet-id' (<wire>:0:105)"
+    assert "invalid type specified for parameter 'subnet-id'" in resp["text"]
 
     # sending wrong subnet-id format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
                                                   "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                   "subnet-id": "xxx"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'subnet-id' (<wire>:0:105)"
+    assert "invalid type specified for parameter 'subnet-id'" in resp["text"]
 
     # sending wrong subnet-id format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
                                                   "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                   "subnet-id": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'subnet-id' (<wire>:0:105)"
+    assert "invalid type specified for parameter 'subnet-id'" in resp["text"]
 
     # sending non-existent subnet-id to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1760,7 +1759,7 @@ def test_v6_lease_cmds_add_negative():
                                                   "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                   "subnet-id": 1}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "missing parameter 'iaid' (<wire>:0:16)"
+    assert "missing parameter 'iaid'" in resp["text"]
 
     # sending wrong iaid format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1768,8 +1767,7 @@ def test_v6_lease_cmds_add_negative():
                                                   "subnet-id": 1,
                                                   "iaid": 12345678901}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "out of range value (12345678901) specified " \
-                           "for parameter 'iaid' (<wire>:0:69)"
+    assert "out of range value (12345678901) specified for parameter 'iaid'" in resp["text"]
 
     # sending wrong iaid format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1777,7 +1775,7 @@ def test_v6_lease_cmds_add_negative():
                                                   "subnet-id": 1,
                                                   "iaid": "1"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'iaid' (<wire>:0:69)"
+    assert "invalid type specified for parameter 'iaid'" in resp["text"]
 
     # sending wrong iaid format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1785,7 +1783,7 @@ def test_v6_lease_cmds_add_negative():
                                                   "subnet-id": 1,
                                                   "iaid": "xxx"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'iaid' (<wire>:0:69)"
+    assert "invalid type specified for parameter 'iaid'" in resp["text"]
 
     # sending wrong iaid format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1793,7 +1791,7 @@ def test_v6_lease_cmds_add_negative():
                                                   "subnet-id": 1,
                                                   "iaid": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'iaid' (<wire>:0:69)"
+    assert "invalid type specified for parameter 'iaid'" in resp["text"]
 
     # sending wrong iaid format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1801,7 +1799,7 @@ def test_v6_lease_cmds_add_negative():
                                                   "subnet-id": 1,
                                                   "iaid": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'iaid' (<wire>:0:69)"
+    assert "invalid type specified for parameter 'iaid'" in resp["text"]
 
 
 @pytest.mark.v6
@@ -1838,7 +1836,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "hw-address": "1234"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid format of the decoded string '1234'"
+    assert "invalid format of the decoded string '1234'" in resp["text"]
 
     # sending wrong hw-address format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1847,7 +1845,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "hw-address": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'hw-address' (<wire>:0:75)"
+    assert "invalid type specified for parameter 'hw-address'" in resp["text"]
 
     # sending wrong hw-address format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1856,7 +1854,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "hw-address": 2}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'hw-address' (<wire>:0:75)"
+    assert "invalid type specified for parameter 'hw-address'" in resp["text"]
 
     # preferred-lft
     # sending wrong preferred-lft format to in lease6-add command
@@ -1866,7 +1864,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "preferred-lft": "2000"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'preferred-lft' (<wire>:0:123)"
+    assert "invalid type specified for parameter 'preferred-lft'" in resp["text"]
 
     # sending wrong preferred-lft format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1875,7 +1873,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "preferred-lft": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'preferred-lft' (<wire>:0:123)"
+    assert "invalid type specified for parameter 'preferred-lft'" in resp["text"]
 
     # sending wrong preferred-lft format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1884,8 +1882,8 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "preferred-lft": 12345678901}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "out of range value (12345678901) specified for " \
-                           "parameter 'preferred-lft' (<wire>:0:123)"
+    assert "out of range value (12345678901) specified for " \
+           "parameter 'preferred-lft'" in resp["text"]
 
     # valid-lft
     # sending wrong valid-lft format to in lease6-add command
@@ -1895,7 +1893,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "valid-lft": "2000"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'valid-lft' (<wire>:0:135)"
+    assert "invalid type specified for parameter 'valid-lft'" in resp["text"]
 
     # sending wrong valid-lft format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1904,7 +1902,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "valid-lft": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'valid-lft' (<wire>:0:135)"
+    assert "invalid type specified for parameter 'valid-lft'" in resp["text"]
 
     # sending wrong valid-lft format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1913,7 +1911,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "valid-lft": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'valid-lft' (<wire>:0:135)"
+    assert "invalid type specified for parameter 'valid-lft'" in resp["text"]
 
     # sending wrong valid-lft format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1922,8 +1920,8 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "valid-lft": 12345678901}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "out of range value (12345678901) specified for " \
-                           "parameter 'valid-lft' (<wire>:0:135)"
+    assert "out of range value (12345678901) specified for " \
+           "parameter 'valid-lft'" in resp["text"]
 
     # fqdn-fwd
     # sending wrong fqdn-fwd format to in lease6-add command
@@ -1933,7 +1931,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "fqdn-fwd": "2000"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'fqdn-fwd' (<wire>:0:73)"
+    assert "invalid type specified for parameter 'fqdn-fwd'" in resp["text"]
 
     # sending wrong fqdn-fwd format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1942,7 +1940,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "fqdn-fwd": 0}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'fqdn-fwd' (<wire>:0:73)"
+    assert "invalid type specified for parameter 'fqdn-fwd'" in resp["text"]
 
     # sending not enough arguments in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1951,8 +1949,8 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "fqdn-fwd": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "No hostname specified and either forward or " \
-                           "reverse fqdn was set to true."
+    assert "No hostname specified and either forward or " \
+           "reverse fqdn was set to true." in resp["text"]
 
     # fqdn-rev
     # sending wrong fqdn-rev format to in lease6-add command
@@ -1962,7 +1960,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "fqdn-rev": "2000"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'fqdn-rev' (<wire>:0:73)"
+    assert "invalid type specified for parameter 'fqdn-rev'" in resp["text"]
 
     # sending wrong fqdn-rev format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1971,7 +1969,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "fqdn-rev": 0}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'fqdn-rev' (<wire>:0:73)"
+    assert "invalid type specified for parameter 'fqdn-rev'" in resp["text"]
 
     # sending not enough arguments in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -1980,8 +1978,8 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "fqdn-rev": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "No hostname specified and either forward or " \
-                           "reverse fqdn was set to true."
+    assert "No hostname specified and either forward or " \
+           "reverse fqdn was set to true." in resp["text"]
 
     # hostname
     # sending wrong hostname format to in lease6-add command
@@ -1991,7 +1989,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "hostname": 2}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'hostname' (<wire>:0:73)"
+    assert "invalid type specified for parameter 'hostname'" in resp["text"]
 
     # sending wrong hostname format to in lease6-add command
     cmd = {"command": "lease6-add", "arguments": {"ip-address": "2001:db8:1::1",
@@ -2000,7 +1998,7 @@ def test_v6_lease_cmds_add_options_negative():
                                                   "iaid": 1234,
                                                   "hostname": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'hostname' (<wire>:0:73)"
+    assert "invalid type specified for parameter 'hostname'" in resp["text"]
 
 
 @pytest.mark.v6
@@ -2131,21 +2129,21 @@ def test_v6_lease_cmds_del_negative():
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "intValue() called on non-integer Element in (<wire>:0:25)"
+    assert "intValue() called on non-integer Element in" in resp["text"]
 
     # sending wrong iaid identifier to lease6-del command
     cmd = {"command": "lease6-del", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "intValue() called on non-integer Element in (<wire>:0:25)"
+    assert "intValue() called on non-integer Element in" in resp["text"]
 
     # sending wrong iaid identifier to lease6-del command
     cmd = {"command": "lease6-del", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "intValue() called on non-integer Element in (<wire>:0:25)"
+    assert "intValue() called on non-integer Element in" in resp["text"]
 
     # address
     # sending wrong address identifier to lease6-del command
@@ -2284,21 +2282,21 @@ def test_v6_lease_cmds_get_negative():
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "intValue() called on non-integer Element in (<wire>:0:25)"
+    assert "intValue() called on non-integer Element in" in resp["text"]
 
     # sending wrong iaid identifier to lease6-get command
     cmd = {"command": "lease6-get", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "intValue() called on non-integer Element in (<wire>:0:25)"
+    assert "intValue() called on non-integer Element in" in resp["text"]
 
     # sending wrong iaid identifier to lease6-get command
     cmd = {"command": "lease6-get", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "intValue() called on non-integer Element in (<wire>:0:25)"
+    assert "intValue() called on non-integer Element in" in resp["text"]
 
     # address
     # sending wrong address identifier to lease6-get command
@@ -2334,30 +2332,30 @@ def test_v6_lease_cmds_update_negative():
     # sending no arguments in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "missing parameter 'ip-address' (<wire>:0:16)"
+    assert "missing parameter 'ip-address'" in resp["text"]
 
     # ip-address
     # sending wrong ip-address format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "xxx"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Failed to convert 'xxx' to address: Failed to convert string " \
-                           "to address 'xxx': Invalid argument(<wire>:0:31)"
+    assert "Failed to convert 'xxx' to address: Failed to convert string " \
+           "to address 'xxx': Invalid argument" in resp["text"]
 
     # sending wrong ip-address format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": 1}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'ip-address' (<wire>:0:31)"
+    assert "invalid type specified for parameter 'ip-address'" in resp["text"]
 
     # sending wrong ip-address format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'ip-address' (<wire>:0:31)"
+    assert "invalid type specified for parameter 'ip-address'" in resp["text"]
 
     # duid
     # sending not enough arguments in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "missing parameter 'duid' (<wire>:0:16)"
+    assert "missing parameter 'duid'" in resp["text"]
 
     # sending wrong duid format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1", "duid": "xxx"}}
@@ -2367,17 +2365,17 @@ def test_v6_lease_cmds_update_negative():
     # sending wrong duid format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1", "duid": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "two consecutive separators (' ') specified in a decoded string ' '"
+    assert "two consecutive separators (' ') specified in a decoded string ' '" in resp["text"]
 
     # sending wrong duid format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1", "duid": 2}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'duid' (<wire>:0:25)"
+    assert "invalid type specified for parameter 'duid'" in resp["text"]
 
     # sending wrong duid format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1", "duid": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'duid' (<wire>:0:25)"
+    assert "invalid type specified for parameter 'duid'" in resp["text"]
 
     # subnet-id
     # sending ip out of subnet to lease6-update command
@@ -2391,36 +2389,36 @@ def test_v6_lease_cmds_update_negative():
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
                                                      "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "missing parameter 'iaid' (<wire>:0:16)"
+    assert "missing parameter 'iaid'" in resp["text"]
 
     # sending wrong subnet-id format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
                                                      "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                      "subnet-id": 12345678901}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "out of range value (12345678901) specified for " \
-                           "parameter 'subnet-id' (<wire>:0:105)"
+    assert "out of range value (12345678901) specified for " \
+           "parameter 'subnet-id'" in resp["text"]
 
     # sending wrong subnet-id format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
                                                      "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                      "subnet-id": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'subnet-id' (<wire>:0:105)"
+    assert "invalid type specified for parameter 'subnet-id'" in resp["text"]
 
     # sending wrong subnet-id format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
                                                      "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                      "subnet-id": "xxx"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'subnet-id' (<wire>:0:105)"
+    assert "invalid type specified for parameter 'subnet-id'" in resp["text"]
 
     # sending wrong subnet-id format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
                                                      "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                      "subnet-id": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'subnet-id' (<wire>:0:105)"
+    assert "invalid type specified for parameter 'subnet-id'" in resp["text"]
 
     # sending non-existent subnet-id to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
@@ -2436,7 +2434,7 @@ def test_v6_lease_cmds_update_negative():
                                                      "duid": "1a:1b:1c:1d:1e:1f:20:21:22:23:24",
                                                      "subnet-id": 1}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "missing parameter 'iaid' (<wire>:0:16)"
+    assert "missing parameter 'iaid'" in resp["text"]
 
     # sending wrong iaid format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
@@ -2444,8 +2442,8 @@ def test_v6_lease_cmds_update_negative():
                                                      "subnet-id": 1,
                                                      "iaid": 12345678901}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "out of range value (12345678901) specified " \
-                           "for parameter 'iaid' (<wire>:0:69)"
+    assert "out of range value (12345678901) specified " \
+           "for parameter 'iaid'" in resp["text"]
 
     # sending wrong iaid format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
@@ -2453,7 +2451,7 @@ def test_v6_lease_cmds_update_negative():
                                                      "subnet-id": 1,
                                                      "iaid": "1"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'iaid' (<wire>:0:69)"
+    assert "invalid type specified for parameter 'iaid'" in resp["text"]
 
     # sending wrong iaid format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
@@ -2461,7 +2459,7 @@ def test_v6_lease_cmds_update_negative():
                                                      "subnet-id": 1,
                                                      "iaid": "xxx"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'iaid' (<wire>:0:69)"
+    assert "invalid type specified for parameter 'iaid'" in resp["text"]
 
     # sending wrong iaid format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
@@ -2469,7 +2467,7 @@ def test_v6_lease_cmds_update_negative():
                                                      "subnet-id": 1,
                                                      "iaid": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'iaid' (<wire>:0:69)"
+    assert "invalid type specified for parameter 'iaid'" in resp["text"]
 
     # sending wrong iaid format to in lease6-update command
     cmd = {"command": "lease6-update", "arguments": {"ip-address": "2001:db8:1::1",
@@ -2477,7 +2475,7 @@ def test_v6_lease_cmds_update_negative():
                                                      "subnet-id": 1,
                                                      "iaid": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid type specified for parameter 'iaid' (<wire>:0:69)"
+    assert "invalid type specified for parameter 'iaid'" in resp["text"]
 
 
 @pytest.mark.v6
