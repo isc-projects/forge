@@ -49,8 +49,8 @@ def test_v4_subnet_selection_based_on_global_reservation_of_class():
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.50-192.168.51.50')
 
-    world.dhcp_cfg["subnet4"][0]["client-class"] = "NOTspecial"
-    world.dhcp_cfg["subnet4"][1]["client-class"] = "special"
+    world.dhcp_cfg["subnet4"][0]["client-classes"] = ["NOTspecial"]
+    world.dhcp_cfg["subnet4"][1]["client-classes"] = ["special"]
 
     world.dhcp_cfg.update({
         "reservations": [
@@ -119,8 +119,8 @@ def test_v4_pool_selection_based_on_global_reservation_of_class():
         "reservations-in-subnet": False
     })
 
-    world.dhcp_cfg["subnet4"][0]["pools"][0]["client-class"] = "NOTspecial"
-    world.dhcp_cfg["subnet4"][0]["pools"][1]["client-class"] = "special"
+    world.dhcp_cfg["subnet4"][0]["pools"][0]["client-classes"] = ["NOTspecial"]
+    world.dhcp_cfg["subnet4"][0]["pools"][1]["client-classes"] = ["special"]
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -141,8 +141,8 @@ def test_v4_pool_selection_based_on_global_reservation_of_class():
 #     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
 #                                                        '192.168.51.1-192.168.51.50')
 #
-#     world.dhcp_cfg["subnet4"][0]["client-class"] = "NOTspecial"
-#     world.dhcp_cfg["subnet4"][1]["client-class"] = "special"
+#     world.dhcp_cfg["subnet4"][0]["client-classes"] = ["NOTspecial"]
+#     world.dhcp_cfg["subnet4"][1]["client-classes"] = ["special"]
 #
 #     world.dhcp_cfg.update({
 #         "reservations": [

@@ -989,7 +989,7 @@ def test_remote_network6_get_all_values(backend):
                                                          "server-tags": ["abc"],
                                                          "shared-networks": [{
                                                              "name": "net1",
-                                                             "client-class": "abc",
+                                                             "client-classes": ["abc"],
                                                              "evaluate-additional-classes": ["XYZ"],
                                                              "rebind-timer": 200,
                                                              "renew-timer": 100,
@@ -1013,7 +1013,7 @@ def test_remote_network6_get_all_values(backend):
     response = srv_msg.send_ctrl_cmd(cmd)
 
     assert response == {"arguments": {"count": 1,
-                                      "shared-networks": [{"client-class": "abc",
+                                      "shared-networks": [{"client-classes": ["abc"],
                                                            "rebind-timer": 200, "renew-timer": 100,
                                                            "valid-lifetime": 300,
                                                            "max-valid-lifetime": 300,

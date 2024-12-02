@@ -181,9 +181,9 @@ def test_lease_cache_different_levels(backend):
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     world.dhcp_cfg.update({"cache-max-age": 10})  # global setting
-    world.dhcp_cfg["subnet4"][0].update({"client-class": "Client_Class_1"})
-    world.dhcp_cfg["shared-networks"][0]["subnet4"][0].update({"client-class": "Client_Class_2", "cache-max-age": 6})
-    world.dhcp_cfg["shared-networks"][0]["subnet4"][1].update({"client-class": "Client_Class_3"})
+    world.dhcp_cfg["subnet4"][0].update({"client-classes": ["Client_Class_1"]})
+    world.dhcp_cfg["shared-networks"][0]["subnet4"][0].update({"client-classes": ["Client_Class_2"], "cache-max-age": 6})
+    world.dhcp_cfg["shared-networks"][0]["subnet4"][1].update({"client-classes": ["Client_Class_3"]})
     world.dhcp_cfg["shared-networks"][0].update({"cache-max-age": 2})
 
     # class 3 subnet 192.168.51.0/24 "cache-max-age": 2 from shared network level

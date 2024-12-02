@@ -115,7 +115,7 @@ def test_v4_classification_member():
 def test_v4_classification_unknown_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '$(EMPTY)')
-    srv_control.add_line_to_subnet(0, {"pools": [{"pool": "192.168.50.50-192.168.50.50", "client-class": "UNKNOWN"}]})
+    srv_control.add_line_to_subnet(0, {"pools": [{"pool": "192.168.50.50-192.168.50.50", "client-classes": ["UNKNOWN"]}]})
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
                                            0,
@@ -154,7 +154,7 @@ def test_v4_classification_unknown_pool():
 def test_v4_classification_known_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '$(EMPTY)')
-    srv_control.add_line_to_subnet(0, {"pools": [{"pool": "192.168.50.55-192.168.50.55", "client-class": "KNOWN"}]})
+    srv_control.add_line_to_subnet(0, {"pools": [{"pool": "192.168.50.55-192.168.50.55", "client-classes": ["KNOWN"]}]})
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
                                            0,
@@ -193,8 +193,8 @@ def test_v4_classification_known_pool():
 def test_v4_classification_known_unknown_pool():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '$(EMPTY)')
-    srv_control.add_line_to_subnet(0, {"pools": [{"pool": "192.168.50.50-192.168.50.50", "client-class": "UNKNOWN"},
-                                                 {"pool": "192.168.50.55-192.168.50.55", "client-class": "KNOWN"}]})
+    srv_control.add_line_to_subnet(0, {"pools": [{"pool": "192.168.50.50-192.168.50.50", "client-classes": ["UNKNOWN"]},
+                                                 {"pool": "192.168.50.55-192.168.50.55", "client-classes": ["KNOWN"]}]})
     srv_control.host_reservation_in_subnet('hostname',
                                            'reserved-name',
                                            0,

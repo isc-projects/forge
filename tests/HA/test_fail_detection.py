@@ -273,14 +273,14 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     srv_control.define_temporary_lease_db_backend(backend)
     if dhcp_version == "v6":
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::30')
-        world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-class": "HA_server1"})
+        world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet6"][0]["pools"].append({"pool": "2001:db8:1::100-2001:db8:1::130",
-                                                      "client-class": "HA_server2"})
+                                                      "client-classes": ["HA_server2"]})
     else:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.30')
-        world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-class": "HA_server1"})
+        world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.130",
-                                                      "client-class": "HA_server2"})
+                                                      "client-classes": ["HA_server2"]})
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -306,16 +306,16 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::30',
                                       world.f_cfg.server2_iface)
-        world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-class": "HA_server1"})
+        world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet6"][0]["pools"].append({"pool": "2001:db8:1::100-2001:db8:1::130",
-                                                      "client-class": "HA_server2"})
+                                                      "client-classes": ["HA_server2"]})
     else:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.30',
                                       world.f_cfg.server2_iface)
-        world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-class": "HA_server1"})
+        world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.130",
-                                                      "client-class": "HA_server2"})
+                                                      "client-classes": ["HA_server2"]})
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -397,14 +397,14 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
     srv_control.define_temporary_lease_db_backend(backend)
     if dhcp_version == "v6":
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::30')
-        world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-class": "HA_server1"})
+        world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet6"][0]["pools"].append({"pool": "2001:db8:1::100-2001:db8:1::130",
-                                                      "client-class": "HA_server2"})
+                                                      "client-classes": ["HA_server2"]})
     else:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.30')
-        world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-class": "HA_server1"})
+        world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.130",
-                                                      "client-class": "HA_server2"})
+                                                      "client-classes": ["HA_server2"]})
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -430,16 +430,16 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
         srv_control.config_srv_subnet('2001:db8:1::/64',
                                       '2001:db8:1::1-2001:db8:1::30',
                                       world.f_cfg.server2_iface)
-        world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-class": "HA_server1"})
+        world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet6"][0]["pools"].append({"pool": "2001:db8:1::100-2001:db8:1::130",
-                                                      "client-class": "HA_server2"})
+                                                      "client-classes": ["HA_server2"]})
     else:
         srv_control.config_srv_subnet('192.168.50.0/24',
                                       '192.168.50.1-192.168.50.30',
                                       world.f_cfg.server2_iface)
-        world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-class": "HA_server1"})
+        world.dhcp_cfg["subnet4"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
         world.dhcp_cfg["subnet4"][0]["pools"].append({"pool": "192.168.50.100-192.168.50.130",
-                                                      "client-class": "HA_server2"})
+                                                      "client-classes": ["HA_server2"]})
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')

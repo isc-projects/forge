@@ -223,9 +223,9 @@ def test_load_balancing_maintenance(backend):
     srv_control.define_temporary_lease_db_backend(backend)
 
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::30')
-    world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-class": "HA_server1"})
+    world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
     world.dhcp_cfg["subnet6"][0]["pools"].append({"pool": "2001:db8:1::100-2001:db8:1::130",
-                                                  "client-class": "HA_server2"})
+                                                  "client-classes": ["HA_server2"]})
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address)
@@ -251,9 +251,9 @@ def test_load_balancing_maintenance(backend):
     srv_control.config_srv_subnet('2001:db8:1::/64',
                                   '2001:db8:1::1-2001:db8:1::30',
                                   world.f_cfg.server2_iface)
-    world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-class": "HA_server1"})
+    world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
     world.dhcp_cfg["subnet6"][0]["pools"].append({"pool": "2001:db8:1::100-2001:db8:1::130",
-                                                  "client-class": "HA_server2"})
+                                                  "client-classes": ["HA_server2"]})
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
     srv_control.open_control_channel()
     srv_control.agent_control_channel(world.f_cfg.mgmt_address_2)

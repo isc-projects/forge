@@ -84,7 +84,7 @@ def _create_mysql_dump():
     _send_cmd("remote-subnet6-set", dict(subnets=subnets))
 
     shared_networks = [{"name": "net1",
-                        "client-class": "abc",
+                        "client-classes": ["abc"],
                         "require-client-classes": ["XYZ"],
                         "rebind-timer": 200,
                         "renew-timer": 100,
@@ -305,7 +305,7 @@ def test_v6_upgrade_mysql_db():
     resp = _send_cmd("remote-network6-get", {"shared-networks": [{"name": "net1"}]})["arguments"]
     assert resp["count"] == 1
     network = resp["shared-networks"][0]
-    assert network["client-class"] == "abc"
+    assert network["client-classes"] == ["abc"]
     assert network["metadata"] == {"server-tags": ["abc"]}
     assert network["name"] == "net1"
     assert network["option-data"] == [{"always-send": True,

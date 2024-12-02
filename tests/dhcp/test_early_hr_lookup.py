@@ -107,7 +107,7 @@ def test_early_hr_lookup_class(backend, dhcp_version):
                 }
             ],
             'subnet': '192.168.50.0/24',
-            'client-class': 'first'
+            'client-classes': ['first']
         },
         {
             'id': 2,
@@ -130,7 +130,7 @@ def test_early_hr_lookup_class(backend, dhcp_version):
                 }
             ],
             'subnet': '2001:db8:1::/64',
-            'client-class': 'first'
+            'client-classes': ['first']
         },
         {
             'id': 2,
@@ -223,7 +223,7 @@ def test_early_hr_lookup_class_in_class(backend, dhcp_version):
                 }
             ],
             'subnet': '192.168.50.0/24',
-            'client-class': 'second'
+            'client-classes': ['second']
         },
         {
             'id': 2,
@@ -246,7 +246,7 @@ def test_early_hr_lookup_class_in_class(backend, dhcp_version):
                 }
             ],
             'subnet': '2001:db8:1::/64',
-            'client-class': 'second'
+            'client-classes': ['second']
         },
         {
             'id': 2,

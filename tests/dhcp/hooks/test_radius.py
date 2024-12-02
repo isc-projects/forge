@@ -223,11 +223,11 @@ def test_RADIUS_giaddr(dhcp_version: str,
     for i in elements:
         if 'subnet4' in i:
             for j in i['subnet4']:
-                if 'client-class' in j:
-                    del j['client-class']
+                if 'client-classes' in j:
+                    del j['client-classes']
                 for k in j['pools']:
-                    if 'client-class' in k:
-                        del k['client-class']
+                    if 'client-classes' in k:
+                        del k['client-classes']
     if reselect == 'reselect':
         srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-address', True)
         srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-pool', True)

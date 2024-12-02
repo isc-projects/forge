@@ -91,8 +91,8 @@ def test_bootp_basic_request_reply_classes(dhcp_version, backend):
     srv_control.new_pool('192.168.50.10-192.168.50.10', 0)
     srv_control.add_hooks('libdhcp_bootp.so')
 
-    world.dhcp_cfg["subnet4"][0]["pools"][0]["client-class"] = "BOOTP"
-    world.dhcp_cfg["subnet4"][0]["pools"][1]["client-class"] = "DHCP"
+    world.dhcp_cfg["subnet4"][0]["pools"][0]["client-classes"] = ["BOOTP"]
+    world.dhcp_cfg["subnet4"][0]["pools"][1]["client-classes"] = ["DHCP"]
     srv_control.create_new_class('DHCP')
     srv_control.add_test_to_class(1, 'test', "not member('BOOTP')")
     srv_control.build_and_send_config_files()

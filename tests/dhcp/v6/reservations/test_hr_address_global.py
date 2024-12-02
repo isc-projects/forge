@@ -58,9 +58,9 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
                                                        '2001:db8:b::1-2001:db8:b::10')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:c::/64',
                                                        '2001:db8:c::1-2001:db8:c::10')
-    world.dhcp_cfg["subnet6"][0]["client-class"] = "NOTspecial"
-    world.dhcp_cfg["subnet6"][1]["client-class"] = "special"
-    world.dhcp_cfg["subnet6"][2]["client-class"] = "special2"
+    world.dhcp_cfg["subnet6"][0]["client-classes"] = ["NOTspecial"]
+    world.dhcp_cfg["subnet6"][1]["client-classes"] = ["special"]
+    world.dhcp_cfg["subnet6"][2]["client-classes"] = ["special2"]
 
     world.dhcp_cfg.update({
         "reservations": [
@@ -141,8 +141,8 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
 #         "reservations-in-subnet": False
 #     })
 #
-#     world.dhcp_cfg["subnet6"][0]["pools"][0]["client-class"] = "NOTspecial"
-#     world.dhcp_cfg["subnet6"][0]["pools"][1]["client-class"] = "special"
+#     world.dhcp_cfg["subnet6"][0]["pools"][0]["client-classes"] = ["NOTspecial"]
+#     world.dhcp_cfg["subnet6"][0]["pools"][1]["client-classes"] = ["special"]
 #
 #     srv_control.build_and_send_config_files()
 #     srv_control.start_srv('DHCP', 'started')
@@ -163,8 +163,8 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
 #     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
 #                                                        '2001:db8:b::1-2001:db8:b::1')
 #
-#     world.dhcp_cfg["subnet6"][0]["client-class"] = "NOTspecial"
-#     world.dhcp_cfg["subnet6"][1]["client-class"] = "special"
+#     world.dhcp_cfg["subnet6"][0]["client-classes"] = ["NOTspecial"]
+#     world.dhcp_cfg["subnet6"][1]["client-classes"] = ["special"]
 #
 #     world.dhcp_cfg.update({
 #         "reservations": [
@@ -245,8 +245,8 @@ def test_v6_subnet_selection_based_on_global_reservation_of_class():
 #         "reservations-in-subnet": False
 #     })
 #
-#     world.dhcp_cfg["subnet6"][0]["pools"][0]["client-class"] = "NOTspecial"
-#     world.dhcp_cfg["subnet6"][0]["pools"][1]["client-class"] = "special"
+#     world.dhcp_cfg["subnet6"][0]["pools"][0]["client-classes"] = ["NOTspecial"]
+#     world.dhcp_cfg["subnet6"][0]["pools"][1]["client-classes"] = ["special"]
 #
 #     world.dhcp_cfg["subnet6"][0].update({
 #         "reservations": [
