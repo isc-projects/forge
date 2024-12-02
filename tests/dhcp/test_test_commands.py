@@ -18,7 +18,7 @@ def _check_subnet4_select_test(arguments, exp_result, response, channel):
     cmd = {"command": "subnet4-select-test"}
     if arguments is not None:
         cmd["arguments"] = arguments
-    cmd_response = srv_msg.send_ctrl_cmd(cmd, channel, exp_result = exp_result)
+    cmd_response = srv_msg.send_ctrl_cmd(cmd, channel, exp_result=exp_result)
     assert cmd_response['text'] == response
     return True
 
@@ -27,7 +27,7 @@ def _check_subnet6_select_test(arguments, exp_result, response, channel):
     cmd = {"command": "subnet6-select-test"}
     if arguments is not None:
         cmd["arguments"] = arguments
-    cmd_response = srv_msg.send_ctrl_cmd(cmd, channel, exp_result = exp_result)
+    cmd_response = srv_msg.send_ctrl_cmd(cmd, channel, exp_result=exp_result)
     assert cmd_response['text'] == response
     return True
 
@@ -36,7 +36,7 @@ def _check_subnet4o6_select_test(arguments, exp_result, response, channel):
     cmd = {"command": "subnet4o6-select-test"}
     if arguments is not None:
         cmd["arguments"] = arguments
-    cmd_response = srv_msg.send_ctrl_cmd(cmd, channel, exp_result = exp_result)
+    cmd_response = srv_msg.send_ctrl_cmd(cmd, channel, exp_result=exp_result)
     assert cmd_response['text'] == response
     return True
 
@@ -88,7 +88,7 @@ def test_subnet4_select_test_negative(channel):
          "bad 'subnet' entry: Failed to convert string to address 'foobar': Invalid argument"],
         [{"classes": 1}, 1, "'classes' entry must be a list"],
         [{"classes": "foo"}, 1, "'classes' entry must be a list"],
-        [{"classes": [ 1 ]}, 1, "'classes' entry must be a list of strings"],
+        [{"classes": [1]}, 1, "'classes' entry must be a list of strings"],
     ]
 
     for case in test_cases:
@@ -103,8 +103,8 @@ def test_subnet4_select_test(channel):
     """ Tests if server responds correctly for simple queries.
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', id = 1)
-    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.1-192.168.51.10', id = 2)
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', id=1)
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.1-192.168.51.10', id=2)
     srv_control.config_client_classification(1, 'foobar')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
@@ -125,8 +125,8 @@ def test_subnet4_select_test(channel):
 
     # Tests with shared network
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', id = 1)
-    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.1-192.168.51.10', id = 2)
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', id=1)
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.1-192.168.51.10', id=2)
     srv_control.config_client_classification(1, 'foobar')
     srv_control.shared_subnet('192.168.50.0/24', 0)
     srv_control.shared_subnet('192.168.51.0/24', 0)
@@ -193,7 +193,7 @@ def test_subnet4o6_select_test_negative(channel):
          "bad 'subnet' entry: Failed to convert string to address 'foobar': Invalid argument"],
         [{"classes": 1}, 1, "'classes' entry must be a list"],
         [{"classes": "foo"}, 1, "'classes' entry must be a list"],
-        [{"classes": [ 1 ]}, 1, "'classes' entry must be a list of strings"],
+        [{"classes": [1]}, 1, "'classes' entry must be a list of strings"],
     ]
 
     for case in test_cases:
@@ -251,8 +251,8 @@ def test_subnet4o6_select_test(channel):
 
     # Tests with shared network
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', {"4o6-interface":"enp0s9"}, id = 1)
-    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.1-192.168.51.10', id = 2)
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', {"4o6-interface": "enp0s9"}, id=1)
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.1-192.168.51.10', id=2)
     srv_control.config_client_classification(1, 'foobar')
     srv_control.shared_subnet('192.168.50.0/24', 0)
     srv_control.shared_subnet('192.168.51.0/24', 0)
@@ -322,8 +322,8 @@ def test_subnet6_select_test(channel):
     """ Tests if server responds correctly for simple queries.
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::100', id = 1)
-    srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64', '2001:db8:2::1-2001:db8:2::100', id = 2)
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::100', id=1)
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64', '2001:db8:2::1-2001:db8:2::100', id=2)
     srv_control.config_client_classification(1, 'foobar')
     srv_control.open_control_channel()
     srv_control.agent_control_channel()
@@ -347,8 +347,8 @@ def test_subnet6_select_test(channel):
 
     # Tests with shared network
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::100', id = 1)
-    srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64', '2001:db8:2::1-2001:db8:2::100', id = 2)
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::100', id=1)
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64', '2001:db8:2::1-2001:db8:2::100', id=2)
     srv_control.config_client_classification(1, 'foobar')
     srv_control.shared_subnet('2001:db8:1::/64', 0)
     srv_control.shared_subnet('2001:db8:2::/64', 0)
