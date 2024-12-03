@@ -355,7 +355,7 @@ def _wait_till_elapsed(start, seconds):
 def _add_guarded_subnet_with_logging_off6(class_test=False):
     # Create guarded subnet with classs and reservation to check if it is not logged
     srv_control.config_srv_another_subnet_no_interface('2001:db8:20::/64', '2001:db8:20::5-2001:db8:20::50',
-                                                       client_class='50', id=5,
+                                                       client_classes=['50'], id=5,
                                                        user_context={"legal-logging": False})
     srv_control.config_srv_prefix('2001:db8:30::', 0, 90, 94)
     srv_control.create_new_class('50')

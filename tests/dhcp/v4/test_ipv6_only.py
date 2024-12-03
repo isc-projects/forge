@@ -69,7 +69,7 @@ def test_ipv6_only_preferred(level):
     # Define option for tests
     option = {"name": "v6-only-preferred", "data": "1800"}
     # Create first subnet guarded by "50" class
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2', client_class='50', id=1)
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2', client_classes=['50'], id=1)
     # Create second subnet with two pools
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.1-192.168.51.2', id=2)
     srv_control.new_pool('192.168.51.11-192.168.51.11', 1)
