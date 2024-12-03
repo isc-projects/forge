@@ -212,8 +212,8 @@ def test_subnet4o6_select_test(channel):
             {
                 "id": 1,
                 "4o6-subnet": "2001:db8:1::/64",
-                "interface": "enp0s9",
-                "4o6-interface": "enp0s9",
+                "interface": world.f_cfg.server_iface,
+                "4o6-interface": world.f_cfg.server_iface,
                 "pools": [
                     {
                         "pool": "192.168.50.1-192.168.50.10"
@@ -223,7 +223,7 @@ def test_subnet4o6_select_test(channel):
             },
             {
                 "id": 2,
-                "interface": "enp0s9",
+                "interface": world.f_cfg.server_iface,
                 "pools": [
                     {
                         "pool": "192.168.51.1-192.168.51.10"
@@ -242,8 +242,8 @@ def test_subnet4o6_select_test(channel):
     test_cases = [
         [{"interface": "lo"}, 3, "no subnet selected"],
         [{"interface": world.f_cfg.server_iface}, 0, "selected subnet '192.168.50.0/24' id 1"],
-        [{"address": "2001:db8:2::2"}, 3, "no subnet selected"],
-        [{"address": "2001:db8:1::1"}, 0, "selected subnet '192.168.50.0/24' id 2"],
+        [{"remote": "2001:db8:2::2"}, 3, "no subnet selected"],
+        [{"remote": "2001:db8:1::1"}, 0, "selected subnet '192.168.50.0/24' id 1"],
     ]
 
     for case in test_cases:
@@ -251,8 +251,33 @@ def test_subnet4o6_select_test(channel):
 
     # Tests with shared network
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', {"4o6-interface": "enp0s9"}, id=1)
-    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.1-192.168.51.10', id=2)
+    subnets_v4 = [
+            {
+                "id": 1,
+                "4o6-subnet": "2001:db8:1::/64",
+                "interface": world.f_cfg.server_iface,
+                "4o6-interface": world.f_cfg.server_iface,
+                "pools": [
+                    {
+                        "pool": "192.168.50.1-192.168.50.10"
+                    }
+                ],
+                "subnet": "192.168.50.0/24"
+            },
+            {
+                "id": 2,
+                "4o6-subnet": "2001:db8:2::/64",
+                "interface": world.f_cfg.server_iface,
+                "4o6-interface": world.f_cfg.server_iface,
+                "pools": [
+                    {
+                        "pool": "192.168.51.1-192.168.51.10"
+                    }
+                ],
+                "subnet": "192.168.51.0/24"
+            }
+        ]
+    world.dhcp_cfg.update({'subnet4': subnets_v4})
     srv_control.config_client_classification(1, 'foobar')
     srv_control.shared_subnet('192.168.50.0/24', 0)
     srv_control.shared_subnet('192.168.51.0/24', 0)
@@ -266,7 +291,7 @@ def test_subnet4o6_select_test(channel):
     test_cases = [
         [{"interface": world.f_cfg.server_iface}, 0,
          "selected shared network 'foo' starting with subnet '192.168.50.0/24' id 1"],
-        [{"address": "192.168.51.1", "classes": ["foobar"]}, 0,
+        [{"remote": "2001:db8:2::2", "classes": ["foobar"]}, 0,
          "selected shared network 'foo' starting with subnet '192.168.51.0/24' id 2"],
     ]
     for case in test_cases:
