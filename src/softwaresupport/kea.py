@@ -1154,22 +1154,22 @@ def update_expired_leases_processing(param):
                       "and values inside 'expired-leases-processing'"
 
 
-def enable_https(certificate: CreateCert, required=False):
+def enable_https(trust_anchor, cert_file, key_file, cert_required=False):
     if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["trust-anchor"] = certificate.ca_cert
-        world.ca_cfg["Control-agent"]["cert-file"] = certificate.server_cert
-        world.ca_cfg["Control-agent"]["key-file"] = certificate.server_key
-        world.ca_cfg["Control-agent"]["cert-required"] = required
+        world.ca_cfg["Control-agent"]["trust-anchor"] = trust_anchor
+        world.ca_cfg["Control-agent"]["cert-file"] = cert_file
+        world.ca_cfg["Control-agent"]["key-file"] = key_file
+        world.ca_cfg["Control-agent"]["cert-required"] = cert_required
     else:
         if "control-sockets" not in world.dhcp_cfg:
             assert False, "Control sockets must be configured before enabling HTTPS"
         for socket in world.dhcp_cfg["control-sockets"]:
             if socket["socket-type"] == "http":
                 socket["socket-type"] = "https"
-                socket.update({"trust-anchor": certificate.ca_cert,
-                               "cert-file": certificate.server_cert,
-                               "key-file": certificate.server_key,
-                               "cert-required": required})
+                socket.update({"trust-anchor": trust_anchor,
+                               "cert-file": cert_file,
+                               "key-file": key_file,
+                               "cert-required": cert_required})
                 break
         else:
             assert False, "No http control socket found"
@@ -1432,7 +1432,7 @@ def check_if_http_socket_is_used():
     """
     if "control-sockets" in world.dhcp_cfg:
         for socket in world.dhcp_cfg["control-sockets"]:
-            if socket["socket-type"] == "http" and socket["socket-address"] != "":
+            if socket["socket-type"] in ["http", "https"] and socket["socket-address"] != "":
                 return True
     return False
 
@@ -1440,6 +1440,8 @@ def check_if_http_socket_is_used():
 def build_config_files(cfg=None):
     # check if control agent is disabled and if http socket is used
     if not world.f_cfg.control_agent and not check_if_http_socket_is_used():
+        # uncomment this for debugging purposes
+        print(json.dumps(world.dhcp_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
         skip("HTTP socket is not configured, skipping entire test.")
 
     substitute_vars(world.dhcp_cfg)

@@ -885,5 +885,5 @@ def generate_certificate():
     return dhcp.generate_certificate()
 
 
-def enable_https(cert_class, required):
-    dhcp.enable_https(cert_class, required)
+def enable_https(trust_anchor, cert_file, key_file, cert_required):
+    dhcp.enable_https(trust_anchor, cert_file, key_file, cert_required)

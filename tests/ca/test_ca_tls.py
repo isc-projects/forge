@@ -48,7 +48,12 @@ def test_ca_tls_basic(dhcp_version, client_cert_required):
     misc.test_setup()
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
-    srv_control.enable_https(certificate, client_cert_required)
+    srv_control.enable_https(
+        certificate.ca_cert,
+        certificate.server_cert,
+        certificate.server_key,
+        client_cert_required
+    )
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -96,7 +101,12 @@ def test_ca_tls_basic_negative(dhcp_version, client_cert_required):
     misc.test_setup()
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
-    srv_control.enable_https(certificate, client_cert_required)
+    srv_control.enable_https(
+        certificate.ca_cert,
+        certificate.server_cert,
+        certificate.server_key,
+        client_cert_required
+    )
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

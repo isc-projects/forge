@@ -61,7 +61,12 @@ def test_rbac_cert_subject():
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # Configure Control Agent to use TLS.
-    srv_control.enable_https(certificate, True)
+    srv_control.enable_https(
+        certificate.ca_cert,
+        certificate.server_cert,
+        certificate.server_key,
+        True
+    )
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
         "parameters": {
@@ -151,7 +156,12 @@ def test_rbac_cert_issuer():
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # Configure Control Agent to use TLS.
-    srv_control.enable_https(certificate, True)
+    srv_control.enable_https(
+        certificate.ca_cert,
+        certificate.server_cert,
+        certificate.server_key,
+        True
+    )
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
         "parameters": {
@@ -233,7 +243,12 @@ def test_rbac_remote_address(tls):
     srv_control.add_http_control_channel()
     # Configure Control Agent to use TLS.
     if tls:
-        srv_control.enable_https(certificate, True)
+        srv_control.enable_https(
+            certificate.ca_cert,
+            certificate.server_cert,
+            certificate.server_key,
+            True
+        )
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
         "parameters": {
@@ -339,8 +354,12 @@ def test_rbac_basic_authentication(tls):
     srv_control.add_http_control_channel()
     # Configure Control Agent to use TLS.
     if tls:
-        srv_control.enable_https(certificate, True)
-
+        srv_control.enable_https(
+            certificate.ca_cert,
+            certificate.server_cert,
+            certificate.server_key,
+            True
+        )
     auth = {"authentication": {
             "type": "basic",
             "clients":

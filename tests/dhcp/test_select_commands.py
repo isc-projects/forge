@@ -49,8 +49,8 @@ def test_subnet4_select_test_negative(channel):
     """ Tests if server responds correctly at malformed query.
     """
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -106,8 +106,8 @@ def test_subnet4_select_test(channel):
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', id=1)
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.1-192.168.51.10', id=2)
     srv_control.config_client_classification(1, 'foobar')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -131,8 +131,8 @@ def test_subnet4_select_test(channel):
     srv_control.shared_subnet('192.168.50.0/24', 0)
     srv_control.shared_subnet('192.168.51.0/24', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"foo"', 0)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'restarted')
 
@@ -155,8 +155,8 @@ def test_subnet4o6_select_test_negative(channel):
     """ Tests if server responds correctly at malformed query.
     """
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -233,8 +233,8 @@ def test_subnet4o6_select_test(channel):
             }
         ]
     world.dhcp_cfg.update({'subnet4': subnets_v4})
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -282,8 +282,8 @@ def test_subnet4o6_select_test(channel):
     srv_control.shared_subnet('192.168.50.0/24', 0)
     srv_control.shared_subnet('192.168.51.0/24', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"foo"', 0)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'restarted')
 
@@ -306,8 +306,8 @@ def test_subnet6_select_test_negative(channel):
     """ Tests if server responds correctly at malformed query for IPv6.
     """
     misc.test_setup()
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -350,8 +350,8 @@ def test_subnet6_select_test(channel):
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::100', id=1)
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64', '2001:db8:2::1-2001:db8:2::100', id=2)
     srv_control.config_client_classification(1, 'foobar')
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -378,8 +378,8 @@ def test_subnet6_select_test(channel):
     srv_control.shared_subnet('2001:db8:1::/64', 0)
     srv_control.shared_subnet('2001:db8:2::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"foo"', 0)
-    srv_control.open_control_channel()
-    srv_control.agent_control_channel()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'restarted')
 

@@ -77,14 +77,19 @@ def test_ha_tls_with_ca(dhcp_version, backend):
         srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     else:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
-    srv_control.add_unix_socket()
-    srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
-    # Configure Control Agent to use TLS.
-    srv_control.enable_https(certificate, False)
 
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
+
+    # Configure Control Agent to use TLS.
+    srv_control.enable_https(
+        certificate.ca_cert,
+        certificate.server_cert,
+        certificate.server_key,
+        False
+    )
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
-
     # Configure HA hook to use TLS.
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
@@ -96,7 +101,6 @@ def test_ha_tls_with_ca(dhcp_version, backend):
                                           "cert-file": certificate.server_cert,
                                           "key-file": certificate.server_key
                                           })
-
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -118,7 +122,12 @@ def test_ha_tls_with_ca(dhcp_version, backend):
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     # Configure Control Agent to use TLS.
-    srv_control.enable_https(certificate, False)
+    srv_control.enable_https(
+        certificate.ca_cert,
+        certificate.server2_cert,
+        certificate.server2_key,
+        False
+    )
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
@@ -201,6 +210,9 @@ def test_ha_tls_without_ca(dhcp_version, backend):
     else:
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
 
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
+
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
@@ -244,6 +256,8 @@ def test_ha_tls_without_ca(dhcp_version, backend):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
 
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     # Configure HA hook to use TLS.
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 2000,
