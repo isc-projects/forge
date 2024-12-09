@@ -13,6 +13,7 @@ import pytest
 from src import misc
 from src import srv_msg
 from src import srv_control
+from src.forge_cfg import world
 
 
 @pytest.mark.v6
@@ -252,7 +253,7 @@ def test_control_channel_http_change_socket_during_reconfigure():
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.add_http_control_channel(socket_name='control_socket2')
+    srv_control.add_unix_socket(socket_name='control_socket2')
     srv_control.add_http_control_channel('$(SRV4_ADDR)', socket_name='control_socket2')
 
     # reconfigure dhcp6 (new subnet, new socket)
@@ -260,8 +261,9 @@ def test_control_channel_http_change_socket_during_reconfigure():
     srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
     # reconfigure control-agent to switch to new dhcp4 socket
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "arguments":  $(AGENT_CONFIG) }',
-                                   '$(SRV4_ADDR)')
+    if world.f_cfg.control_agent:
+        srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "arguments":  $(AGENT_CONFIG) }',
+                                       '$(SRV4_ADDR)')
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
     misc.test_procedure()

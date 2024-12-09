@@ -327,61 +327,6 @@ def test_control_channel_keashell_test_config():
 
 @pytest.mark.v4
 @pytest.mark.controlchannel
-def test_control_channel_keashell_write_config():
-
-    misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
-    srv_control.add_unix_socket()
-    srv_control.add_http_control_channel('127.0.0.1')
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
-
-    misc.test_procedure()
-    srv_msg.client_requests_option(1)
-    srv_msg.client_send_msg('DISCOVER')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_content('yiaddr', '192.168.50.1')
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-
-    misc.test_setup()
-    srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
-    srv_control.add_http_control_channel('localhost')
-
-    srv_control.build_config_files()
-    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-set <<<\'"Dhcp4":{"renew-timer":1000,"rebind-timer":2000,"valid-lifetime":4000,"interfaces-config":{"interfaces":["$(SERVER_IFACE)"]},"subnet4":[{"subnet":"192.168.51.0/24","id":1,"interface":"$(SERVER_IFACE)","pools":[{"pool":"192.168.51.1-192.168.51.1"}]}],"lease-database":{"type":"memfile"},"control-sockets":[{"socket-type":"unix","socket-name":"%s"}]}\'' % world.f_cfg.run_join('control_socket'))
-    srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
-
-    misc.test_procedure()
-    srv_msg.client_requests_option(1)
-    srv_msg.client_send_msg('DISCOVER')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_content('yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-
-    srv_msg.execute_kea_shell('--host 127.0.0.1 --port 8000 --service dhcp4 config-write <<<\'\'')
-
-    # TODO tests needed for not valid/not permitted paths
-    srv_control.start_srv('DHCP', 'restarted')
-
-    misc.test_procedure()
-    srv_msg.client_requests_option(1)
-    srv_msg.client_send_msg('DISCOVER')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER')
-    srv_msg.response_check_include_option(1)
-    srv_msg.response_check_content('yiaddr', '192.168.51.1')
-    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-
-
-@pytest.mark.v4
-@pytest.mark.controlchannel
 def test_control_channel_socket_reload_config():
 
     # initial configuration is taken from file

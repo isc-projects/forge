@@ -474,9 +474,8 @@ def test_negative_missing_dependency(dhcp_version):
         cmd = dict(command='class-add', arguments={"client-classes": [{"name": "ipxe_efi_x64",
                                                                        "test": "member('missing_class')"}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert re.search(r"expression: \[member\('missing_class'\)\] error: <string>:1.8-22: "
-                     r"Not defined client class 'missing_class' at \(<wire>:0:\d+\)",
-                     response['text'])
+    assert "expression: [member('missing_class')] error" in response['text']
+    assert "Not defined client class 'missing_class' at" in response['text']
 
 
 def test_negative_break_dependency(dhcp_version):

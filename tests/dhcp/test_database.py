@@ -615,6 +615,7 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
                                         "reconnect-wait-time": wait_time,
                                         "on-fail": "serve-retry-continue"}
     srv_control.add_database_hook(backend)
+    srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 
     # Stop database engine so Kea does not have anything to connect to.
@@ -713,6 +714,7 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'on-fail', 'stop-retry-exit')
     srv_control.add_database_hook(backend)
+    srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 
     # Start Kea
@@ -810,6 +812,7 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'on-fail', 'serve-retry-exit')
     srv_control.add_database_hook(backend)
+    srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 
     # Start Kea
@@ -916,6 +919,7 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'on-fail', 'serve-retry-continue')
     srv_control.add_database_hook(backend)
+    srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 
     # Start Kea

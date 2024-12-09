@@ -13,7 +13,7 @@ import pytest
 from src import misc
 from src import srv_msg
 from src import srv_control
-
+from src.forge_cfg import world
 
 @pytest.mark.v4
 @pytest.mark.controlchannel
@@ -209,7 +209,7 @@ def test_control_channel_http_change_socket_during_reconfigure():
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
-    srv_control.add_http_control_channel(socket_name='control_socket2')
+    srv_control.add_unix_socket(socket_name='control_socket2')
     srv_control.add_http_control_channel('$(SRV4_ADDR)', socket_name='control_socket2')
 
     # reconfigure dhcp4 (new subnet, new socket)
@@ -217,8 +217,9 @@ def test_control_channel_http_change_socket_during_reconfigure():
     srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp4"],"arguments":  $(DHCP_CONFIG) }',
                                    '$(SRV4_ADDR)')
     # reconfigure control-agent to switch to new dhcp4 socket
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "arguments":  $(AGENT_CONFIG) }',
-                                   '$(SRV4_ADDR)')
+    if world.f_cfg.control_agent:
+        srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "arguments":  $(AGENT_CONFIG) }',
+                                       '$(SRV4_ADDR)')
 
     misc.test_procedure()
     srv_msg.client_requests_option(1)
