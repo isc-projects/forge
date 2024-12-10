@@ -524,15 +524,27 @@ def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_n
 
 
 # Configure a control socket.
-def open_control_channel_socket(socket_name=None):
-    if socket_name is not None:
-        socket_path = world.f_cfg.run_join(socket_name)
-    else:
-        socket_path = world.f_cfg.run_join('control_socket')
+def open_control_channel_socket(socket_name: str = None) -> None:
+    """open_control_channel_socket Add unix socket to control-sockets list.
+    If there is a socket with the same name already in the list, it will not be added again.
+
+    :param socket_name: Name of the socket to add. If None, 'control_socket' will be used.
+    :type socket_name: str, optional
+    """
+    if socket_name is None:
+        socket_name = 'control_socket'
+    socket_path = world.f_cfg.run_join(socket_name)
 
     if "control-sockets" not in world.dhcp_cfg:
         world.dhcp_cfg["control-sockets"] = []
 
+    for socket in world.dhcp_cfg["control-sockets"]:
+        if socket["socket-type"] == "unix" and socket["socket-name"] == socket_path:
+            # let's not add the same socket twice
+            # there is a bit of a mess in HA + Radius test, this one is using
+            # src/softwaresupport/kea.py configuration way and src/softwaresupport/cb_model.py
+            # this was never planned to work together.
+            return
     world.dhcp_cfg["control-sockets"].append({"socket-type": "unix", "socket-name": socket_path})
 
 
@@ -1154,7 +1166,21 @@ def update_expired_leases_processing(param):
                       "and values inside 'expired-leases-processing'"
 
 
-def enable_https(trust_anchor, cert_file, key_file, cert_required=False):
+def enable_https(trust_anchor: str, cert_file: str, key_file: str, cert_required: bool = False) -> None:
+    """enable_https Enable HTTPS for the control channel. If forge is configured
+    to use Control Agent daemon, it will be configured here with all the parameters (trust-anchor, cert-file, key-file, cert-required).
+
+    If forge is not configured to use Control Agent daemon, https parameters will be added to the http control sockets.
+
+    :param trust_anchor: Path to the trust anchor file
+    :type trust_anchor: str
+    :param cert_file: Path to the certificate file
+    :type cert_file: str
+    :param key_file: Path to the key file
+    :type key_file: str
+    :param cert_required: Whether certificate is required
+    :type cert_required: bool
+    """
     if world.f_cfg.control_agent:
         world.ca_cfg["Control-agent"]["trust-anchor"] = trust_anchor
         world.ca_cfg["Control-agent"]["cert-file"] = cert_file
@@ -1176,7 +1202,19 @@ def enable_https(trust_anchor, cert_file, key_file, cert_required=False):
 
 
 # Start kea-ctrl-agent if it's enabled
-def add_http_control_channel(host_address, host_port, socket_name='control_socket'):
+def add_http_control_channel(host_address: str, host_port: int, socket_name: str = 'control_socket') -> None:
+    """add_http_control_channel Add http control channel to the configuration. If forge is configured
+    to use Control Agent daemon, it will be configured here with all the parameters (addresses, sockets, logging)
+
+    If forge is not configured to use Control Agent daemon, it http address and port will be added to the control-sockets list.
+
+    :param host_address: Address of the host to listen for http requests
+    :type host_address: str
+    :param host_port: Port of the host to listen for http requests
+    :type host_port: int
+    :param socket_name: Name of the socket to use for the control channel
+    :type socket_name: str, optional
+    """
     if world.f_cfg.control_agent:
         if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
             logging_file = 'kea-ctrl-agent.log'
