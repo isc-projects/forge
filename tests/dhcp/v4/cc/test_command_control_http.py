@@ -15,6 +15,7 @@ from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
 
+
 @pytest.mark.v4
 @pytest.mark.controlchannel
 def test_control_channel_http_dhcp_disable_timer():

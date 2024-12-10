@@ -190,6 +190,7 @@ def test_v6_upgrade_mysql_db():
     srv_control.add_hooks('libdhcp_cb_cmds.so')
     srv_control.add_hooks('libdhcp_mysql.so')
     srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     hosts = {"hosts-databases": [{"user": tmp_user_name,
                                   "password": "$(DB_PASSWD)",
                                   "name": tmp_db_name,

@@ -7,8 +7,6 @@
 """Kea classification manipulation commands"""
 
 
-import re
-
 import pytest
 
 from src import srv_msg

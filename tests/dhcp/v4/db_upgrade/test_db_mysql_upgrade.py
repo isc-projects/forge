@@ -45,6 +45,7 @@ def _create_mysql_dump():
     srv_control.add_hooks('libdhcp_cb_cmds.so')
     srv_control.add_hooks('libdhcp_mysql.so')
     srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     srv_control.enable_db_backend_reservation('MySQL')
     srv_control.define_temporary_lease_db_backend('mysql')
     cb_config = {"config-databases": [{"user": "$(DB_USER)",

@@ -97,6 +97,7 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
                                         "on-fail": "stop-retry-exit"}
     srv_control.add_database_hook(backend)
     srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
 
     # Start Kea
     srv_control.build_and_send_config_files()
@@ -201,6 +202,7 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
                                         "on-fail": "serve-retry-exit"}
     srv_control.add_database_hook(backend)
     srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
 
     # Start Kea
     srv_control.build_and_send_config_files()
@@ -306,7 +308,7 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
                                         "on-fail": "serve-retry-continue"}
     srv_control.add_database_hook(backend)
     srv_control.add_http_control_channel()
-
+    srv_control.add_unix_socket()
     # Start Kea
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -426,7 +428,7 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
                                         "on-fail": "stop-retry-exit"}
     srv_control.add_database_hook(backend)
     srv_control.add_http_control_channel()
-
+    srv_control.add_unix_socket()
     # Stop database engine so Kea does not have anything to connect to.
     _stop_database(backend)
     # Start Kea
@@ -519,6 +521,7 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
                                         "on-fail": "serve-retry-exit"}
     srv_control.add_database_hook(backend)
     srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
 
     # Stop database engine so Kea does not have anything to connect to.
     _stop_database(backend)

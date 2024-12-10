@@ -35,6 +35,7 @@ def _create_pgsql_dump():
     srv_control.add_hooks('libdhcp_cb_cmds.so')
     srv_control.add_hooks('libdhcp_pgsql.so')
     srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
     srv_control.enable_db_backend_reservation('PostgreSQL')
     srv_control.define_temporary_lease_db_backend('postgresql')
     srv_control.build_and_send_config_files()
