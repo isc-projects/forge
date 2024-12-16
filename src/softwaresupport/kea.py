@@ -1234,7 +1234,13 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
     else:
         if "control-sockets" not in world.dhcp_cfg:
             world.dhcp_cfg["control-sockets"] = []
-        world.dhcp_cfg["control-sockets"].append({"socket-type": "http",
+        for socket in world.dhcp_cfg["control-sockets"]:
+            if socket["socket-type"] == "http":
+                socket["socket-address"] = host_address
+                socket["socket-port"] = int(host_port)
+                break
+        else:
+            world.dhcp_cfg["control-sockets"].append({"socket-type": "http",
                                                   "socket-address": host_address,
                                                   "socket-port": int(host_port)})
 

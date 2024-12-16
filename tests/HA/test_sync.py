@@ -866,11 +866,6 @@ def test_HA_and_RADIUS(dhcp_version: str,
 
     # Configure the backend.
     srv_control.define_temporary_lease_db_backend(backend)
-
-    # Start kea-ctrl-agent and configure the control socket in Kea.
-    srv_control.add_http_control_channel()
-    srv_control.add_unix_socket()
-
     # Load necessary hook libraries.
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -894,6 +889,10 @@ def test_HA_and_RADIUS(dhcp_version: str,
     # Add pools for the usual HA traffic coming from generate_leases().
     # Two times the lease count - one for each starting MAC
     _add_ha_pools(2 * leases_count)
+
+    # Start kea-ctrl-agent and configure the control socket in Kea.
+    srv_control.add_http_control_channel()
+    srv_control.add_unix_socket()
 
     # Start Kea.
     srv_control.build_and_send_config_files()
@@ -930,10 +929,6 @@ def test_HA_and_RADIUS(dhcp_version: str,
     # Configure the backend.
     srv_control.define_temporary_lease_db_backend(backend)
 
-    # Start kea-ctrl-agent and configure the control socket in Kea.
-    srv_control.add_http_control_channel(host_address=world.f_cfg.mgmt_address_2)
-    srv_control.add_unix_socket()
-
     # Load necessary hook libraries.
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -958,6 +953,10 @@ def test_HA_and_RADIUS(dhcp_version: str,
     # Add pools for the usual HA traffic coming from generate_leases().
     # Two times the lease count - one for each starting MAC
     _add_ha_pools(2 * leases_count)
+
+    # Start kea-ctrl-agent and configure the control socket in Kea.
+    srv_control.add_http_control_channel(host_address=world.f_cfg.mgmt_address_2)
+    srv_control.add_unix_socket()
 
     # Start Kea.
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)

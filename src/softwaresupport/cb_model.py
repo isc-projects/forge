@@ -753,7 +753,7 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
     cfg = ConfigModel(init_cfg, **config_model_args)
 
     # it's needed to fulfill check_if_http_socket_is_used in src/softwaresupport/kea.py
-    srv_control.add_http_control_channel()
+    srv_control.add_http_control_channel(host_address=destination)
     srv_control.build_and_send_config_files(cfg=cfg.get_dict(), dest=destination)
     srv_control.start_srv('DHCP', 'started')
 
