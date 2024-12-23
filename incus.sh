@@ -41,7 +41,7 @@ function install_base_pkgs() {
             install_pkgs "$1" bind9 ccache curl freeradius gnupg net-tools openssh-server socat tcpdump vim
             ;;
         "fedora"|"rhel")
-            install_pkgs "$1" bind ccache freeradius net-tools openssh-server socat tcpdump vim
+            install_pkgs "$1" bind ccache freeradius net-tools openssh-server socat tcpdump vim python3
             ;;
         "alpine")
             install_pkgs "$1" bash bind ccache curl freeradius gnupg net-tools openssl openssh python3 socat sudo tcpdump vim
