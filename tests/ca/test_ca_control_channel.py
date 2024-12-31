@@ -34,9 +34,6 @@ def _send_directly_to_ca(cmd, exp_result=0, address='$(SRV4_ADDR)', exp_failed=F
 @pytest.mark.ca
 @pytest.mark.controlchannel
 def test_ca_list():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
-
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_unix_socket()
@@ -64,9 +61,6 @@ def test_ca_list():
 @pytest.mark.ca
 @pytest.mark.controlchannel
 def test_ca_config_get_set():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
-
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_unix_socket()
@@ -96,9 +90,6 @@ def test_ca_config_get_set():
 @pytest.mark.ca
 @pytest.mark.controlchannel
 def test_ca_config_set():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
-
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_unix_socket()
@@ -168,9 +159,6 @@ def test_ca_config_set():
 @pytest.mark.disabled
 @pytest.mark.controlchannel
 def test_ca_config_test():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
-
     # this is bug, won't be fixed #910
     # let's check minimal configuration
     misc.test_setup()
@@ -236,9 +224,6 @@ def test_ca_config_test():
 @pytest.mark.ca
 @pytest.mark.controlchannel
 def test_ca_config_reload():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
-
     # let's check minimal configuration
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -291,9 +276,6 @@ def test_ca_config_reload():
 @pytest.mark.ca
 @pytest.mark.controlchannel
 def test_ca_build_report():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
-
     # let's check minimal configuration
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -317,9 +299,6 @@ def test_ca_build_report():
 @pytest.mark.ca
 @pytest.mark.controlchannel
 def test_ca_config_write():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
-
     # let's check minimal configuration
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -348,9 +327,6 @@ def test_ca_config_write():
 @pytest.mark.ca
 @pytest.mark.controlchannel
 def test_ca_shutdown():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
-
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_unix_socket()
@@ -368,8 +344,6 @@ def test_ca_shutdown():
 @pytest.mark.ca
 @pytest.mark.controlchannel
 def test_ca_version_get():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
@@ -390,9 +364,6 @@ def test_ca_version_get():
 @pytest.mark.ca
 @pytest.mark.controlchannel
 def test_ca_config_hash_get():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
-
     # https://gitlab.isc.org/isc-projects/kea/-/issues/2940
     # CA will be removed, so it won't be fixed. Test disabled for now, it will need restructure
     # after CA will be removed anyway
