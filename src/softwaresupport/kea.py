@@ -1241,8 +1241,8 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
                 break
         else:
             world.dhcp_cfg["control-sockets"].append({"socket-type": "http",
-                                                  "socket-address": host_address,
-                                                  "socket-port": int(host_port)})
+                                                      "socket-address": host_address,
+                                                      "socket-port": int(host_port)})
 
 
 def config_srv_id(id_type, id_value):
