@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -253,11 +253,10 @@ def send_dont_wait_for_message(iface=None, ignore_response=False):
 def send_wait_for_message(requirement_level: str, message: str, expect_response: bool = True,
                           protocol: str = 'UDP', address: str = None, port: int = None,
                           iface: str = None):
-    """
-    Send messages to server either TCP or UDP, check if response is received.
+    """Send messages to server either TCP or UDP, check if response is received.
     :param requirement_level: not used. RFC-grade requirement level e.g. 'MAY', 'MUST'
     :param message: name of message that should be received from a server (if we expect multiple messages,
-                     than this is name of the first message)
+    than this is name of the first message)
     :param expect_response: condition if message is expected or not
     :param protocol: choose protocol, for now it's UDP for DHCP messages and TCP for bulk lease query
     :param address: destination address for TCP connection
@@ -474,10 +473,9 @@ def forge_sleep(time_val, time_units='seconds'):
 
 @step(r'Pause the Test.')
 def test_pause():
-    """
-    Pause the test for any reason. Very good to debug problems. Checking server configuration
+    """Pause the test for any reason. Very good to debug problems. Checking server configuration
     and so on.... Do NOT put it in automatic tests, it blocks test until user will:
-        Press any key to continue.
+    Press any key to continue.
     """
     multi_protocol_functions.test_pause()
 
@@ -513,18 +511,14 @@ def compare_file(remote_path):
 
 @step(r'Client sends local file stored in: (\S+) to server, to location: (\S+).')
 def send_file_to_server(local_path, remote_path):
-    """
-    If you need send some file to server, use that step.
-    """
+    """If you need send some file to server, use that step."""
     local_path, remote_path = test_define_value(local_path, remote_path)
     multi_protocol_functions.send_file_to_server(local_path, remote_path)
 
 
 @step(r'Client removes file from server located in: (\S+).')
 def remove_file_from_server(remote_path, dest=world.f_cfg.mgmt_address):
-    """
-    If you need to remove file from a server, please do so.
-    """
+    """If you need to remove file from a server, please do so."""
     remote_path = test_define_value(remote_path)[0]
     multi_protocol_functions.remove_file_from_server(remote_path, dest=dest)
 

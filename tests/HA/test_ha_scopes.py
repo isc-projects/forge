@@ -1,4 +1,4 @@
-# Copyright (C) 2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2024-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -37,9 +37,7 @@ def kill_kea_on_second_system():
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('mode', ['load-balancing', 'hot-standby', 'passive-backup'])
 def test_HA_ha_scopes(dhcp_version: str, backend: str, mode: str):
-    """
-    Check that Kea recieves ha-scopes command and returns correct scopes.
-
+    """Check that Kea recieves ha-scopes command and returns correct scopes.
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
     :param hook_order: the order in which hooks are loaded: either alphabetical

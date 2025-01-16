@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -54,14 +54,12 @@ pgsql_reservation = Dispatcher('pgsql_reservation')
 # DHCP server configurations
 @step(r'Server is configured with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
-    """Adds server configuration with specified subnet and pool.
-
-    Arguments:
-    subnet -- the value for "subnet". If None, then continue with configuring an
-        already existing subnet element.
-    pool -- the value appended to "pools". If None, then leave "pools" alone.
-    iface -- the interface to be configured on the subnet element
-        (default: SERVER_IFACE)
+    """Add server configuration with specified subnet and pool.
+    :param subnet: the value for "subnet". If None, then continue with configuring an
+    already existing subnet element.
+    :param pool: the value appended to "pools". If None, then leave "pools" alone.
+    :param iface: the interface to be configured on the subnet element
+    (default: SERVER_IFACE)
     """
     subnet, pool, iface = test_define_value(subnet, pool, iface)
     dhcp.prepare_cfg_subnet(subnet, pool, iface=iface, **kwargs)
@@ -69,15 +67,13 @@ def config_srv_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
 
 @step(r'Server is configured on interface (\S+) and address (\S+) with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet_with_iface(interface, address, subnet, pool):
-    """Adds server configuration with specified subnet and pool.
-
-    Arguments:
-    interface -- the interface to be configured on the subnet element and at the
-        global level
-    address -- the address to be configured at the global level
-    subnet -- the value for "subnet". If None, then continue with configuring an
-        already existing subnet element.
-    pool -- the value appended to "pools". If None, then leave "pools" alone.
+    """Add server configuration with specified subnet and pool.
+    :param interface: the interface to be configured on the subnet element and at the
+    global level
+    :param address: the address to be configured at the global level
+    :param subnet: the value for "subnet". If None, then continue with configuring an
+    already existing subnet element.
+    :param pool: the value appended to "pools". If None, then leave "pools" alone.
     """
     interface, address, subnet, pool = test_define_value(interface, address, subnet, pool)
     dhcp.prepare_cfg_subnet_specific_interface(interface, address, subnet, pool)
@@ -515,16 +511,14 @@ def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
 @step(r'Reserve (\S+) (\S+) in subnet (\d+) for host uniquely identified by (\S+) (\S+).')
 def host_reservation_in_subnet(reservation_type, reserved_value, subnet, unique_host_value_type, unique_host_value):
     """Configure a subnet-level host reservation.
-
-    Arguments:
-    reservation_type -- the type of the reserved resource: "client-classes",
-        "hostname", "ip-addresses", "option-data", "prefixes"
-    reserved_value -- the value of the reserved resource
-    subnet -- the ordinal number of the subnet under which the reservation will
-        be made. Careful, this is not the subnet ID.
-    unique_host_value_type -- the type for the reservation's identifier:
-        "circuit-id", "client-id", "duid", "flex-id", "hw-address"
-    unique_host_value -- the value for the reservation's identifier
+    :param reservation_type: the type of the reserved resource: "client-classes",
+    "hostname", "ip-addresses", "option-data", "prefixes"
+    :param reserved_value: the value of the reserved resource
+    :param subnet: the ordinal number of the subnet under which the reservation will
+    be made. Careful, this is not the subnet ID.
+    :param unique_host_value_type: the type for the reservation's identifier:
+    "circuit-id", "client-id", "duid", "flex-id", "hw-address"
+    :param unique_host_value: the value for the reservation's identifier
     """
     reservation_type, reserved_value, unique_host_value_type, unique_host_value = test_define_value(reservation_type,
                                                                                                     reserved_value,
@@ -717,12 +711,11 @@ def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address):
 
 def start_srv(name: str, action: str, config_set=None,
               dest: str = world.f_cfg.mgmt_address, should_succeed: bool = True):
-    """
-    Start, stop, restart or reconfigure server.
+    """Start, stop, restart or reconfigure server.
     :param name: 'DHCP' | 'DNS'
     :param action: 'started' | 'stopped' | 'restarted' | 'reconfigured'
     :param config_set: Dynamic configuration to be used. Currently used only as an integer to select
-        a certain DNS configuration.
+    a certain DNS configuration.
     :param dest: management address of server
     :param should_succeed: whether the action is supposed to succeed or fail
     """

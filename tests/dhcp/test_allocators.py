@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2023-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -192,11 +192,10 @@ def test_v4_allocator_exhausted_pool(backend, allocator):
 
 
 def _check_multiple_v6_addresses(all_leases: list, offset: int = 1) -> str:
-    """
-    Check if list of addresses is iterative or randomly allocated
+    """Check if list of addresses is iterative or randomly allocated
     :param all_leases: list of ip addresses as strings
     :param offset: offset to check between addresses, with addresses it will be 1,
-                in prefixes number should be higher than 1
+    in prefixes number should be higher than 1
     :return: True if conditional is met
     """
     def _verdict(lst):

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2023-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,7 +21,7 @@ def basic_configuration(version, lft) -> None:
     """basic_configuration Configure basic DHCPv4 server with DDNS and 4 subnets.
 
     :param version: DHCP version
-    :type versio: int
+    :type version: int
     :param lft: global lease lifetime
     :type lft: int
     """
@@ -108,8 +108,6 @@ def _check_fqdn_record(
 def _check_address_record(fqdn: str, arpa: str, expect: str = "notempty") -> None:
     """_check_address_record Check if reverse DNS record is present.
 
-    :param version: dhcp version
-    :type version: int
     :param fqdn: FQDN value that will be checked
     :type fqdn: str
     :param arpa: DNS entry value
@@ -254,11 +252,11 @@ def _get_address_and_check_dns_record(
     :type version: int, optional
     :param mac: MAC address in case of DHCP v4 and DUID when testing DHCPv6, defaults to None
     :type mac: str
-    :param fqdn: FQDN value that will be sent to DHCP server, defaults to None
-    :type fqdn: str
-    :param expected_fqdn: FQDN value that will be sent back by DHCP server if None is used test assume that
+    :param client_fqdn: FQDN value that will be sent to DHCP server, defaults to None
+    :type client_fqdn: str
+    :param returned_fqdn: FQDN value that will be sent back by DHCP server if None is used test assume that
                           fqdn and expected FQDN are equal, defaults to None
-    :type expected_fqdn: str, optional
+    :type returned_fqdn: str, optional
     :param address: expected IP address, defaults to None
     :type address: str
     :param arpa: DNS entry value, defaults to None

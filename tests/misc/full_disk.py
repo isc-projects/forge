@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -49,12 +49,11 @@ def _destroy_ramdisk(location='/tmp/kea_ram_disk', dest=world.f_cfg.mgmt_address
 def _allocate_disk_space(size="full",
                          location='/tmp/kea_ram_disk/allocate_disk',
                          dest=world.f_cfg.mgmt_address):
-    """
-    Quickly allocate space on ramdisk or anywhere you want ;) on some systems it may be required
+    """Quickly allocate space on ramdisk or anywhere you want ;) on some systems it may be required
     to execute this function twice to get entire disk allocated
     :param size: string parameter to define how much space should be allocated,
-                 by default it will take full space on disk that include "kea_ram_disk"
-                 in it's path
+    by default it will take full space on disk that include "kea_ram_disk"
+    in it's path
     :param location: path to file that will be generated
     :param dest: IP address of a system on which we want to allocate disk space
     :return result of executed command
@@ -72,15 +71,13 @@ def _allocate_disk_space(size="full",
 
 
 def _move_pgsql_to_ram_disk(location='/tmp/kea_ram_disk_pgsql', dest=world.f_cfg.mgmt_address):
-    """
-    Function should create backup for postrges data and config,
+    """Function should create backup for postrges data and config,
     create new ramdisk, copy postgres data there and reconfigure postgres to use new ram disk.
-
     THIS FUNCTION MAY DAMAGE YOUR SETUP!
     :param location: location for new ram disk where pgsql will save all the data
     :param dest: destination host
     :return: two strings, location from where we moved postgres and path to configuration file
-             required to reverse changes
+    required to reverse changes
     """
     cmd = 'sudo systemctl start postgresql'
     srv_msg.execute_shell_cmd(cmd, dest=dest, save_results=False)

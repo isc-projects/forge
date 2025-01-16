@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2012-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -505,37 +505,36 @@ def convert_DUID_hwaddr(duid, threshold):
 
 
 def convert_DUID(duid):
-    """
-    We can use two types of DUID:
-        DUID_LLT link layer address + time (e.g. 00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8 )
-        DUID_LL link layer address (e.g. 00:03:00:01:ff:ff:ff:ff:ff:01 )
+    """We can use two types of DUID:
+    - DUID_LLT link layer address + time (e.g. 00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8 )
+    - DUID_LL link layer address (e.g. 00:03:00:01:ff:ff:ff:ff:ff:01 )
 
-        third DUID based on vendor is not supported (also not planned to be ever supported)
+    third DUID based on vendor is not supported (also not planned to be ever supported)
 
-        In case of using DUID_LLT:
-            00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8
-            00:01 - duid type, it need to be 0001 for DUID_LLT
-                  00:01 - hardware type, make it always 0001
-                        52:7b:a8:f0 - converted time value
-                                    08:00:27:58:f1:e8 - link layer address
+    In case of using DUID_LLT:
+    |    00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8
+    |    00:01 - duid type, it need to be 0001 for DUID_LLT
+    |            00:01 - hardware type, make it always 0001
+    |                52:7b:a8:f0 - converted time value
+    |                            08:00:27:58:f1:e8 - link layer address
 
-        In case of using DUID_LL:
-            00:03:00:01:ff:ff:ff:ff:ff:01
-            00:03 - duid type, it need to be 0003 for DUID_LL
-                  00:01 - hardware type, make it always 0001
-                        ff:ff:ff:ff:ff:01 - link layer address
+    In case of using DUID_LL:
+    |    00:03:00:01:ff:ff:ff:ff:ff:01
+    |    00:03 - duid type, it need to be 0003 for DUID_LL
+    |            00:01 - hardware type, make it always 0001
+    |                ff:ff:ff:ff:ff:01 - link layer address
 
-        You can use two forms for each DUID type, with ":" and without.
-        For example
-                00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8
-            it's same as:
-                00010001527ba8f008002758f1e8
-            and
-                00:03:00:01:ff:ff:ff:ff:ff:01
-            it's same as:
-                00030001ffffffffff01
+    You can use two forms for each DUID type, with ":" and without.
+    For example
+    |        00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8
+    |    it's same as:
+    |        00010001527ba8f008002758f1e8
+    |    and
+    |        00:03:00:01:ff:ff:ff:ff:ff:01
+    |    it's same as:
+    |        00030001ffffffffff01
 
-        Other configurations will cause to fail test.
+    Other configurations will cause to fail test.
     """
     if isinstance(duid, (dhcp6.DUID_LLT, dhcp6.DUID_LL, dhcp6.DUID_EN)):
         return duid
@@ -873,9 +872,9 @@ def get_option(msg, opt_code, get_all=False):
     :param msg: scapy message to retrieve the option from
     :param opt_code: option code or name
     :param get_all: True if it should return all options with given code,
-                    False if a single option is required
+    False if a single option is required
     :return: scapy message representing the option or None if the option doesn't exist
-             or list of options if there are multiple
+    or list of options if there are multiple
     '''
 
     # Ensure the option code is an integer.
@@ -1568,32 +1567,29 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
          status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
          linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None):
-    """
-    Sends and ensures receival of 6 packets part of a regular DHCPv6 exchange
+    """Send and ensure receival of 6 packets part of a regular DHCPv6 exchange
     in the correct sequence: solicit, advertise, request, reply, renew, reply.
     Inserts options in the client packets based on given parameters and ensures
     that the right options are found in the server packets. A single option
     missing or having incorrect values renders the test failed.
-
-    Args:
-        address: the expected address as value of the IA_Address suboption.
-            For multiple addresses, use additional check_IA_NA() calls.
-        delegated_prefix: the expected prefix in format '<prefix>/<length>'.
-            For multiple prefixes, use additional check_IA_PD() calls.
-        relay_information: whether client packets should be encapsulated in relay
-            forward messages, and by extension whether server packets should be
-            expected to be encapsulated in relay reply messages (default: False)
-        status_code: the expected status code (default: None - expected to be missing)
-        exchange: can have values "sarr-only" for 4-way SARR, "full" meaning
-            SARR + renew-reply or "renew-reply". It is a string instead of a boolean
-            for clearer recognition of test names because this value often comes from
-            pytest parametrization. (default: "full")
-        duid: the DUID to be used in client packets
-            (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
-        iaid: sets IAID for the client
-        linkaddr: sets Link Address in Relayed message
-        ifaceid: sets Interface ID in option 18 in Relayed message
-        iface: sets interface for the client
+    :param address: the expected address as value of the IA_Address suboption.
+    For multiple addresses, use additional check_IA_NA() calls.
+    :param delegated_prefix: the expected prefix in format '<prefix>/<length>'.
+    For multiple prefixes, use additional check_IA_PD() calls.
+    :param relay_information: whether client packets should be encapsulated in relay
+    forward messages, and by extension whether server packets should be
+    expected to be encapsulated in relay reply messages (default: False)
+    :param status_code: the expected status code (default: None - expected to be missing)
+    :param exchange: can have values "sarr-only" for 4-way SARR, "full" meaning
+    SARR + renew-reply or "renew-reply". It is a string instead of a boolean
+    for clearer recognition of test names because this value often comes from
+    pytest parametrization. (default: "full")
+    :param duid: the DUID to be used in client packets
+    (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+    :param iaid: sets IAID for the client
+    :param linkaddr: sets Link Address in Relayed message
+    :param ifaceid: sets Interface ID in option 18 in Relayed message
+    :param iface: sets interface for the client
     """
     iface = world.cfg["iface"] if iface is None else iface
     # TODO: Add ability to check that options other than IA_NAs and IA_PDs are not included.
@@ -1654,28 +1650,25 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
        status_code_IA_NA=None, status_code_IA_PD=None,
        duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
        linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None):
-    """
-    Sends and ensures receival of 2 packets part of a regular DHCPv6 exchange
+    """Send and ensure receival of 2 packets part of a regular DHCPv6 exchange
     in the correct sequence: solicit, advertise.
     Inserts options in the client packets based on given parameters and ensures
     that the right options are found in the server packets. A single option
     missing or having incorrect values renders the test failed.
-
-    Args:
-        address: the expected address as value of the IA_Address suboption.
-            For multiple addresses, use additional check_IA_NA() calls.
-        delegated_prefix: the expected prefix in format '<prefix>/<length>'.
-            For multiple prefixes, use additional check_IA_PD() calls.
-        relay_information: whether client packets should be encapsulated in relay
-            forward messages, and by extension whether server packets should be
-            expected to be encapsulated in relay reply messages (default: False)
-        status_code: the expected status code (default: None - expected to be missing)
-        duid: the DUID to be used in client packets
-            (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
-        iaid: sets IAID for the client
-        linkaddr: sets Link Address in Relayed message
-        ifaceid: sets Interface ID in option 18 in Relayed message
-        """
+    :param address: the expected address as value of the IA_Address suboption.
+    For multiple addresses, use additional check_IA_NA() calls.
+    :param delegated_prefix: the expected prefix in format '<prefix>/<length>'.
+    For multiple prefixes, use additional check_IA_PD() calls.
+    :param relay_information: whether client packets should be encapsulated in relay
+    forward messages, and by extension whether server packets should be
+    expected to be encapsulated in relay reply messages (default: False)
+    :param status_code: the expected status code (default: None - expected to be missing)
+    :param duid: the DUID to be used in client packets
+    (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+    :param iaid: sets IAID for the client
+    :param linkaddr: sets Link Address in Relayed message
+    :param ifaceid: sets Interface ID in option 18 in Relayed message
+    """
 
     iface = world.cfg["iface"] if iface is None else iface
     # Kea sends NoAddrsAvail or NoPrefixAvail in ADVERTISE when there are no

@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -130,13 +130,12 @@ def _option_data():
 
 
 def _dorara(vendor_ids: int, address: str, vivso_suboptions: str):
-    """
-    Do a DORA exchange plus another RA exchange to test the renew case.
+    """Do a DORA exchange plus another RA exchange to test the renew case.
     Expect the given IPv4 address in the yiaddr field and the given vivso suboption content.
     :param vendor_id: list of vendor IDs included in the client's messages
     :param address: the expected IPv4 address value for the yiaddr field
     :param vivso_suboptions: the expected content for option 125.
-                             If None, it is expected that the option is not received.
+    If None, it is expected that the option is not received.
     """
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', ''.join(secrets.choice(string.hexdigits) for _ in range(12)).lower())
@@ -219,13 +218,12 @@ def _dorara(vendor_ids: int, address: str, vivso_suboptions: str):
 
 
 def _sarrrr(vendor_ids: int, address: str, vendor_suboptions: str):
-    """
-    Do a SARR exchange plus another renew-reply exchange.
+    """Do a SARR exchange plus another renew-reply exchange.
     Expect the given IPv4 address in the yiaddr field and the given vendor option content.
     :param vendor_ids: list of vendor IDs included in the client's messages
     :param address: the expected IPv4 address value for the yiaddr field
     :param vendor_suboptions: the expected content for option 17.
-                              If None, it is expected that the option is not received.
+    If None, it is expected that the option is not received.
     """
     duid = [secrets.choice(string.hexdigits) for _ in range(12)]
     duid = '00:03:00:01:' + ':'.join(''.join(duid[i:i+2]) for i in range(0, len(duid), 2))
@@ -333,10 +331,9 @@ def _sarrrr(vendor_ids: int, address: str, vendor_suboptions: str):
 
 
 def _vivso_content(vivsos):
-    """
-    Create the hexstring content of a vivso option 125 for the given vendor IDs and given suboptions.
+    """Create the hexstring content of a vivso option 125 for the given vendor IDs and given suboptions.
     :param vivsos: lists of vivso options, each being a list of [vendor ID, suboptions],
-                   each suboption being a list of [suboption_code, suboption_content]
+    each suboption being a list of [suboption_code, suboption_content]
     """
     all_results = []
     for vendor_id, suboptions in vivsos:
@@ -1208,7 +1205,7 @@ def test_v4_option_125_encapsulated():
 def test_v4_two_vendors_two_options_using_vendor_class_option_data():
     """
     Check that multiple vendors can get their respective options using always-send in the automated
-    VENDOR_CLASS_ classes. This is likely the most common Kea configuration.
+    VENDOR_CLASS classes. This is likely the most common Kea configuration.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.0.2.0/24', '192.0.2.10-192.0.2.250')
@@ -1364,7 +1361,7 @@ def test_v4_multiple_vendors_multiple_options_using_global_option_data():
 def test_v4_options_from_other_vendors_using_vendor_class_option_data():
     """
     Check that multiple vendors can get multiple options from other vendors through the automated
-    VENDOR_CLASS_ class. It's a combination of the other two tests above.
+    VENDOR_CLASS class. It's a combination of the other two tests above.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.0.2.0/24', '192.0.2.10-192.0.2.250')
@@ -1429,7 +1426,7 @@ def test_v4_options_from_other_vendors_using_vendor_class_option_data():
 def test_v6_two_vendors_two_options_using_vendor_class_option_data():
     """
     Check that multiple vendors can get their respective options using always-send in the automated
-    VENDOR_CLASS_ classes. This is an unlikely Kea configuration since it doesn't work as in v4.
+    VENDOR_CLASS classes. This is an unlikely Kea configuration since it doesn't work as in v4.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::10 - 2001:db8::250')

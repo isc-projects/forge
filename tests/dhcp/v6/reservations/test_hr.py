@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -313,7 +313,7 @@ def test_v6_host_reservation_classes_2():
 def test_v6_host_reservation_empty(backend):
     """
     Test if empty (only MAC address) reservation can be made.
-    # kea#2878 - `reservation-add` requires `subnet-id` to be provided, which contradicts empty reservations
+    # kea#2878 - "reservation-add" requires "subnet-id" to be provided, which contradicts empty reservations
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')

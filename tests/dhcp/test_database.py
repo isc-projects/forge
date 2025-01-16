@@ -1,4 +1,4 @@
-# Copyright (C) 2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2024-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -68,7 +68,7 @@ def _restart_databases(backend):
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
-    """Test starts Kea without lease DB connection and checks it's behavior according to `on-fail`.
+    """Test starts Kea without lease DB connection and checks it's behavior according to "on-fail".
     stop-retry-exit - Kea should stop and not serve any clients after not being able to connect to DB.
     After exhausting retries Kea should shutdown.
     Testing steps:
@@ -169,7 +169,7 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
-    """Test starts Kea without lease DB connection and checks it's behavior according to `on-fail`.
+    """Test starts Kea without lease DB connection and checks it's behavior according to "on-fail".
     It is highly recommended not to use this on fail setting for the lease manager by Kea ARM.
     serve-retry-exit - Kea should still serve clients traffic other than lease related after
     not being able to connect to DB.
@@ -275,7 +275,7 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
-    """Test starts Kea without lease DB connection and checks it's behavior according to `on-fail`.
+    """Test starts Kea without lease DB connection and checks it's behavior according to "on-fail".
     It is highly recommended not to use this on fail setting for the lease manager by Kea ARM.
     serve-retry-continue - Kea should still serve clients traffic other than lease related after
     not being able to connect to DB.
@@ -392,7 +392,7 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
-    """Test starts Kea without reservation DB connection and checks it's behavior according to `on-fail`.
+    """Test starts Kea without reservation DB connection and checks it's behavior according to "on-fail".
     stop-retry-exit - Kea should stop and not serve any clients after not being able to connect to DB.
     After exhausting retries Kea should shutdown.
     Testing steps:
@@ -486,7 +486,7 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
-    """Test starts Kea without reservation DB connection and checks it's behavior according to `on-fail`.
+    """Test starts Kea without reservation DB connection and checks it's behavior according to "on-fail".
     serve-retry-exit - Kea should still serve clients after not being able to connect to DB.
     After exhausting retries Kea should shutdown.
     Forge starts Kea, confirms it is waiting for DB connection and serving any Clients.
@@ -583,7 +583,7 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
-    """Test starts Kea without reservation DB connection and checks it's behavior according to `on-fail`.
+    """Test starts Kea without reservation DB connection and checks it's behavior according to "on-fail".
     serve-retry-continue - Kea should still serve clients traffic after not being able to connect to DB.
     After exhausting retries Kea should continue to serve clients non lease related traffic
     Testing steps:
@@ -685,7 +685,7 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
-    """Test starts Kea without legallog DB connection and checks it's behavior according to `on-fail`.
+    """Test starts Kea without legallog DB connection and checks it's behavior according to "on-fail".
     stop-retry-exit - Kea should stop and not serve any clients after not being able to connect to DB.
     After exhausting retries Kea should shutdown.
     Testing steps:
@@ -783,7 +783,7 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
-    """Test starts Kea without legallog DB connection and checks it's behavior according to `on-fail`.
+    """Test starts Kea without legallog DB connection and checks it's behavior according to "on-fail".
     serve-retry-exit - Kea should still serve clients after not being able to connect to DB.
     After exhausting retries Kea should shutdown.
     Testing steps:
@@ -890,7 +890,7 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
-    """Test starts Kea without legallog DB connection and checks it's behavior according to `on-fail`.
+    """Test starts Kea without legallog DB connection and checks it's behavior according to "on-fail".
     serve-retry-continue - Kea should still serve clients traffic after not being able to connect to DB.
     After exhausting retries Kea should continue to serve clients non lease related traffic
     Testing steps:

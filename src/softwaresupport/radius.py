@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -430,22 +430,20 @@ def init_and_start_radius(destination: str = world.f_cfg.mgmt_address):
 def send_and_receive(config_type: str,
                      radius_reservation_in_pool: str,
                      ha_mode: str = None):
-    """
-    Exchange messages and check that the proper leases were returned according
+    """Exchange messages and check that the proper leases were returned according
     to Kea's configuration.
-
     :param config_type: different configurations used in testing
-        * 'subnet': a classified pool with a single address configured inside a traditional subnet
-        * 'network': a classified pool with a single address configured inside a shared network
-        * 'multiple-subnets': multiple classified pools in multiple subnets inside a shared network
+    * 'subnet': a classified pool with a single address configured inside a traditional subnet
+    * 'network': a classified pool with a single address configured inside a shared network
+    * 'multiple-subnets': multiple classified pools in multiple subnets inside a shared network
     :param radius_reservation_in_pool: whether there is an existing pool in Kea that contains the
-                                       lease reserved by RADIUS for the first client in this test
-        * 'radius-reservation-in-pool': yes
-        * 'radius-reservation-outside-pool': no
+    lease reserved by RADIUS for the first client in this test
+    * 'radius-reservation-in-pool': yes
+    * 'radius-reservation-outside-pool': no
     :param ha_mode: HA mode, not strictly-related to RADIUS. Default is None meaning no HA
-        * 'hot-standby'
-        * 'load-balancing'
-        * 'passive-backup'
+    * 'hot-standby'
+    * 'load-balancing'
+    * 'passive-backup'
     :return list of dictionaries of leases containing address, client_id, mac
     """
 

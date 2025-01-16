@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -293,14 +293,12 @@ def log_doesnt_contain(line, log_file=None, destination=world.f_cfg.mgmt_address
 
 
 def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination=world.f_cfg.mgmt_address):
-    """
-    Wait until a line appears a certain number of times in a file.
-
+    """Wait until a line appears a certain number of times in a file.
     :param line: line (or part of file or glob pattern) being checked
     :param count: number of matching lines to wait for
     :param timeout: time to wait for in seconds
-    :param file: name of file being checked, or glob pattern potentially matching multiple files.
-                 Default: None i.e. default log file
+    :param log_file: name of file being checked, or glob pattern potentially matching multiple files.
+    Default: None i.e. default log file
     :param destination: address of server hosting the file
     """
     started_at = datetime.datetime.now()
@@ -521,9 +519,9 @@ def test_define_value(*args):
     Designed to use in test scenarios values from init_all.py file. To makes them even more portable
     Bash like define variables: $(variable_name)
     You can use steps like:
-        Client download file from server stored in: $(SERVER_SETUP_DIR)/other_dir/my_file
+    - Client download file from server stored in: $(SERVER_SETUP_DIR)/other_dir/my_file
     or
-        Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/my_file
+    - Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/my_file
 
     $ sign is very important without it Forge wont find variable in init_all.
 

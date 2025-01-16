@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2020-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -72,10 +72,8 @@ def _clear_leases_from_server(dhcp_version, backend, server):
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
 @pytest.mark.parametrize('trigger', ['restart', 'ha_sync'])
 def test_HA_hot_standby_multiple_leases_v6(trigger, hook_order: str):
-    """
-    Check that Kea HA can sync multiple IA_NA and IA_PD leases provided together
+    """Check that Kea HA can sync multiple IA_NA and IA_PD leases provided together
     in the same exchange.
-
     :param trigger: the trigger for the lease synchronization: either Kea restart or ha_sync command
     :param hook_order: the order in which hooks are loaded: either alphabetical
     or reverse alphabetical. This is to test all order combinations for each set
@@ -189,10 +187,8 @@ def test_HA_hot_standby_multiple_leases_v6(trigger, hook_order: str):
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
 @pytest.mark.parametrize('trigger', ['restart', 'ha_sync'])
 def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: str, hook_order: str, trigger: str):
-    """
-    Check that Kea HA nodes can work if they have different sync-page-limit
+    """Check that Kea HA nodes can work if they have different sync-page-limit
     configuration entries.
-
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
     :param hook_order: the order in which hooks are loaded: either alphabetical
@@ -372,9 +368,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
 @pytest.mark.parametrize('trigger', ['start', 'ha_sync'])
 def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str, trigger: str):
-    """
-    Check that Kea can synchronize leases between HA nodes in passive-backup mode.
-
+    """Check that Kea can synchronize leases between HA nodes in passive-backup mode.
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
     :param hook_order: the order in which hooks are loaded: either alphabetical
@@ -491,9 +485,7 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
 def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str):
-    """
-    Check that Kea can synchronize leases between HA nodes in load-balancing mode.
-
+    """Check that Kea can synchronize leases between HA nodes in load-balancing mode.
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
     :param hook_order: the order in which hooks are loaded: either alphabetical
@@ -612,10 +604,8 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
 def test_HA_load_balancing_both_scopes_for_primary(dhcp_version: str, backend: str, hook_order: str):
-    """
-    Check that a primary load-balancing HA node can take all the traffic when
+    """Check that a primary load-balancing HA node can take all the traffic when
     the secondary HA node is offline.
-
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
     :param hook_order: the order in which hooks are loaded: either alphabetical
@@ -676,10 +666,8 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version: str, backend: s
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize('hook_order', ['alphabetical'])  # possible params:  'reverse'
 def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version: str, backend: str, hook_order: str):
-    """
-    Check that a secondary load-balancing HA node can take all the traffic when
+    """Check that a secondary load-balancing HA node can take all the traffic when
     the primary HA node is offline.
-
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
     :param hook_order: the order in which hooks are loaded: either aplhabetical

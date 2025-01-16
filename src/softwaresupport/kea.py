@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -487,7 +487,7 @@ def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_n
     :param severity_level: debug level
     :param logging_file: the output for the log messages ('stdout', 'syslog', or file name)
     :param merge_by_name: whether to merge into other existing loggers if the name is matched.
-                          True by default. If False, the logger is simply added without any checks.
+    True by default. If False, the logger is simply added without any checks.
     """
     if world.f_cfg.install_method == 'make':
         if logging_file is None:
@@ -626,13 +626,11 @@ def add_line_in_subnet(subnet_id, additional_line):
 def prepare_cfg_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
     """Creates or updates an element under "subnet[46]" element in Kea's JSON
     configuration.
-
-    Arguments:
-    subnet -- the value for "subnet". If None, then continue with configuring an
-        already existing subnet element.
-    pool -- the value appended to "pools". If None, then leave "pools" alone.
-    iface -- the interface to be configured on the subnet element
-        (default: SERVER_IFACE)
+    :param subnet: the value for "subnet". If None, then continue with configuring an
+    already existing subnet element.
+    :param pool: the value appended to "pools". If None, then leave "pools" alone.
+    :param iface: the interface to be configured on the subnet element
+    (default: SERVER_IFACE)
     """
     if world.proto == 'v4':
         if subnet == "default":
@@ -668,13 +666,11 @@ def prepare_cfg_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
 def config_srv_another_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
     """Like config_srv_subnet(subnet, pool, iface), but increments the subnet
     counter to guarantee that this subnet will be a new one.
-
-    Arguments:
-    subnet -- the value for "subnet". If None, then continue with configuring an
-        already existing subnet element.
-    pool -- the value appended to "pools". If None, then leave "pools" alone.
-    iface -- the interface to be configured on the subnet element
-        (default: SERVER_IFACE)
+    :param subnet: the value for "subnet". If None, then continue with configuring an
+    already existing subnet element.
+    :param pool: the value appended to "pools". If None, then leave "pools" alone.
+    :param iface: the interface to be configured on the subnet element
+    (default: SERVER_IFACE)
     """
     world.dhcp["subnet_cnt"] += 1
     prepare_cfg_subnet(subnet, pool, iface, **kwargs)
@@ -715,14 +711,11 @@ def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space
 
 
 def add_interface(iface, add_to_existing=True):
-    """Adds an interface to the "interfaces" list under "interfaces-config" in
+    """Add an interface to the "interfaces" list under "interfaces-config" in
     Kea JSON configuration.
-
-    Arguments:
-    iface -- the interface to be added to the configuration
-    add_to_existing -- if True, then add the interface in all circumstances.
-        If False, then add the interface only if there are no other interfaces
-        configured
+    :param iface: the interface to be added to the configuration
+    :param add_to_existing: if True, then add the interface in all circumstances.
+    If False, then add the interface only if there are no other interfaces configured.
     """
     if "interfaces-config" not in world.dhcp_cfg.keys():
         world.dhcp_cfg["interfaces-config"] = {"interfaces": []}
@@ -929,17 +922,15 @@ def prepare_cfg_add_option_shared_network(option_name: str, option_value: str,
 
 def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, subnet):
     """Configure a subnet-level host reservation.
-
-    Arguments:
-    reservation_type -- the type of the reserved resource: "client-classes",
-        "hostname", "ip-addresses", "option-data", "prefixes"
-    reserved_value -- the value of the reserved resource
-    unique_host_value_type -- the type for the reservation's identifier:
-        "circuit-id", "client-id", "duid", "flex-id", "hw-address"
-    unique_host_value -- the value for the reservation's identifier
-    subnet -- the ordinal number of the subnet under which the reservation will
-        be made. Careful, this is not the subnet ID. Subnet 0 is the first subnet.
-        Can also hold the value 'global'.
+    :param reservation_type: the type of the reserved resource: "client-classes",
+    "hostname", "ip-addresses", "option-data", "prefixes"
+    :param reserved_value: the value of the reserved resource
+    :param unique_host_value_type: the type for the reservation's identifier:
+    "circuit-id", "client-id", "duid", "flex-id", "hw-address"
+    :param unique_host_value: the value for the reservation's identifier
+    :param subnet: the ordinal number of the subnet under which the reservation will
+    be made. Careful, this is not the subnet ID. Subnet 0 is the first subnet.
+    Can also hold the value 'global'.
     """
     # v6 for ip-address reservation and prefixes using different format and names:
     if world.proto[1] == '6':
@@ -1266,13 +1257,12 @@ def config_srv_id(id_type, id_value):
 
 
 def prepare_cfg_prefix(prefix, length, delegated_length, subnet, **kwargs):
-    """
-    Adds a new prefix delegation pool to the given subnet configuration.
+    """Add a new prefix delegation pool to the given subnet configuration.
     :param prefix: the IPv6 prefix to delegate prefixes from
     :param length: the length of the IPv6 prefix to delegate prefixes from
     :param delegated_length: the IPv6 prefix to delegate prefixes from
     :param subnet: the ordinal number of the subnet under which the reservation will be made.
-                   Careful, this is not the subnet ID. Subnet 0 is the first subnet.
+    Careful, this is not the subnet ID. Subnet 0 is the first subnet.
     :param kwargs: additional entries in the pool
     """
     if world.proto == 'v4':

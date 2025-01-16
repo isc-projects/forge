@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Internet Systems Consortium.
+# Copyright (C) 2023-2025 Internet Systems Consortium.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,14 +18,13 @@ from tests.HA.steps import HOT_STANDBY, wait_until_ha_state
 
 
 def _check_lease(mac: str, addr: str, vlt: int, state: int = 0, dest: str = world.f_cfg.mgmt_address):
-    """
-    Send lease4-get-by-hw-address command and parse it's output
+    """Send lease4-get-by-hw-address command and parse it's output
     :param mac: mac address of a lease
     :param addr: ip address of a lease
     :param vlt: valid lifetime value saved by kea
     :param state: state of a lease saved by kea
     :param dest: address of a command destination, default world.f_cfg.mgmt_address,
-                 can be also world.f_cfg.mgmt_address_2
+    can be also world.f_cfg.mgmt_address_2
     """
     cmd = {"command": "lease4-get-by-hw-address",
            "arguments": {"hw-address": mac}}

@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1663,13 +1663,12 @@ def test_v4_global_to_in_subnet(channel, exchange, host_database):
 @pytest.mark.hosts_cmds
 @pytest.mark.parametrize('channel', ['http'])
 def test_v4_reservation_get_by_hostname(channel):
-    """
-    Tests the reservation-get-by-hostname API command.
+    """Test the reservation-get-by-hostname API command.
     Negative cases are included:
-     * empty argument list
-     * missing arguments
-     * wrong data types
-     * valid values, but not in configuration
+    * empty argument list
+    * missing arguments
+    * wrong data types
+    * valid values, but not in configuration
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
@@ -1790,13 +1789,12 @@ def test_v4_reservation_get_by_hostname(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.parametrize('channel', ['http'])
 def test_v4_reservation_get_by_id(channel):
-    """
-    Tests the reservation-get-by-id API command.
+    """Test the reservation-get-by-id API command.
     Negative cases are included:
-     * empty argument list
-     * missing arguments
-     * wrong data types
-     * bogus values
+    * empty argument list
+    * missing arguments
+    * wrong data types
+    * bogus values
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
@@ -3409,13 +3407,12 @@ def test_v6_global_to_in_subnet(channel, exchange, host_database):
 @pytest.mark.hosts_cmds
 @pytest.mark.parametrize('channel', ['http'])
 def test_v6_reservation_get_by_hostname(channel):
-    """
-    Tests the reservation-get-by-hostname API command.
+    """Test the reservation-get-by-hostname API command.
     Negative cases are included:
-     * empty argument list
-     * missing arguments
-     * wrong data types
-     * valid values, but not in configuration
+    * empty argument list
+    * missing arguments
+    * wrong data types
+    * valid values, but not in configuration
     """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff', id=1)

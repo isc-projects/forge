@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -88,34 +88,18 @@ def test_procedure():
 
 
 def merge_containers(target, source, identify=None, last_list_parent_key=None):
-    """
-    Recursively merges dicts and lists from {source} into {target}.
+    """Recursively merges dicts and lists from {source} into {target}.
     :param target: container being merged into
     :param source: container being merged
     :param identify: dict used to uniquely identify elements within the source and target lists that
-                     are being merged. Keys in this dict are so-called last-list-parent-keys - a way
-                     to limit the places where these unique keys are considered. Values in this dict
-                     are the unique IDs for the elements in the source and target lists being
-                     merged. By default None which means no smart merging is attempted.
-                     E.g. {'output-options': 'output'} for:
-                     {
-                         "name": "kea-dhcp6",
-                         "output-options": [
-                             {
-                                 "output": "/opt/kea/var/log/kea.log",
-                                 "flush": true,
-                                 "maxsize": 10240000,
-                                 "maxver": 1,
-                                 "pattern": ""
-                             }
-                         ],
-                         "debuglevel": 99,
-                         "severity": "DEBUG"
-                     }
+    are being merged. Keys in this dict are so-called last-list-parent-keys - a way
+    to limit the places where these unique keys are considered. Values in this dict
+    are the unique IDs for the elements in the source and target lists being
+    merged. By default None which means no smart merging is attempted.
+    E.g. {'output-options': 'output'}
     :param last_list_parent_key: The last dict key that hosted a list in the recursive path. This
-                                 will be matched against keys in {identify}. Only for internal
-                                 recursive calls. Don't set this explicitly from external calls.
-
+    will be matched against keys in {identify}. Only for internal
+    recursive calls. Don't set this explicitly from external calls.
     """
     if (isinstance(target, dict)):
         for k, v in source.items():
