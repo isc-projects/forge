@@ -10,19 +10,59 @@ variables:
 
   CI_REGISTRY_IMAGE: registry.gitlab.isc.org/isc-projects/forge
 
+image: "${CI_REGISTRY_IMAGE}:latest"
+
+.get_modified_python_scripts: &get_modified_python_scripts
+  - |
+    MODIFIED_PYTHON_SCRIPTS=
+    for i in $(git diff --name-only $(git merge-base origin/master HEAD)); do
+      if echo ${i} | grep -E '.py$' > /dev/null 2>&1; then
+        if ! echo ${PYTHON_EXCLUDE} | grep -F "${i}" > /dev/null 2>&1; then
+          MODIFIED_PYTHON_SCRIPTS+=" ${i}"
+        fi
+      fi
+    done
+    if test -z "${MODIFIED_PYTHON_SCRIPTS}"; then
+      echo "No python scripts to check. Exiting early."
+      exit 0
+    else
+      echo "Checking python scripts: ${MODIFIED_PYTHON_SCRIPTS}"
+    fi
+
 bandit:
-  image: "${CI_REGISTRY_IMAGE}:latest"
   script:
-    - bandit -s "${BANDIT_SKIPS}" -r ./forge ./tests ./src
+    - *get_modified_python_scripts
+    - bandit --skip="${BANDIT_SKIPS}" ${MODIFIED_PYTHON_SCRIPTS}
 
-pylint:
-  image: "${CI_REGISTRY_IMAGE}:latest"
+pages:
   script:
-    - pip install --upgrade pycodestyle pylint
-    - ./check-style.sh
+    # Add __init__.py files.
+    - touch __init__.py
+    - >
+      find ./* -type d
+      -not -path './dhcp/burnin/scripts/tci*'
+      -not -path './unused/performance/charts*'
+      -exec touch {}/__init__.py ';'
+    # Generate docs.
+    - pydoctor --docformat restructuredtext --html-output public .
+  artifacts:
+    paths:
+      - public
+  rules:
+    # Deploy docs only on merge to master.
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: on_success
 
-semgrep:
-  allow_failure: true
-  image: "${CI_REGISTRY_IMAGE}:latest"
+pydocstyle:
   script:
-    - semgrep --config auto --error .
+    - *get_modified_python_scripts
+    - pydocstyle ${MODIFIED_PYTHON_SCRIPTS}
+
+pydoctor:
+  script:
+    - *get_modified_python_scripts
+    - pydoctor --docformat restructuredtext --warnings-as-errors ${MODIFIED_PYTHON_SCRIPTS}
+
+pylint-and-pycodestyle:
+  script:
+    - ./check-style.sh --changed

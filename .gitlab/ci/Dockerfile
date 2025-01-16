@@ -5,4 +5,10 @@ FROM python:latest AS gitlab-ci
 COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-RUN pip install bandit pycodestyle pylint semgrep
+RUN pip install --upgrade \
+    bandit \
+    pycodestyle \
+    pydocstyle \
+    pydoctor \
+    pylint \
+    semgrep
