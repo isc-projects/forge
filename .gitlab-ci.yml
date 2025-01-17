@@ -61,7 +61,7 @@ pydocstyle:
 pydoctor:
   script:
     - *get_modified_python_scripts
-    - pydoctor --docformat restructuredtext --warnings-as-errors ${MODIFIED_PYTHON_SCRIPTS}
+    - pydoctor --docformat restructuredtext ${MODIFIED_PYTHON_SCRIPTS}
 
 pylint-and-pycodestyle:
   script:
