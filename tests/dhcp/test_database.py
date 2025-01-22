@@ -19,6 +19,10 @@ from src.protosupport.multi_protocol_functions import log_contains_n_times, log_
 
 
 def _start_database(database, destination_address=world.f_cfg.mgmt_address):
+    """
+    :param database:
+    :param destination_address: (Default value = world.f_cfg.mgmt_address)
+    """
     database = database.lower()
     if world.server_system == 'alpine':
         # We use mariadb on Alpine instead of mysql
@@ -31,6 +35,10 @@ def _start_database(database, destination_address=world.f_cfg.mgmt_address):
 
 
 def _stop_database(database, destination_address=world.f_cfg.mgmt_address):
+    """
+    :param database:
+    :param destination_address: (Default value = world.f_cfg.mgmt_address)
+    """
     database = database.lower()
     if world.server_system == 'alpine':
         # We use mariadb on Alpine instead of mysql
@@ -43,6 +51,9 @@ def _stop_database(database, destination_address=world.f_cfg.mgmt_address):
 
 
 def _confirm_no_dhcp_service(dhcp_version):
+    """
+    :param dhcp_version:
+    """
     if dhcp_version == 'v4':
         srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
         srv_msg.client_send_msg('DISCOVER')
@@ -58,6 +69,8 @@ def _confirm_no_dhcp_service(dhcp_version):
 @pytest.fixture()
 def _restart_databases(backend):
     """Restart database even if test fails.
+
+    :param backend: database backend
     """
     yield
     _start_database(backend, destination_address=world.f_cfg.mgmt_address)
@@ -76,6 +89,11 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
     (both Discover and other messages).
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Leases db is checked to confirm Kea is using it.
+
+    :param backend: database backend
+    :type backend: str
+    :param dhcp_version:
+    :type dhcp_version:
     """
     retries = 5
     wait_time = 2000
@@ -179,6 +197,10 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
     Other traffic should be served. After exhausting retries Kea should shutdown.
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Leases db is checked to confirm Kea is using it.
+    :param backend: database backend
+    :type backend: str
+    :param dhcp_version:
+    :type dhcp_version:
     """
     retries = 5
     wait_time = 2000
@@ -285,6 +307,10 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
     Other traffic should be served.
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Leases db is checked to confirm Kea is using it.
+    :param backend: database backend
+    :type backend: str
+    :param dhcp_version:
+    :type dhcp_version:
     """
     retries = 5
     wait_time = 2000
@@ -400,6 +426,10 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
     After exhausting retries Kea should shutdown.
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     DHCP traffic is send to confirm Kea is using reservations.
+    :param backend: database backend
+    :type backend: str
+    :param dhcp_version:
+    :type dhcp_version:
     """
     retries = 5
     wait_time = 2000
@@ -493,6 +523,10 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
     After exhausting retries Kea should shutdown.
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     DHCP traffic is send to confirm Kea is using reservations.
+    :param backend: database backend
+    :type backend: str
+    :param dhcp_version:
+    :type dhcp_version: str
     """
     retries = 5
     wait_time = 2000
@@ -591,6 +625,10 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
     Test waits for Kea to be done waiting and check if Kea is still serving Clients.
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     DHCP traffic is send to confirm Kea is using reservations.
+    :param backend: database backend
+    :type backend: str
+    :param dhcp_version:
+    :type dhcp_version: str
     """
     retries = 5
     wait_time = 2000
@@ -693,6 +731,10 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
     After exhausting retries Kea should shutdown.
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Legal log is checked to confirm Kea is using DB.
+    :param backend: database backend
+    :type backend: str
+    :param dhcp_version:
+    :type dhcp_version: str
     """
     retries = 5
     wait_time = 2000
@@ -791,6 +833,10 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
     After exhausting retries Kea should shutdown.
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Legal log is checked to confirm Kea is using DB.
+    :param backend: database backend
+    :type backend: str
+    :param dhcp_version:
+    :type dhcp_version: str
     """
     retries = 5
     wait_time = 2000
@@ -898,6 +944,10 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
     Test waits for Kea to be done waiting and check if Kea is still serving Clients.
     Then Kea is restarted and DB is reconnected after Kea starts to check if service is restored.
     Legal log is checked to confirm Kea is using DB.
+    :param backend: database backend
+    :type backend: str
+    :param dhcp_version:
+    :type dhcp_version: str
     """
     retries = 5
     wait_time = 2000

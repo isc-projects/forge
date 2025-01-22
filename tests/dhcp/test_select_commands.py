@@ -15,6 +15,13 @@ from src.forge_cfg import world
 
 
 def _check_subnet4_select_test(arguments, exp_result, response, channel):
+    """
+    :param arguments:
+    :param exp_result:
+    :param response:
+    :param channel:
+    :type channel: str
+    """
     cmd = {"command": "subnet4-select-test"}
     if arguments is not None:
         cmd["arguments"] = arguments
@@ -24,6 +31,15 @@ def _check_subnet4_select_test(arguments, exp_result, response, channel):
 
 
 def _check_subnet6_select_test(arguments, exp_result, response, channel):
+    """
+    :param arguments:
+    :param exp_result:
+    :param response:
+    :param channel:
+    :type channel: str
+    :return:
+    :rtype: bool
+    """
     cmd = {"command": "subnet6-select-test"}
     if arguments is not None:
         cmd["arguments"] = arguments
@@ -33,6 +49,15 @@ def _check_subnet6_select_test(arguments, exp_result, response, channel):
 
 
 def _check_subnet4o6_select_test(arguments, exp_result, response, channel):
+    """
+    :param arguments:
+    :param exp_result:
+    :param response:
+    :param channel:
+    :type channel: str
+    :return:
+    :rtype: bool
+    """
     cmd = {"command": "subnet4o6-select-test"}
     if arguments is not None:
         cmd["arguments"] = arguments
@@ -46,7 +71,10 @@ def _check_subnet4o6_select_test(arguments, exp_result, response, channel):
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet4_select_test_negative(channel):
-    """ Tests if server responds correctly at malformed query.
+    """Tests if server responds correctly at malformed query.
+
+    :param channel:
+    :type channel: str
     """
     misc.test_setup()
     srv_control.add_unix_socket()
@@ -100,7 +128,9 @@ def test_subnet4_select_test_negative(channel):
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet4_select_test(channel):
-    """ Tests if server responds correctly for simple queries.
+    """Test if server responds correctly for simple queries.
+    :param channel:
+    :type channel: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10', id=1)
@@ -152,7 +182,10 @@ def test_subnet4_select_test(channel):
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet4o6_select_test_negative(channel):
-    """ Tests if server responds correctly at malformed query.
+    """Tests if server responds correctly at malformed query.
+
+    :param channel:
+    :type channel: str
     """
     misc.test_setup()
     srv_control.add_unix_socket()
@@ -205,7 +238,10 @@ def test_subnet4o6_select_test_negative(channel):
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet4o6_select_test(channel):
-    """ Tests if server responds correctly for simple queries.
+    """Tests if server responds correctly for simple queries.
+
+    :param channel:
+    :type channel: str
     """
     misc.test_setup()
     subnets_v4 = [
@@ -303,7 +339,10 @@ def test_subnet4o6_select_test(channel):
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet6_select_test_negative(channel):
-    """ Tests if server responds correctly at malformed query for IPv6.
+    """Tests if server responds correctly at malformed query for IPv6.
+
+    :param channel:
+    :type channel: str
     """
     misc.test_setup()
     srv_control.add_unix_socket()
@@ -344,7 +383,10 @@ def test_subnet6_select_test_negative(channel):
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet6_select_test(channel):
-    """ Tests if server responds correctly for simple queries.
+    """Tests if server responds correctly for simple queries.
+
+    :param channel:
+    :type channel: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::100', id=1)

@@ -40,10 +40,6 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, mode: str):
     """Check that Kea recieves ha-scopes command and returns correct scopes.
     :param dhcp_version: v4 or v6, determined by pytest marks
     :param backend: the database backend to be used for leases
-    :param hook_order: the order in which hooks are loaded: either alphabetical
-    or reverse alphabetical. This is to test all order combinations for each set
-    of two hook libraries after problems were found on one order of loading HA
-    with leasequery.
     :param mode: the HA mode to be used in test.
     """
     config = {'load-balancing': LOAD_BALANCING, 'hot-standby': HOT_STANDBY, 'passive-backup': PASSIVE_BACKUP}

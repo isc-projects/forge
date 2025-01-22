@@ -21,14 +21,19 @@ from src.forge_cfg import world
 
 def _reservation_add(reservation: dict, target: str = None, channel: str = 'http', exp_result: int = 0,
                      exp_failed: bool = False):
-    """
-    Send reservation add command
+    """Send reservation add command
     :param reservation: dictionary with reservation
+    :type reservation: dict:
     :param target: memory for memfile, database for database
+    :type target:
     :param channel: http or socket
+    :type channel:
     :param exp_result: expected result of a command returned by kea
+    :type exp_result:
     :param exp_failed: expectation if command should fail completely
-    :return: dict, response from Kea
+    :type exp_failed:
+    :return: response from Kea
+    :rtype: dict
     """
     if target is None:
         assert False, "Do not leave this to chance, please set target value"
@@ -43,14 +48,20 @@ def _reservation_add(reservation: dict, target: str = None, channel: str = 'http
 
 def _reservation_update(reservation: dict, target: str = None, channel: str = 'http',
                         exp_result: int = 0, exp_failed: bool = False):
-    """
-    Send reservation update command
+    """Send reservation update command
+
     :param reservation: dictionary with reservation
+    :type reservation:
     :param target: primary for memfile, database for database
+    :type target:
     :param channel: http or socket
+    :type channel:
     :param exp_result: expected result of a command returned by kea
+    :type exp_result:
     :param exp_failed: expectation if command should fail completely
+    :type exp_failed:
     :return: dict, response from Kea
+
     """
 
     if target is None:
@@ -66,15 +77,22 @@ def _reservation_update(reservation: dict, target: str = None, channel: str = 'h
 
 def _reservation_get(cmd: str, args: dict, target: str = None, channel: str = 'http',
                      exp_result: int = 0, exp_failed: bool = False):
-    """
-    Send reservation add command
+    """Send reservation add command
+
     :param cmd: command to send
+    :type cmd:
     :param args: argument of a command
+    :type args: dict:
     :param target: primary for memfile, database for database
+    :type target:
     :param channel: http or socket
+    :type channel:
     :param exp_result: expected result of a command returned by kea
+    :type exp_result:
     :param exp_failed: expectation if command should fail completely
-    :return: dict, response from Kea
+    :type exp_failed:
+    :return: response from Kea
+    :rtype: dict
     """
     if target is None:
         assert False, "Do not leave this to chance, please set target value"
@@ -87,14 +105,19 @@ def _reservation_get(cmd: str, args: dict, target: str = None, channel: str = 'h
 
 def _reservation_del(args: dict, target: str = None, channel: str = 'http',
                      exp_result: int = 0, exp_failed: bool = False):
-    """
-    Send reservation-del command
+    """Send reservation-del command
     :param args: dictionary with arguments of command
+    :type args:
     :param target: primary for memfile, database for database
+    :type target:
     :param channel: http or socket
+    :type channel:
     :param exp_result: expected result of a command returned by kea
+    :type exp_result:
     :param exp_failed: expectation if command should fail completely
-    :return: dict, response from Kea
+    :type exp_failed:
+    :return: response from Kea
+    :rtype: dict
     """
     if target is None:
         assert False, "Do not leave this to chance, please set target value"
@@ -106,10 +129,11 @@ def _reservation_del(args: dict, target: str = None, channel: str = 'http',
 
 
 def _clean_up_reservation(res: dict):
-    """
-    Remove all empty values from reservation, makes it easier to compare created reservation with received
+    """Remove all empty values from reservation, makes it easier to compare created reservation with received
     :param res: reservation received from Kea
-    :return: dict: cleaned up reservation
+    :type res:
+    :return: cleaned up reservation
+    :rtype: dict
     """
     for x in list(res.keys()):
         if isinstance(res[x], (list, str)) and len(res[x]) == 0:
@@ -119,10 +143,11 @@ def _clean_up_reservation(res: dict):
 
 
 def _get_target(database: str):
-    """
-    Get proper operation-target based on database type
+    """Get proper operation-target based on database type
     :param database: database type name
+    :type database: str
     :return: operation-target value
+    :rtype: str
     """
     if database == 'memfile':
         return 'memory'
@@ -130,6 +155,14 @@ def _get_target(database: str):
 
 
 def _get_multiple_iana(adresses, iaids, duid):
+    """
+    :param adresses:
+    :type adresses:
+    :param iaids:
+    :type iaids:
+    :param duid:
+    :type duid:
+    """
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
     srv_msg.client_does_include('Client', 'client-id')
@@ -165,8 +198,12 @@ def _get_multiple_iana(adresses, iaids, duid):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
 def test_v4_reconfigure(channel, host_database):
-    """
-    Add reservation, reconfigure Kea, check if it is still able to get reservation
+    """Add reservation, reconfigure Kea, check if it is still able to get reservation
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -214,8 +251,12 @@ def test_v4_reconfigure(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_add_reservation(channel, host_database):
-    """
-    Add simple reservation
+    """Add simple reservation
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -287,10 +328,16 @@ def test_v4_add_reservation(channel, host_database):
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 @pytest.mark.parametrize('query_type', ['by-ip', 'by-mac'])
 def test_v4_del_reservation(channel, host_database, query_type):
-    """
-    Add and delete reservation using:
+    """Add and delete reservation using:
     * 3 params (subnet-id, identifier-type, identifier)
     * 2 params (subnet-id, address)
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
+    :param query_type:
+    :type query_type:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -364,10 +411,14 @@ def test_v4_del_reservation(channel, host_database, query_type):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_get_reservation(channel, host_database):
-    """
-    Test reservation-get command using:
+    """Test reservation-get command using:
     * 3 params (subnet-id, identifier-type, identifier)
     * 2 params (subnet-id, address)
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -425,8 +476,12 @@ def test_v4_get_reservation(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_add_reservation_flex_id(channel, host_database):
-    """
-    Add reservation based on flex id
+    """Add reservation based on flex id
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
@@ -468,8 +523,12 @@ def test_v4_add_reservation_flex_id(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_add_reservation_complex(channel, host_database):
-    """
-    Add reservation with all parameters configured, check if client will get all and check reservation get result
+    """Add reservation with all parameters configured, check if client will get all and check reservation get result
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -568,8 +627,12 @@ def test_v4_add_reservation_complex(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_get_reservation_by_id(channel, host_database):
-    """
-    Add reservation with all parameters configured, then test reservation-get-by-hostname reservation-get-by-id commands
+    """Add reservation with all parameters configured, then test reservation-get-by-hostname,
+    reservation-get-by-id commands.
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -716,8 +779,12 @@ def test_v4_get_reservation_by_id(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_reservation_get_all(channel, host_database):
-    """
-    Check command reservation-get-all
+    """Check command reservation-get-all
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
@@ -793,10 +860,14 @@ def test_v4_reservation_get_all(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_reservation_get_page(channel, host_database):
-    """
-    Add 7 reservations in subnet 1 and 7 in subnet 2. Use reservation-get-page to get all from subnet 1
+    """Add 7 reservations in subnet 1 and 7 in subnet 2. Use reservation-get-page to get all from subnet 1
     than from subnet 2. At the end use command reservation-get-page without subnet id to get all 14 reservations
     while using different limit.
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
 
     misc.test_setup()
@@ -1080,8 +1151,12 @@ def test_v4_reservation_get_page(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_reservation_update(channel, host_database):
-    """
-    Check reservation update command with all backends and assignment
+    """Check reservation update command with all backends and assignment
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -1202,8 +1277,12 @@ def test_v4_reservation_update(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_reservation_update_negative(channel, host_database):
-    """
-    Check various incorrect commands reservation-update
+    """Check various incorrect commands reservation-update
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -1315,9 +1394,13 @@ def test_v4_reservation_update_negative(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_conflicts_duplicate_mac_reservations(channel, host_database):
-    """
-    Check if non unique reservations will be rejected when "ip-reservations-unique": False is NOT used.
+    """Check if non unique reservations will be rejected when "ip-reservations-unique": False is NOT used.
     Default Kea behaviour
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -1368,9 +1451,13 @@ def test_v4_conflicts_duplicate_mac_reservations(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_conflicts_duplicate_ip_reservations(channel, host_database):
-    """
-    Check if non unique reservations will be rejected when "ip-reservations-unique": False is NOT used.
+    """Check if non unique reservations will be rejected when "ip-reservations-unique": False is NOT used.
     Default Kea behaviour
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -1423,9 +1510,13 @@ def test_v4_conflicts_duplicate_ip_reservations(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_duplicate_ip_reservations_allowed(channel, host_database):
-    """
-    Check if configuration option "ip-reservations-unique": False will allow to keep non unique
+    """Check if configuration option "ip-reservations-unique": False will allow to keep non unique
     reservations in all backends and if those reservations will be assigned correctly
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     the_same_ip_address = '192.168.50.10'
     misc.test_setup()
@@ -1549,9 +1640,15 @@ def test_v4_duplicate_ip_reservations_allowed(channel, host_database):
 @pytest.mark.parametrize('exchange', ['full', 'renew-only'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_global_to_in_subnet(channel, exchange, host_database):
-    """
-    Test that the same client can migrate from a global reservation to an
+    """Test that the same client can migrate from a global reservation to an
     in-subnet reservation after only a simple Kea reconfiguration.
+
+    :param channel:
+    :type channel:
+    :param exchange:
+    :type exchange:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -1669,6 +1766,9 @@ def test_v4_reservation_get_by_hostname(channel):
     * missing arguments
     * wrong data types
     * valid values, but not in configuration
+
+    :param channel:
+    :type channel:
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
@@ -1795,6 +1895,9 @@ def test_v4_reservation_get_by_id(channel):
     * missing arguments
     * wrong data types
     * bogus values
+
+    :param channel:
+    :type channel:
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.50-192.168.50.50', id=1)
@@ -2138,8 +2241,12 @@ def test_v4_reservation_get_by_id(channel):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
 def test_v6_reconfigure(channel, host_database):
-    """
-    Add reservation, reconfigure Kea, check if it is still able to get reservation
+    """Add reservation, reconfigure Kea, check if it is still able to get reservation
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -2193,8 +2300,12 @@ def test_v6_reconfigure(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_add_reservation(channel, host_database):
-    """
-    Add simple reservation
+    """Add simple reservation
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -2269,10 +2380,16 @@ def test_v6_add_reservation(channel, host_database):
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 @pytest.mark.parametrize('query_type', ['by-ip', 'by-mac'])
 def test_v6_del_reservation(channel, host_database, query_type):
-    """
-    Add and delete reservation using:
+    """Add and delete reservation using:
     * by-mac (subnet-id, identifier-type, identifier)
     * by-ip (subnet-id, address)
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
+    :param query_type:
+    :type query_type:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -2382,10 +2499,16 @@ def test_v6_del_reservation(channel, host_database, query_type):
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 @pytest.mark.parametrize('query_type', ['by-ip', 'by-mac'])
 def test_v6_del_reservation_with_prefix(channel, host_database, query_type):
-    """
-    Add and delete reservation using:
+    """Add and delete reservation using:
     * by-mac (subnet-id, identifier-type, identifier)
     * by-ip (subnet-id, address)
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
+    :param query_type:
+    :type query_type:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -2497,10 +2620,14 @@ def test_v6_del_reservation_with_prefix(channel, host_database, query_type):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_get_reservation(channel, host_database):
-    """
-    Test reservation-get command using:
+    """Test reservation-get command using:
     * 3 params (subnet-id, identifier-type, identifier)
     * 2 params (subnet-id, address)
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -2559,8 +2686,12 @@ def test_v6_get_reservation(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_add_reservation_flex_id(channel, host_database):
-    """
-    Add reservation with flex id
+    """Add reservation with flex id
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50', id=1)
@@ -2603,8 +2734,12 @@ def test_v6_add_reservation_flex_id(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_add_reservation_complex(channel, host_database):
-    """
-    Add, get, and assign complex reservation
+    """Add, get, and assign complex reservation
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -2680,8 +2815,12 @@ def test_v6_add_reservation_complex(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_reservation_get_all(channel, host_database):
-    """
-    Check reservation-get-all command in separate subnets on all backends
+    """Check reservation-get-all command in separate subnets on all backends
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff', id=1)
@@ -2765,10 +2904,14 @@ def test_v6_reservation_get_all(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_reservation_get_page(channel, host_database):
-    """
-    Add 7 reservations in subnet 1 and 7 in subnet 2. Use reservation-get-page to get all from subnet 1
+    """Add 7 reservations in subnet 1 and 7 in subnet 2. Use reservation-get-page to get all from subnet 1
     than from subnet 2. At the end use command reservation-get-page without subnet id to get all 14 reservations
     while using different limit.
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff', id=1)
@@ -3074,9 +3217,13 @@ def test_v6_reservation_get_page(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_conflicts_duplicate_duid_reservations(channel, host_database):
-    """
-    Check if non unique reservations will be rejected when "ip-reservations-unique": False is NOT used.
+    """Check if non unique reservations will be rejected when "ip-reservations-unique": False is NOT used.
     Default Kea behaviour
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -3158,9 +3305,13 @@ def test_v6_conflicts_duplicate_duid_reservations(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_duplicate_ip_reservations_allowed(channel, host_database):
-    """
-    Check if configuration option "ip-reservations-unique": False will allow to keep non unique
+    """Check if configuration option "ip-reservations-unique": False will allow to keep non unique
     reservations in all backends and if those reservations will be assigned correctly
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -3291,9 +3442,15 @@ def test_v6_duplicate_ip_reservations_allowed(channel, host_database):
 @pytest.mark.parametrize('exchange', ['full', 'renew-only'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_global_to_in_subnet(channel, exchange, host_database):
-    """
-    Test that the same client can migrate from a global reservation to an
+    """Test that the same client can migrate from a global reservation to an
     in-subnet reservation after only a simple Kea reconfiguration.
+
+    :param channel:
+    :type channel:
+    :param exchange:
+    :type exchange:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -3413,6 +3570,9 @@ def test_v6_reservation_get_by_hostname(channel):
     * missing arguments
     * wrong data types
     * valid values, but not in configuration
+
+    :param channel:
+    :type channel:
     """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff', id=1)
@@ -3661,6 +3821,10 @@ def test_v6_reservation_get_by_hostname(channel):
 @pytest.mark.hosts_cmds
 @pytest.mark.parametrize('channel', ['http'])
 def test_v6_reservation_get_by_id(channel):
+    """
+    :param channel:
+    :type channel:
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff', id=1)
     srv_control.config_srv_another_subnet_no_interface('3001::/64', '3001::1-3001::ff', id=2)
@@ -3978,8 +4142,12 @@ def test_v6_reservation_get_by_id(channel):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_reservation_update(channel, host_database):
-    """
-    reservation-update tests
+    """reservation-update tests
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -4106,8 +4274,12 @@ def test_v6_reservation_update(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_reservation_update_negative(channel, host_database):
-    """
-    Check various combinations of incorrect reservation-update command
+    """Check various combinations of incorrect reservation-update command
+
+    :param channel:
+    :type channel:
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -4218,10 +4390,12 @@ def test_v6_reservation_update_negative(channel, host_database):
 @pytest.mark.hosts_cmds
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
 def test_v6_memfile_with_(host_database):
-    """
-    Check how Kea is handling situations when reservations are saved in config file
+    """Check how Kea is handling situations when reservations are saved in config file
     and in one of the supported backend. Also it checks operation-target parameter
     of the host commands
+
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -4301,10 +4475,12 @@ def test_v6_memfile_with_(host_database):
 @pytest.mark.hosts_cmds
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
 def test_v4_memfile_with_(host_database):
-    """
-    Check how Kea is handling situations when reservations are saved in config file
+    """Check how Kea is handling situations when reservations are saved in config file
     and in one of the supported backend. Also it checks operation-target parameter
     of the host commands
+
+    :param host_database:
+    :type host_database:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')
@@ -4382,12 +4558,14 @@ def test_v4_memfile_with_(host_database):
 @pytest.mark.host_reservation
 @pytest.mark.hosts_cmds
 def test_save_reservation_to_the_config_file(dhcp_version):
-    """
-    Add reservation, check if all is correct and assign reservation.
+    """Add reservation, check if all is correct and assign reservation.
     Restart Kea
     Check if reservation is gone
     Add reservation, check if all is correct, save config and restart KEA.
     Check if reservation is still accessible, assign lease.
+
+    :param dhcp_version:
+    :type dhcp_version:
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_host_cmds.so')

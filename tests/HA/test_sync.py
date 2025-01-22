@@ -75,10 +75,12 @@ def test_HA_hot_standby_multiple_leases_v6(trigger, hook_order: str):
     """Check that Kea HA can sync multiple IA_NA and IA_PD leases provided together
     in the same exchange.
     :param trigger: the trigger for the lease synchronization: either Kea restart or ha_sync command
+    :type trigger:
     :param hook_order: the order in which hooks are loaded: either alphabetical
     or reverse alphabetical. This is to test all order combinations for each set
     of two hook libraries after problems were found on one order of loading HA
     with leasequery.
+    :type hook_order:
     """
 
     # HA SERVER 1

@@ -26,6 +26,8 @@
 # pylint: disable=unused-argument
 # pylint: disable=unused-variable
 
+"""Functions that can be used for testing all protocols."""
+
 import datetime
 import sys
 import os
@@ -54,6 +56,13 @@ log = logging.getLogger('forge')
 
 
 def forge_sleep(duration, time_units):
+    """forge_sleep.
+
+    :param duration:
+    :type duration:
+    :param time_units:
+    :type time_units:
+    """
     divide = 1.0
     if time_units == 'milliseconds' or time_units == 'millisecond':
         divide = 1000.0
@@ -61,10 +70,13 @@ def forge_sleep(duration, time_units):
 
 
 def test_pause():
-    """
-    Pause the test for any reason. Press any key to continue.
-    """
+    """Pause the test for any reason. Press any key to continue."""
     def getch():
+        """Getch.
+
+        :return:
+        :rtype:
+        """
         fd = sys.stdin.fileno()
         old = termios.tcgetattr(fd)
         try:
@@ -79,27 +91,41 @@ def test_pause():
 
 
 def copy_file_from_server(remote_path, local_filename='downloaded_file', dest=world.f_cfg.mgmt_address):
-    """
-    Copy file from remote server via ssh. Address/login/password from init_all.py
+    """Copy file from remote server via ssh. Address/login/password from init_all.py
     Path required.
+
+    :param remote_path:
+    :type remote_path: str
+    :param local_filename: (Default value = 'downloaded_file')
+    :type local_filename:
+    :param dest: Default value = world.f_cfg.mgmt_address)
+    :type dest:
+    :return:
+    :rtype:
     """
     fabric_download_file(remote_path, world.cfg["test_result_dir"] + f'/{local_filename}', destination_host=dest)
     return world.cfg["test_result_dir"] + f'/{local_filename}'
 
 
 def send_file_to_server(local_path, remote_path):
-    """
-    Send file to remote server via ssh. Address/login/password from init_all
+    """Send file to remote server via ssh. Address/login/password from init_all
     Two paths required.
-    Local - relative to lettuce directory
-    Remote - absolute
+
+    :param local_path: relative to lettuce directory
+    :type local_path:
+    :param remote_path: absolute
+    :type remote_path:
     """
     fabric_send_file(local_path, remote_path)
 
 
 def remove_file_from_server(remote_path, dest=world.f_cfg.mgmt_address):
-    """
-    Remove file from remote server.
+    """Remove file from remote server.
+
+    :param remote_path:
+    :type remote_path:
+    :param dest: (Default value = world.f_cfg.mgmt_address)
+    :type dest:
     """
     fabric_remove_file_command(remote_path, destination_host=dest)
 
@@ -108,10 +134,12 @@ def remove_file_from_server(remote_path, dest=world.f_cfg.mgmt_address):
 
 
 def sort_container(obj):
-    """
-    Helper function to sort JSON for ease of comparison.
+    """Helper function to sort JSON for ease of comparison.
+
     :param obj: json as dictionary or other list
+    :type obj:
     :return: Sorted json dictionary or other list
+    :rtype:
     """
     if isinstance(obj, dict):
         return json.loads(json.dumps(obj, sort_keys=True))
@@ -121,8 +149,14 @@ def sort_container(obj):
 
 
 def add_variable(variable_name, variable_val, val_type):
-    """
-    Define variable and add it to temporary list or to init_all.py file.
+    """Define variable and add it to temporary list or to init_all.py file.
+
+    :param variable_name:
+    :type variable_name:
+    :param variable_val:
+    :type variable_val:
+    :param val_type:
+    :type val_type:
     """
     assert not bool(re.compile('[^A-Z^0-9^_] + ').search(variable_name)), \
         "Variable name contain invalid characters (Allowed are only capital letters, numbers and sign '_')."
@@ -148,6 +182,7 @@ def add_variable(variable_name, variable_val, val_type):
 
 
 def user_victory():
+    """user_victory"""
     if not os.path.exists(world.cfg["test_result_dir"]):
         os.makedirs(world.cfg["test_result_dir"])
     shutil.copy('../doc/.victory.jpg', world.cfg["test_result_dir"] + '/celebrate_success.jpg')
@@ -157,8 +192,10 @@ def user_victory():
 
 
 def compare_file(local_path):
-    """
-    Compare two files, downloaded and local
+    """Compare two files, downloaded and local
+
+    :param local_path:
+    :type local_path:
     """
     if not os.path.exists(local_path):
         assert False, 'No local file %s' % local_path
@@ -189,12 +226,16 @@ def compare_file(local_path):
 
 
 def get_line_count_in_file(line, file, destination=world.f_cfg.mgmt_address):
-    """
-    Retrieves the number of lines contained in a file.
+    """Retrieves the number of lines contained in a file.
 
     :param line: line (or part of file or glob pattern) being checked
+    :type line:
     :param file: name of file being checked, or glob pattern potentially matching multiple files
-    :param destination: address of server hosting the file
+    :type file:
+    :param destination: address of server hosting the file (Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    :return:
+    :rtype:
     """
     command = 'grep "$(cat <<EOF\n'
     command += f'{line}\n'
@@ -207,13 +248,17 @@ def get_line_count_in_file(line, file, destination=world.f_cfg.mgmt_address):
 
 
 def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_address):
-    """
-    Retrieves the number of lines contained in a log file.
+    """Retrieves the number of lines contained in a log file.
 
     :param line: line (or part of file or glob pattern) being checked
+    :type line:
     :param log_file: name of the log file being checked. If None, default values
+    :type log_file:
                      representing Kea logs are used.
-    :param destination: address of server hosting the file
+    :param destination: address of server hosting the file (Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    :return:
+    :rtype:
     """
     if world.f_cfg.install_method == 'make':
         if log_file is None:
@@ -251,42 +296,106 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
 
 
 def file_contains_line(file, line, destination=world.f_cfg.mgmt_address):
+    """
+    :param file:
+    :type file:
+    :param line:
+    :type line:
+    :param destination: Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    """
     result = get_line_count_in_file(line, file, destination=destination)
     assert result > 0, f'Expected file "{get_line_count_in_file.file}" to contain line "{line}", but it does not.'
 
 
 def file_contains_line_n_times(file, n, line, destination=world.f_cfg.mgmt_address):
+    """
+    :param file:
+    :type file:
+    :param n:
+    :type n:
+    :param line:
+    :type line:
+    :param destination: (Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    """
     result = get_line_count_in_file(line, file, destination=destination)
     assert result == n, f'Expected file {get_line_count_in_file.file} to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
 
 
 def file_doesnt_contain_line(file, line, destination=world.f_cfg.mgmt_address):
+    """
+    :param file:
+    :type file:
+    :param line:
+    :type line:
+    :param destination: Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    """
     result = get_line_count_in_file(line, file, destination=destination)
     assert result == 0, f'Expected file "{get_line_count_in_file.file}" to not contain line "{line}".' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
 
 
 def lease_file_contains(line, destination=world.f_cfg.mgmt_address):
+    """
+    :param line:
+    :type line:
+    :param destination: (Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    """
     file_contains_line(world.f_cfg.get_leases_path(), line, destination=destination)
 
 
 def lease_file_doesnt_contain(line, destination=world.f_cfg.mgmt_address):
+    """
+    :param line:
+    :type line:
+    :param destination: (Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    """
     file_doesnt_contain_line(world.f_cfg.get_leases_path(), line, destination=destination)
 
 
 def log_contains(line, log_file=None, destination=world.f_cfg.mgmt_address):
+    """
+    :param line:
+    :type line:
+    :param log_file: (Default value = None)
+    :type log_file:
+    :param destination: Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    """
     result = get_line_count_in_log(line, log_file, destination=destination)
     assert result > 0, f'Expected log file {get_line_count_in_log.file} to contain line "{line}", but it does not.'
 
 
 def log_contains_n_times(line, n, log_file=None, destination=world.f_cfg.mgmt_address):
+    """
+    :param line:
+    :type line:
+    :param n:
+    :type n:
+    :param log_file: Default value = None)
+    :type log_file:
+    :param destination: Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    """
     result = get_line_count_in_log(line, log_file, destination=destination)
     assert result == n, f'Expected log file {get_line_count_in_log.file} to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
 
 
 def log_doesnt_contain(line, log_file=None, destination=world.f_cfg.mgmt_address):
+    """
+    :param line:
+    :type line:
+    :param log_file: (Default value = None)
+    :type log_file:
+    :param destination: Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    """
     result = get_line_count_in_log(line, log_file, destination=destination)
     assert result == 0, f'Expected log file {get_line_count_in_log.file} to not contain line "{line}".' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
@@ -295,11 +404,16 @@ def log_doesnt_contain(line, log_file=None, destination=world.f_cfg.mgmt_address
 def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination=world.f_cfg.mgmt_address):
     """Wait until a line appears a certain number of times in a file.
     :param line: line (or part of file or glob pattern) being checked
-    :param count: number of matching lines to wait for
-    :param timeout: time to wait for in seconds
+    :type line:
+    :param count: number of matching lines to wait for (Default value = 1)
+    :type count:
+    :param timeout: time to wait for in seconds (Default value = 4)
+    :type timeout:
     :param log_file: name of file being checked, or glob pattern potentially matching multiple files.
     Default: None i.e. default log file
-    :param destination: address of server hosting the file
+    :type log_file:
+    :param destination: address of server hosting the file (Default value = world.f_cfg.mgmt_address)
+    :type destination:
     """
     started_at = datetime.datetime.now()
     count = int(count)
@@ -327,7 +441,20 @@ def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination
 
 def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
                          db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd, destination=world.f_cfg.mgmt_address):
-
+    """
+    :param table_name:
+    :type table_name:
+    :param db_type:
+    :type db_type:
+    :param db_name: Default value = world.f_cfg.db_name)
+    :type db_name:
+    :param db_user: Default value = world.f_cfg.db_user)
+    :type db_user:
+    :param db_passwd: Default value = world.f_cfg.db_passwd)
+    :type db_passwd:
+    :param destination: Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    """
     if db_type in ["mysql", "MySQL"]:
         # that is tmp solution - just clearing not saving.
         command = 'mysql -u {db_user} -p{db_passwd} -e "delete from {table_name}" {db_name}'.format(**locals())
@@ -342,6 +469,28 @@ def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
 def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=world.f_cfg.db_name,
                           db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
                           destination=world.f_cfg.mgmt_address, lease=None):
+    """
+    :param table_name:
+    :type table_name:
+    :param db_type:
+    :type db_type:
+    :param line: Default value = "")
+    :type line:
+    :param grep_cmd: Default value = None)
+    :type grep_cmd:
+    :param db_name: Default value = world.f_cfg.db_name)
+    :type db_name:
+    :param db_user: Default value = world.f_cfg.db_user)
+    :type db_user:
+    :param db_passwd: Default value = world.f_cfg.db_passwd)
+    :type db_passwd:
+    :param destination: Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    :param lease: Default value = None)
+    :type lease:
+    :return:
+    :rtype:
+    """
     if db_type.lower() == "mysql":
         if lease is None:
             select = 'select *'
@@ -399,6 +548,28 @@ def db_table_record_count(table_name, db_type, line="", grep_cmd=None, db_name=w
 def db_table_contains_line(table_name, db_type, line="", grep_cmd=None, expect=True, db_name=world.f_cfg.db_name,
                            db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
                            destination=world.f_cfg.mgmt_address, lease=None):
+    """
+    :param table_name:
+    :type table_name:
+    :param db_type:
+    :type db_type:
+    :param line: Default value = "")
+    :type line:
+    :param grep_cmd: Default value = None)
+    :type grep_cmd:
+    :param expect: Default value = True)
+    :type expect:
+    :param db_name: Default value = world.f_cfg.db_name)
+    :type db_name:
+    :param db_user: Default value = world.f_cfg.db_user)
+    :type db_user:
+    :param db_passwd: Default value = world.f_cfg.db_passwd)
+    :type db_passwd:
+    :param destination: Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    :param lease: Default value = None)
+    :type lease:
+    """
     result = db_table_record_count(table_name, db_type, line,
                                    grep_cmd, db_name, db_user, db_passwd,
                                    destination, lease)
@@ -415,6 +586,26 @@ def db_table_contains_line(table_name, db_type, line="", grep_cmd=None, expect=T
 def db_table_contains_line_n_times(table_name, db_type, n, line="", grep_cmd=None, db_name=world.f_cfg.db_name,
                                    db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
                                    destination=world.f_cfg.mgmt_address):
+    """
+    :param table_name:
+    :type table_name:
+    :param db_type:
+    :type db_type:
+    :param n:
+    :type n:
+    :param line: (Default value = "")
+    :type line:
+    :param grep_cmd: Default value = None)
+    :type grep_cmd:
+    :param db_name: Default value = world.f_cfg.db_name)
+    :type db_name:
+    :param db_user: Default value = world.f_cfg.db_user)
+    :type db_user:
+    :param db_passwd: Default value = world.f_cfg.db_passwd)
+    :type db_passwd:
+    :param destination: Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    """
     result = db_table_record_count(table_name, db_type, line,
                                    grep_cmd, db_name, db_user, db_passwd,
                                    destination)
@@ -425,15 +616,22 @@ def db_table_contains_line_n_times(table_name, db_type, n, line="", grep_cmd=Non
 def lease_dump(backend, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
                db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address,
                out="/tmp/lease_dump.csv"):
-    """
-    Function dumps database to CSV file performing kea-admin lease-dump command on server.
+    """Function dumps database to CSV file performing kea-admin lease-dump command on server.
+
     :param backend: Select database backend: mysql, pgsql
-    :param db_name: specifies a database name to connect to
-    :param db_user: specifies username when connecting to a database
-    :param db_passwd: specifies a password for the database connection
-    :param destination_address: specifies server address for management
-    :param out: output file path
+    :type backend: Select database backend:
+    :param db_name: specifies a database name to connect to (Default value = world.f_cfg.db_name)
+    :type db_name:
+    :param db_user: specifies username when connecting to a database (Default value = world.f_cfg.db_user)
+    :type db_user:
+    :param db_passwd: specifies a password for the database connection (Default value = world.f_cfg.db_passwd)
+    :type db_passwd:
+    :param destination_address: specifies server address for management (Default value = world.f_cfg.mgmt_address)
+    :type destination_address:
+    :param out: output file path (Default value = "/tmp/lease_dump.csv")
+    :type out:
     :return: output file path on server
+    :rtype:
     """
     path = os.path.join(world.f_cfg.software_install_path, 'sbin/kea-admin')
 
@@ -447,15 +645,22 @@ def lease_dump(backend, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user
 
 def lease_upload(backend, leases_file, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
                  db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address):
-    """
-    Function uploads CSV file to database performing kea-admin lease-upload command on server.
+    """Function uploads CSV file to database performing kea-admin lease-upload command on server.
+
     :param backend: Select database backend: mysql, pgsql
+    :type backend: Select database backend:
     :param leases_file: input file path
-    :param db_name: specifies a database name to connect to
-    :param db_user: specifies username when connecting to a database
-    :param db_passwd: specifies a password for the database connection
-    :param destination_address: specifies server address for management
+    :type leases_file:
+    :param db_name: specifies a database name to connect to (Default value = world.f_cfg.db_name)
+    :type db_name:
+    :param db_user: specifies username when connecting to a database (Default value = world.f_cfg.db_user)
+    :type db_user:
+    :param db_passwd: specifies a password for the database connection (Default value = world.f_cfg.db_passwd)
+    :type db_passwd:
+    :param destination_address: specifies server address for management (Default value = world.f_cfg.mgmt_address)
+    :type destination_address:
     :return: shell operation result
+    :rtype:
     """
     path = os.path.join(world.f_cfg.software_install_path, 'sbin/kea-admin')
 
@@ -468,6 +673,12 @@ def lease_upload(backend, leases_file, db_name=world.f_cfg.db_name, db_user=worl
 
 
 def change_network_variables(value_name, value):
+    """
+    :param value_name:
+    :type value_name:
+    :param value:
+    :type value:
+    """
     if value_name == "source_port":
         world.cfg["source_port"] = int(value)
     elif value_name == "destination_port":
@@ -484,6 +695,18 @@ def change_network_variables(value_name, value):
 
 
 def execute_shell_cmd(path, save_results=True, dest=world.f_cfg.mgmt_address, exp_failed=False):
+    """
+    :param path:
+    :type path:
+    :param save_results: (Default value = True)
+    :type save_results:
+    :param dest: Default value = world.f_cfg.mgmt_address)
+    :type dest:
+    :param exp_failed: Default value = False)
+    :type exp_failed:
+    :return:
+    :rtype:
+    """
     result = fabric_sudo_command(path, hide_all=False, ignore_errors=True,
                                  destination_host=dest)
 
@@ -515,17 +738,18 @@ def execute_shell_cmd(path, save_results=True, dest=world.f_cfg.mgmt_address, ex
 
 def test_define_value(*args):
     """Substitute variable references in a string.
-
     Designed to use in test scenarios values from init_all.py file. To makes them even more portable
     Bash like define variables: $(variable_name)
     You can use steps like:
     - Client download file from server stored in: $(SERVER_SETUP_DIR)/other_dir/my_file
     or
     - Client removes file from server located in: $(SOFTWARE_INSTALL_DIR)/my_file
-
     $ sign is very important without it Forge wont find variable in init_all.
-
     You can use any variable form init_all in that way. Also you can add them using step:
+    :param args:
+    :type args:
+    :return:
+    :rtype:
     """
     tested_args = []
     for arg in args:
@@ -573,7 +797,11 @@ def substitute_vars(cfg):
 
     It goes through all fields, arrays etc in dictionary and in any string it substitutes vars.
     It works as test_define_value but it takes dict as argument that contains whole configuration
-    fields instead of one big string."""
+    fields instead of one big string.
+
+    :param cfg:
+    :type cfg:
+    """
     for k, v in cfg.items():
         if isinstance(v, str):
             cfg[k] = test_define_value(v)[0]
@@ -593,6 +821,14 @@ def substitute_vars(cfg):
 
 
 def _process_ctrl_response(response, exp_result):
+    """
+    :param response:
+    :type response:
+    :param exp_result:
+    :type exp_result:
+    :return:
+    :rtype:
+    """
     world.control_channel = response
     try:
         result = json.loads(response)
@@ -618,6 +854,20 @@ def _process_ctrl_response(response, exp_result):
 
 
 def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=world.f_cfg.mgmt_address, exp_result=0, exp_failed=False):
+    """
+    :param command:
+    :type command:
+    :param socket_name: (Default value = None)
+    :type socket_name:
+    :param destination_address: Default value = world.f_cfg.mgmt_address)
+    :type destination_address:
+    :param exp_result: Default value = 0)
+    :type exp_result:
+    :param exp_failed: Default value = False)
+    :type exp_failed:
+    :return:
+    :rtype:
+    """
     # if command is expected to fail it does not make sense to check response details
     if exp_failed:
         # expected result should be default (0) or None
@@ -657,18 +907,28 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
 
 def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=False, https=False, verify=None, cert=None,
                            headers=None):
-    """
-    Send command to Control Agent using http or https
+    """Send command to Control Agent using http or https
+
     :param command: dict, command
+    :type command:
     :param address: string, IP address of Control Agent
+    :type address:
     :param port: int, port number on which Control Agent is listening
-    :param exp_result: int, value of result parameter send back by Control Agent
-    :param exp_failed: boolean, set to True if we expect that message over http/https will be failed to deliver
+    :type port:
+    :param exp_result: int, value of result parameter send back by Control Agent (Default value = 0)
+    :type exp_result:
+    :param exp_failed: boolean, set to True if we expect that message over http/https will be failed to deliver (Default value = False)
+    :type exp_failed:
     :param https: boolean, True if command should be send using https (default False)
-    :param verify: boolean, verification of certificate
-    :param cert: tuple, contain client cert and key
+    :type https:
+    :param verify: boolean, verification of certificate (Default value = None)
+    :type verify:
+    :param cert: tuple, contain client cert and key (Default value = None)
+    :type cert:
     :param headers: dict, dictionary that should be added to message headers
-    return dict, json struct response from Control Agent
+    :type headers:
+    :return: json struct response from Control Agent (Default value = None)
+    :rtype: dict
     """
     if exp_failed:
         # expected result should be default (0) or None
@@ -709,6 +969,14 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
 
 
 def assert_result(condition, result, value):
+    """
+    :param condition:
+    :type condition:
+    :param result:
+    :type result:
+    :param value:
+    :type value:
+    """
     if result == 1 and condition is None:
         # it's ok :)
         pass
@@ -725,6 +993,14 @@ def assert_result(condition, result, value):
 
 
 def parse_json_file(condition, parameter_name, parameter_value):
+    """
+    :param condition:
+    :type condition:
+    :param parameter_name:
+    :type parameter_name:
+    :param parameter_value:
+    :type parameter_value:
+    """
     world.control_channel_parsed = [None, None, None]
     save_local_file(json.dumps(json.loads(world.control_channel), sort_keys=True, indent=2,
                                separators=(',', ': ')), local_file_name=generate_file_name(1, "command_result"))
@@ -768,6 +1044,12 @@ def parse_json_file(condition, parameter_name, parameter_value):
 
 
 def strip_file(file_path):
+    """
+    :param file_path:
+    :type file_path:
+    :return:
+    :rtype:
+    """
     tmp_list = []
     tmp = open(file_path, 'r')
     for line in tmp:
@@ -786,10 +1068,26 @@ def strip_file(file_path):
 
 
 def set_value(env_name, env_value):
+    """
+    :param env_name:
+    :type env_name:
+    :param env_value:
+    :type env_value:
+    """
     world.f_cfg.set_env_val(env_name, env_value)
 
 
 def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_address, should_succeed=True):
+    """
+    :param leases_list:
+    :type leases_list:
+    :param backend: (Default value = 'memfile')
+    :type backend:
+    :param destination: Default value = world.f_cfg.mgmt_address)
+    :type destination:
+    :param should_succeed: Default value = True)
+    :type should_succeed:
+    """
     if not isinstance(leases_list, list):
         leases_list = [leases_list]
     leases_list_copy = copy.deepcopy(leases_list)
@@ -842,7 +1140,13 @@ def print_leases(backend='memfile', db_name=world.f_cfg.db_name, db_user=world.f
 
 
 def convert_address_to_hex(address):
-    '''Convert string address to hexadecimal representation.'''
+    """Convert string address to hexadecimal representation.
+
+    :param address:
+    :type address:
+    :return:
+    :rtype:
+    """
     address = test_define_value(address)[0]
     if '.' in address:
         return '{:02X}{:02X}{:02X}{:02X}'.format(*map(int, address.split('.')))
@@ -853,16 +1157,28 @@ def convert_address_to_hex(address):
 
 
 def _increase_address_n(prefix):
-    '''Increment an IPv[46]Network address.'''
+    """Increment an IPv[46]Network address.
+
+    :param prefix:
+    :type prefix:
+    :return:
+    :rtype:
+    """
     return prefix.network_address + \
         (1 << (prefix.network_address.max_prefixlen - int(prefix.prefixlen)))
 
 
 def increase_address(address, prefix_length):
-    '''
-    Increment an IPv4 or IPv6 address belonging to a network with given prefix
+    """Increment an IPv4 or IPv6 address belonging to a network with given prefix
     length.
-    '''
+
+    :param address:
+    :type address:
+    :param prefix_length:
+    :type prefix_length:
+    :return:
+    :rtype:
+    """
     address, prefix_length = test_define_value(address, prefix_length)
     if '.' in address:
         network = ipaddress.IPv4Network(address + '/' + prefix_length)
@@ -880,10 +1196,12 @@ def increase_address(address, prefix_length):
 
 
 def get_address_of_local_vm(addr: str = None):
-    """
-    Get address of an interface that is facing other address in forge setup
+    """Get address of an interface that is facing other address in forge setup
+
     :param addr: ip address of remote system
-    :return: string, local ip address
+    :type addr:
+    :return: local ip address
+    :rtype: str
     """
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect((addr, 80))
@@ -895,6 +1213,20 @@ def get_address_of_local_vm(addr: str = None):
 def create_db_dump(database: str, db_name: str = world.f_cfg.db_name,
                    db_user: str = world.f_cfg.db_user, db_password: str = world.f_cfg.db_passwd,
                    destination_address=world.f_cfg.mgmt_address, file_name=None):
+    """
+    :param database: str:
+    :type database: str:
+    :param db_name: str: (Default value = world.f_cfg.db_name)
+    :type db_name: str:
+    :param db_user: str: (Default value = world.f_cfg.db_user)
+    :type db_user: str:
+    :param db_password: str: (Default value = world.f_cfg.db_passwd)
+    :type db_password: str:
+    :param destination_address: Default value = world.f_cfg.mgmt_address)
+    :type destination_address:
+    :param file_name: Default value = None)
+    :type file_name:
+    """
     if file_name is None:
         file_name = f"/tmp/{database}_dump.sql"
 
@@ -922,7 +1254,20 @@ def restore_db_from_dump(database: str, db_name: str = None,
                          db_user: str = None,
                          db_password: str = world.f_cfg.db_passwd,
                          destination_address=world.f_cfg.mgmt_address, file_name=None):
-
+    """
+    :param database: str:
+    :type database: str:
+    :param db_name: str: (Default value = None)
+    :type db_name: str:
+    :param db_user: str: (Default value = None)
+    :type db_user: str:
+    :param db_password: str: (Default value = world.f_cfg.db_passwd)
+    :type db_password: str:
+    :param destination_address: Default value = world.f_cfg.mgmt_address)
+    :type destination_address:
+    :param file_name: Default value = None)
+    :type file_name:
+    """
     for i in [db_name, db_user, db_password, file_name]:
         assert i, "Missing required parameter"
 

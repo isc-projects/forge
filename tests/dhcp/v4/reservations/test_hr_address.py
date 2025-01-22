@@ -290,6 +290,8 @@ def test_v4_host_reservation_empty(backend):
     """
     Test if empty (only MAC address) reservation can be made.
     # kea#2878 - "reservation-add" requires "subnet-id" to be provided, which contradicts empty reservations
+    :param backend:
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')

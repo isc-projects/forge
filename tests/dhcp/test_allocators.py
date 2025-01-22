@@ -20,14 +20,19 @@ log = logging.getLogger('forge')
 
 
 def _get_lease_4(allocator: str, mac: str, giaddr: str, all_leases: list = None, netmask: int = 16):
-    """
-    Get v4 lease from kea. Check if address is correct by checking previously assigned address.
+    """Get v4 lease from kea. Check if address is correct by checking previously assigned address.
     :param allocator: type of allocator
+    :type allocator:
     :param mac: mac address of a client
+    :type mac:
     :param giaddr: relay address
+    :type giaddr:
     :param all_leases: list of previously assigned leases from single subnet
+    :type all_leases:
     :param netmask: subnet netmask
+    :type netmask:
     :return: dictionary with single lease
+    :rtype: dict
     """
     misc.test_procedure()
     srv_msg.network_variable('source_port', 67)
@@ -78,12 +83,15 @@ def _get_lease_4(allocator: str, mac: str, giaddr: str, all_leases: list = None,
 @pytest.mark.parametrize('backend', ['memfile', 'postgresql', 'mysql'])
 @pytest.mark.parametrize('scope', ['subnets', 'shared-networks'])
 def test_v4_allocators(backend, scope):
-    """
-    Get 10 addresses from each subnet, check if:
+    """Get 10 addresses from each subnet, check if:
     - iterative starts from first and have all others are one by one
     - random and flq wont start from first in the pool and each next is not +1 from the previous
     - check if all leases are correctly saved in the lease file/database
     - allocator configured per subnet
+    :param backend: database backend
+    :type backend: str
+    :param scope:
+    :type scope:
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.167.0.0/16', '192.167.0.0/16', allocator='iterative')
@@ -117,8 +125,9 @@ def test_v4_allocators(backend, scope):
 @pytest.mark.allocators
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_v4_allocator_randomness(backend):
-    """
-    This will check if random and flq allocator will assign different addresses after Kea restart.
+    """This will check if random and flq allocator will assign different addresses after Kea restart.
+    :param backend: database backend
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.167.0.0/16', '192.167.0.0/16', allocator='random')
@@ -165,8 +174,11 @@ def test_v4_allocator_randomness(backend):
 @pytest.mark.parametrize('backend', ['memfile'])
 @pytest.mark.parametrize('allocator', ['random', 'flq'])
 def test_v4_allocator_exhausted_pool(backend, allocator):
-    """
-    This will check if random and flq allocator will assign different addresses after Kea restart.
+    """This will check if random and flq allocator will assign different addresses after Kea restart.
+    :param backend: database backend
+    :type backend: str
+    :param allocator:
+    :type allocator:
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.167.0.0/16', '192.167.0.1-192.167.0.4', allocator=allocator)
@@ -194,11 +206,18 @@ def test_v4_allocator_exhausted_pool(backend, allocator):
 def _check_multiple_v6_addresses(all_leases: list, offset: int = 1) -> str:
     """Check if list of addresses is iterative or randomly allocated
     :param all_leases: list of ip addresses as strings
+    :type all_leases:
     :param offset: offset to check between addresses, with addresses it will be 1,
-    in prefixes number should be higher than 1
+    :type offset: in prefixes number should be higher than 1
     :return: True if conditional is met
+    :rtype:
     """
     def _verdict(lst):
+        """
+
+        :param lst:
+
+        """
         if any(lst):
             return 'iterative'
         return 'random'
@@ -216,16 +235,22 @@ def _check_multiple_v6_addresses(all_leases: list, offset: int = 1) -> str:
 
 def _get_lease_6(allocator: str, mac: str, relay: str, iaid: int = None, iapd: int = None, netmask: int = 112,
                  all_leases: list = None):
-    """
-    Get leases with possible multiple IA-NAs and IA-PDs. Also check if all received addresses/prefixes meets
+    """Get leases with possible multiple IA-NAs and IA-PDs. Also check if all received addresses/prefixes meets
     assumptions from particular allocator, and if those fit inside proper subnet
     :param allocator: name of allocator
+    :type allocator:
     :param mac: mac address of a client (used for DUID)
+    :type mac:
     :param iaid: number of iaids
+    :type iaid:
     :param iapd: number of iapds
+    :type iapd:
     :param netmask: netmask of subnet
+    :type netmask:
     :param all_leases: list of all previously assigned leases from particular subnet
+    :type all_leases:
     :return: list of leases assigned
+    :rtype: list
     """
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', f'00:03:00:01:{mac}')
@@ -325,11 +350,14 @@ def _get_lease_6(allocator: str, mac: str, relay: str, iaid: int = None, iapd: i
 @pytest.mark.parametrize('backend', ['memfile', 'postgresql', 'mysql'])
 @pytest.mark.parametrize('scope', ['subnets', 'shared-networks'])
 def test_v6_allocators(backend, scope):
-    """
-    Test allocators in v6, addresses as well as prefixes. Checks:
+    """Test allocators in v6, addresses as well as prefixes. Checks:
     - randomness between addresses/prefixes assigned in single exchange (one client)
     - randomness between addresses/prefixes assigned in multiple exchanges (multiple clients)
     - correctness of address/prefix assigned (if it fits subnet)
+    :param backend: database backend
+    :type backend: str
+    :param scope:
+    :type scope:
     """
     misc.test_setup()
     netmask = 110
@@ -402,8 +430,11 @@ def test_v6_allocators(backend, scope):
 @pytest.mark.parametrize('backend', ['memfile'])
 @pytest.mark.parametrize('prefix_allocator', ['random', 'flq'])
 def test_v6_allocator_randomness(backend, prefix_allocator):
-    """
-    This will check if random and flq allocator will assign different addresses after Kea restart.
+    """This will check if random and flq allocator will assign different addresses after Kea restart.
+    :param backend: database backend
+    :type backend: str
+    :param prefix_allocator:
+    :type prefix_allocator:
     """
     misc.test_setup()
     netmask = 112
@@ -464,8 +495,9 @@ def test_v6_allocator_randomness(backend, prefix_allocator):
 @pytest.mark.allocators
 @pytest.mark.parametrize('backend', ['memfile', 'postgresql', 'mysql'])
 def test_v6_allocators_exhausted_pools_address(backend):
-    """
-    Check if kea can change pools with different allocators
+    """Check if kea can change pools with different allocators
+    :param backend: database backend
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::4', allocator='random')
@@ -491,8 +523,9 @@ def test_v6_allocators_exhausted_pools_address(backend):
 @pytest.mark.allocators
 @pytest.mark.parametrize('backend', ['memfile', 'postgresql', 'mysql'])
 def test_v6_allocators_exhausted_prefix(backend):
-    """
-    Check if kea can change pools with different allocators
+    """Check if kea can change pools with different allocators
+    :param backend: database backend
+    :type backend: str
     """
     misc.test_setup()
 

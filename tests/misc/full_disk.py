@@ -53,7 +53,7 @@ def _allocate_disk_space(size="full",
     to execute this function twice to get entire disk allocated
     :param size: string parameter to define how much space should be allocated,
     by default it will take full space on disk that include "kea_ram_disk"
-    in it's path
+    in its path
     :param location: path to file that will be generated
     :param dest: IP address of a system on which we want to allocate disk space
     :return result of executed command

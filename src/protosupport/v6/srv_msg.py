@@ -95,10 +95,13 @@ OPTIONS = {"client-id": 1,
 
 
 def get_option_code(opt_code) -> int:
-    '''
-    Return an integer representation of the option code or name {opt_code}.
+    """Return an integer representation of the option code or name {opt_code}.
+
     :param opt_code: integer or string representing the option's code or name
-    '''
+    :type opt_code:
+    :return:
+    :rtype:
+    """
     if isinstance(opt_code, str):
         if opt_code.isdigit():
             # It was an integer in string format.
@@ -115,8 +118,10 @@ decode_hex = codecs.getdecoder("hex_codec")
 
 
 def client_requests_option(opt_type):
-    """
-    Add RequestOption to message.
+    """Add RequestOption to message.
+
+    :param opt_type:
+    :type opt_type:
     """
     # Ensure the option code is an integer.
     opt_type = get_option_code(opt_type)
@@ -131,12 +136,14 @@ def client_requests_option(opt_type):
 
 
 def client_send_msg(msgname, iface=None, addr=None):
+    """Send specified message with defined options.
+    :param msgname:
+    :type msgname:
+    :param iface: (Default value = None)
+    :type iface:
+    :param addr: Default value = None)
+    :type addr:
     """
-    Sends specified message with defined options.
-    Parameters:
-    msg ('<msg> message'): name of the message.
-    """
-
     # Remove previous message waiting to be sent, just in case this is a
     # REQUEST after we received ADVERTISE. We don't want to send SOLICIT
     # the second time.
@@ -182,6 +189,12 @@ def client_send_msg(msgname, iface=None, addr=None):
 
 
 def client_sets_value(value_name, new_value):
+    """
+    :param value_name:
+    :type value_name:
+    :param new_value:
+    :type new_value:
+    """
     if value_name in world.cfg["values"]:
         if isinstance(world.cfg["values"][value_name], str):
             world.cfg["values"][value_name] = str(new_value)
@@ -194,8 +207,10 @@ def client_sets_value(value_name, new_value):
 
 
 def unicast_address(addr_type):
-    """
-    Turn off sending on All_DHCP_Relay_Agents_and_Servers, and use UNICAST address.
+    """Turn off sending on All_DHCP_Relay_Agents_and_Servers, and use UNICAST address.
+
+    :param addr_type:
+    :type addr_type:
     """
     if addr_type:
         world.cfg["address_v6"] = world.f_cfg.srv_ipv6_addr_global
@@ -204,10 +219,15 @@ def unicast_address(addr_type):
 
 
 def client_does_include(sender_type, opt_type, value=None):
-    """
-    Include options to message. This function refers to @step in lettuce
-    """
+    """Include options to message. This function refers to @step in lettuce
 
+    :param sender_type:
+    :type sender_type:
+    :param opt_type:
+    :type opt_type:
+    :param value: Default value = None)
+    :type value:
+    """
     assert sender_type is not None, "sender_type is None"
     assert sender_type in ["Client", "RelayAgent", "Relay-Supplied-Option"], "Two sender type accepted: Client or" \
                                                                              " RelayAgent, your choice is: " \
@@ -389,17 +409,26 @@ def client_does_include(sender_type, opt_type, value=None):
         assert "unsupported option: " + opt_type
 
 
-def change_message_field(message_filed, value, value_type):
+def change_message_field(message_field, value, value_type):
+    """
+    :param message_field:
+    :type message_field:
+    :param value:
+    :type value:
+    :param value_type:
+    :type value_type:
+    """
     convert_type = {"int": int,
                     "string": str,
                     "str": str,
                     "unicode": str}
 
     convert = convert_type[value_type]
-    world.message_fields.append([str(message_filed), convert(value)])
+    world.message_fields.append([str(message_field), convert(value)])
 
 
 def apply_message_fields_changes():
+    """apply_message_fields_changes"""
     for field_details in world.message_fields:
         try:
             setattr(world.climsg[0], field_details[0], field_details[1])
@@ -408,6 +437,12 @@ def apply_message_fields_changes():
 
 
 def add_vendor_suboption(code, data):
+    """
+    :param code:
+    :type code:
+    :param data:
+    :type data:
+    """
     # if code == 1 we need check if we added code=1 before
     # if we do, we need append only data not whole suboption
     if code == 1 and len(world.vendor) > 0:
@@ -426,8 +461,9 @@ def add_vendor_suboption(code, data):
 
 
 def generate_new(opt):
-    """
-    Generate new client id with random MAC address.
+    """Generate new client id with random MAC address.
+    :param opt:
+    :type opt:
     """
     if opt == 'client':
         client_id(RandMAC())
@@ -450,6 +486,10 @@ def generate_new(opt):
 
 
 def add_client_option(option):
+    """
+    :param option:
+    :type option:
+    """
     if world.sender_type == "Client":
         world.cliopts.append(option)
     elif world.sender_type == "RelayAgent":
@@ -461,14 +501,25 @@ def add_client_option(option):
 
 
 def add_option_to_msg(msg, option):
+    """
+    :param msg:
+    :type msg:
+    :param option:
+    :type option:
+    :return:
+    :rtype:
+    """
     # this is request_option option
     msg /= option
     return msg
 
 
 def client_add_saved_option(erase, count="all"):
-    """
-    Add saved option to message, and erase.
+    """Add saved option to message, and erase.
+    :param erase:
+    :type erase:
+    :param count: (Default value = "all")
+    :type count:
     """
     if count == "all":
         for each_key in list(world.savedmsg.keys()):
@@ -487,6 +538,7 @@ def client_add_saved_option(erase, count="all"):
 
 
 def vendor_option_request_convert():
+    """vendor_option_request_convert"""
     data_tmp = ''
     for each in world.vendor:
         if each[0] == 1:
@@ -499,6 +551,14 @@ def vendor_option_request_convert():
 
 
 def convert_DUID_hwaddr(duid, threshold):
+    """
+    :param duid:
+    :type duid:
+    :param threshold:
+    :type threshold:
+    :return:
+    :rtype:
+    """
     tmp = duid[threshold:]
     hwaddr = ':'.join(tmp[i:i+2] for i in range(0, len(tmp), 2))
     return hwaddr
@@ -535,6 +595,11 @@ def convert_DUID(duid):
     |        00030001ffffffffff01
 
     Other configurations will cause to fail test.
+
+    :param duid:
+    :type duid:
+    :return:
+    :rtype:
     """
     if isinstance(duid, (dhcp6.DUID_LLT, dhcp6.DUID_LL, dhcp6.DUID_EN)):
         return duid
@@ -550,6 +615,12 @@ def convert_DUID(duid):
 
 
 def build_raw(msg, append):
+    """
+    :param msg:
+    :type msg:
+    :param append:
+    :type append:
+    """
     if msg == "":
         world.climsg.append(build_msg("") / Raw(load=append))
     else:
@@ -558,6 +629,14 @@ def build_raw(msg, append):
 
 
 def build_msg(msg_dhcp, iface=None):
+    """
+    :param msg_dhcp:
+    :type msg_dhcp:
+    :param iface: (Default value = None)
+    :type iface:
+    :return:
+    :rtype:
+    """
     if iface == world.cfg["iface2"]:
         src = world.cfg["cli_link_local2"]
     else:
@@ -596,8 +675,9 @@ def build_msg(msg_dhcp, iface=None):
 
 
 def create_relay_forward(level=1):
-    """
-    Encapsulate message in relay-forward message.
+    """Encapsulate message in relay-forward message.
+    :param level: Default value = 1)
+    :type level:
     """
     assert level > 0
     # set flag for adding client option client-id which is added by default
@@ -642,11 +722,14 @@ def create_relay_forward(level=1):
 # --------------------- SEND/RECEIVE MESSAGE BLOCK START --------------------- #
 
 def read_dhcp6_msgs(d: bytes, msg: list):
-    """
-    Recursively parse bytes received via TCP channel
+    """Recursively parse bytes received via TCP channel
+
     :param d: bytes
+    :type d: bytes:
     :param msg: list of DHCP6 messages
+    :type msg: list
     :return: list of DHCP6 messages
+    :rtype:
     """
     if len(d) == 0:
         return msg
@@ -660,22 +743,34 @@ def read_dhcp6_msgs(d: bytes, msg: list):
 
 
 def close_sockets(socket_list):
+    """
+    :param socket_list:
+    :type socket_list:
+    """
     for each_socket in socket_list:
         each_socket.close()
 
 
 def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: int = 3, parse: bool = True,
                   number_of_connections: int = 1, print_all: bool = True):
-    """
-    Send message over TCP channel and listen for response
+    """Send message over TCP channel and listen for response
+
     :param msg: bytes representing DHCP6 message
+    :type msg: bytes
     :param address: address to which message will be sent
+    :type address: str
     :param port: port number on which receiving end is listening
+    :type port: int
     :param timeout: how long kea will wait from last received message
+    :type timeout: int
     :param parse: should received bytes be parsed into DHCP6 messages
+    :type parse:
     :param number_of_connections: how many connections should forge open
+    :type number_of_connections:
     :param print_all: print all to stdout (use false for massive messages)
+    :type print_all:
     :return: list of parsed DHCP6 messages
+    :rtype:
     """
     if address is None:
         address = world.f_cfg.srv_ipv6_addr_global
@@ -731,6 +826,26 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
 def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
                           protocol: str = 'UDP', address: str = None, port: int = None, iface=None,
                           ignore_response: bool = False):
+    """
+    :param requirement_level:
+    :type requirement_level: str
+    :param presence:
+    :type presence: bool
+    :param exp_message:
+    :type exp_message: str
+    :param protocol: (Default value = 'UDP')
+    :type protocol: str
+    :param address: str: (Default value = None)
+    :type address: str
+    :param port: int: (Default value = None)
+    :type port: int
+    :param iface: Default value = None)
+    :type iface
+    :param ignore_response: (Default value = False)
+    :type ignore_response: bool
+    :return:
+    :rtype:
+    """
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # debug.recv=[]
     # Uncomment this to get debug.recv filled with all received messages
@@ -800,6 +915,10 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
 
 
 def get_last_response():
+    """
+    :return:
+    :rtype:
+    """
     assert len(world.srvmsg), "No response received."
     return world.srvmsg[-1].copy()
 
@@ -809,6 +928,12 @@ def get_last_response():
 
 
 def get_msg_type(msg):
+    """
+    :param msg:
+    :type msg:
+    :return:
+    :rtype:
+    """
     msg_types = {2: "ADVERTISE",
                  3: "REQUEST",
                  7: "REPLY",
@@ -823,6 +948,12 @@ def get_msg_type(msg):
 
 
 def client_save_option(option_name, count=0):
+    """
+    :param option_name:
+    :type option_name:
+    :param count: (Default value = 0)
+    :type count:
+    """
     assert option_name in OPTIONS, "Unsupported option name " + option_name
     opt_code = OPTIONS.get(option_name)
     opt = get_option(get_last_response(), opt_code)
@@ -837,11 +968,11 @@ def client_save_option(option_name, count=0):
 
 
 def client_copy_option(option_name, copy_all=False):
-    """
-    Copy options with given name from the last received message.
-
+    """Copy options with given name from the last received message.
     :param option_name: the name of the option, as specified in {OPTIONS}
-    :param copy_all: True if you all options are copied, False otherwise
+    :type option_name:
+    :param copy_all: True if you all options are copied, False otherwise (Default value = False)
+    :type copy_all:
     """
     assert world.srvmsg
 
@@ -867,16 +998,20 @@ def client_copy_option(option_name, copy_all=False):
 
 
 def get_option(msg, opt_code, get_all=False):
-    '''
-    Retrieve from scapy message {msg}, the DHCPv6 option having IANA code {opt_code}.
+    """Retrieve from scapy message {msg}, the DHCPv6 option having IANA code {opt_code}.
+
     :param msg: scapy message to retrieve the option from
+    :type msg:
     :param opt_code: option code or name
+    :type opt_code:
     :param get_all: True if it should return all options with given code,
-    False if a single option is required
+    :type get_all:
+    False if a single option is required (Default value = False)
     :return: scapy message representing the option or None if the option doesn't exist
     or list of options if there are multiple
-    '''
-
+    :return:
+    :rtype:
+    """
     # Ensure the option code is an integer.
     opt_code = get_option_code(opt_code)
 
@@ -936,6 +1071,14 @@ def get_option(msg, opt_code, get_all=False):
 
 
 def unknown_option_to_str(data_type, opt):
+    """
+    :param data_type:
+    :type data_type:
+    :param opt:
+    :type opt:
+    :return:
+    :rtype:
+    """
     if data_type == "uint8":
         assert len(opt.data) == 1, "Received option " + opt.optcode + " contains " + len(opt.data) + \
                                    " bytes, but expected exactly 1"
@@ -945,12 +1088,13 @@ def unknown_option_to_str(data_type, opt):
 
 
 def _get_opt_descr(opt_code):
-    '''
-    Get a textual description as provided by scapy, of option code or name {opt_code}.
-    :param opt_code: the option code or name that is being described
-    :return: the description
-    '''
+    """Get a textual description as provided by scapy, of option code or name {opt_code}.
 
+    :param opt_code: the option code or name that is being described
+    :type opt_code:
+    :return: the description
+    :rtype:
+    """
     # Ensure the option code is an integer.
     opt_code = get_option_code(opt_code)
 
@@ -963,8 +1107,14 @@ def _get_opt_descr(opt_code):
 
 
 def response_check_include_option(must_include, opt_code):
-    """
-    Checking presence of expected option.
+    """Checking presence of expected option.
+
+    :param must_include:
+    :type must_include:
+    :param opt_code:
+    :type opt_code:
+    :return:
+    :rtype:
     """
     assert len(world.srvmsg) != 0, "No response received."
 
@@ -983,15 +1133,17 @@ def response_check_include_option(must_include, opt_code):
 
 
 def get_subopt_from_option(exp_opt_code, exp_subopt_code):
-    '''
-    Get the list of {exp_subopt_code} suboptions which are inside option
+    """Get the list of {exp_subopt_code} suboptions which are inside option
     {exp_opt_code} that should have been previously retrieved through
     get_option().
-    :param exp_opt_code: the option code or name that was previously retrieved through get_option()
-    :param exp_subopt_code: the option code or name to be retrieved, nested inside the higher-level option
-    :return: tuple(the list of suboptions, the suboption code)
-    '''
 
+    :param exp_opt_code: the option code or name that was previously retrieved through get_option()
+    :type exp_opt_code:
+    :param exp_subopt_code: the option code or name to be retrieved, nested inside the higher-level option
+    :type exp_subopt_code:
+    :return: tuple(the list of suboptions, the suboption code)
+    :rtype:
+    """
     # Ensure option codes are integers.
     exp_opt_code = get_option_code(exp_opt_code)
     exp_subopt_code = get_option_code(exp_subopt_code)
@@ -1034,11 +1186,25 @@ def get_subopt_from_option(exp_opt_code, exp_subopt_code):
 
 
 def get_suboption(opt_code, subopt_code):
+    """
+    :param opt_code:
+    :type opt_code:
+    :param subopt_code:
+    :type subopt_code:
+    :return:
+    :rtype:
+    """
     opt, _ = get_subopt_from_option(opt_code, subopt_code)
     return opt
 
 
 def extract_duid(option):
+    """
+    :param option:
+    :type option:
+    :return:
+    :rtype:
+    """
     if option.type == 1:
         # DUID_LLT
         return "0001000" + str(option.hwtype) + str(hex(option.timeval))[2:] + str(option.lladdr).replace(":", "")
@@ -1051,13 +1217,17 @@ def extract_duid(option):
 
 
 def response_check_include_suboption(opt_code, expect, expected_value):
-    """
-    Assert that suboption {expected_value} exists inside option {opt_code}
+    """Assert that suboption {expected_value} exists inside option {opt_code}
     if {expect} is True or doesn't exist if {expect} is False.
+
     :param opt_code: option code or name
+    :type opt_code:
     :param expect: whether the suboption should exist
+    :type expect:
     :param expected_value: suboption code or name
+    :type expected_value:
     :return: tuple(the list of suboptions, the suboption code)
+    :rtype:
     """
     x = []
     opt_code = get_option_code(opt_code)
@@ -1082,17 +1252,21 @@ values_equivalent = {7: "prefval", 13: "statuscode",
 
 
 def response_check_suboption_content(subopt_code, opt_code, expect, data_type, expected_value):
-    '''
-    Assert that field {data_type} from option {subopt_code} nested inside option
+    """Assert that field {data_type} from option {subopt_code} nested inside option
     {opt_code} has {expected_value} if {expect} is True. Or check that it has a
     different value than {expected_value} if {expect} is False.
-    :param subopt_code: suboption code or name
-    :param opt_code: option code or name
-    :param expect: whether the value is expected or not in the suboption
-    :param data_type: the suboption field whose value is checked
-    :param expected_value: the value that is checked
-    '''
 
+    :param subopt_code: suboption code or name
+    :type subopt_code:
+    :param opt_code: option code or name
+    :type opt_code:
+    :param expect: whether the value is expected or not in the suboption
+    :type expect:
+    :param data_type: the suboption field whose value is checked
+    :type data_type:
+    :param expected_value: the value that is checked
+    :type expected_value:
+    """
     # Ensure the option codes are integers.
     opt_code = get_option_code(opt_code)
     subopt_code = get_option_code(subopt_code)
@@ -1133,22 +1307,31 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
 
 
 def convert_relayed_message(relayed_option):
+    """
+    :param relayed_option:
+    :type relayed_option:
+    """
     world.rlymsg.append(relayed_option)
     world.srvmsg.pop()
     world.srvmsg.append(relayed_option.message)
 
 
 def response_check_option_content(opt_code, expect, data_type, expected_value):
-    '''
-    Assert that field {data_type} of option with code or name {opt_code} has
+    """Assert that field {data_type} of option with code or name {opt_code} has
     value {expected_value} if {expect} is True or has a different value if
     {expect} is False.
-    :param opt_code: option code or name
-    :param expect: whether the value is expected or not
-    :param data_type: the option field whose value is checked
-    :param expected_value: the value that is checked
-    '''
 
+    :param opt_code: option code or name
+    :type opt_code:
+    :param expect: whether the value is expected or not
+    :type expect:
+    :param data_type: the option field whose value is checked
+    :type data_type:
+    :param expected_value: the value that is checked
+    :type expected_value:
+    :return:
+    :rtype:
+    """
     # Ensure the option code is an integer.
     opt_code = get_option_code(opt_code)
     data_type = str(data_type)
@@ -1221,11 +1404,25 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
 
 
 def response_check_option_content_more(opt_code, data_type, expected):
-    pass
+    """
+    :param opt_code:
+    :type opt_code:
+    :param data_type:
+    :type data_type:
+    :param expected:
+    :type expected:
+    :return:
+    :rtype:
+    """
 
 
 def save_value_from_option(value_name, option_name):
-
+    """
+    :param value_name:
+    :type value_name:
+    :param option_name:
+    :type option_name:
+    """
     assert world.srvmsg
     get_option(world.srvmsg[0], option_name)
     if len(world.opts) == 0:
@@ -1239,7 +1436,12 @@ def save_value_from_option(value_name, option_name):
 
 
 def compare_values(value_name, option_name):
-
+    """
+    :param value_name:
+    :type value_name:
+    :param option_name:
+    :type option_name:
+    """
     assert world.srvmsg
     get_option(world.srvmsg[0], option_name)
     if len(world.opts) == 0:
@@ -1257,7 +1459,12 @@ def compare_values(value_name, option_name):
 
 
 def get_all_leases(decode_duid=True):
-
+    """
+    :param decode_duid: Default value = True)
+    :type decode_duid:
+    :return:
+    :rtype:
+    """
     assert world.srvmsg
 
     msg = get_last_response()
@@ -1289,14 +1496,20 @@ def get_all_leases(decode_duid=True):
 
 
 def response_get_content(*args):
+    """
+    :param args:
+    :type args:
+    :return:
+    :rtype:
+    """
     # only v4!
-    pass
 
 
 def tcp_messages_include(**kwargs):
-    """
-    Checks how many messages of each type are in received over tcp list
+    """Checks how many messages of each type are in received over tcp list
     :param kwargs: types of messages e.g. leasequery_reply=1, leasequery_data=199, leasequery_done=1
+    :type kwargs:
+    :param kwargs:
     """
     expected_msg_count = sum(list(kwargs.values()))
     assert expected_msg_count == len(world.tcpmsg), \
@@ -1313,14 +1526,17 @@ def tcp_messages_include(**kwargs):
 
 
 def tcp_get_message(**kwargs):
-    """
-    Find one message in the list of all received via TCP channel. Messages can be retrieved via its index in the list
+    """Find one message in the list of all received via TCP channel. Messages can be retrieved via its index in the list
     or using address/prefix to find one specific message e.g.
     * tcp_get_message(address=lease["address"])
     * tcp_get_message(prefix=lease["address"])
     * tcp_get_message(order=3)
+
     :param kwargs: define which type of search should be performed and with what value
+    :type kwargs:
+    :param kwargs:
     :return: DHCP6 message
+    :rtype:
     """
     # we can look for address or prefix, address in scapy is represented by addr and prefix is represented by prefix
     print(".", end="", flush=True)
@@ -1358,10 +1574,19 @@ def tcp_get_message(**kwargs):
 
 
 def loops_config_sld():
+    """loops_config_sld"""
     world.loops["save_leases_details"] = True
 
 
 def values_for_loops(value_name, file_flag, values):
+    """
+    :param value_name:
+    :type value_name:
+    :param file_flag:
+    :type file_flag:
+    :param values:
+    :type values:
+    """
     value_name = str(value_name)
     if value_name == "client-id":
         world.loops[value_name] = []
@@ -1371,6 +1596,14 @@ def values_for_loops(value_name, file_flag, values):
 
 
 def loops(message_type_1, message_type_2, repeat):
+    """
+    :param message_type_1:
+    :type message_type_1:
+    :param message_type_2:
+    :type message_type_2:
+    :param repeat:
+    :type repeat:
+    """
     import importlib
     testsetup = importlib.import_module("misc")
     repeat = int(repeat)
@@ -1486,22 +1719,23 @@ def loops(message_type_1, message_type_2, repeat):
 
 
 def save_info():
-    pass
+    """save_info"""
 
 
 def check_IA_NA(address, status_code=None, expect=True):
-    """
-    Check that the latest received response has an IA_NA option containing
+    """Check that the latest received response has an IA_NA option containing
     an IA_Address suboption with the given address and the given status code.
 
     :param address: the expected address as value of the IA_Address suboption.
+    :type address:
                     None means that it is expected for the IA_Address to be missing.
     :param status_code: the expected status code (default: None - expected to be missing).
+    :type status_code: the expected status code (default:
     :param expect: whether the given address or status_code is expected to be found (True),
+    :type expect:
                    or expected to be missing (False). If the two need different values for expect,
-                   the function can be called twice, one for each.
+                   the function can be called twice, one for each. (Default value = True)
     """
-
     if address is None and status_code is None:
         response_check_include_option(False, 'IA_NA')
         # No IA_NA so nothing else to check.
@@ -1520,18 +1754,19 @@ def check_IA_NA(address, status_code=None, expect=True):
 
 
 def check_IA_PD(prefix, status_code=None, expect=True):
-    """
-    Check that the latest received response has an IA_PD option containing
+    """Check that the latest received response has an IA_PD option containing
     an IA-Prefix suboption with the given address and the given status code.
 
     :param prefix: the expected prefix in format '<prefix>/<length>'.
+    :type prefix:
                    None means that it is expected for the IA-Prefix to be missing.
     :param status_code: the expected status code (default: None - expected to be missing).
+    :type status_code: the expected status code (default:
     :param expect: whether the given address or status_code is expected to be found (True),
+    :type expect:
                    or expected to be missing (False). If the two need different values for expect,
-                   the function can be called twice, one for each.
+                   the function can be called twice, one for each. (Default value = True)
     """
-
     if prefix is None and status_code is None:
         response_check_include_option(False, 'IA_PD')
         # No IA_PD so nothing else to check.
@@ -1572,24 +1807,37 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
     Inserts options in the client packets based on given parameters and ensures
     that the right options are found in the server packets. A single option
     missing or having incorrect values renders the test failed.
+
     :param address: the expected address as value of the IA_Address suboption.
-    For multiple addresses, use additional check_IA_NA() calls.
+    :type address:
+    For multiple addresses, use additional check_IA_NA() calls. (Default value = None)
     :param delegated_prefix: the expected prefix in format '<prefix>/<length>'.
-    For multiple prefixes, use additional check_IA_PD() calls.
+    :type delegated_prefix:
+    For multiple prefixes, use additional check_IA_PD() calls. (Default value = None)
     :param relay_information: whether client packets should be encapsulated in relay
+    :type relay_information:
     forward messages, and by extension whether server packets should be
     expected to be encapsulated in relay reply messages (default: False)
-    :param status_code: the expected status code (default: None - expected to be missing)
+    :param status_code_IA_NA: the expected IA_NA status code (Default value = None)
+    :type status_code_IA_NA:
+    :param status_code_IA_PD: the expected IA_PD status code (Default value = None)
+    :type status_code_IA_PD:
     :param exchange: can have values "sarr-only" for 4-way SARR, "full" meaning
+    :type exchange:
     SARR + renew-reply or "renew-reply". It is a string instead of a boolean
     for clearer recognition of test names because this value often comes from
     pytest parametrization. (default: "full")
     :param duid: the DUID to be used in client packets
+    :type duid:
     (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
-    :param iaid: sets IAID for the client
-    :param linkaddr: sets Link Address in Relayed message
-    :param ifaceid: sets Interface ID in option 18 in Relayed message
-    :param iface: sets interface for the client
+    :param iaid: sets IAID for the client (Default value = None)
+    :type iaid:
+    :param linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::1000')
+    :type linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::
+    :param ifaceid: sets Interface ID in option 18 in Relayed message (Default value = 'port1234')
+    :type ifaceid:
+    :param iface: sets interface for the client (Default value = None)
+    :type iface:
     """
     iface = world.cfg["iface"] if iface is None else iface
     # TODO: Add ability to check that options other than IA_NAs and IA_PDs are not included.
@@ -1655,21 +1903,33 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     Inserts options in the client packets based on given parameters and ensures
     that the right options are found in the server packets. A single option
     missing or having incorrect values renders the test failed.
+
     :param address: the expected address as value of the IA_Address suboption.
-    For multiple addresses, use additional check_IA_NA() calls.
+    :type address:
+    For multiple addresses, use additional check_IA_NA() calls. (Default value = None)
     :param delegated_prefix: the expected prefix in format '<prefix>/<length>'.
-    For multiple prefixes, use additional check_IA_PD() calls.
+    :type delegated_prefix:
+    For multiple prefixes, use additional check_IA_PD() calls. (Default value = None)
     :param relay_information: whether client packets should be encapsulated in relay
+    :type relay_information:
     forward messages, and by extension whether server packets should be
     expected to be encapsulated in relay reply messages (default: False)
-    :param status_code: the expected status code (default: None - expected to be missing)
+    :param status_code_IA_NA: the expected IA_NA status code (Default value = None)
+    :type status_code_IA_NA:
+    :param status_code_IA_PD: the expected IA_PD status code (Default value = None)
+    :type status_code_IA_PD:
     :param duid: the DUID to be used in client packets
+    :type duid:
     (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
-    :param iaid: sets IAID for the client
-    :param linkaddr: sets Link Address in Relayed message
-    :param ifaceid: sets Interface ID in option 18 in Relayed message
+    :param iaid: sets IAID for the client (Default value = None)
+    :type iaid:
+    :param linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::1000')
+    :type linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::
+    :param ifaceid: sets Interface ID in option 18 in Relayed message (Default value = 'port1234')
+    :type ifaceid:
+    :param iface: Default value = None)
+    :type iface:
     """
-
     iface = world.cfg["iface"] if iface is None else iface
     # Kea sends NoAddrsAvail or NoPrefixAvail in ADVERTISE when there are no
     # leases available, as opposed to no IA_NA at all in REPLY.

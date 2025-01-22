@@ -219,6 +219,7 @@ class CreateCert:
         """
         Remove all default keys and certs or just one singled out by name
         :param name: name of a cert/key to be removed
+        :type name:
         """
         if name is not None:
             remove_file_from_server(name)
@@ -254,8 +255,11 @@ class CreateCert:
         """
         Generate CA ( Certificate authority ) cert and key on remote system, and change access right of generated files
         :param ca_name: CN name of cert
+        :type ca_name:
         :param ca_key_name: name of key output file
+        :type ca_key_name:
         :param ca_cert_name: name of cert output file
+        :type ca_cert_name:
         """
         key = self.ca_key if ca_key_name is None else world.f_cfg.data_join(ca_key_name)
         cert = self.ca_cert if ca_cert_name is None else world.f_cfg.data_join(ca_cert_name)
@@ -281,11 +285,17 @@ class CreateCert:
         """
         Generate server cert and key, sign it with previously generated CA, change access rights
         :param cn: CN parameter of a key
+        :type cn:
         :param server_key_name: name of server key output file
+        :type server_key_name:
         :param server_csr_name: name of server csr output file
+        :type server_csr_name:
         :param server_cert_name: name of server cert output file
+        :type server_cert_name:
         :param ca_cert_name: name of CA cert file
+        :type ca_cert_name:
         :param ca_key_name: name of CA key file
+        :type ca_key_name:
         """
         s_key = self.server_key if server_key_name is None else world.f_cfg.data_join(server_key_name)
         s_csr = self.server_csr if server_csr_name is None else world.f_cfg.data_join(server_csr_name)
@@ -322,12 +332,17 @@ class CreateCert:
         """
         Generate client cert and key, sign it with previously generated CA, change access rights
         :param cn: CN parameter of a key
+        :type cn:
         :param client_key_name:
+        :type client_key_name:
         :param client_csr_name:
+        :type client_csr_name:
         :param ca_cert_name:
+        :type ca_cert_name:
         :param ca_key_name:
+        :type ca_key_name:
         :param client_cert_name:
-        :return:
+        :type client_cert_name:
         """
         c_key = self.client_key if client_key_name is None else world.f_cfg.data_join(client_key_name)
         c_crt = self.client_cert if client_cert_name is None else world.f_cfg.data_join(client_cert_name)
@@ -362,12 +377,17 @@ class CreateCert:
         """
 
         :param cn:
+        :type cn:
         :param server_key_name:
+        :type server_key_name:
         :param server_csr_name:
+        :type server_csr_name:
         :param server_cert_name:
+        :type server_cert_name:
         :param ca_cert_name:
+        :type ca_cert_name:
         :param ca_key_name:
-        :return:
+        :type ca_key_name:
         """
         s_key = self.server2_key if server_key_name is None else world.f_cfg.data_join(server_key_name)
         s_csr = self.server2_csr if server_csr_name is None else world.f_cfg.data_join(server_csr_name)
@@ -402,7 +422,9 @@ class CreateCert:
         and return dictionary of name and full file path
 
         :param cert_name: Select certificate to download or None to download all.
+        :type cert_name:
         :return: Full path of the downloaded file on Forge machine or dict with names and path of certificates.
+        :rtype: list[str]
         """
         if cert_name is None:
             certs = {}
@@ -420,6 +442,10 @@ class CreateCert:
 
 
 def generate_certificate():
+    """
+    :return:
+    :rtype:
+    """
     return CreateCert()
 
 
@@ -427,6 +453,7 @@ def _get_option_code(option_name: str):
     """
     Look for option code of standard option
     :param option_name: string option name
+    :type option_name:
     :return: int, option code
     """
     if world.proto == 'v4':
@@ -480,13 +507,17 @@ def add_defaults6():
 
 
 def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_name=True):
-    """
-    Adds a logger with specified values to the Kea configuration.
+    """Add a logger with specified values to the Kea configuration.
     :param log_type: name of the logger (e.g. 'kea-dhcp6', 'kea-dhcp6.options')
+    :type log_type:
     :param severity: logger severity (e.g. 'DEBUG', 'INFO')
+    :type severity:
     :param severity_level: debug level
+    :type severity_level:
     :param logging_file: the output for the log messages ('stdout', 'syslog', or file name)
+    :type logging_file:
     :param merge_by_name: whether to merge into other existing loggers if the name is matched.
+    :type merge_by_name:
     True by default. If False, the logger is simply added without any checks.
     """
     if world.f_cfg.install_method == 'make':
@@ -624,13 +655,18 @@ def add_line_in_subnet(subnet_id, additional_line):
 
 
 def prepare_cfg_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
-    """Creates or updates an element under "subnet[46]" element in Kea's JSON
+    """Create or update an element under "subnet[46]" element in Kea's JSON
     configuration.
     :param subnet: the value for "subnet". If None, then continue with configuring an
+    :type subnet:
     already existing subnet element.
     :param pool: the value appended to "pools". If None, then leave "pools" alone.
+    :type pool:
     :param iface: the interface to be configured on the subnet element
+    :type iface:
     (default: SERVER_IFACE)
+    :param kwargs:
+    :type kwargs:
     """
     if world.proto == 'v4':
         if subnet == "default":
@@ -667,10 +703,15 @@ def config_srv_another_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kw
     """Like config_srv_subnet(subnet, pool, iface), but increments the subnet
     counter to guarantee that this subnet will be a new one.
     :param subnet: the value for "subnet". If None, then continue with configuring an
+    :type subnet:
     already existing subnet element.
     :param pool: the value appended to "pools". If None, then leave "pools" alone.
+    :type pool:
     :param iface: the interface to be configured on the subnet element
+    :type iface:
     (default: SERVER_IFACE)
+    :param kwargs:
+    :type kwargs:
     """
     world.dhcp["subnet_cnt"] += 1
     prepare_cfg_subnet(subnet, pool, iface, **kwargs)
@@ -714,7 +755,9 @@ def add_interface(iface, add_to_existing=True):
     """Add an interface to the "interfaces" list under "interfaces-config" in
     Kea JSON configuration.
     :param iface: the interface to be added to the configuration
+    :type iface:
     :param add_to_existing: if True, then add the interface in all circumstances.
+    :type add_to_existing:
     If False, then add the interface only if there are no other interfaces configured.
     """
     if "interfaces-config" not in world.dhcp_cfg.keys():
@@ -796,10 +839,17 @@ def prepare_cfg_add_option(option_name, option_value, space,
     """
     Add option data to global kea configuration
     :param option_name: string option name
+    :type option_name:
     :param option_value: string, option value
+    :type option_value:
     :param space: string, option space
+    :type space:
     :param option_code: int, option code
+    :type option_code:
     :param opt_type: string, option type
+    :type opt_type:
+    :param kwargs:
+    :type kwargs:
     """
 
     # check if we are configuring default option or user option via function "prepare_cfg_add_custom_option"
@@ -828,8 +878,13 @@ def prepare_cfg_add_option_subnet(option_name: str, subnet: int, option_value: s
     """
     Add option data to subnet
     :param option_name: string, option name
+    :type option_name:
     :param subnet: int, index of a subnet that will be updated
+    :type subnet:
     :param option_value: string, option value
+    :type option_value:
+    :param kwargs:
+    :type kwargs:
     """
     space = world.cfg["space"]
     subnet = int(subnet)
@@ -861,9 +916,15 @@ def prepare_cfg_add_option_pool(option_name: str, option_value: str, subnet: int
     """
     Add option data to a pool
     :param option_name: string, option name
+    :type option_name:
     :param option_value: string, option value
+    :type option_value:
     :param subnet: int, index of subnet in the list of subnets
+    :type subnet:
     :param pool: int, index of pool to be updated on the list of pools
+    :type pool:
+    :param kwargs:
+    :type kwargs:
     """
     space = world.cfg["space"]
     subnet = int(subnet)
@@ -896,8 +957,13 @@ def prepare_cfg_add_option_shared_network(option_name: str, option_value: str,
     """
     Add option data to shared-network
     :param option_name: string, option name
+    :type option_name:
     :param option_value: string, option value
+    :type option_value:
     :param shared_network: int, index of shared network to be updated in the list of shared networks
+    :type shared_network:
+    :param kwargs:
+    :type kwargs:
     """
     space = world.cfg["space"]
     shared_network = int(shared_network)
@@ -923,12 +989,17 @@ def prepare_cfg_add_option_shared_network(option_name: str, option_value: str,
 def host_reservation(reservation_type, reserved_value, unique_host_value_type, unique_host_value, subnet):
     """Configure a subnet-level host reservation.
     :param reservation_type: the type of the reserved resource: "client-classes",
+    :type reservation_type: the type of the reserved resource:
     "hostname", "ip-addresses", "option-data", "prefixes"
     :param reserved_value: the value of the reserved resource
+    :type reserved_value:
     :param unique_host_value_type: the type for the reservation's identifier:
+    :type unique_host_value_type: the type for the reservation's identifier:
     "circuit-id", "client-id", "duid", "flex-id", "hw-address"
     :param unique_host_value: the value for the reservation's identifier
+    :type unique_host_value:
     :param subnet: the ordinal number of the subnet under which the reservation will
+    :type subnet:
     be made. Careful, this is not the subnet ID. Subnet 0 is the first subnet.
     Can also hold the value 'global'.
     """
@@ -1008,10 +1079,11 @@ def add_hooks(library_path):
 
 
 def check_hook_presence(hook):
-    """
-    Check if hook whose path matches the pattern given as parameter is present.
-
+    """Check if hook whose path matches the pattern given as parameter is present.
     :param hook: pattern used to match library paths
+    :type hook:
+    :return:
+    :rtype:
     """
     for hook_library in world.dhcp_cfg['hooks-libraries']:
         if re.search(hook, hook_library['library']):
@@ -1037,6 +1109,7 @@ def delete_hooks(hook_patterns):
     Delete hook whose path matches one of the patterns given as parameters.
 
     :param hook_patterns: list of patterns used to match library paths
+    :type hook_patterns:
     """
     for hp in hook_patterns:
         for i, hook_library in enumerate(world.dhcp_cfg['hooks-libraries']):
@@ -1052,8 +1125,11 @@ def add_parameter_to_hook(hook_name, parameter_name, parameter_value):
     this way passed dictionary will be saved in parameters of particular hook
 
     :param hook_name: hook library name
+    :type hook_name:
     :param parameter_name: the parameter's JSON key
+    :type parameter_name:
     :param parameter_value: the parameter's JSON value
+    :type parameter_value:
     """
 
     hook_no = None
@@ -1084,7 +1160,9 @@ def delete_parameter_from_hook(hook_name, parameter_name: str):
     Remove parameter from the hook configuration, use hook library name.
 
     :param hook_name: hook pattern contained in the library name
+    :type hook_name:
     :param parameter_name: the parameter's JSON key
+    :type parameter_name:
     """
 
     # Get the hook number.
@@ -1259,11 +1337,16 @@ def config_srv_id(id_type, id_value):
 def prepare_cfg_prefix(prefix, length, delegated_length, subnet, **kwargs):
     """Add a new prefix delegation pool to the given subnet configuration.
     :param prefix: the IPv6 prefix to delegate prefixes from
+    :type prefix:
     :param length: the length of the IPv6 prefix to delegate prefixes from
+    :type length:
     :param delegated_length: the IPv6 prefix to delegate prefixes from
+    :type delegated_length:
     :param subnet: the ordinal number of the subnet under which the reservation will be made.
+    :type subnet:
     Careful, this is not the subnet ID. Subnet 0 is the first subnet.
     :param kwargs: additional entries in the pool
+    :type kwargs:
     """
     if world.proto == 'v4':
         assert False, "Not available for DHCPv4"
@@ -1349,6 +1432,12 @@ def configure_multi_threading(enable_mt, pool=0, queue=0):
 
 
 def disable_mt_if_required(cfg):
+    """
+    :param cfg:
+    :type cfg:
+    :return:
+    :rtype:
+    """
     # core MT is enabled by default, HA MT as well. So we need to cover couple cases:
     # * if auto_multi_threading_configuration is false than do nothing
     # * if we detect hooks that are not MT compatible we have to disable MT in core, and in HA
@@ -1497,7 +1586,10 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     Generate final config file, save it to test result directory
     and send it to remote system unless testing step will define differently.
     :param destination_address: address of remote system to which conf file will be send,
+    :type destination_address:
     default it's world.f_cfg.mgmt_address
+    :param cfg:
+    :type cfg:
     """
 
     # generate config files content
@@ -1773,8 +1865,11 @@ def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_
     """
     Start kea with generated config
     :param should_succeed: whether the action is supposed to succeed or fail
+    :type should_succeed:
     :param destination_address: management address of server
+    :type destination_address:
     :param process: name of the single process we want to start (using -s option of keactrl)
+    :type process:
     """
     if destination_address not in world.f_cfg.multiple_tested_servers:
         world.multiple_tested_servers.append(destination_address)
@@ -1820,8 +1915,11 @@ def _check_kea_process_result(succeed: bool, result: str, action: str):
     """
     Check if a server's logs or a server's output contains failure messages.
     :param succeed: whether the result is supposed to be success or failure
+    :type succeed:
     :param result: the logs or output resulted from an action on the server
+    :type result:
     :param action: one-word description of the action done on the server
+    :type action:
     """
     errors = ["Failed to apply configuration", "Failed to initialize server",
               "Service failed", "failed to initialize Kea"]
@@ -1882,7 +1980,9 @@ def reconfigure_srv(should_succeed: bool = True,
     """
     Send signal to Kea server to reconfigure itself.
     :param should_succeed: whether the reconfiguration is supposed to succeed or fail
+    :type should_succeed:
     :param destination_address: management address of server
+    :type destination_address:
     """
     if world.f_cfg.install_method == 'make':
         result = _reload_kea_with_keactrl(destination_address)
@@ -1939,7 +2039,9 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
     """
     Download logs from kea-dhcp4 or kea-dhcp6
     :param local_dest_dir: results directory
+    :type local_dest_dir:
     :param destination_address: ip address of a remote system
+    :type destination_address:
     """
     if world.f_cfg.install_method == 'make':
         log_path = world.f_cfg.log_join('kea.log*')
@@ -1983,7 +2085,9 @@ def save_ddns_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address)
     """
     Download logs from kea-dhcp-ddns
     :param local_dest_dir: results directory
+    :type local_dest_dir:
     :param destination_address: ip address of a remote system
+    :type destination_address:
     """
     if world.f_cfg.install_method == 'make':
         log_path = world.f_cfg.log_join('kea-dhcp-ddns.log')
@@ -2010,7 +2114,9 @@ def save_ctrl_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address)
     """
     Download logs from kea-ctrl-agent
     :param local_dest_dir: results directory
+    :type local_dest_dir:
     :param destination_address: ip address of a remote system
+    :type destination_address:
     """
     if world.f_cfg.install_method == 'make':
         log_path = world.f_cfg.log_join('kea-ctrl-agent.log')
@@ -2034,7 +2140,12 @@ def save_ctrl_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address)
 
 
 def save_radius_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address):
-    """ Download RADIUS logs and relevant RADIUS config files. """
+    """Download RADIUS logs and relevant RADIUS config files.
+    :param local_dest_dir:
+    :type local_dest_dir:
+    :param destination_address:
+    :type destination_address:
+    """
 
     radius_dir = os.path.join(local_dest_dir, 'radius')
 
@@ -2054,6 +2165,7 @@ def save_logs(destination_address: str = world.f_cfg.mgmt_address):
     """
     Save all types of log files to results file
     :param destination_address: ip address of remote system
+    :type destination_address:
     """
     local_dest_dir = check_local_path_for_downloaded_files(world.cfg["test_result_dir"], '.', destination_address)
 
@@ -2146,6 +2258,7 @@ def insert_message_in_server_logs(message: str):
     The messages are formatted in similar fashion to Kea's log messages.
 
     :param message: the message to be logged
+    :type message:
     """
     if world.f_cfg.install_method != 'make':
         return

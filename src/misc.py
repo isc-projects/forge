@@ -6,8 +6,7 @@
 
 # Author: Wlodzimierz Wencel
 
-# This file contains a number of common steps that are general and may be used
-# By a lot of feature files.
+"""This file contains a number of common steps that are general and may be used by a lot of feature files."""
 
 # pylint: disable=consider-using-enumerate
 # pylint: disable=invalid-name
@@ -20,9 +19,7 @@ from .softwaresupport.configuration import KeaConfiguration
 
 
 def set_world():
-    """
-    Set counters which are being used to server configuration in Kea
-    """
+    """Set counters which are being used to server configuration in Kea."""
     if not hasattr(world, 'dhcp'):
         world.dhcp = {}
     else:
@@ -48,22 +45,24 @@ def set_world():
 
 @step(r'Pass Criteria:')
 def pass_criteria():
-    # Do nothing, "Pass criteria:" appears in the text as beautification only
-    pass
+    """Do nothing. "Pass criteria:" appears in the text as beautification only."""
 
 
 @step(r'Test Setup:')
 def test_setup():
+    """Set up test conditions."""
     set_world()
 
 
 @step(r'Server reconfigure:')
 def reconfigure():
+    """Reconfigure Kea server."""
     set_world()
 
 
 @step(r'Test Procedure:')
 def test_procedure():
+    """Reset option data and set up test conditions."""
     for each in world.f_cfg.software_under_test:
         if "server" in each:
             if world.proto == "v4":
@@ -88,18 +87,23 @@ def test_procedure():
 
 
 def merge_containers(target, source, identify=None, last_list_parent_key=None):
-    """Recursively merges dicts and lists from {source} into {target}.
+    """Recursively merge dicts and lists from source into target.
+
     :param target: container being merged into
+    :type target:
     :param source: container being merged
+    :type source:
     :param identify: dict used to uniquely identify elements within the source and target lists that
-    are being merged. Keys in this dict are so-called last-list-parent-keys - a way
-    to limit the places where these unique keys are considered. Values in this dict
-    are the unique IDs for the elements in the source and target lists being
-    merged. By default None which means no smart merging is attempted.
-    E.g. {'output-options': 'output'}
+        are being merged. Keys in this dict are so-called last-list-parent-keys - a way
+        to limit the places where these unique keys are considered. Values in this dict
+        are the unique IDs for the elements in the source and target lists being
+        merged. By default None which means no smart merging is attempted.
+        E.g. {'output-options': 'output'}
+    :type identify:
     :param last_list_parent_key: The last dict key that hosted a list in the recursive path. This
-    will be matched against keys in {identify}. Only for internal
-    recursive calls. Don't set this explicitly from external calls.
+        will be matched against keys in {identify}. Only for internal
+        recursive calls. Don't set this explicitly from external calls.
+    :type last_list_parent_key:
     """
     if (isinstance(target, dict)):
         for k, v in source.items():

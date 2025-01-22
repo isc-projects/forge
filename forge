@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (C) 2019-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2019-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -210,8 +210,11 @@ def execute(cmd, timeout=60, cwd=None, env=None, raise_error=True, dry_run=False
     :param bool capture: if True then the command's traces are captured and returned by the function
     :param bool interactive: if True then stdin and stdout are not redirected, traces handling is disabled,
                              used for e.g. SSH
-    :param int attemts: number of attempts to run the command if it fails
+    :param int attempts: number of attempts to run the command if it fails
     :param int sleep_time_after_attempt: number of seconds to sleep before taking next attempt
+    :param str log_prefix: prefix to add to each log message
+    :return: exit code, and also output if capture is True
+    :rtype: int or tuple(str, int)
     """
     log.info('>>>>> Executing %s in %s', cmd, cwd if cwd else os.getcwd())
     if not check_times:
@@ -311,6 +314,11 @@ def _get_win_addresses(vars, version):
 
 
 def set_init_all(args):
+    """Generate the init_all.py file.
+    :param args:
+    :type args:
+    """
+
     # generate init_all.py
     my_vars = globals()
 
@@ -341,6 +349,12 @@ def set_init_all(args):
 
 
 def get_vagrant_dir(args):
+    """Obsolete.
+    :param args:
+    :type args:
+    :return:
+    :rtype:
+    """
     vagrant_dir = os.path.join('vagrant',
                                'lxc' if args.lxc else 'vbox',
                                args.sid if args.sid else 'default',
@@ -372,6 +386,10 @@ def _get_interface_names(sid):
 
 
 def ensure_lxc_bridges(args):
+    """Obsolete.
+    :param args:
+    :type args:
+    """
     mgmt_brg, traffic_brg = _get_interface_names(args.sid)
     for bridge in [mgmt_brg, traffic_brg]:
         if execute('sudo ip link show dev %s' % bridge, raise_error=False):
@@ -519,6 +537,10 @@ def _terminate_instances(args):
 
 
 def setup(args):
+    """setup
+    :param args:
+    :type args:
+    """
     # load config
     cfg = _load_config()
 
@@ -971,7 +993,7 @@ def install_dhcpd(args):
     """
     Run ISC-DHCP installation on both systems
     :param args: parser arguments
-    :return:
+    :type args:
     """
     ensure_lxc_bridges(args)
 
@@ -1174,7 +1196,10 @@ def package_box_and_upload(args):
 
 
 def parse_args():
-    """Parse arguments."""
+    """Parse arguments.
+    :return:
+    :rtype:
+    """
     # used lambda to change args order and able to substitute width
     fl = functools.partial(lambda w, t: textwrap.fill(t, w), 80)
     description = [

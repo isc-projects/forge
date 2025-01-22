@@ -56,6 +56,12 @@ def _check_times_in_message(valid_lifetime: int):
 def test_basic_configuration(backend, level, allocator):
     """
     Check pre allocation on offer on different configuration levels with different backends and allocators
+    :param backend:
+    :type backend:
+    :param level:
+    :type level:
+    :param allocator:
+    :type allocator:
     """
     vlt = 123
     offer_lifetime = 10
@@ -228,6 +234,8 @@ def test_with_lease_affinity(backend):
     Check:
     * if lease affinity apply to leases allocated on offer
     * if lease state 2 can be allocated on offer
+    :param backend:
+    :type backend:
     """
     vlt = 5
     offer_lifetime = 4

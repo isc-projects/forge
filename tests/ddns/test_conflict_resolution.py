@@ -181,7 +181,6 @@ def _get_address6(
     duid: str, fqdn: str, address: str, expected_fqdn: str = None, class_id: str = None
 ) -> None:
     """_get_address Get a lease from DHCP server, perform basic checks on responses and content of the lease file.
-
     :param duid: DIUD address of the client e.g. 00:01:02:03:04:05
     :type duid: str
     :param fqdn: FQDN value that will be sent to DHCP server
@@ -247,7 +246,6 @@ def _get_address_and_check_dns_record(
 ):
     """_get_address_and_update_ddns Get a lease from DHCP server and update DNS records.
     Function checks DNS records before and after lease is obtained, to check if DDNS is working correctly.
-
     :param version: DHCP version, defaults to 4
     :type version: int, optional
     :param mac: MAC address in case of DHCP v4 and DUID when testing DHCPv6, defaults to None
@@ -255,12 +253,13 @@ def _get_address_and_check_dns_record(
     :param client_fqdn: FQDN value that will be sent to DHCP server, defaults to None
     :type client_fqdn: str
     :param returned_fqdn: FQDN value that will be sent back by DHCP server if None is used test assume that
-                          fqdn and expected FQDN are equal, defaults to None
-    :type returned_fqdn: str, optional
+    :type returned_fqdn:
     :param address: expected IP address, defaults to None
     :type address: str
     :param arpa: DNS entry value, defaults to None
     :type arpa: str
+    :param class_id: (Default value = None)
+    :type class_id: str:
     """
     if returned_fqdn is None:
         returned_fqdn = client_fqdn
@@ -279,6 +278,18 @@ def _get_address_and_check_dns_record(
 
 
 def send_cmd(cmd, address=world.f_cfg.mgmt_address, exp_result=0, exp_failed=False):
+    """
+    :param cmd:
+    :type cmd:
+    :param address: (Default value = world.f_cfg.mgmt_address)
+    :type address:
+    :param exp_result: (Default value = 0)
+    :type exp_result:
+    :param exp_failed: (Default value = False)
+    :type exp_failed:
+    :return:
+    :rtype:
+    """
     result = srv_msg.send_ctrl_cmd_via_http(
         command=cmd, address=address, exp_result=exp_result, exp_failed=exp_failed
     )
@@ -292,13 +303,15 @@ def send_cmd(cmd, address=world.f_cfg.mgmt_address, exp_result=0, exp_failed=Fal
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns4_conflict_resolution_check_with_dhcid(level):
-    """
-    Test ddns-conflict-resolution-mode set to "check-with-dhcid" at 3 levels.
+    """Test ddns-conflict-resolution-mode set to "check-with-dhcid" at 3 levels.
     https://datatracker.ietf.org/doc/html/rfc4703
     Each new DNS entry is checked against existing entries. If DHCID maches, entry is updated, if not, entry is not updated.
     If record was updated expiration of previous address should not remove DNS record.
 
     If the same client get's address from different subnet, it should be able to update DNS entry.
+
+    :param level:
+    :type level:
     """
     # basic config
     main_valid_lifetime = 25
@@ -463,10 +476,12 @@ def test_ddns4_conflict_resolution_check_with_dhcid(level):
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
-    """
-    Test ddns-conflict-resolution-mode set to "no-check-with-dhcid" at 3 levels.
+    """Test ddns-conflict-resolution-mode set to "no-check-with-dhcid" at 3 levels.
 
     EacExisting DNS entries may be overwritten by any client, whether or not those entries include a DHCID record.
+
+    :param level:
+    :type level:
     """
 
     # basic config
@@ -630,8 +645,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
     "conflict", ["check-exists-with-dhcid", "no-check-without-dhcid"]
 )
 def test_ddns4_conflict_resolution(level, conflict):
-    """
-    Test ddns-conflict-resolution-mode settings: "check-exists-with-dhcid" and "no-check-without-dhcid" at 3 levels.
+    """Test ddns-conflict-resolution-mode settings: "check-exists-with-dhcid" and "no-check-without-dhcid" at 3 levels.
 
     check-exists-with-dhcid - Existing DNS entries may only be overwritten if they have a DHCID record.
     The DHCID record need not match the client's DHCID. This mode provides a way to protect static
@@ -640,6 +654,11 @@ def test_ddns4_conflict_resolution(level, conflict):
 
     no-check-without-dhcid - Existing DNS entries may be overwritten by any client.
     New entries will not include DHCID records.
+
+    :param level:
+    :type level:
+    :param conflict:
+    :type conflict:
     """
 
     # basic config
@@ -743,13 +762,15 @@ def test_ddns4_conflict_resolution(level, conflict):
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns6_conflict_resolution_check_with_dhcid(level):
-    """
-    Test ddns-conflict-resolution-mode set to "check-with-dhcid" at 3 levels.
+    """Test ddns-conflict-resolution-mode set to "check-with-dhcid" at 3 levels.
     https://datatracker.ietf.org/doc/html/rfc4703
     Each new DNS entry is checked against existing entries. If DHCID maches, entry is updated, if not, entry is not updated.
     If record was updated expiration of previous address should not remove DNS record.
 
     If the same client get's address from different subnet, it should be able to update DNS entry.
+
+    :param level:
+    :type level:
     """
     # basic config
     main_valid_lifetime = 25
@@ -936,10 +957,12 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
-    """
-    Test ddns-conflict-resolution-mode set to "no-check-with-dhcid" at 3 levels.
+    """Test ddns-conflict-resolution-mode set to "no-check-with-dhcid" at 3 levels.
 
     Existing DNS entries may be overwritten by any client, whether or not those entries include a DHCID record.
+
+    :param level:
+    :type level:
     """
 
     # basic config
@@ -1124,8 +1147,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
     "conflict", ["check-exists-with-dhcid", "no-check-without-dhcid"]
 )
 def test_ddns6_conflict_resolution(level, conflict):
-    """
-    Test ddns-conflict-resolution-mode settings: "check-exists-with-dhcid" and "no-check-without-dhcid" at 3 levels.
+    """Test ddns-conflict-resolution-mode settings: "check-exists-with-dhcid" and "no-check-without-dhcid" at 3 levels.
 
     check-exists-with-dhcid - Existing DNS entries may only be overwritten if they have a DHCID record.
     The DHCID record need not match the client's DHCID. This mode provides a way to protect static
@@ -1134,6 +1156,11 @@ def test_ddns6_conflict_resolution(level, conflict):
 
     no-check-without-dhcid - Existing DNS entries may be overwritten by any client.
     New entries will not include DHCID records.
+
+    :param level:
+    :type level:
+    :param conflict:
+    :type conflict:
     """
 
     # basic config
@@ -1240,12 +1267,13 @@ def test_ddns6_conflict_resolution(level, conflict):
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns6_conflict_resolution_simple_scenario(level):
-    """
-    Test ddns-conflict-resolution-mode set to "check-with-dhcid" at 3 levels.
+    """Test ddns-conflict-resolution-mode set to "check-with-dhcid" at 3 levels.
     https://datatracker.ietf.org/doc/html/rfc4703
     Each new DNS entry is checked against existing entries. If DHCID maches, entry is updated, if not, entry is not updated.
     If record was updated expiration of previous address should not remove DNS record.
 
+    :param level:
+    :type level:
     """
     # basic config
     main_valid_lifetime = 50

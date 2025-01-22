@@ -22,12 +22,13 @@ AUTHORIZE_CONTENT = ''
 
 def add_leading_subnet(subnet: str = None,
                        pool: str = None):
-    """
-    Add to the first position: a subnet or a shared network with a single subnet,
+    """Add to the first position: a subnet or a shared network with a single subnet,
     in both cases with a single pool. The subnet ID is the third octet from the
     v4 address.
     :param subnet: the subnet value
+    :type subnet:
     :param pool: the pool value
+    :type pool:
     """
     # Defaults
     if subnet is None:
@@ -75,6 +76,12 @@ def add_leading_subnet(subnet: str = None,
 
 
 def add_reservation(mac: str, attributes=None):
+    """
+    :param mac: str:
+    :type mac: str:
+    :param attributes: (Default value = None)
+    :type attributes:
+    """
     if attributes is None:
         attributes = []
 
@@ -96,6 +103,7 @@ def add_reservation(mac: str, attributes=None):
 
 
 def add_usual_reservations():
+    """add_usual_reservations"""
     add_reservation('08:00:27:b0:c1:41', [
         'Framed-IP-Address = "192.168.51.51"',
         'Framed-IPv6-Address = "2001:db8:51::51"',
@@ -222,11 +230,11 @@ def add_usual_reservations():
 
 
 def configurations(interface: str = world.f_cfg.server_iface):
-    """
-    Return configurations used in RADIUS tests.
-
+    """Return configurations used in RADIUS tests.
     :param interface: the name of the client-facing interface on the server side
+    :type interface: str:
     :return: configurations
+    :rtype:
     """
 
     v = world.proto[1]
@@ -337,7 +345,12 @@ def configurations(interface: str = world.f_cfg.server_iface):
 
 
 def _tweak_radius_config(destination: str = world.f_cfg.mgmt_address):
-    """ Remove comments and empty lines, and enable auth logs. """
+    """Remove comments and empty lines, and enable auth logs.
+
+    :param destination: str: (Default value = world.f_cfg.mgmt_address)
+    :type destination: str:
+
+    """
     for file in [
         '/etc/raddb/radiusd.conf',
         '/etc/freeradius/3.0/radiusd.conf',
@@ -381,14 +394,22 @@ def get_address(mac: str,
                 giaddr: str = None,
                 expected_lease: str = None,
                 server_id: str = world.f_cfg.srv4_addr):
-    """
-    Make a full exchange, check that the expected lease is received and,
+    """Make a full exchange, check that the expected lease is received and,
     finally, return the received leases.
-
     :param mac: the client's MAC address
+    :type mac: str:
     :param giaddr: the v4 client's giaddr value
+    :type giaddr:
     :param expected_lease: a lease that's expected to be given by the DHCP server
+    :type expected_lease:
+    :param giaddr: str: (Default value = None)
+    :type giaddr: str:
+    :param expected_lease: str: (Default value = None)
+    :type expected_lease: str:
+    :param server_id: str: (Default value = world.f_cfg.srv4_addr)
+    :type server_id: str:
     :return: the leased v4 address or the first lease in the v6 case, in both cases along with the client ID and MAC address
+    :rtype:
     """
 
     if world.proto == 'v4':
@@ -415,9 +436,9 @@ def get_address(mac: str,
 
 
 def init_and_start_radius(destination: str = world.f_cfg.mgmt_address):
-    """
-    Configure and restart RADIUS on remote hosts.
+    """Configure and restart RADIUS on remote hosts.
     :param destination: address of the server that hosts the RADIUS service
+    :type destination:
     """
     _init_radius(destination=destination)
     _start_radius(destination=destination)
@@ -433,18 +454,29 @@ def send_and_receive(config_type: str,
     """Exchange messages and check that the proper leases were returned according
     to Kea's configuration.
     :param config_type: different configurations used in testing
+    :type config_type:
     * 'subnet': a classified pool with a single address configured inside a traditional subnet
     * 'network': a classified pool with a single address configured inside a shared network
     * 'multiple-subnets': multiple classified pools in multiple subnets inside a shared network
     :param radius_reservation_in_pool: whether there is an existing pool in Kea that contains the
+    :type radius_reservation_in_pool:
     lease reserved by RADIUS for the first client in this test
     * 'radius-reservation-in-pool': yes
     * 'radius-reservation-outside-pool': no
     :param ha_mode: HA mode, not strictly-related to RADIUS. Default is None meaning no HA
+    :type ha_mode:
     * 'hot-standby'
     * 'load-balancing'
     * 'passive-backup'
     :return list of dictionaries of leases containing address, client_id, mac
+    :param config_type: str:
+    :type config_type: str:
+    :param radius_reservation_in_pool: str:
+    :type radius_reservation_in_pool: str:
+    :param ha_mode: str: (Default value = None)
+    :type ha_mode: str:
+    :return:
+    :rtype:
     """
 
     leases = []
@@ -538,12 +570,12 @@ def send_and_receive(config_type: str,
 
 
 def send_message_and_expect_no_more_leases(mac: str, giaddr: str = None):
-    """
-    Send a discover or a solicit and expect the exhausted leases case which is
+    """Send a discover or a solicit and expect the exhausted leases case which is
     no answer for v4 or NoAddrsAvail status code for v6.
-
     :param mac: the client's MAC address
+    :type mac:
     :param giaddr: the v4 client's giaddr value
+    :type giaddr:
     """
     if world.proto == 'v4':
         client_id = '11' + mac.replace(':', '')
@@ -558,9 +590,9 @@ def send_message_and_expect_no_more_leases(mac: str, giaddr: str = None):
 
 
 def _init_radius(destination: str = world.f_cfg.mgmt_address):
-    """
-    Create authorize file and clients.conf needed by RADIUS and send them to {destination}.
+    """Create authorize file and clients.conf needed by RADIUS and send them to {destination}.
     :param destination: address where RADIUS is set up
+    :type destination:
     """
 
     global AUTHORIZE_CONTENT
@@ -607,10 +639,9 @@ client {mgmt_address} {{
 
 
 def _start_radius(destination: str = world.f_cfg.mgmt_address):
-    """
-    Restart the RADIUS systemd service.
-
+    """Restart the RADIUS systemd service.
     :param destination: address of the server that hosts the RADIUS service
+    :type destination:
     """
 
     for file in [
