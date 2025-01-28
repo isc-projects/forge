@@ -48,7 +48,7 @@ def _reservation_add(reservation: dict, target: str = None, channel: str = 'http
 
 def _reservation_update(reservation: dict, target: str = None, channel: str = 'http',
                         exp_result: int = 0, exp_failed: bool = False):
-    """Send reservation update command
+    """Send reservation update command.
 
     :param reservation: dictionary with reservation
     :type reservation:
@@ -77,7 +77,7 @@ def _reservation_update(reservation: dict, target: str = None, channel: str = 'h
 
 def _reservation_get(cmd: str, args: dict, target: str = None, channel: str = 'http',
                      exp_result: int = 0, exp_failed: bool = False):
-    """Send reservation add command
+    """Send reservation add command.
 
     :param cmd: command to send
     :type cmd:
@@ -198,7 +198,7 @@ def _get_multiple_iana(adresses, iaids, duid):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
 def test_v4_reconfigure(channel, host_database):
-    """Add reservation, reconfigure Kea, check if it is still able to get reservation
+    """Add reservation, reconfigure Kea, check if it is still able to get reservation.
 
     :param channel:
     :type channel:
@@ -251,7 +251,7 @@ def test_v4_reconfigure(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_add_reservation(channel, host_database):
-    """Add simple reservation
+    """Add simple reservation.
 
     :param channel:
     :type channel:
@@ -476,7 +476,7 @@ def test_v4_get_reservation(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_add_reservation_flex_id(channel, host_database):
-    """Add reservation based on flex id
+    """Add reservation based on flex id.
 
     :param channel:
     :type channel:
@@ -523,7 +523,7 @@ def test_v4_add_reservation_flex_id(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_add_reservation_complex(channel, host_database):
-    """Add reservation with all parameters configured, check if client will get all and check reservation get result
+    """Add reservation with all parameters configured, check if client will get all and check reservation get result.
 
     :param channel:
     :type channel:
@@ -779,7 +779,7 @@ def test_v4_get_reservation_by_id(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_reservation_get_all(channel, host_database):
-    """Check command reservation-get-all
+    """Check command reservation-get-all.
 
     :param channel:
     :type channel:
@@ -1151,7 +1151,7 @@ def test_v4_reservation_get_page(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_reservation_update(channel, host_database):
-    """Check reservation update command with all backends and assignment
+    """Check reservation update command with all backends and assignment.
 
     :param channel:
     :type channel:
@@ -1277,7 +1277,7 @@ def test_v4_reservation_update(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v4_reservation_update_negative(channel, host_database):
-    """Check various incorrect commands reservation-update
+    """Check various incorrect commands reservation-update.
 
     :param channel:
     :type channel:
@@ -2241,7 +2241,7 @@ def test_v4_reservation_get_by_id(channel):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL'])
 def test_v6_reconfigure(channel, host_database):
-    """Add reservation, reconfigure Kea, check if it is still able to get reservation
+    """Add reservation, reconfigure Kea, check if it is still able to get reservation.
 
     :param channel:
     :type channel:
@@ -2300,7 +2300,7 @@ def test_v6_reconfigure(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_add_reservation(channel, host_database):
-    """Add simple reservation
+    """Add simple reservation.
 
     :param channel:
     :type channel:
@@ -2686,7 +2686,7 @@ def test_v6_get_reservation(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_add_reservation_flex_id(channel, host_database):
-    """Add reservation with flex id
+    """Add reservation with flex id.
 
     :param channel:
     :type channel:
@@ -2734,7 +2734,7 @@ def test_v6_add_reservation_flex_id(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_add_reservation_complex(channel, host_database):
-    """Add, get, and assign complex reservation
+    """Add, get, and assign complex reservation.
 
     :param channel:
     :type channel:
@@ -2815,7 +2815,7 @@ def test_v6_add_reservation_complex(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_reservation_get_all(channel, host_database):
-    """Check reservation-get-all command in separate subnets on all backends
+    """Check reservation-get-all command in separate subnets on all backends.
 
     :param channel:
     :type channel:
@@ -4142,7 +4142,7 @@ def test_v6_reservation_get_by_id(channel):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_reservation_update(channel, host_database):
-    """reservation-update tests
+    """reservation-update tests.
 
     :param channel:
     :type channel:
@@ -4274,7 +4274,7 @@ def test_v6_reservation_update(channel, host_database):
 @pytest.mark.parametrize('channel', ['http'])
 @pytest.mark.parametrize('host_database', ['MySQL', 'PostgreSQL', 'memfile'])
 def test_v6_reservation_update_negative(channel, host_database):
-    """Check various combinations of incorrect reservation-update command
+    """Check various combinations of incorrect reservation-update command.
 
     :param channel:
     :type channel:

@@ -4,9 +4,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-"""Testing how kea behaves when available disk space run out
-   THIS IS NOT DESIGNED FOR AUTOMATED TESTING! Only manual!
-   Tests are explained in test code
+"""Testing how kea behaves when available disk space run out.
+
+THIS IS NOT DESIGNED FOR AUTOMATED TESTING! Only manual!
+Tests are explained in test code
 """
 
 import os
@@ -24,23 +25,23 @@ def _check_disk(dest=world.f_cfg.mgmt_address):
 
 
 def _create_ramdisk(location='/tmp/kea_ram_disk', size='10M', dest=world.f_cfg.mgmt_address):
-    """
-    create new ramdisk, clear it if already exists
+    """Create new ramdisk, clear it if already exists.
+
     :param location: where new ramdisk should be mounted
     :param size: size of new disk
     :param dest: IP address of a system on which we want to allocate disk space
-    :return result of executed command
+    :return: result of executed command
     """
     cmd = f'sudo mkdir -p {location} && sudo mount -t tmpfs -o size={size} tmpfs {location} && chmod 777 {location}'
     return srv_msg.execute_shell_cmd(cmd, dest=dest)
 
 
 def _destroy_ramdisk(location='/tmp/kea_ram_disk', dest=world.f_cfg.mgmt_address):
-    """
-    Destroy previously created ramdisk, if disk will be busy it will be just cleared
+    """Destroy previously created ramdisk. If disk will be busy it will be just cleared.
+
     :param location: location of previously mounted ramdisk
     :param dest: IP address of a system on which we want to allocate disk space
-    :return result of executed command
+    :return: result of executed command
     """
     cmd = f'sudo rm -rf {location}/* && sudo umount -f {location}'
     return srv_msg.execute_shell_cmd(cmd, dest=dest)
@@ -49,14 +50,18 @@ def _destroy_ramdisk(location='/tmp/kea_ram_disk', dest=world.f_cfg.mgmt_address
 def _allocate_disk_space(size="full",
                          location='/tmp/kea_ram_disk/allocate_disk',
                          dest=world.f_cfg.mgmt_address):
-    """Quickly allocate space on ramdisk or anywhere you want ;) on some systems it may be required
+    """Quickly allocate space on ramdisk or anywhere you want ;).
+
+    On some systems it may be required
     to execute this function twice to get entire disk allocated
+
     :param size: string parameter to define how much space should be allocated,
-    by default it will take full space on disk that include "kea_ram_disk"
-    in its path
+        by default it will take full space on disk that include "kea_ram_disk"
+        in its path
     :param location: path to file that will be generated
     :param dest: IP address of a system on which we want to allocate disk space
-    :return result of executed command
+    :return: result of executed command
+    :rtype:
     """
     if size == "full":
         cmd = 'df -l | grep kea_ram_disk'
@@ -71,13 +76,15 @@ def _allocate_disk_space(size="full",
 
 
 def _move_pgsql_to_ram_disk(location='/tmp/kea_ram_disk_pgsql', dest=world.f_cfg.mgmt_address):
-    """Function should create backup for postrges data and config,
-    create new ramdisk, copy postgres data there and reconfigure postgres to use new ram disk.
+    """Backup postgres data and config, new ramdisk, copy postgres data there and reconfigure postgres to use ramdisk.
+
     THIS FUNCTION MAY DAMAGE YOUR SETUP!
+
     :param location: location for new ram disk where pgsql will save all the data
     :param dest: destination host
     :return: two strings, location from where we moved postgres and path to configuration file
-    required to reverse changes
+        required to reverse changes
+    :rtype: tuple[str, str]
     """
     cmd = 'sudo systemctl start postgresql'
     srv_msg.execute_shell_cmd(cmd, dest=dest, save_results=False)
@@ -139,8 +146,8 @@ def _move_pgsql_to_ram_disk(location='/tmp/kea_ram_disk_pgsql', dest=world.f_cfg
 
 def _move_pgsql_back_to_default(previous_location, pgsql_cfg,
                                 dest=world.f_cfg.mgmt_address):
-    """
-    It should reverse all changes made in _move_pgsql_to_ram_disk
+    """Reverse all changes made in _move_pgsql_to_ram_disk.
+
     :param previous_location: previous pgsql data folder
     :param pgsql_cfg:
     :param dest:
@@ -167,7 +174,7 @@ def _move_pgsql_back_to_default(previous_location, pgsql_cfg,
 @pytest.mark.v6
 @pytest.mark.disabled
 def test_v6_recover_pgsql():
-    # in case if test_v6_full_disk_testing_pgsql will fail and not recover settings
+    """In case if test_v6_full_disk_testing_pgsql will fail and not recover settings."""
     # I made static recovery just for my particular setup
     assert False, "this test may destroy your setup, remove this line if you really want to run it"
     _move_pgsql_back_to_default('/var/lib/postgresql/9.6/main', '/etc/postgresql/9.6/main/postgresql.conf')
@@ -176,7 +183,7 @@ def test_v6_recover_pgsql():
 @pytest.mark.v6
 @pytest.mark.disabled
 def test_v6_full_disk_testing_pgsql():
-    # create new ramdisk with
+    """Create new ramdisk."""
     assert False, "this test may destroy your setup, remove this line if you really want to run it"
     full_current_location, pgsql_conf = _move_pgsql_to_ram_disk()
     misc.test_setup()
@@ -218,7 +225,7 @@ def test_v6_full_disk_testing_pgsql():
 @pytest.mark.v6
 @pytest.mark.disabled
 def test_v6_full_disk_testing_memfile():
-    # check how kea6 behave when disk is full, using memfile and logs to file
+    """Check how kea6 behave when disk is full, using memfile and logs to file."""
     assert False, "this test may destroy your setup, remove this line if you really want to run it"
     misc.test_setup()
     _create_ramdisk()
@@ -258,7 +265,7 @@ def test_v6_full_disk_testing_memfile():
 @pytest.mark.v4
 @pytest.mark.disabled
 def test_v4_full_disk_testing():
-    # check how kea4 behave when disk is full, using memfile and logs to file
+    """Check how kea4 behave when disk is full, using memfile and logs to file."""
     assert False, "this test may destroy your setup, remove this line if you really want to run it"
     misc.test_setup()
     _create_ramdisk()

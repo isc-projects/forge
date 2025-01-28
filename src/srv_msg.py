@@ -19,6 +19,8 @@
 # pylint: disable=useless-object-inheritance
 # pylint: disable=too-many-arguments
 
+"""Functions used in building or transmitting messages/packets."""
+
 import random
 import json
 import importlib
@@ -35,8 +37,13 @@ log = logging.getLogger('forge')
 
 
 class Dispatcher(object):
-    """ """
+    """Dispatcher."""
+
     def __getattr__(self, attr_name):
+        """__getattr__.
+
+        :param attr_name:
+        """
         mod = importlib.import_module("src.protosupport.%s.srv_msg" % world.f_cfg.proto)
         return getattr(mod, attr_name)
 
@@ -46,7 +53,8 @@ dhcpmsg = Dispatcher()
 
 # config values return
 def get_interface():
-    """
+    """Get interface.
+
     :return:
     :rtype:
     """
@@ -54,7 +62,8 @@ def get_interface():
 
 
 def get_proto_version():
-    """
+    """Get protocol version.
+
     :return:
     :rtype:
     """
@@ -62,7 +71,8 @@ def get_proto_version():
 
 
 def get_server_interface():
-    """
+    """Get server interface.
+
     :return:
     :rtype:
     """
@@ -70,7 +80,8 @@ def get_server_interface():
 
 
 def get_server_path():
-    """
+    """Get server path.
+
     :return:
     :rtype:
     """
@@ -80,7 +91,8 @@ def get_server_path():
 # building DHCP messages
 @step(r'Client requests option (\d+).')
 def client_requests_option(opt_type):
-    """Add Option: Request Option with requested option code
+    """Add Option: Request Option with requested option code.
+
     :param opt_type:
     :type opt_type:
     """
@@ -89,8 +101,8 @@ def client_requests_option(opt_type):
 
 @step(r'(Client|RelayAgent) sets (\w+) value to (\S+).')
 def client_sets_value(sender_type, value_name, new_value):
-    """User can set values like: address, T1 or DUID to make test scenario
-    more accurate.
+    """User can set values like: address, T1 or DUID to make test scenario more accurate.
+
     :param sender_type:
     :type sender_type:
     :param value_name:
@@ -108,8 +120,9 @@ def client_sets_value(sender_type, value_name, new_value):
 
 @step(r'Through (\S+) interface to address (\S+) client sends (\w+) message.')
 def client_send_msg_via_interface(iface, addr, msgname):
-    r"""This step actually build message (e.g. SOLICIT) with all details
-    specified in steps like:
+    r"""Build message (e.g. SOLICIT) with all details specified in steps.
+
+    Like:
     Client sets (\w+) value to (\S+).
     Client does include (\S+).
     and others..
@@ -128,8 +141,9 @@ def client_send_msg_via_interface(iface, addr, msgname):
 
 @step(r'Client sends (\w+) message.')
 def client_send_msg(msgname, iface=None):
-    r"""This step actually build message (e.g. SOLICIT) with all details
-    specified in steps like:
+    r"""Build message (e.g. SOLICIT) with all details specified in steps.
+
+    Like:
     Client sets (\w+) value to (\S+).
     Client does include (\S+).
     and others..
@@ -146,7 +160,8 @@ def client_send_msg(msgname, iface=None):
 
 @step(r'Send (\S+) with raw appending (.+)')
 def send_raw_message(msg_type="", raw_append=None):
-    """
+    """Send raw message.
+
     :param msg_type: (Default value = "")
     :type msg_type:
     :param raw_append: (Default value = None)
@@ -157,7 +172,9 @@ def send_raw_message(msg_type="", raw_append=None):
 
 @step(r'Client adds to the message (\S+) with value (\S+).')
 def client_does_include_with_value(opt_type, value):
-    """You can choose to include options to message with proposed value. Mostly used only with
+    """Include options to message with proposed value.
+
+    Mostly used only with
     DHCPv4. Also reason why that step is called "Client adds to message" not
     "Client does (NOT )?include" as other step is that lettuce step parser is really... weak.
     What ever I'll do with that always takes wrong step.
@@ -189,8 +206,10 @@ def client_v6_does_include_with_value(sender_type, opt_type, value):
 
 @step(r'(\S+) does (NOT )?include (\S+).')
 def client_does_include(sender_type, opt_type, value=None):
-    """You can choose to include options to message (support for every option listed
-    in RFC 3315 and more) or to not include options like IA_NA or client_id.
+    """Include options to message.
+
+    Supports every option listed in RFC 3315 and more or to not include options like IA_NA or client_id.
+
     :param sender_type:
     :type sender_type:
     :param opt_type:
@@ -203,7 +222,9 @@ def client_does_include(sender_type, opt_type, value=None):
 
 
 def add_scapy_option(option, where='client'):
-    """Add option to next message. Forge does cleaver things to world.cliopts so double check if
+    """Add option to next message.
+
+    Forge does cleaver things to world.cliopts so double check if
     that function is actually doing in your test what you expect it does.
 
     :param option: scapy option, can be just tuple for v4 or scapy.layers.dhcp6 option class
@@ -231,7 +252,8 @@ def add_scapy_option(option, where='client'):
 
 @step(r'Relay-agent does include (\S+).')
 def relay_agent_does_include(opt_type):
-    """
+    """relay_agent_does_include.
+
     :param opt_type:
     :type opt_type:
     """
@@ -241,10 +263,12 @@ def relay_agent_does_include(opt_type):
 
 @step(r'Client chooses (GLOBAL)|(LINK_LOCAL) UNICAST address.')
 def unicast_address(addr_type, addr_type2):
-    """Message can be send on 3 different addresses:
+    """Message can be sent on 3 different addresses.
+
     - multicast for DHCPv6
     - unicast global address of the server
     - unicast local address of the server
+
     Proper configuration in init_all.py required.
 
     :param addr_type:
@@ -258,8 +282,8 @@ def unicast_address(addr_type, addr_type2):
 
 @step(r'Generate new (\S+).')
 def generate_new(opt):
-    """For some test scenarios there is a need for multiple different users, in this step you can
-    choose which value needs to be changed:
+    """Change option values in scenarios with multiple different users.
+
     for client_id and IA: client
     for client_id only: Client_ID
     for IA: IA
@@ -273,7 +297,10 @@ def generate_new(opt):
 
 @step(r'RelayAgent forwards message encapsulated in (\d+) level(s)?.')
 def create_relay_forward(level=1):
-    """This step is strictly related to step: Client sends message.
+    """create_relay_forward.
+
+    This step is strictly related to step: Client sends message.
+
     You can put only after that step. They can be seperated with other steps
     which causes to change values/include options
 
@@ -288,7 +315,9 @@ def create_relay_forward(level=1):
 
 @step(r'(Client|RelayAgent) adds suboption for vendor specific information with code: (\d+) and data: (\S+).')
 def add_vendor_suboption(sender_type, code, data):
-    """After adding Vendor Specific Option we can decide to add suboptions to it. Please make sure which are
+    """add_vendor_suboption.
+
+    After adding Vendor Specific Option we can decide to add suboptions to it. Please make sure which are
     supported and if it's necessary add suboption by yourself.
 
     :param sender_type:
@@ -303,7 +332,8 @@ def add_vendor_suboption(sender_type, code, data):
 
 @step(r'Before sending a message set filed named (\S+) to (\S+) as type (\S+).')
 def change_message_filed(message_filed, value, value_type):
-    """
+    """change_message_filed.
+
     :param message_filed:
     :type message_filed:
     :param value:
@@ -318,7 +348,8 @@ def change_message_filed(message_filed, value, value_type):
 # checking DHCP respond
 @step(r'Server MUST NOT respond.')
 def send_dont_wait_for_message(iface=None, ignore_response=False):
-    """This step causes to send message in cases when we don't expect any response.
+    """Send message in cases when we don't expect any response.
+
     Step used only for v4 testing
 
     :param iface: (Default value = None)
@@ -334,6 +365,7 @@ def send_wait_for_message(requirement_level: str, message: str, expect_response:
                           protocol: str = 'UDP', address: str = None, port: int = None,
                           iface: str = None):
     """Send messages to server either TCP or UDP, check if response is received.
+
     :param requirement_level: not used. RFC-grade requirement level e.g. 'MAY', 'MUST'
     :type requirement_level:
     :param message: name of message that should be received from a server (if we expect multiple messages,
@@ -357,7 +389,8 @@ def send_wait_for_message(requirement_level: str, message: str, expect_response:
 
 @step(r'(Response|Relayed Message) MUST (NOT )?include option (\d+).')
 def response_check_include_option(opt_code, expect_include=True):
-    """Use this step for parsing respond. For more details please read manual section "Parsing respond"
+    """Use this step for parsing respond. For more details please read manual section "Parsing respond".
+
     :param opt_code:
     :type opt_code:
     :param expect_include: (Default value = True)
@@ -370,7 +403,8 @@ def response_check_include_option(opt_code, expect_include=True):
 
 @step(r'(Response|Relayed Message) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_content(data_type, value, expected=True):
-    """
+    """response_check_content.
+
     :param data_type:
     :type data_type:
     :param value:
@@ -384,7 +418,8 @@ def response_check_content(data_type, value, expected=True):
 
 @step(r'(Response|Relayed Message) option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_option_content(opt_code, data_type, expected_value, expect_include=True):
-    """Detailed parsing of received option. For more details please read manual section "Parsing respond"
+    """Detailed parsing of received option. For more details please read manual section "Parsing respond".
+
     :param opt_code:
     :type opt_code:
     :param data_type:
@@ -404,6 +439,7 @@ def response_check_option_content(opt_code, data_type, expected_value, expect_in
 
 def response_check_option_content_more(opt_code, data_type, expected_value):
     """Check subsequent options. Only to be called after the first option was checked with response_check_option_content.
+
     :param opt_code:
     :type opt_code:
     :param data_type:
@@ -419,7 +455,8 @@ def response_check_option_content_more(opt_code, data_type, expected_value):
 
 @step(r'(Response|Relayed Message) sub-option (\d+) from option (\d+) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_suboption_content(subopt_code, opt_code, data_type, value, expect_include=True):
-    """Some options can include suboptions, we can test them too.
+    """Include suboptions, we can test them too.
+
     For more details please read manual section "Parsing respond"
 
     :param subopt_code:
@@ -437,7 +474,8 @@ def response_check_suboption_content(subopt_code, opt_code, data_type, value, ex
 
 
 def get_suboption(opt_code, subopt_code):
-    """
+    """Get suboption.
+
     :param opt_code:
     :type opt_code:
     :param subopt_code:
@@ -451,7 +489,8 @@ def get_suboption(opt_code, subopt_code):
 # building DNS messages
 @step(r'Client for DNS Question Record uses address: (\S+) type (\S+) class (\S+).')
 def dns_question_record(addr, qtype, qclass):
-    """
+    """dns_question_record.
+
     :param addr:
     :type addr:
     :param qtype:
@@ -464,7 +503,8 @@ def dns_question_record(addr, qtype, qclass):
 
 @step(r'Client sends DNS query.')
 def client_send_dns_query(dns_addr=None, dns_port=None):
-    """
+    """client_send_dns_query.
+
     :param dns_addr: (Default value = None)
     :type dns_addr:
     :param dns_port: (Default value = None)
@@ -476,7 +516,7 @@ def client_send_dns_query(dns_addr=None, dns_port=None):
 # checking DNS respond
 @step(r'DNS server (\S+) (NOT )?respond with DNS query.')
 def send_wait_for_query(type, expect_include=True, iface=None):
-    """This step causes to send message to server and capture respond.
+    """Send message to server and capture respond.
 
     :param type:
     :type type:
@@ -490,7 +530,8 @@ def send_wait_for_query(type, expect_include=True, iface=None):
 
 @step(r'Received DNS query MUST (NOT )?contain (\S+) with value (\S+).')
 def dns_check(expect, data_type, expected_data_value):
-    """
+    """DNS check.
+
     :param expect:
     :type expect:
     :param data_type:
@@ -504,7 +545,8 @@ def dns_check(expect, data_type, expected_data_value):
 
 @step(r'Received DNS query MUST include (NOT )?empty (QUESTION|ANSWER|AUTHORITATIVE_NAMESERVERS|ADDITIONAL_RECORDS) part.')
 def dns_option(part_name, expect_include=True):
-    """
+    """DNS option.
+
     :param part_name:
     :type part_name:
     :param expect_include: (Default value = True)
@@ -516,7 +558,8 @@ def dns_option(part_name, expect_include=True):
 
 @step(r'Received DNS part (QUESTION|ANSWER|AUTHORITATIVE_NAMESERVERS|ADDITIONAL_RECORDS) MUST (NOT )?contain (\S+) with value (\S+).')
 def dns_option_content(part_name, value_name, value, expect_include=True):
-    """
+    """DNS option content.
+
     :param part_name:
     :type part_name:
     :param value_name:
@@ -533,7 +576,9 @@ def dns_option_content(part_name, value_name, value, expect_include=True):
 # save option from received message
 @step(r'Client copies (\S+) option from received message.')
 def client_copy_option(option_name, copy_all=False):
-    """When we need to send the same option back to server (e.g. Server ID) we can use this step.
+    """client_copy_option.
+
+    When we need to send the same option back to server (e.g. Server ID) we can use this step.
     Copied option is automatically added to next generated message, and erased.
 
     :param option_name:
@@ -546,13 +591,15 @@ def client_copy_option(option_name, copy_all=False):
 
 
 def clean_saved_options():
-    """Clean all previously saved options"""
+    """Clean all previously saved options."""
     world.savedmsg = {}
 
 
 @step(r'Client saves (\S+) option from received message.')
 def client_save_option(option_name):
-    """In time we need to include one option more then one time in different messages, we can
+    """client_save_option.
+
+    In time we need to include one option more then one time in different messages, we can
     choose to save it in memory. Memory will be erased at the end of the test, or when we
     decide to clear it in step "Client adds saved options. And erase.
 
@@ -565,7 +612,8 @@ def client_save_option(option_name):
 
 @step(r'Client saves into set no. (\d+) (\S+) option from received message.')
 def client_save_option_count(count, option_name):
-    """
+    """client_save_option_count.
+
     :param count:
     :type count:
     :param option_name:
@@ -577,8 +625,7 @@ def client_save_option_count(count, option_name):
 
 @step(r'Client adds saved options. And (DONT )?Erase.')
 def client_add_saved_option(erase=False):
-    """This step causes to include saved options to message. Also we can decide to keep or clear
-    memory.
+    """Include saved options to message. Also we can decide to keep or clear memory.
 
     :param erase: (Default value = False)
     :type erase:
@@ -589,7 +636,8 @@ def client_add_saved_option(erase=False):
 
 @step(r'Client adds saved options in set no. (\d+). And (DONT )?Erase.')
 def client_add_saved_option_count(count, erase=False):
-    """
+    """client_add_saved_option_count.
+
     :param count:
     :type count:
     :param erase: (Default value = False)
@@ -601,9 +649,9 @@ def client_add_saved_option_count(count, erase=False):
 
 @step(r'Save (\S+) value from (\d+) option.')
 def save_value_from_option(value_name, option_name):
-    """This step can be used to save value of some option field for
-    further usage. It's like client_save_option but only for
-    one specific field of given option.
+    """Save value of some option field for further usage.
+
+    It's like client_save_option but only for one specific field of given option.
 
     :param value_name:
     :type value_name:
@@ -615,7 +663,9 @@ def save_value_from_option(value_name, option_name):
 
 @step(r'Received (\S+) value in option (\d+) is the same as saved value.')
 def compare_values(value_name, option_name):
-    """If you have used step save_value_from_option, then this step will
+    """Compare values.
+
+    If you have used step save_value_from_option, then this step will
     compare the earlier saved value with the recent received value.
     Note that names of fields that values are being compared should
     be the same.
@@ -631,7 +681,8 @@ def compare_values(value_name, option_name):
 # other
 @step(r'Set network variable (\S+) with value (\S+).')
 def network_variable(value_name, value):
-    """
+    """Set network variable.
+
     :param value_name:
     :type value_name:
     :param value:
@@ -644,6 +695,7 @@ def network_variable(value_name, value):
 @step(r'Table (\S+) in (\S+) database MUST (NOT )?contain line or phrase: (.+)')
 def table_contains_line(table_name, db_type, line, expect=True):
     """Check if in table X in database type Y include line.
+
     Be aware that tested line is every thing after "line: " until end of the line.
 
     :param table_name:
@@ -661,6 +713,7 @@ def table_contains_line(table_name, db_type, line, expect=True):
 
 def table_contains_line_n_times(table_name, db_type, n, line, destination=world.f_cfg.mgmt_address):
     """Check if in table X in database type Y include line.
+
     Be aware that tested line is every thing after "line: " until end of the line.
 
     :param table_name:
@@ -680,7 +733,8 @@ def table_contains_line_n_times(table_name, db_type, n, line, destination=world.
 
 @step(r'Remove all records from table (\S+) in (\S+) database.')
 def remove_from_db_table(table_name, db_type, destination=world.f_cfg.mgmt_address):
-    """
+    """Remove all entries from database table.
+
     :param table_name:
     :type table_name:
     :param db_type:
@@ -708,30 +762,32 @@ def forge_sleep(time_val, time_units='seconds'):
 
 @step(r'Pause the Test.')
 def test_pause():
-    """Pause the test for any reason. Very good to debug problems. Checking server configuration
+    """Pause the test for any reason.
+
+    Very good to debug problems. Checking server configuration
     and so on.... Do NOT put it in automatic tests, it blocks test until user will:
     Press any key to continue.
-
-
     """
     multi_protocol_functions.test_pause()
 
 
 @step(r'End test.')
 def test_stop():
-    """ """
+    """End test."""
     assert False, "Test ended."
 
 
 @step(r'Fail test.')
 def test_fail():
-    """ """
+    """Fail test."""
     assert False, "Test failed on purpose."
 
 
 @step(r'Client download file from server stored in: (\S+).')
 def copy_remote(remote_path, local_filename='downloaded_file', dest=world.f_cfg.mgmt_address):
-    """Download file from remote server. It is stored in test directory.
+    """Download file from remote server.
+
+    It is stored in test directory.
     And named "downloaded_file"
 
     :param remote_path:
@@ -784,7 +840,8 @@ def remove_file_from_server(remote_path, dest=world.f_cfg.mgmt_address):
 
 @step(r'Add environment variable named (\S+) to value (.+)')
 def set_env(env_name, env_value):
-    """
+    """Set environment variable.
+
     :param env_name:
     :type env_name:
     :param env_value:
@@ -795,8 +852,9 @@ def set_env(env_name, env_value):
 
 @step(r'User define temporary variable: (\S+) with value (.+)')
 def add_variable_temporary(variable_name, variable_val):
-    """User can define his own variable, that can be called from any place in test scenario,
-    by $(variable_name). Allowed signs in variable name are: capitalized letters and '_'.
+    """Define variable that can be called from any place in test scenario by $(variable_name).
+
+    Allowed signs in variable name are: capitalized letters and '_'.
 
     Temporary variable will be stored in world.define and cleared at the end of scenario.
 
@@ -810,8 +868,9 @@ def add_variable_temporary(variable_name, variable_val):
 
 @step(r'User define permanent variable: (\S+) with value (\S+).')
 def add_variable_permanent(variable_name, variable_val):
-    """User can define his own variable, that can be called from any place in test scenario,
-    by $(variable_name). Allowed signs in variable name are: capitalized letters and '_'.
+    """Define variable that can be called from any place in test scenario by $(variable_name).
+
+    Allowed signs in variable name are: capitalized letters and '_'.
 
     Permanent variable will be placed at the end of the init_all.py file. It won't be removed.
     User can do so by removing it from file.
@@ -832,7 +891,8 @@ def test_victory():
 
 @step(r'Execute command (\S+) with arguments: (.+)')
 def execute_shell_cmd(path, dest=world.f_cfg.mgmt_address, save_results=True):
-    """
+    """Execute shell command.
+
     :param path:
     :type path:
     :param dest: (Default value = world.f_cfg.mgmt_address)
@@ -850,7 +910,8 @@ def execute_shell_cmd(path, dest=world.f_cfg.mgmt_address, save_results=True):
 
 @step(r'Execute command (\S+) with arguments: (.+)')
 def execute_kea_shell(args, exp_result=0, exp_failed=False):
-    """
+    """Execute kea-shell command.
+
     :param args:
     :type args:
     :param exp_result: (Default value = 0)
@@ -870,7 +931,8 @@ def execute_kea_shell(args, exp_result=0, exp_failed=False):
 
 @step(r'Check socket connectivity on address (\S+) and port (\S+).')
 def check_socket(socket_address, socket_port):
-    """
+    """Check socket.
+
     :param socket_address:
     :type socket_address:
     :param socket_port:
@@ -880,7 +942,8 @@ def check_socket(socket_address, socket_port):
 
 @step(r'Check socket connectivity on server in path (\S+).')
 def check_socket_server_site(socket_path):
-    """
+    """check_socket_server_site.
+
     :param socket_path:
     :type socket_path:
     """
@@ -889,7 +952,8 @@ def check_socket_server_site(socket_path):
 @step(r'Send ctrl cmd (.+) using UNIX socket (\S+) to server (.+).')
 def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=world.f_cfg.mgmt_address,
                              exp_result=0, exp_failed=False):
-    """
+    """Send control command via socket.
+
     :param command:
     :type command:
     :param socket_name: (Default value = None)
@@ -915,7 +979,8 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
 @step(r'Send ctrl cmd (.+) using HTTP (\S+):(\S+) connection.')
 def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_result=0, exp_failed=False, https=False, verify=None, cert=None,
                            headers=None):
-    """
+    """Send control command via HTTP.
+
     :param command:
     :type command:
     :param address: (Default value = '$(MGMT_ADDRESS)')
@@ -948,6 +1013,7 @@ def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_re
 def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=False, address=world.f_cfg.mgmt_address, verify=None, cert=None,
                   headers=None, port=8000):
     """Send request to DHCP Kea server over Unix socket or over HTTP via CA.
+
     :param cmd:
     :type cmd:
     :param channel: (Default value = 'http')
@@ -1002,13 +1068,14 @@ def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=Fa
 
 @step(r'Loops config: Save leases details.')
 def loops_config_sld():
-    """ """
+    """loops_config_sld."""
     dhcpmsg.loops_config_sld()
 
 
 @step(r'Loops config: choose (\S+) from (file )?(.+)')
 def values_for_loops(value_name, file_flag, values):
-    """
+    """values_for_loops.
+
     :param value_name:
     :type value_name:
     :param file_flag:
@@ -1021,7 +1088,8 @@ def values_for_loops(value_name, file_flag, values):
 
 @step(r'Exchange messages (\S+) - (\S+) (\d+) times.')
 def loops(message_type_1, message_type_2, repeat):
-    """
+    """loops.
+
     :param message_type_1:
     :type message_type_1:
     :param message_type_2:
@@ -1036,7 +1104,8 @@ def loops(message_type_1, message_type_2, repeat):
 
 
 def get_all_leases():
-    """
+    """Get all leases.
+
     :return:
     :rtype:
     """
@@ -1044,7 +1113,8 @@ def get_all_leases():
 
 
 def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address, should_succeed=True):
-    """
+    """Check leases.
+
     :param leases_list:
     :type leases_list:
     :param backend: database backend (Default value = 'memfile')
@@ -1061,7 +1131,8 @@ def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address, 
 def lease_dump(backend, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
                db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address,
                out="/tmp/lease_dump.csv"):
-    """
+    """Dump leases.
+
     :param backend: database backend
     :type backend: str
     :param db_name: (Default value = world.f_cfg.db_name)
@@ -1083,7 +1154,8 @@ def lease_dump(backend, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user
 
 def lease_upload(backend, leases_file, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
                  db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address):
-    """
+    """Upload leases.
+
     :param backend: database backend
     :type backend: str
     :param leases_file:
@@ -1105,7 +1177,8 @@ def lease_upload(backend, leases_file, db_name=world.f_cfg.db_name, db_user=worl
 
 def print_leases(backend='memfile', db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,
                  db_passwd=world.f_cfg.db_passwd, destination_address=world.f_cfg.mgmt_address):
-    """
+    """Print leases.
+
     :param backend: database backend (Default value = 'memfile')
     :type backend: str
     :param db_name: (Default value = world.f_cfg.db_name)
@@ -1123,7 +1196,8 @@ def print_leases(backend='memfile', db_name=world.f_cfg.db_name, db_user=world.f
 
 
 def get_option(msg, opt_code):
-    """
+    """Get option.
+
     :param msg:
     :type msg:
     :param opt_code:
@@ -1135,7 +1209,8 @@ def get_option(msg, opt_code):
 
 
 def get_subopt_from_option(exp_opt_code, exp_subopt_code):
-    """
+    """Get suboption from option.
+
     :param exp_opt_code:
     :type exp_opt_code:
     :param exp_subopt_code:
@@ -1147,7 +1222,8 @@ def get_subopt_from_option(exp_opt_code, exp_subopt_code):
 
 
 def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
-    """
+    """Do discover-offer.
+
     :param address: (Default value = None)
     :type address:
     :param options: (Default value = None)
@@ -1164,7 +1240,8 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
 
 def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
        init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
-    """
+    """Do request-acknowledgement.
+
     :param address:
     :type address:
     :param options: (Default value = None)
@@ -1189,7 +1266,8 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
 
 def DORA(address=None, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04',
          init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
-    """
+    """Do DORA.
+
     :param address: (Default value = None)
     :type address:
     :param options: (Default value = None)
@@ -1215,7 +1293,8 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
 
 
 def check_IA_NA(address, status_code=None, expect=True):
-    """
+    """check_IA_NA.
+
     :param address:
     :type address:
     :param status_code: (Default value = None)
@@ -1229,7 +1308,8 @@ def check_IA_NA(address, status_code=None, expect=True):
 
 
 def check_IA_PD(prefix, status_code=None, expect=True):
-    """
+    """check_IA_PD.
+
     :param prefix:
     :type prefix:
     :param status_code: (Default value = None)
@@ -1246,7 +1326,8 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
        status_code_IA_NA=None, status_code_IA_PD=None,
        duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
        linkaddr='2001:db8:1::1000', ifaceid='port1234'):
-    """
+    """Do solicit-advertisement.
+
     :param address: (Default value = None)
     :type address:
     :param delegated_prefix: (Default value = None)
@@ -1278,7 +1359,8 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
          status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
          linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None):
-    """
+    """Do SARR.
+
     :param address: (Default value = None)
     :type address:
     :param delegated_prefix: (Default value = None)
@@ -1312,7 +1394,8 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
                                   chaddr: str = 'ff:01:02:03:ff:04',
                                   client_id: str = None):
-    """
+    """BOOTP_REQUEST_and_BOOTP_REPLY.
+
     :param address: str:
     :type address: str:
     :param chaddr: str: (Default value = 'ff:01:02:03:ff:04')
@@ -1328,7 +1411,8 @@ def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
 
 
 def get_address_facing_remote_address(addr: str = world.f_cfg.mgmt_address):
-    """Get address of an interface that is facing other address in forge setup
+    """Get address of an interface that is facing other address in forge setup.
+
     :param addr: ip address of remote system
     :type addr: str:
     :return: string, local ip address
@@ -1350,7 +1434,8 @@ def start_fuzzing():
 
 def enable_tcpdump(file_name: str = "my_capture.pcap", iface: str = None,
                    port_filter: str = None, location: str = 'local'):
-    """Start tcpdump process, can be enabled on local system or remote, with custom port filtering
+    """Start tcpdump process, can be enabled on local system or remote, with custom port filtering.
+
     Example how to use entire set of tcpdump commands:
     srv_msg.enable_tcpdump(file_name='abc.pcap', location=world.f_cfg.mgmt_address, port_filter='port 53')
     <send traffic>
@@ -1362,8 +1447,8 @@ def enable_tcpdump(file_name: str = "my_capture.pcap", iface: str = None,
     :param iface: network interface on which tcpdump will be enabled
     :type iface: str
     :param port_filter: port filter (e.g. 'port 53' or 'port 8080 or port 8000' by default it will filter
+        out everything except dhcp ports and dns
     :type port_filter: str
-out everything except dhcp ports and dns
     :param location: local for system on which forge is running, or ip address of any system that is used during test
     :type location: str
     """
@@ -1371,7 +1456,8 @@ out everything except dhcp ports and dns
 
 
 def kill_tcpdump(location: str = 'local'):
-    """Stop tcpdump instances running on system
+    """Stop tcpdump instances running on system.
+
     :param location: local for system on which forge is running, or ip address of any system that is used during test
     :type location: str:
     """
@@ -1379,7 +1465,8 @@ def kill_tcpdump(location: str = 'local'):
 
 
 def get_tcpdump_capture(location, file_name):
-    """Download capture files to tests results
+    """Download capture files to tests results.
+
     :param location: ip address of remote system on which tcpdump was enabled
     :type location:
     :param file_name: name of capture file
@@ -1389,7 +1476,8 @@ def get_tcpdump_capture(location, file_name):
 
 
 def tcp_messages_include(**kwargs):
-    """
+    """tcp_messages_include.
+
     :param kwargs:
     :type kwargs:
     """
@@ -1397,7 +1485,8 @@ def tcp_messages_include(**kwargs):
 
 
 def tcp_get_message(**kwargs):
-    """
+    """tcp_get_message.
+
     :param kwargs:
     :type kwargs:
     :return:
@@ -1407,7 +1496,8 @@ def tcp_get_message(**kwargs):
 
 
 def send_over_tcp(msg, address=None, port=None, parse=False, number_of_connections=1, print_all=True):
-    """
+    """Send over TCP.
+
     :param msg:
     :type msg:
     :param address: (Default value = None)
@@ -1428,7 +1518,7 @@ def send_over_tcp(msg, address=None, port=None, parse=False, number_of_connectio
 
 
 def check_if_address_belongs_to_subnet(subnet: str = None, address: str = None):
-    """Check if address belongs to subnet. Accepts v4 and v6
+    """Check if address belongs to subnet. Accepts v4 and v6.
 
     :param subnet: subnet definition e.g. '2001:db8:1::/64'
     :type subnet: str:
@@ -1452,7 +1542,8 @@ def check_if_address_belongs_to_subnet(subnet: str = None, address: str = None):
 def create_db_dump(database: str, db_name: str = world.f_cfg.db_name,
                    db_user: str = world.f_cfg.db_user, db_password: str = world.f_cfg.db_passwd,
                    destination_address=world.f_cfg.mgmt_address, file_name=None):
-    """
+    """Create database dump.
+
     :param database: str:
     :type database: str:
     :param db_name: str: (Default value = world.f_cfg.db_name)
@@ -1472,7 +1563,8 @@ def create_db_dump(database: str, db_name: str = world.f_cfg.db_name,
 def restore_db_from_dump(database: str, db_name: str = None,
                          db_user: str = None, db_password: str = world.f_cfg.db_passwd,
                          destination_address=world.f_cfg.mgmt_address, file_name=None):
-    """
+    """Restore database from dump.
+
     :param database: str:
     :type database: str:
     :param db_name: str: (Default value = None)

@@ -16,6 +16,8 @@
 # pylint: disable=unused-variable
 # pylint: disable=useless-object-inheritance
 
+"""Functions used in manipulating or observing server behavior."""
+
 import json
 import logging
 import importlib
@@ -30,11 +32,22 @@ log = logging.getLogger('forge')
 
 
 class Dispatcher(object):
-    """Dispatcher"""
+    """Dispatcher."""
+
     def __init__(self, mod_name):
+        """__init__.
+
+        :param mod_name:
+        :type mod_name:
+        """
         self.mod_name = mod_name
 
     def __getattr__(self, attr_name):
+        """__getattr__.
+
+        :param attr_name:
+        :type attr_name:
+        """
         if any(('isc_dhcp' in s for s in world.f_cfg.software_under_test)):
             server_name = f'isc_dhcp{world.proto[1]}_server'
         else:
@@ -56,14 +69,14 @@ pgsql_reservation = Dispatcher('pgsql_reservation')
 @step(r'Server is configured with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
     """Add server configuration with specified subnet and pool.
+
     :param subnet: the value for "subnet". If None, then continue with configuring an
+        already existing subnet element.
     :type subnet:
-    already existing subnet element.
     :param pool: the value appended to "pools". If None, then leave "pools" alone.
     :type pool:
-    :param iface: the interface to be configured on the subnet element
+    :param iface: the interface to be configured on the subnet element (default: SERVER_IFACE)
     :type iface:
-    (default: SERVER_IFACE)
     :param kwargs:
     :type kwargs:
     """
@@ -74,14 +87,14 @@ def config_srv_subnet(subnet, pool, iface=world.f_cfg.server_iface, **kwargs):
 @step(r'Server is configured on interface (\S+) and address (\S+) with (\S+) subnet with (\S+) pool.')
 def config_srv_subnet_with_iface(interface, address, subnet, pool):
     """Add server configuration with specified subnet and pool.
-    :param interface: the interface to be configured on the subnet element and at the
+
+    :param interface: the interface to be configured on the subnet element and at the global level
     :type interface:
-    global level
     :param address: the address to be configured at the global level
     :type address:
     :param subnet: the value for "subnet". If None, then continue with configuring an
+        already existing subnet element.
     :type subnet:
-    already existing subnet element.
     :param pool: the value appended to "pools". If None, then leave "pools" alone.
     :type pool:
     """
@@ -90,8 +103,7 @@ def config_srv_subnet_with_iface(interface, address, subnet, pool):
 
 
 def merge_in_subnet(selector, modification, config=None):
-    """Merges {modification} into the subnet living under {config} identified by
-    the keys and values from {selector}.
+    """Merge modification into the subnet identified by selector.
 
     :param selector: dictionary used to identify the subnet, all keys and values are checked
     :type selector:
@@ -113,9 +125,7 @@ def merge_in_subnet(selector, modification, config=None):
 
 
 def merge_in_network_subnet(network_selector, subnet_selector, modification):
-    """Merges {modification} into the subnet identified by the keys and values from
-    {subnet_selector} that lives under the shared network identified by the keys
-    and values from {network_selector}.
+    """Merge modification into the subnet under network identified by selectors.
 
     :param network_selector: dictionary used to identify the shared network, all keys and values are checked
     :type network_selector:
@@ -135,12 +145,12 @@ def merge_in_network_subnet(network_selector, subnet_selector, modification):
 
 
 def update_subnet_counter():
-    """When subnets are configured via other functions than the ones in this
+    """Update subnet counter.
+
+    When subnets are configured via other functions than the ones in this
     module, the subnet counter is left behind. This function updates it so that
     the functions in this module e.g. config_srv_another_subnet() can be used
     correctly again.
-
-
     """
     subnet_key = f'subnet{world.proto[1]}'
     if subnet_key in world.dhcp_cfg:
@@ -183,7 +193,7 @@ def config_srv_another_subnet_no_interface(subnet, pool, **kwargs):
 
 @step(r'Server is configured with (\S+) prefix in subnet (\d+) with (\d+) prefix length and (\d+) delegated prefix length.')
 def config_srv_prefix(prefix, subnet, length, delegated_length, **kwargs):
-    """Adds server configuration with specified prefix.
+    """Add server configuration with specified prefix.
 
     :param prefix:
     :type prefix:
@@ -201,7 +211,7 @@ def config_srv_prefix(prefix, subnet, length, delegated_length, **kwargs):
 
 
 def add_prefix_to_subnet(prefix, length, delegated_length, subnet):
-    """Add prefix configuration to existing subnet
+    """Add prefix configuration to existing subnet.
 
     :param prefix:
     :type prefix:
@@ -218,7 +228,7 @@ def add_prefix_to_subnet(prefix, length, delegated_length, subnet):
 
 @step(r'Server-id configured with type (\S+) value (\S+).')
 def config_srv_id(id_type, id_value):
-    """Adds server configuration with specified prefix.
+    """Add server configuration with specified prefix.
 
     :param id_type:
     :type id_type:
@@ -231,7 +241,8 @@ def config_srv_id(id_type, id_value):
 
 @step(r'Next server value on subnet (\d+) is configured with address (\S+).')
 def subnet_add_siaddr(subnet_number, addr):
-    """
+    """subnet_add_siaddr.
+
     :param subnet_number:
     :type subnet_number:
     :param addr:
@@ -243,7 +254,8 @@ def subnet_add_siaddr(subnet_number, addr):
 
 @step(r'Next server global value is configured with address (\S+).')
 def global_add_siaddr(addr):
-    """
+    """global_add_siaddr.
+
     :param addr:
     :type addr:
     """
@@ -254,6 +266,7 @@ def global_add_siaddr(addr):
 @step(r'Server is configured with (\S+) option with value (\S+).')
 def config_srv_opt(option_name, option_value, **kwargs):
     """Add to configuration options like: preference, dns servers..
+
     This step causes to set in to main space!
 
     :param option_name:
@@ -269,8 +282,9 @@ def config_srv_opt(option_name, option_value, **kwargs):
 
 @step(r'On space (\S+) server is configured with (\S+) option with value (\S+).')
 def config_srv_opt_space(space, option_name, option_value, **kwargs):
-    """Add to configuration options like: preference, dns servers.. but you can specify
-    to which space should that be included.
+    """Add to configuration options like: preference, dns servers..
+
+    You can specify to which space should that be included.
 
     :param space:
     :type space:
@@ -288,18 +302,14 @@ def config_srv_opt_space(space, option_name, option_value, **kwargs):
 @step(r'Server is configured with custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
 def config_srv_custom_opt(opt_name, opt_code, opt_type, opt_value, **kwargs):
     """Prepare server configuration with the specified custom option.
-    opt_name name of the option, e.g. foo
-    opt_code code of the option, e.g. 100
-    opt_type type of the option, e.g. uint8 (see bind10 guide for complete list)
-    opt_value value of the option, e.g. 1
 
-    :param opt_name:
+    :param opt_name: name of the option, e.g. foo
     :type opt_name:
-    :param opt_code:
+    :param opt_code: code of the option, e.g. 100
     :type opt_code:
-    :param opt_type:
+    :param opt_type: type of the option, e.g. uint8 (see bind10 guide for complete list)
     :type opt_type:
-    :param opt_value:
+    :param opt_value: value of the option, e.g. 1
     :type opt_value:
     :param kwargs:
     :type kwargs:
@@ -311,7 +321,7 @@ def config_srv_custom_opt(opt_name, opt_code, opt_type, opt_value, **kwargs):
 
 @step(r'On space (\S+) server is configured with a custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
 def config_srv_custom_opt_space(space, opt_name, opt_code, opt_type, opt_value, **kwargs):
-    """Same step like "Server is configured with custom option.." but specify that option on different space then main.
+    """Do the same as config_srv_custom_opt but specify that option on different space then main.
 
     :param space:
     :type space:
@@ -359,6 +369,7 @@ def set_time_option(which_time, value):
 @step(r'Add configuration parameter (\S+) with value (\S+) to global configuration.')
 def set_conf_parameter_global(parameter_name, value):
     """Can be used on the end of configuration process, just before starting server.
+
     :param value: return:
     :type value:
     :param parameter_name:
@@ -371,6 +382,7 @@ def set_conf_parameter_global(parameter_name, value):
 @step(r'Add configuration parameter (\S+) with value (\S+) to subnet (\d+) configuration.')
 def set_conf_parameter_subnet(parameter_name, value, subnet_id):
     """Can be used on the end of configuration process, just before starting server.
+
     :param value: return:
     :type value:
     :param parameter_name:
@@ -384,7 +396,7 @@ def set_conf_parameter_subnet(parameter_name, value, subnet_id):
 
 @step(r'Add to config file line: (.+)')
 def add_line(command):
-    """The same step as 'Run configuration command: (.+)'
+    """Do the same as step 'Run configuration command: (.+)'.
 
     :param command:
     :type command:
@@ -394,7 +406,8 @@ def add_line(command):
 
 @step(r'To subnet (\d+) configuration section in the config file add line: (.+)')
 def add_line_to_subnet(subnetid, command):
-    """
+    """add_line_to_subnet.
+
     :param subnetid:
     :type subnetid:
     :param command:
@@ -416,7 +429,8 @@ def add_hooks(library_path):
 
 
 def delete_hooks(hook_patterns):
-    """
+    """Delete hooks.
+
     :param hook_patterns:
     :type hook_patterns:
     """
@@ -425,7 +439,8 @@ def delete_hooks(hook_patterns):
 
 @step(r'To hook no. (\d+) add parameter named (\S+) with value: (.+)')
 def add_parameter_to_hook(hook_name, parameter_name, parameter_value=None):
-    """
+    """Add parameter to hook.
+
     :param hook_name:
     :type hook_name:
     :param parameter_name:
@@ -440,7 +455,8 @@ def add_parameter_to_hook(hook_name, parameter_name, parameter_value=None):
 
 @step(r'Add High-Availability hook library located (\S+).')
 def add_ha_hook(library_path):
-    """
+    """Add HA hook.
+
     :param library_path:
     :type library_path:
     """
@@ -451,7 +467,8 @@ def add_ha_hook(library_path):
 
 @step(r'To HA hook configuration add (\S+) with value: (.+)')
 def add_parameter_to_ha_hook(parameter_name, parameter_value, relationship=0):
-    """
+    """Add parameter to HA hook.
+
     :param parameter_name:
     :type parameter_name:
     :param parameter_value:
@@ -464,7 +481,8 @@ def add_parameter_to_ha_hook(parameter_name, parameter_value, relationship=0):
 
 
 def update_ha_hook_parameter(param, relationship=0):
-    """
+    """Update HA hook parameter.
+
     :param param:
     :type param:
     :param relationship: (Default value = 0)
@@ -476,7 +494,8 @@ def update_ha_hook_parameter(param, relationship=0):
 def build_database(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
                    db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
                    init_db=True, disable=False):
-    """
+    """Build database.
+
     :param dest: (Default value = world.f_cfg.mgmt_address)
     :type dest:
     :param db_name: (Default value = world.f_cfg.db_name)
@@ -496,7 +515,8 @@ def build_database(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
 
 @step(r'Use (\S+) as lease database backend.')
 def define_temporary_lease_db_backend(lease_db_type):
-    """
+    """Define temporary lease database backend.
+
     :param lease_db_type:
     :type lease_db_type:
     """
@@ -507,7 +527,8 @@ def define_temporary_lease_db_backend(lease_db_type):
 
 @step(r'Credentials for (\S+) database. User: (\S+); Passwd: (\S+); DB-name: (\S+); Host: (\S+);')
 def define_temporary_lease_db_backend_credentials(db_type, tmp_db_user, tmp_db_passwd, tmp_db_name, tmp_db_host):
-    """
+    """Define temporary lease database backend credentials.
+
     :param db_type:
     :type db_type:
     :param tmp_db_user:
@@ -531,7 +552,7 @@ def define_temporary_lease_db_backend_credentials(db_type, tmp_db_user, tmp_db_p
 def add_database_hook(db_type):
     """add_database_hook Check if database hook was added to configuration. If not it will add it.
 
-    :param db_type: mysql, pgsql, postrges or memfile
+    :param db_type: mysql, pgsql, postgres or memfile
     :type db_type: str
     """
     dhcp.add_database_hook(db_type)
@@ -540,7 +561,8 @@ def add_database_hook(db_type):
 # START Reservation backend section
 @step(r'Use (\S+) reservation system.')
 def enable_db_backend_reservation(db_type, clear=True):
-    """
+    """Enable database backend reservation.
+
     :param db_type:
     :type db_type:
     :param clear: (Default value = True)
@@ -565,7 +587,8 @@ def enable_db_backend_reservation(db_type, clear=True):
 
 @step(r'Create new (\S+) reservation identified by (\S+) (\S+).')
 def new_db_backend_reservation(db_type, reservation_identifier, reservation_identifier_value):
-    """
+    """Add new database backend reservation.
+
     :param db_type:
     :type db_type:
     :param reservation_identifier:
@@ -583,7 +606,8 @@ def new_db_backend_reservation(db_type, reservation_identifier, reservation_iden
 
 @step(r'Add (\S+) (\S+) to (\S+) reservation record id (\d+).')
 def update_db_backend_reservation(field_name, field_value, db_type, reservation_record_id):
-    """
+    """Update database backend reservation.
+
     :param field_name:
     :type field_name:
     :param field_value:
@@ -604,7 +628,8 @@ def update_db_backend_reservation(field_name, field_value, db_type, reservation_
 @step(r'Add IPv6 prefix reservation (\S+) (\d+) with iaid (\S+) to (\S+) record id (\d+).')
 def ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len,
                                        reserved_iaid, db_type, reservation_record_id):
-    """
+    """ipv6_prefix_db_backend_reservation.
+
     :param reserved_prefix:
     :type reserved_prefix:
     :param reserved_prefix_len:
@@ -616,7 +641,6 @@ def ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len,
     :param reservation_record_id:
     :type reservation_record_id:
     """
-
     if db_type.lower() == 'mysql':
         mysql_reservation.ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, reserved_iaid,
                                                              int(reservation_record_id))
@@ -629,7 +653,8 @@ def ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len,
 
 @step(r'Add IPv6 address reservation (\S+) with iaid (\S+) to (\S+) record id (\d+).')
 def ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, db_type, reservation_record_id):
-    """
+    """ipv6_address_db_backend_reservation.
+
     :param reserved_address:
     :type reserved_address:
     :param reserved_iaid:
@@ -653,7 +678,8 @@ def ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, db_type
 def option_db_record_reservation(reserved_option_code, reserved_option_value, reserved_option_space,
                                  reserved_option_persistent, reserved_option_client_class, reserved_subnet_id,
                                  reserved_option_scope, db_type, reservation_record_id):
-    """
+    """option_db_record_reservation.
+
     :param reserved_option_code:
     :type reserved_option_code:
     :param reserved_option_value:
@@ -689,7 +715,8 @@ def option_db_record_reservation(reserved_option_code, reserved_option_value, re
 
 @step(r'Dump all the reservation entries from (\S+) database.')
 def dump_db_reservation(db_type):
-    """
+    """Dump database reservation.
+
     :param db_type:
     :type db_type:
     """
@@ -703,7 +730,8 @@ def dump_db_reservation(db_type):
 
 @step(r'Upload hosts reservation to (\S+) database.')
 def upload_db_reservation(db_type, exp_failed=False):
-    """
+    """Upload database reservation.
+
     :param db_type:
     :type db_type:
     :param exp_failed: (Default value = False)
@@ -754,7 +782,8 @@ def shared_subnet(subnet_id, shared_subnet_id):
 
 @step(r'Shared subnet (\d+) is configured with option line: (.+)')
 def add_option_shared_subnet(shared_subnet_id, conf_line):
-    """
+    """Add option shared subnet.
+
     :param shared_subnet_id:
     :type shared_subnet_id:
     :param conf_line:
@@ -767,6 +796,7 @@ def add_option_shared_subnet(shared_subnet_id, conf_line):
 @step(r'Add configuration parameter (\S+) with value (\S+) to shared-subnet (\d+) configuration.')
 def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
     """Can be used on the end of configuration process, just before starting server.
+
     :param parameter_name:
     :type parameter_name:
     :param value:
@@ -782,17 +812,18 @@ def set_conf_parameter_shared_subnet(parameter_name, value, subnet_id):
 @step(r'Reserve (\S+) (\S+) in subnet (\d+) for host uniquely identified by (\S+) (\S+).')
 def host_reservation_in_subnet(reservation_type, reserved_value, subnet, unique_host_value_type, unique_host_value):
     """Configure a subnet-level host reservation.
+
     :param reservation_type: the type of the reserved resource: "client-classes",
+        "hostname", "ip-addresses", "option-data", "prefixes"
     :type reservation_type: the type of the reserved resource:
-    "hostname", "ip-addresses", "option-data", "prefixes"
     :param reserved_value: the value of the reserved resource
     :type reserved_value:
     :param subnet: the ordinal number of the subnet under which the reservation will
+        be made. Careful, this is not the subnet ID.
     :type subnet:
-    be made. Careful, this is not the subnet ID.
     :param unique_host_value_type: the type for the reservation's identifier:
+        "circuit-id", "client-id", "duid", "flex-id", "hw-address"
     :type unique_host_value_type: the type for the reservation's identifier:
-    "circuit-id", "client-id", "duid", "flex-id", "hw-address"
     :param unique_host_value: the value for the reservation's identifier
     :type unique_host_value:
     """
@@ -837,7 +868,8 @@ def set_time_in_subnet(which_time, subnet, value):
 
 @step(r'Server is configured with another pool (\S+) in subnet (\d+).')
 def new_pool(pool, subnet, pool_id=None):
-    """
+    """Add new pool.
+
     :param pool:
     :type pool:
     :param subnet:
@@ -851,14 +883,12 @@ def new_pool(pool, subnet, pool_id=None):
 @step(r'Server is configured with (\S+) option in subnet (\d+) with value (\S+).')
 def config_srv(option_name, subnet, option_value, **kwargs):
     """Prepare server configuration with the specified option.
-    option_name name of the option, e.g. dns-servers (number may be used here)
-    option_value value of the configuration
 
-    :param option_name:
+    :param option_name: name of the option, e.g. dns-servers (number may be used here)
     :type option_name:
     :param subnet:
     :type subnet:
-    :param option_value:
+    :param option_value: value of the configuration
     :type option_value:
     :param kwargs:
     :type kwargs:
@@ -869,16 +899,14 @@ def config_srv(option_name, subnet, option_value, **kwargs):
 @step(r'On space (\S+) server is configured with (\S+) option in subnet (\d+) with value (\S+).')
 def config_srv_on_space(space, option_name, subnet, option_value, **kwargs):
     """Prepare server configuration with the specified option.
-    option_name name of the option, e.g. dns-servers (number may be used here)
-    option_value value of the configuration
 
     :param space:
     :type space:
-    :param option_name:
+    :param option_name: name of the option, e.g. dns-servers (number may be used here)
     :type option_name:
     :param subnet:
     :type subnet:
-    :param option_value:
+    :param option_value: value of the configuration
     :type option_value:
     :param kwargs:
     :type kwargs:
@@ -887,7 +915,7 @@ def config_srv_on_space(space, option_name, subnet, option_value, **kwargs):
 
 
 def option_in_shared_network(option_name: str, option_value: str, shared_network: int = 0, **kwargs):
-    """Add option-data to shared network
+    """Add option-data to shared network.
 
     :param option_name: string, option name
     :type option_name:
@@ -903,7 +931,7 @@ def option_in_shared_network(option_name: str, option_value: str, shared_network
 
 
 def add_option_to_pool(option_name: str, option_value: str, subnet: int = 0, pool: int = 0, **kwargs):
-    """Add option data to a pool
+    """Add option data to a pool.
 
     :param option_name: string, option name
     :type option_name:
@@ -921,7 +949,8 @@ def add_option_to_pool(option_name: str, option_value: str, subnet: int = 0, poo
 
 @step(r'Server is configured with client-classification option in subnet (\d+) with name (\S+).')
 def config_client_classification(subnet, option_value):
-    """
+    """config_client_classification.
+
     :param subnet:
     :type subnet:
     :param option_value:
@@ -932,7 +961,8 @@ def config_client_classification(subnet, option_value):
 
 @step(r'Server is configured with client-classification option in pool (\d+) with name (\S+).')
 def config_pool_client_classification(subnet, pool, option_value):
-    """
+    """config_pool_client_classification.
+
     :param subnet:
     :type subnet:
     :param pool:
@@ -945,7 +975,8 @@ def config_pool_client_classification(subnet, pool, option_value):
 
 @step(r'Server is configured with require-client-classification option in subnet (\d+) with name (\S+).')
 def config_require_client_classification(subnet, option_value):
-    """
+    """config_require_client_classification.
+
     :param subnet:
     :type subnet:
     :param option_value:
@@ -956,7 +987,8 @@ def config_require_client_classification(subnet, option_value):
 
 @step(r'Add class called (\S+).')
 def create_new_class(class_name):
-    """
+    """Create new class.
+
     :param class_name:
     :type class_name:
     """
@@ -965,7 +997,8 @@ def create_new_class(class_name):
 
 @step(r'To class no (\d+) add parameter named: (\S+) with value: (.+)')
 def add_test_to_class(class_number, parameter_name, parameter_value):
-    """
+    """Add test to class.
+
     :param class_number:
     :type class_number:
     :param parameter_name:
@@ -980,7 +1013,8 @@ def add_test_to_class(class_number, parameter_name, parameter_value):
 
 @step(r'To class no (\d+) add option (\S+) with value (\S+).')
 def add_option_to_defined_class(class_no, option, option_value):
-    """
+    """Add option to defined class.
+
     :param class_no:
     :type class_no:
     :param option:
@@ -993,7 +1027,8 @@ def add_option_to_defined_class(class_no, option, option_value):
 
 @step(r'Server has control channel (\S+).')
 def add_unix_socket(socket_name=None):
-    """
+    """Add unix socket.
+
     :param socket_name: (Default value = None)
     :type socket_name:
     """
@@ -1002,7 +1037,8 @@ def add_unix_socket(socket_name=None):
 
 @step(r'Server has control agent configured on HTTP connection with address (\S+):(\S+) and socket (\S+) path: (\S+).')
 def add_http_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, socket_name='control_socket'):
-    """
+    """Add HTTP control channel.
+
     :param host_address: (Default value = '$(MGMT_ADDRESS)')
     :type host_address:
     :param host_port: (Default value = 8000)
@@ -1015,17 +1051,17 @@ def add_http_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, soc
 
 
 def disable_leases_affinity():
-    """Disable lease affinity completely, meaning - lease will be removed from leases file immediately after
-    client send release message (by default Kea will keep those for brief period of time. Default
-    behaviour changed ot 2.3.2
+    """Disable lease affinity completely.
 
-
+    This means lease will be removed from leases file immediately after client send release message
+    By default Kea will keep those for brief period of time. Default behaviour changed on 2.3.2.
     """
     dhcp.disable_lease_affinity()
 
 
 def configure_multi_threading(enable_mt: bool, pool: int = 0, queue: int = 0):
-    """Configure multithreading settings directly, this will also disable automated check
+    """Configure multithreading settings directly, this will also disable automated check.
+
     :param enable_mt: bool, "enable-multi-threading" value
     :type enable_mt:
     :param pool: int, "thread-pool-size" value
@@ -1037,10 +1073,11 @@ def configure_multi_threading(enable_mt: bool, pool: int = 0, queue: int = 0):
 
 
 def update_expired_leases_processing(param):
-    """Update configuration map of "expired-leases-processing" with one or more parameters. Param checking is not
-    required it will be done just before sending a config file.
-    To set default config please use update_expired_leases_processing('default')
-    To update configuration with param hold-reclaimed-time please use update_expired_leases_processing({"hold-reclaimed-time": <your value>})
+    """Update configuration map of "expired-leases-processing" with one or more parameters.
+
+    Param checking is not required it will be done just before sending a config file.
+    To set default config please use update_expired_leases_processing('default').
+    To update configuration with param hold-reclaimed-time please use update_expired_leases_processing({"hold-reclaimed-time": <your value>}).
 
     :param param: str or dict
     :type param:
@@ -1051,7 +1088,8 @@ def update_expired_leases_processing(param):
 # DNS server configuration
 @step(r'DNS server is configured on (\S+) address (\S+) on port no. (\d+) and working directory (\S+).')
 def dns_conf(ip_type, address, port, direct):
-    """
+    """dns_conf.
+
     :param ip_type:
     :type ip_type:
     :param address:
@@ -1067,7 +1105,8 @@ def dns_conf(ip_type, address, port, direct):
 
 @step(r'DNS server is configured with zone (\S+) with type: (\S+) file: (\S+) with dynamic update key: (\S+).')
 def add_zone(zone, zone_type, file_nem, key):
-    """
+    """Add zone.
+
     :param zone:
     :type zone:
     :param zone_type:
@@ -1083,7 +1122,8 @@ def add_zone(zone, zone_type, file_nem, key):
 
 @step(r'Add DNS key named: (\S+) algorithm: (\S+) and value: (\S+).')
 def dns_add_key(key_name, algorithm, key_value):
-    """
+    """Add DNS key.
+
     :param key_name:
     :type key_name:
     :param algorithm:
@@ -1097,7 +1137,8 @@ def dns_add_key(key_name, algorithm, key_value):
 
 @step(r'Add DNS rndc-key on address (\S+) and port (\d+). Using algorithm: (\S+) with value: (\S+)')
 def dns_rest(address, port, alg, value):
-    """
+    """Add DNS rndc-key on address and port.
+
     :param address:
     :type address:
     :param port:
@@ -1113,7 +1154,8 @@ def dns_rest(address, port, alg, value):
 
 @step(r'Server logging system is configured with logger type (\S+), severity (\S+), severity level (\S+) and log file (\S+).')
 def configure_loggers(log_type, severity, severity_level, logging_file=None):
-    """
+    """Configure loggers.
+
     :param log_type:
     :type log_type:
     :param severity:
@@ -1130,7 +1172,8 @@ def configure_loggers(log_type, severity, severity_level, logging_file=None):
 # servers management
 @step(r'Create server configuration.')
 def build_config_files(cfg=None):
-    """
+    """Build config files.
+
     :param cfg: (Default value = None)
     :type cfg:
     """
@@ -1139,7 +1182,8 @@ def build_config_files(cfg=None):
 
 @step(r'Create and send server configuration.')
 def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address):
-    """
+    """Build and send configuration files.
+
     :param cfg: (Default value = None)
     :type cfg:
     :param dest: (Default value = world.f_cfg.mgmt_address)
@@ -1153,12 +1197,13 @@ def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address):
 def start_srv(name: str, action: str, config_set=None,
               dest: str = world.f_cfg.mgmt_address, should_succeed: bool = True):
     """Start, stop, restart or reconfigure server.
+
     :param name: DHCP' | 'DNS'
     :type name:
     :param action: started' | 'stopped' | 'restarted' | 'reconfigured'
     :type action:
     :param config_set: Dynamic configuration to be used. Currently used only as an integer to select
-    a certain DNS configuration. (Default value = None)
+        a certain DNS configuration. (Default value = None)
     :type config_set:
     :param dest: management address of server
     :type dest:
@@ -1201,7 +1246,9 @@ def start_srv(name: str, action: str, config_set=None,
 
 
 def check_remote_address(remote_address):
-    """Add new remote server IP address as additional location, can be used for running dhcp server
+    """Add new remote server IP address as additional location.
+
+    Can be used for running dhcp server.
     From all added locations all files on clean up will be downloaded to specific local location
 
     :param remote_address: IP address of remote vm
@@ -1213,7 +1260,8 @@ def check_remote_address(remote_address):
 
 @step(r'Add remote server with address: (\S+).')
 def add_remote_server(remote_address):
-    """
+    """Add remote server.
+
     :param remote_address:
     :type remote_address:
     """
@@ -1225,7 +1273,8 @@ def add_remote_server(remote_address):
 def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address,
                     software_install_path=world.f_cfg.software_install_path, db_user=world.f_cfg.db_user,
                     db_passwd=world.f_cfg.db_passwd, db_name=world.f_cfg.db_name):
-    """
+    """Clear some data.
+
     :param data_type:
     :type data_type:
     :param service: (Default value = 'dhcp')
@@ -1259,7 +1308,8 @@ def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address,
 # DDNS server
 @step(r'DDNS server has control channel (\S+).')
 def ddns_add_unix_socket(socket_name=None):
-    """
+    """Add unix socket to DDNS server.
+
     :param socket_name: (Default value = None)
     :type socket_name:
     """
@@ -1268,7 +1318,8 @@ def ddns_add_unix_socket(socket_name=None):
 
 @step(r'DDNS server is configured on (\S+) address and (\S+) port.')
 def add_ddns_server(address, port):
-    """
+    """Add DDNS server.
+
     :param address:
     :type address:
     :param port:
@@ -1280,7 +1331,8 @@ def add_ddns_server(address, port):
 
 @step(r'DDNS server is configured with (\S+) option set to (\S+).')
 def add_ddns_server_behavioral_options(option, value):
-    """
+    """Add option to DDNS server.
+
     :param option:
     :type option:
     :param value:
@@ -1292,7 +1344,8 @@ def add_ddns_server_behavioral_options(option, value):
 
 @step(r'DDNS server is configured with (\S+) option set to (\S+).')
 def add_ddns_server_connectivity_options(option, value):
-    """
+    """Add options to DDNS server.
+
     :param option:
     :type option:
     :param value:
@@ -1304,7 +1357,8 @@ def add_ddns_server_connectivity_options(option, value):
 
 @step(r'Add forward DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
 def add_forward_ddns(name, key_name, ip_address=None):
-    """
+    """Add forward DDNS.
+
     :param name:
     :type name:
     :param key_name:
@@ -1321,7 +1375,8 @@ def add_forward_ddns(name, key_name, ip_address=None):
 
 @step(r'Add reverse DDNS with name (\S+) and key (\S+) on address (\S+) and port (\S+).')
 def add_reverse_ddns(name, key_name, ip_address=None):
-    """
+    """Add reverse DDNS.
+
     :param name:
     :type name:
     :param key_name:
@@ -1338,7 +1393,8 @@ def add_reverse_ddns(name, key_name, ip_address=None):
 
 @step(r'Add DDNS key named (\S+) based on (\S+) with secret value (\S+).')
 def add_keys(name, algorithm, secret):
-    """
+    """Add DDNS keys.
+
     :param name:
     :type name:
     :param algorithm:
@@ -1359,7 +1415,8 @@ def ddns_add_gss_tsig(addr, dns_system,
                       server_id="server1",
                       server_principal="DNS/server.example.com@EXAMPLE.COM",
                       tkey_lifetime=3600):
-    """
+    """Configure DDNS server with GSS-TSIG.
+
     :param addr:
     :type addr:
     :param dns_system:
@@ -1388,7 +1445,7 @@ def ddns_add_gss_tsig(addr, dns_system,
 
 @step(r'Use DNS set no. (\d+).')
 def use_dns_set_number(number, override_dns_addr=None):
-    """Use specific set of configs for bind 9, in future we can make this dynamic just like kea
+    """Use specific set of configs for bind 9, in future we can make this dynamic just like kea.
 
     :param number: int, number of set used
     :type number:
@@ -1399,7 +1456,8 @@ def use_dns_set_number(number, override_dns_addr=None):
 
 
 def print_cfg(service='DHCP'):
-    """
+    """Print configuration.
+
     :param service: (Default value = 'DHCP')
     :type service:
     """
@@ -1415,7 +1473,8 @@ def print_cfg(service='DHCP'):
 
 
 def generate_certificate():
-    """
+    """Generate certificate.
+
     :return:
     :rtype:
     """
@@ -1423,7 +1482,8 @@ def generate_certificate():
 
 
 def enable_https(trust_anchor, cert_file, key_file, cert_required):
-    """
+    """Enable HTTPS.
+
     :param trust_anchor:
     :type trust_anchor:
     :param cert_file:
