@@ -25,6 +25,7 @@ cd "${script_path}"
 
 if test ${#} -eq 0; then
   PY_FILES="$(find ${files_to_search} -name '*.py' -or -name 'forge' | sort -uV)"
+  if test -z "${PY_FILES}"; then echo "No python scripts to check. Exiting early."; exit 0; fi
 else
   PY_FILES="${@}"
 fi
