@@ -858,7 +858,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     :param port: int: (Default value = None)
     :type port: int
     :param iface: Default value = None)
-    :type iface
+    :type iface:
     :param ignore_response: (Default value = False)
     :type ignore_response: bool
     :return:
@@ -1027,10 +1027,10 @@ def get_option(msg, opt_code, get_all=False):
     :param opt_code: option code or name
     :type opt_code:
     :param get_all: True if it should return all options with given code,
+        False if a single option is required (Default value = False)
     :type get_all:
-    False if a single option is required (Default value = False)
     :return: scapy message representing the option or None if the option doesn't exist
-    or list of options if there are multiple
+        or list of options if there are multiple
     :return:
     :rtype:
     """
@@ -1534,7 +1534,6 @@ def tcp_messages_include(**kwargs):
 
     :param kwargs: types of messages e.g. leasequery_reply=1, leasequery_data=199, leasequery_done=1
     :type kwargs:
-    :param kwargs:
     """
     expected_msg_count = sum(list(kwargs.values()))
     assert expected_msg_count == len(world.tcpmsg), \
@@ -1561,7 +1560,6 @@ def tcp_get_message(**kwargs):
 
     :param kwargs: define which type of search should be performed and with what value
     :type kwargs:
-    :param kwargs:
     :return: DHCP6 message
     :rtype:
     """
@@ -1842,30 +1840,30 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
 
     :param address: the expected address as value of the IA_Address suboption.
     :type address:
-    For multiple addresses, use additional check_IA_NA() calls. (Default value = None)
+        For multiple addresses, use additional check_IA_NA() calls. (Default value = None)
     :param delegated_prefix: the expected prefix in format '<prefix>/<length>'.
+        For multiple prefixes, use additional check_IA_PD() calls. (Default value = None)
     :type delegated_prefix:
-    For multiple prefixes, use additional check_IA_PD() calls. (Default value = None)
     :param relay_information: whether client packets should be encapsulated in relay
+        forward messages, and by extension whether server packets should be
+        expected to be encapsulated in relay reply messages (default: False)
     :type relay_information:
-    forward messages, and by extension whether server packets should be
-    expected to be encapsulated in relay reply messages (default: False)
     :param status_code_IA_NA: the expected IA_NA status code (Default value = None)
     :type status_code_IA_NA:
     :param status_code_IA_PD: the expected IA_PD status code (Default value = None)
     :type status_code_IA_PD:
     :param exchange: can have values "sarr-only" for 4-way SARR, "full" meaning
+        SARR + renew-reply or "renew-reply". It is a string instead of a boolean
+        for clearer recognition of test names because this value often comes from
+        pytest parametrization. (default: "full")
     :type exchange:
-    SARR + renew-reply or "renew-reply". It is a string instead of a boolean
-    for clearer recognition of test names because this value often comes from
-    pytest parametrization. (default: "full")
     :param duid: the DUID to be used in client packets
+        (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
     :type duid:
-    (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
     :param iaid: sets IAID for the client (Default value = None)
     :type iaid:
     :param linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::1000')
-    :type linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::
+    :type linkaddr:
     :param ifaceid: sets Interface ID in option 18 in Relayed message (Default value = 'port1234')
     :type ifaceid:
     :param iface: sets interface for the client (Default value = None)
@@ -1938,26 +1936,26 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     missing or having incorrect values renders the test failed.
 
     :param address: the expected address as value of the IA_Address suboption.
+        For multiple addresses, use additional check_IA_NA() calls. (Default value = None)
     :type address:
-    For multiple addresses, use additional check_IA_NA() calls. (Default value = None)
     :param delegated_prefix: the expected prefix in format '<prefix>/<length>'.
+        For multiple prefixes, use additional check_IA_PD() calls. (Default value = None)
     :type delegated_prefix:
-    For multiple prefixes, use additional check_IA_PD() calls. (Default value = None)
     :param relay_information: whether client packets should be encapsulated in relay
+        forward messages, and by extension whether server packets should be
+        expected to be encapsulated in relay reply messages (default: False)
     :type relay_information:
-    forward messages, and by extension whether server packets should be
-    expected to be encapsulated in relay reply messages (default: False)
     :param status_code_IA_NA: the expected IA_NA status code (Default value = None)
     :type status_code_IA_NA:
     :param status_code_IA_PD: the expected IA_PD status code (Default value = None)
     :type status_code_IA_PD:
     :param duid: the DUID to be used in client packets
+        (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
     :type duid:
-    (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
     :param iaid: sets IAID for the client (Default value = None)
     :type iaid:
     :param linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::1000')
-    :type linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::
+    :type linkaddr:
     :param ifaceid: sets Interface ID in option 18 in Relayed message (Default value = 'port1234')
     :type ifaceid:
     :param iface: Default value = None)
