@@ -1494,6 +1494,8 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
     :type host_port: int
     :param socket_name: Name of the socket to use for the control channel
     :type socket_name: str, optional
+    :param auth: Authentication settings for the control channel
+    :type auth: dict, optional
     """
     if world.f_cfg.control_agent:
         if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
@@ -1520,9 +1522,12 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
                 socket["socket-port"] = int(host_port)
                 break
         else:
-            world.dhcp_cfg["control-sockets"].append({"socket-type": "http",
-                                                      "socket-address": host_address,
-                                                      "socket-port": int(host_port)})
+            conf = {"socket-type": "http",
+                    "socket-address": host_address,
+                    "socket-port": int(host_port)}
+            if auth:
+                conf.update(auth)
+            world.dhcp_cfg["control-sockets"].append(conf)
 
 
 def config_srv_id(id_type, id_value):
@@ -1810,11 +1815,12 @@ def build_config_files(cfg=None):
     :param cfg:
     :type cfg:
     """
-    # check if control agent is disabled and if http socket is used
-    if not world.f_cfg.control_agent and not check_if_http_socket_is_used():
+    # let's make sure that if CA is used, we will execute only tests that use CA
+    if world.f_cfg.control_agent and world.ca_cfg["Control-agent"] == {}:
         # uncomment this for debugging purposes
-        print(json.dumps(world.dhcp_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
-        skip("HTTP socket is not configured, skipping entire test.")
+        # print(json.dumps(world.dhcp_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
+        # print(json.dumps(world.ca_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
+        skip("CA is NOT used in this test, skipping entire test.")
 
     substitute_vars(world.dhcp_cfg)
     if world.proto == 'v4':

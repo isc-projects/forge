@@ -18,12 +18,6 @@ from src import srv_control
 from src.forge_cfg import world
 
 
-@pytest.fixture(autouse=True)
-def skip_if_ca_disabled():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
-
-
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -47,7 +41,7 @@ def test_ca_tls_basic(dhcp_version, client_cert_required):
 
     misc.test_setup()
     srv_control.add_unix_socket()
-    srv_control.add_http_control_channel()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.enable_https(
         certificate.ca_cert,
         certificate.server_cert,
@@ -100,7 +94,7 @@ def test_ca_tls_basic_negative(dhcp_version, client_cert_required):
 
     misc.test_setup()
     srv_control.add_unix_socket()
-    srv_control.add_http_control_channel()
+    srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.enable_https(
         certificate.ca_cert,
         certificate.server_cert,

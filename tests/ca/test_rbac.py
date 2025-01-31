@@ -23,15 +23,10 @@ from src.forge_cfg import world
 # but due to discovered bug https://gitlab.isc.org/isc-projects/kea/-/issues/2475 I choose to go with reconfigure
 
 
-@pytest.fixture(autouse=True)
-def skip_if_ca_disabled():
-    if not world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be enabled')
-
-
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
-def test_rbac_cert_subject():
+def test_rbac_cert_subject(dhcp_version):
     """
     Test assign-role-method set to cert subject
     """
@@ -107,9 +102,11 @@ def test_rbac_cert_subject():
 
     cmd = {"command": "config-get", "arguments": {}}
     resp = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert, client_key))
+
     cmd = {"command": "config-get", "arguments": {}}
-    resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert, client_key))
-    assert resp["arguments"]["Control-agent"]["hooks-libraries"] == hook
+    if world.f_cfg.control_agent:
+        resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert, client_key))
+        assert resp["arguments"]["Control-agent"]["hooks-libraries"] == hook
 
     for i in ["status-get", "list-commands", "config-get"]:
         cmd = {"command": i, "arguments": {}}
@@ -121,26 +118,32 @@ def test_rbac_cert_subject():
         resp = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert, client_key), exp_result=403)
         assert resp['text'] == 'Forbidden', f"text message from response should be 'Forbidden' it is {resp} instead."
 
+    if world.f_cfg.control_agent:
+        for i in ["list-commands", "status-get"]:
+            cmd = {"command": i, "arguments": {}}
+            resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert, client_key),
+                                         exp_result=403)
+            assert resp['text'] == 'Forbidden', f"text message from response should be\
+                  'Forbidden' it is {resp} instead."
+
     for i in ["list-commands", "status-get"]:
         cmd = {"command": i, "arguments": {}}
-        resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert, client_key),
+        if world.f_cfg.control_agent:
+            resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert,
+                                         cert=(client_cert_3, client_key_3))
+        resp = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert_3, client_key_3))
+
+    if world.f_cfg.control_agent:
+        cmd = {"command": "config-get", "arguments": {}}
+        resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert_3, client_key_3),
                                      exp_result=403)
         assert resp['text'] == 'Forbidden', f"text message from response should be 'Forbidden' it is {resp} instead."
 
-    for i in ["list-commands", "status-get"]:
-        cmd = {"command": i, "arguments": {}}
-        resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert_3, client_key_3))
-        resp = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert_3, client_key_3))
-
-    cmd = {"command": "config-get", "arguments": {}}
-    resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert_3, client_key_3),
-                                 exp_result=403)
-    assert resp['text'] == 'Forbidden', f"text message from response should be 'Forbidden' it is {resp} instead."
-
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
-def test_rbac_cert_issuer():
+def test_rbac_cert_issuer(dhcp_version):
     """
     Test assign-role-method set to cert issuer
     issue https://gitlab.isc.org/isc-projects/kea/-/issues/2475
@@ -193,9 +196,11 @@ def test_rbac_cert_issuer():
     # allowed commands
     cmd = {"command": "config-get", "arguments": {}}
     resp = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert, client_key))
+
     cmd = {"command": "config-get", "arguments": {}}
-    resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert, client_key))
-    assert resp["arguments"]["Control-agent"]["hooks-libraries"] == hook
+    if world.f_cfg.control_agent:
+        resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert, client_key))
+        assert resp["arguments"]["Control-agent"]["hooks-libraries"] == hook
 
     # some of not allowed
     for i in ["status-get", "list-commands"]:
@@ -208,12 +213,13 @@ def test_rbac_cert_issuer():
     if world.f_cfg.control_agent:
         world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
     else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+        world.dhcp_cfg[f"Dhcp{world.proto[1]}"]["hooks-libraries"] = hook
 
     # configure it via config-set
     cmd = {"command": "config-set",
-           "arguments": world.ca_cfg if world.f_cfg.control_agent else {f'Dhcp{world.proto[1]}': world.dhcp_cfg}}
-    resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert, client_key))
+           "arguments": world.ca_cfg if world.f_cfg.control_agent else world.dhcp_cfg}
+    resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent' if world.f_cfg.control_agent else None, verify=ca_cert,
+                                 cert=(client_cert, client_key))
 
     # and now all commands will fail:
     for i in ["status-get", "list-commands", "config-set", "config-get"]:
@@ -223,9 +229,10 @@ def test_rbac_cert_issuer():
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.parametrize('tls', [True, False])
-def test_rbac_remote_address(tls):
+def test_rbac_remote_address(dhcp_version, tls):
     """
     Test assign-role-method set to remote-address, with tls or without
     issue https://gitlab.isc.org/isc-projects/kea/-/issues/2475
@@ -283,16 +290,20 @@ def test_rbac_remote_address(tls):
                                  'https' if tls else 'http',  # depends on tls parameter
                                  verify=ca_cert if tls else None,  # depends on tls parameter
                                  cert=(client_cert, client_key) if tls else None)  # depends on tls parameter
+
     cmd = {"command": "config-get", "arguments": {}}
-    resp = srv_msg.send_ctrl_cmd(cmd,
-                                 'https' if tls else 'http',  # depends on tls parameter
-                                 service='agent',
-                                 verify=ca_cert if tls else None,  # depends on tls parameter
-                                 cert=(client_cert, client_key) if tls else None)  # depends on tls parameter
-    assert resp["arguments"]["Control-agent"]["hooks-libraries"] == hook
+    if world.f_cfg.control_agent:
+        resp = srv_msg.send_ctrl_cmd(cmd,
+                                     'https' if tls else 'http',  # depends on tls parameter
+                                     service='agent',
+                                     verify=ca_cert if tls else None,  # depends on tls parameter
+                                     cert=(client_cert, client_key) if tls else None)  # depends on tls parameter
+        assert resp["arguments"]["Control-agent"]["hooks-libraries"] == hook
 
     cmds = ["list-commands", "status-get"]
-    service = [None, 'agent']
+    service = [None]
+    if world.f_cfg.control_agent:
+        service.append('agent')
 
     for i, serv in tuple(zip(cmds, service)):
         cmd = {"command": i, "arguments": {}}
@@ -309,11 +320,11 @@ def test_rbac_remote_address(tls):
     if world.f_cfg.control_agent:
         world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
     else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+        world.dhcp_cfg[f"Dhcp{world.proto[1]}"]["hooks-libraries"] = hook
 
     # configure it via config-set
     cmd = {"command": "config-set",
-           "arguments": world.ca_cfg if world.f_cfg.control_agent else {f'Dhcp{world.proto[1]}': world.dhcp_cfg}}
+           "arguments": world.ca_cfg if world.f_cfg.control_agent else world.dhcp_cfg}
     resp = srv_msg.send_ctrl_cmd(cmd,
                                  'https' if tls else 'http',
                                  service='agent',
@@ -321,7 +332,11 @@ def test_rbac_remote_address(tls):
                                  cert=(client_cert, client_key) if tls else None)
 
     cmds = ["list-commands", "status-get", "config-get", "config-set"]
-    service = [None, 'agent']
+
+    service = [None]
+    if world.f_cfg.control_agent:
+        service.append('agent')
+
     for i, serv in tuple(zip(cmds, service)):
         cmd = {"command": i, "arguments": {}}
         resp = srv_msg.send_ctrl_cmd(cmd,
@@ -334,9 +349,10 @@ def test_rbac_remote_address(tls):
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.parametrize('tls', [False, True])
-def test_rbac_basic_authentication(tls):
+def test_rbac_basic_authentication(dhcp_version, tls):
     """
     Test assign-role-method set to basic authentication, with or without tls enabled
     :param tls: bool, tls value
@@ -351,15 +367,6 @@ def test_rbac_basic_authentication(tls):
 
     misc.test_setup()
     srv_control.add_unix_socket()
-    srv_control.add_http_control_channel()
-    # Configure Control Agent to use TLS.
-    if tls:
-        srv_control.enable_https(
-            certificate.ca_cert,
-            certificate.server_cert,
-            certificate.server_key,
-            True
-        )
     auth = {"authentication": {
             "type": "basic",
             "clients":
@@ -374,11 +381,20 @@ def test_rbac_basic_authentication(tls):
                     }
                 ]
             }}
-
     if world.f_cfg.control_agent:
+        srv_control.add_http_control_channel()
         world.ca_cfg["Control-agent"].update(auth)
     else:
-        world.dhcp_cfg.update(auth)
+        srv_control.add_http_control_channel(auth=auth)
+
+    # Configure Control Agent to use TLS.
+    if tls:
+        srv_control.enable_https(
+            certificate.ca_cert,
+            certificate.server_cert,
+            certificate.server_key,
+            True
+        )
 
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
@@ -419,7 +435,9 @@ def test_rbac_basic_authentication(tls):
     srv_control.start_srv('DHCP', 'started')
 
     cmds = ["list-commands", "config-get"]
-    service = [None, 'agent']
+    service = [None]
+    if world.f_cfg.control_agent:
+        service.append('agent')
 
     # first admin, check commands that should be accepted
     for i, serv in tuple(zip(cmds, service)):
@@ -434,7 +452,9 @@ def test_rbac_basic_authentication(tls):
 
     # first admin, check commands that should be rejected
     cmds = ["status-get", "config-set"]
-    service = [None, 'agent']
+    service = [None]
+    if world.f_cfg.control_agent:
+        service.append('agent')
 
     # first admin, check commands that should be accepted
     for i, serv in tuple(zip(cmds, service)):
@@ -466,7 +486,9 @@ def test_rbac_basic_authentication(tls):
 
     # second admin, check commands that should be accepted
     cmds = ["config-get", "list-commands"]
-    service = [None, 'agent']
+    service = [None]
+    if world.f_cfg.control_agent:
+        service.append('agent')
 
     for i, serv in tuple(zip(cmds, service)):
         cmd = {"command": i, "arguments": {}}
@@ -484,7 +506,6 @@ def _preconfigure_test():
     """
     misc.test_setup()
     srv_control.add_unix_socket()
-    srv_control.add_http_control_channel()
 
     auth = {
         "authentication": {
@@ -506,9 +527,10 @@ def _preconfigure_test():
                 ]}}
 
     if world.f_cfg.control_agent:
+        srv_control.add_http_control_channel()
         world.ca_cfg["Control-agent"].update(auth)
     else:
-        world.dhcp_cfg.update(auth)
+        srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
@@ -550,7 +572,8 @@ def make_sure_file_is_correct():
 
 @pytest.mark.v4
 @pytest.mark.ca
-def test_rbac_access_by_read_write(make_sure_file_is_correct):
+@pytest.mark.v6
+def test_rbac_access_by_read_write(dhcp_version, make_sure_file_is_correct):
     """
     Check ACLs based on READ and WRITE key words, also check how changing command definition files
     in share/api will reflect on Control Agent work
@@ -613,8 +636,9 @@ def test_rbac_access_by_read_write(make_sure_file_is_correct):
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
-def test_rbac_access_by_name_removed_file(make_sure_file_is_correct):
+def test_rbac_access_by_name_removed_file(dhcp_version, make_sure_file_is_correct):
     """
     Check how Control Agent reacts on removed command definition file from share/api
     :param make_sure_file_is_correct: fixture that will backup and restore dhcp-disable.json file
@@ -660,8 +684,9 @@ def test_rbac_access_by_name_removed_file(make_sure_file_is_correct):
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
-def test_rbac_access_by_name_removed_file_2(make_sure_file_is_correct):
+def test_rbac_access_by_name_removed_file_2(dhcp_version, make_sure_file_is_correct):
     """
     Check how Control Agent reacts on removed command definition file from share/api
     :param make_sure_file_is_correct: fixture that will backup and restore dhcp-disable.json file
@@ -740,8 +765,9 @@ def test_rbac_access_by_name_removed_file_2(make_sure_file_is_correct):
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
-def test_rbac_access_by_all_none():
+def test_rbac_access_by_all_none(dhcp_version):
     """
     Check key words ALL and NONE in ACL definition and "list-match-first" parameter
     """
@@ -859,8 +885,9 @@ def test_rbac_access_by_all_none():
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
-def test_rbac_access_by_hook_name():
+def test_rbac_access_by_hook_name(dhcp_version):
     """
     Check ACL based on hook names
     """
@@ -909,8 +936,9 @@ def test_rbac_access_by_hook_name():
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
-def test_rbac_access_by_commands_with_other_list():
+def test_rbac_access_by_commands_with_other_list(dhcp_version):
     """
     Check "other-commands" ACL definition
     """
@@ -974,8 +1002,9 @@ def test_rbac_access_by_commands_with_other_list():
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
-def test_rbac_filter_responses():
+def test_rbac_filter_responses(dhcp_version):
     """
     Check response filtering defined in "response-filters": ["list-commands"]
     issue https://gitlab.isc.org/isc-projects/kea/-/issues/2483
@@ -1002,10 +1031,8 @@ def test_rbac_filter_responses():
 
     resp = _send_cmd({"command": "list-commands", "arguments": {}})
 
-    assert "subnet4-del" in resp["arguments"], "returned list do not contain commands from subnet_cmds hook"
-    assert "subnet6-del" in resp["arguments"], "returned list do not contain commands from subnet_cmds hook"
-    assert "network6-get" in resp["arguments"], "returned list do not contain commands from subnet_cmds hook"
-    assert "network4-add" in resp["arguments"], "returned list do not contain commands from subnet_cmds hook"
+    for cmd in ["subnet4-del", "subnet6-del", "network6-get", "network4-add"]:
+        assert cmd in resp["arguments"], f"returned list do not contain commands from subnet_cmds hook: {cmd}"
 
     roles = [
         {
@@ -1031,19 +1058,18 @@ def test_rbac_filter_responses():
     # with "response-filters": ["list-commands"] non allowed comments should be filtered out
     resp2 = _send_cmd({"command": "list-commands", "arguments": {}})
 
-    assert "subnet4-del" not in resp2["arguments"], "returned list do contain commands from subnet_cmds hook"
-    assert "subnet6-del" not in resp2["arguments"], "returned list do contain commands from subnet_cmds hook"
-    assert "network6-get" not in resp2["arguments"], "returned list do contain commands from subnet_cmds hook"
-    assert "network4-add" not in resp2["arguments"], "returned list do contain commands from subnet_cmds hook"
+    for cmd in ["subnet4-del", "subnet6-del", "network6-get", "network4-add"]:
+        assert cmd not in resp2["arguments"], f"returned list do contain commands from subnet_cmds hook: {cmd}"
 
     assert len(resp2["arguments"]) < len(resp["arguments"]), \
         "We should get smaller number of commands back in second response"
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.disabled
-def test_default_role():
+def test_default_role(dhcp_version):
     # not sure how to test it
     hook = _preconfigure_test()
     hook[0]["parameters"].update({"default-role": {
@@ -1067,8 +1093,9 @@ def test_default_role():
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
-def test_unknown_role():
+def test_unknown_role(dhcp_version):
     """
     Check if redefinition of unknown-rule works
     """
@@ -1114,14 +1141,14 @@ def test_unknown_role():
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
-def test_creating_access_list_for_multiple_use_cases():
+def test_creating_access_list_for_multiple_use_cases(dhcp_version):
     """
     Define multiple ACLs in "access-control-lists" and then use those in different roles
     """
     misc.test_setup()
     srv_control.add_unix_socket()
-    srv_control.add_http_control_channel()
     auth = {"authentication": {
         "type": "basic",
         "clients":
@@ -1141,9 +1168,10 @@ def test_creating_access_list_for_multiple_use_cases():
             ]
     }}
     if world.f_cfg.control_agent:
+        srv_control.add_http_control_channel()
         world.ca_cfg["Control-agent"].update(auth)
     else:
-        world.dhcp_cfg.update(auth)
+        srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
@@ -1218,14 +1246,14 @@ def test_creating_access_list_for_multiple_use_cases():
 
 
 @pytest.mark.v4
+@pytest.mark.v6
 @pytest.mark.ca
-def test_mixed_roles():
+def test_mixed_roles(dhcp_version):
     """
     Test all access lists types and logic in one single ACL
     """
     misc.test_setup()
     srv_control.add_unix_socket()
-    srv_control.add_http_control_channel()
     auth = {"authentication": {
         "type": "basic",
         "clients":
@@ -1238,9 +1266,10 @@ def test_mixed_roles():
     }}
 
     if world.f_cfg.control_agent:
+        srv_control.add_http_control_channel()
         world.ca_cfg["Control-agent"].update(auth)
     else:
-        world.dhcp_cfg.update(auth)
+        srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
         "library": world.f_cfg.hooks_join("libca_rbac.so"),
