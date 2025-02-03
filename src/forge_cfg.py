@@ -18,7 +18,7 @@
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=unspecified-encoding
 # pylint: disable=unused-argument
-
+"""Forge configuration."""
 import os
 import threading
 import fcntl
@@ -101,7 +101,10 @@ SETTINGS = {
 
 
 class ForgeConfiguration:
+    """Main Forge class with a configuration."""
+
     def __init__(self):
+        """__init__ Class initialisation."""
         # default
         self.dns_used = ["bind9_server"]
         self.dhcp_used = ["kea4_server", "kea6_server", "none_server", "isc_dhcp4_server", "isc_dhcp6_server"]
@@ -202,8 +205,7 @@ class ForgeConfiguration:
         self.basic_validation()
 
     def _determine_mgmt_password(self):
-        """_determine_mgmt_password Determine mgmt password.
-        """
+        """_determine_mgmt_password Determine mgmt password."""
         if not hasattr(self, "mgmt_password_cmd") or self.mgmt_password_cmd is None or len(self.mgmt_password_cmd) == 0:
             return
         with subprocess.Popen(self.mgmt_password_cmd, shell=True, stdout=subprocess.PIPE) as pipe:
@@ -237,7 +239,7 @@ class ForgeConfiguration:
                                     'It should have a value and it should not be None.')
 
     def gethwaddr(self, ifname):
-        """gethwaddr Get hardware address of interface.
+        """Get hardware address of interface.
 
         :param ifname: interface name
         :type ifname: str
@@ -250,8 +252,7 @@ class ForgeConfiguration:
         return ':'.join('%02x' % b for b in info[18:24])
 
     def basic_validation(self):
-        """basic_validation Basic validation of configuration.
-        """
+        """basic_validation Basic validation of configuration."""
         if self.software_install_path == "":
             print("Configuration failure, software_install_path is empty. "
                   "Please use ./src/forge_cfg.py -T to validate configuration.")
@@ -401,8 +402,8 @@ class ForgeConfiguration:
 
 
 def get_test_progress():
-    """
-    Returns a textual representation of the total test progress e.g. '#8/24'.
+    """Return a textual representation of the total test progress e.g. '#8/24'.
+
     Before running the first test, it's always just '#1'.
     :return: textual representation of the total test progress
     :rtype: str
@@ -422,7 +423,7 @@ world.get_test_progress = get_test_progress
 
 
 def _conv_arg_to_txt(arg):
-    """convert argument to string
+    """_conv_arg_to_txt Convert argument to string.
 
     :param arg: argument to convert
     :type arg: any
@@ -436,7 +437,7 @@ def _conv_arg_to_txt(arg):
 
 
 def step(pattern):
-    """step replaces lettuce step decorator
+    """Replace lettuce step decorator.
 
     :param pattern: pattern to match
     :type pattern: str
@@ -444,7 +445,7 @@ def step(pattern):
     :rtype: function
     """
     def wrap(func):
-        """wrap replaces lettuce wrap decorator
+        """Wrap replaces lettuce wrap decorator.
 
         :param func: function to wrap
         :type func: function
@@ -452,7 +453,7 @@ def step(pattern):
         :rtype: function
         """
         def wrapped_func(*args, **kwargs):
-            """wrapped_func replaces lettuce wrapped_func
+            """Replace lettuce wrapped_func.
 
             :param args: arguments
             :type args: tuple

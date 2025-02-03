@@ -4,6 +4,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+"""Pytest additional configuration."""
+
 import pytest
 from src.forge_cfg import world
 
@@ -13,9 +15,10 @@ from src.forge_cfg import world
 
 @pytest.fixture(autouse=True, scope='session')
 def get_number_of_tests(request):
-    """
-    Get the total number of tests. Function is called automatically, but after
-    the first test so test_count will be != 0 from the second test onward.
+    """Get the total number of tests.
+
+    Function is called automatically, but after the first test
+    so test_count will be != 0 from the second test onward.
 
     :param request: pytest request to run a test
     :type request: pytest.SubRequest
@@ -24,23 +27,47 @@ def get_number_of_tests(request):
 
 
 def pytest_runtest_setup(item):
-    pass
+    """Call for each test before execution.
+
+    :param item: pytest item to run a test
+    :type item: pytest.Item
+    """
+    pass  # pylint: disable=unnecessary-pass
 
 
 @pytest.fixture(autouse=True)
 def initialize_terrain(request):
+    """Reset test configuration before each test.
+
+    :param request: pytest request to run a test
+    :type request: pytest.SubRequest
+    """
     from src import terrain
     terrain.initialize(request)
     world.f_cfg.control_agent = request.config.getoption("--with-ca")
 
 
 def pytest_runtest_teardown(item, nextitem):
+    """Call for each test after execution.
+
+    :param item: pytest item to run a test
+    :type item: pytest.Item
+    :param nextitem: pytest item to run next
+    :type nextitem: pytest.Item
+    """
     from src import terrain
     item.failed = None
     terrain.cleanup(item)
 
 
 def pytest_runtest_logstart(nodeid, location):
+    """Print start line before each test, with test counter.
+
+    :param nodeid: pytest node id
+    :type nodeid: str
+    :param location: pytest location
+    :type location: str
+    """
     banner = f' START {world.get_test_progress()}: {nodeid} '
     stars = 140 - len(banner)
     half_stars = int(stars / 2)
@@ -49,6 +76,13 @@ def pytest_runtest_logstart(nodeid, location):
 
 
 def pytest_runtest_logfinish(nodeid, location):
+    """Print finish line after each test, with test counter.
+
+    :param nodeid: pytest node id
+    :type nodeid: str
+    :param location: pytest location
+    :type location: str
+    """
     banner = f' END {world.get_test_progress()}: {nodeid} '
     stars = 140 - len(banner)
     half_stars = int(stars / 2)
@@ -58,6 +92,11 @@ def pytest_runtest_logfinish(nodeid, location):
 
 
 def pytest_runtest_logreport(report):
+    """Print result line after each test, with test counter.
+
+    :param report: pytest report
+    :type report: pytest.Report
+    """
     if report.when == 'call':
         outcome = report.outcome.upper()
         node_id = report.nodeid
@@ -73,9 +112,15 @@ def pytest_runtest_logreport(report):
 
 
 def pytest_generate_tests(metafunc):
-    # If a test function has dhcp_version as fixtures ie. it has such argument
-    # then generate 3 versions of this test, for v4, v4_bootp, v6 ie. automagically
-    # parametrize.
+    """Generate two tests if there is dhcp_version as a fixture.
+
+    If a test function has dhcp_version as fixtures ie. it has such argument
+    then generate 3 versions of this test, for v4, v4_bootp, v6 ie. automagically
+    parametrize.
+
+    :param metafunc: pytest metafunction
+    :type metafunc: pytest.Metafunc
+    """
     if 'dhcp_version' not in metafunc.fixturenames:
         return
 
@@ -119,16 +164,31 @@ def pytest_generate_tests(metafunc):
 
 
 def pytest_configure(config):
+    """Configure before each test.
+
+    :param config: pytest config
+    :type config: pytest.Config
+    """
     from src import terrain
     terrain.test_start()
 
 
 def pytest_unconfigure(config):
+    """Clean up after each test.
+
+    :param config: pytest config
+    :type config: pytest.Config
+    """
     from src import terrain
     terrain.say_goodbye()
 
 
 def pytest_addoption(parser):
+    """Add options to pytest.
+
+    :param parser: pytest parser
+    :type parser: pytest.Parser
+    """
     parser.addoption("--iters-factor", action="store", default=1,
                      help="iterations factor, initial iterations in tests are multiplied by this value, default 1")
     parser.addoption("--with-ca", action="store_true", default=False,
