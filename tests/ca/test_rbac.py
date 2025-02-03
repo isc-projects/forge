@@ -680,7 +680,7 @@ def test_rbac_access_by_name_removed_file(dhcp_version, make_sure_file_is_correc
     srv_control.start_srv('DHCP', 'stopped')
 
     # start without dhcp-disable file, agent should log an error and exit
-    srv_control.start_srv('CA', 'started', should_succeed=False)
+    srv_control.start_srv('CA' if world.f_cfg.control_agent else 'DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v4
@@ -720,7 +720,7 @@ def test_rbac_access_by_name_removed_file_2(dhcp_version, make_sure_file_is_corr
     srv_control.build_and_send_config_files()
 
     # start without dhcp-disable file, agent should log an error and exit
-    srv_control.start_srv('CA', 'started', should_succeed=False)
+    srv_control.start_srv('CA' if world.f_cfg.control_agent else 'DHCP', 'started', should_succeed=False)
 
     # now let's add dhcp-disable as our custom command in custom hook, and add 3rd admin based on
     # our new my-custom-hook
@@ -1054,7 +1054,6 @@ def test_rbac_filter_responses(dhcp_version):
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
-
     # with "response-filters": ["list-commands"] non allowed comments should be filtered out
     resp2 = _send_cmd({"command": "list-commands", "arguments": {}})
 

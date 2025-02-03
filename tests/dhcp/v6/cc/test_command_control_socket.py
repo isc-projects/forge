@@ -341,6 +341,7 @@ def test_control_channel_socket_config_test():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()  # we need this to run this test in --with-ca option
     # To global section of the config add file line: "expired-leases-processing":{"flush-reclaimed-timer-wait-time": 0,"hold-reclaimed-time": 0,"max-reclaim-leases": 100,"max-reclaim-time": 0,"reclaim-timer-wait-time": 0,"unwarned-reclaim-cycles": 5}
     # To global section of the config add file line: "expired-leases-processing":{"flush-reclaimed-timer-wait-time": 0,"hold-reclaimed-time": 0,"max-reclaim-leases": 100,"max-reclaim-time": 0,"reclaim-timer-wait-time": 0,"unwarned-reclaim-cycles": 5}
 
@@ -351,7 +352,7 @@ def test_control_channel_socket_config_test():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
-    srv_control.add_http_control_channel('control_socket_ANOTHER_ONE')
+    srv_control.add_http_control_channel(socket_name='control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
@@ -368,7 +369,7 @@ def test_control_channel_socket_config_test():
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.config_srv_prefix('2001:db8:1::', 0, 90, 96)
-    srv_control.add_http_control_channel('control_socket_ANOTHER_ONE')
+    srv_control.add_http_control_channel(socket_name='control_socket_ANOTHER_ONE')
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
     srv_control.config_srv_opt('sip-server-addr', '2001:db8::1,2001:db8::2')
     srv_control.config_srv_opt('new-posix-timezone', 'EST5EDT4\\,M3.2.0/02:00\\,M11.1.0/02:00')
