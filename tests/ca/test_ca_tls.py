@@ -30,6 +30,11 @@ def test_ca_tls_basic(dhcp_version, client_cert_required):
 
     Test creates all required certificates on server(ca, server, client),
     downloads those required for connection to Forge machine and sends command to Kea.
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    :param client_cert_required: whether client certificate is required
+    :type client_cert_required: bool
     """
     # Create certificates.
     certificate = srv_control.generate_certificate()
@@ -82,6 +87,11 @@ def test_ca_tls_basic_negative(dhcp_version, client_cert_required):
     Test creates all required certificates on server(ca, server, client),
     downloads those required for connection to Forge machine and sends command to Kea
     using incomplete or wrong certificate set.
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    :param client_cert_required: whether client certificate is required
+    :type client_cert_required: bool
     """
     # Create certificates.
     certificate = srv_control.generate_certificate()

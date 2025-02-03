@@ -202,6 +202,8 @@ class ForgeConfiguration:
         self.basic_validation()
 
     def _determine_mgmt_password(self):
+        """_determine_mgmt_password Determine mgmt password.
+        """
         if not hasattr(self, "mgmt_password_cmd") or self.mgmt_password_cmd is None or len(self.mgmt_password_cmd) == 0:
             return
         with subprocess.Popen(self.mgmt_password_cmd, shell=True, stdout=subprocess.PIPE) as pipe:
@@ -210,6 +212,10 @@ class ForgeConfiguration:
             self.mgmt_password = output.decode('utf-8').strip()
 
     def _load_settings(self):
+        """_load_settings Load settings from init_all.py.
+
+        :raises Exception: if a mandatory parameter is missing
+        """
         # Take configuration parameters from init_all.py.
         for key, default_value in SETTINGS.items():
             if hasattr(init_all, key):
@@ -231,12 +237,21 @@ class ForgeConfiguration:
                                     'It should have a value and it should not be None.')
 
     def gethwaddr(self, ifname):
+        """gethwaddr Get hardware address of interface.
+
+        :param ifname: interface name
+        :type ifname: str
+        :return: hardware address
+        :rtype: str
+        """
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         info = fcntl.ioctl(s.fileno(), 0x8927, struct.pack('256s', bytes(ifname, 'utf-8')[:15]))
         s.close()
         return ':'.join('%02x' % b for b in info[18:24])
 
     def basic_validation(self):
+        """basic_validation Basic validation of configuration.
+        """
         if self.software_install_path == "":
             print("Configuration failure, software_install_path is empty. "
                   "Please use ./src/forge_cfg.py -T to validate configuration.")
@@ -247,45 +262,86 @@ class ForgeConfiguration:
             sys.exit(-1)
 
     def set_env_val(self, env_name, env_val):
-        """
-        Set environmet variable.
-        :param env_name:
-        :param env_val:
-        :return:
+        """set_env_val Set environment variable.
+
+        :param env_name: environment variable name
+        :type env_name: str
+        :param env_val: environment variable value
+        :type env_val: str
         """
         os.putenv(env_name, env_val)
 
     def data_join(self, sub_path):
+        """data_join Get path to var/lib/kea directory.
+
+        :param sub_path: subpath to join
+        :type sub_path: str
+        :return: path to var/lib/kea directory
+        :rtype: str
+        """
         if self.install_method == 'make':
             return os.path.join(self.software_install_path, 'var/lib/kea', sub_path)
         else:
             return os.path.join('/var/lib/kea', sub_path)
 
     def log_join(self, sub_path):
+        """log_join Get path to var/log directory.
+
+        :param sub_path: subpath to join
+        :type sub_path: str
+        :return: path to var/log directory
+        :rtype: str
+        """
         if self.install_method == 'make':
             return os.path.join(self.software_install_path, 'var/log', sub_path)
         else:
             return os.path.join('/var/log/kea', sub_path)
 
     def etc_join(self, sub_path):
+        """etc_join Get path to etc/kea directory.
+
+        :param sub_path: subpath to join
+        :type sub_path: str
+        :return: path to etc/kea directory
+        :rtype: str
+        """
         if self.install_method == 'make':
             return os.path.join(self.software_install_path, 'etc/kea', sub_path)
         else:
             return os.path.join('/etc/kea', sub_path)
 
     def get_dhcp_conf_path(self):
+        """get_dhcp_conf_path Get path to kea-dhcp{proto}.conf file.
+
+        :return: path to kea-dhcp{proto}.conf file
+        :rtype: str
+        """
         if self.install_method == 'make':
             return os.path.join(self.software_install_path, f'etc/kea/kea-dhcp{world.proto[1]}.conf')
         else:
             return f'/etc/kea/kea-dhcp{world.proto[1]}.conf'
 
     def sbin_join(self, sub_path):
+        """sbin_join Get path to sbin directory.
+
+        :param sub_path: subpath to join
+        :type sub_path: str
+        :return: path to sbin directory
+        :rtype: str
+        """
         if self.install_method == 'make':
             return os.path.join(self.software_install_path, 'sbin', sub_path)
         else:
             return os.path.join('/usr/sbin', sub_path)
 
     def hooks_join(self, sub_path):
+        """hooks_join Get path to lib/kea/hooks directory. Path differ between systems.
+
+        :param sub_path: subpath to join
+        :type sub_path: str
+        :return: path to lib/kea/hooks directory
+        :rtype: str
+        """
         if self.install_method == 'make':
             return os.path.join(self.software_install_path, 'lib/kea/hooks', sub_path)
         else:
@@ -296,12 +352,24 @@ class ForgeConfiguration:
             return os.path.join(f'/usr/lib/{world.server_architecture}-linux-gnu/kea/hooks', sub_path)
 
     def run_join(self, sub_path):
+        """run_join Get path to run/kea directory.
+
+        :param sub_path: subpath to join
+        :type sub_path: str
+        :return: path to run/kea directory
+        :rtype: str
+        """
         if self.install_method == 'make':
             return os.path.join(self.software_install_path, 'var/run/kea', sub_path)
         else:
             return os.path.join('/run/kea', sub_path)
 
     def get_share_path(self):
+        """get_share_path Get path to share/kea directory.
+
+        :return: path to share directory
+        :rtype: str
+        """
         if self.install_method == 'make':
             return os.path.join(self.software_install_path, 'share/kea')
         else:
@@ -309,9 +377,23 @@ class ForgeConfiguration:
 
     @staticmethod
     def tmp_join(sub_path):
+        """tmp_join Get path to temporary directory.
+
+        :param sub_path: subpath to join
+        :type sub_path: str
+        :return: path to temporary directory
+        :rtype: str
+        """
         return os.path.join('/tmp', sub_path)
 
     def get_leases_path(self, proto=None):
+        """get_leases_path Get path to leases file.
+
+        :param proto: protocol version, defaults to None
+        :type proto: str, optional
+        :return: path to leases file
+        :rtype: str
+        """
         if not proto:
             proto = world.proto
 
@@ -322,6 +404,8 @@ def get_test_progress():
     """
     Returns a textual representation of the total test progress e.g. '#8/24'.
     Before running the first test, it's always just '#1'.
+    :return: textual representation of the total test progress
+    :rtype: str
     """
     result = f'#{world.current_test_index}'
     if world.test_count != 0:
@@ -338,16 +422,45 @@ world.get_test_progress = get_test_progress
 
 
 def _conv_arg_to_txt(arg):
+    """convert argument to string
+
+    :param arg: argument to convert
+    :type arg: any
+    :return: string representation of argument
+    :rtype: str
+    """
     if isinstance(arg, str):
         return "'%s'" % arg
     else:
         return str(arg)
 
 
-# stub that replaces lettuce step decorator
 def step(pattern):
+    """step replaces lettuce step decorator
+
+    :param pattern: pattern to match
+    :type pattern: str
+    :return: wrapped function
+    :rtype: function
+    """
     def wrap(func):
+        """wrap replaces lettuce wrap decorator
+
+        :param func: function to wrap
+        :type func: function
+        :return: wrapped function
+        :rtype: function
+        """
         def wrapped_func(*args, **kwargs):
+            """wrapped_func replaces lettuce wrapped_func
+
+            :param args: arguments
+            :type args: tuple
+            :param kwargs: keyword arguments
+            :type kwargs: dict
+            :return: result of the wrapped function
+            :rtype: any
+            """
             txt = func.__name__ + '('
             txt_args = ", ".join([_conv_arg_to_txt(a) for a in args])
             txt_kwargs = ", ".join(['%s=%s' % (str(k), _conv_arg_to_txt(v)) for k, v in kwargs.items()])

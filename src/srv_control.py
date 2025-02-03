@@ -1045,6 +1045,8 @@ def add_http_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, soc
     :type host_port:
     :param socket_name: (Default value = 'control_socket')
     :type socket_name:
+    :param auth: optional authorisation configuration
+    :type auth: dict
     """
     host_address, host_port = test_define_value(host_address, host_port)
     dhcp.add_http_control_channel(host_address, host_port, socket_name, auth)

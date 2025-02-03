@@ -1481,7 +1481,7 @@ def enable_https(trust_anchor: str, cert_file: str, key_file: str, cert_required
 
 
 # Start kea-ctrl-agent if it's enabled
-def add_http_control_channel(host_address: str, host_port: int, socket_name: str = 'control_socket') -> None:
+def add_http_control_channel(host_address: str, host_port: int, socket_name: str = 'control_socket', auth: dict = None) -> None:
     """add_http_control_channel Add http control channel to the configuration.
 
     If forge is configured to use Control Agent daemon, it will be configured here with all the parameters (addresses, sockets, logging).

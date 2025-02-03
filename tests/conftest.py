@@ -18,6 +18,7 @@ def get_number_of_tests(request):
     the first test so test_count will be != 0 from the second test onward.
 
     :param request: pytest request to run a test
+    :type request: pytest.SubRequest
     """
     world.test_count = len(request.node.items)
 
@@ -136,6 +137,14 @@ def pytest_addoption(parser):
 
 @pytest.fixture
 def iters_factor(request):
+    """
+    Get the iterations factor (how many times the test should be repeated).
+
+    :param request: pytest request to run a test
+    :type request: pytest.SubRequest
+    :return: iterations factor
+    :rtype: int
+    """
     return int(request.config.getoption("--iters-factor"))
 
 

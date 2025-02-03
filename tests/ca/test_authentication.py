@@ -21,6 +21,11 @@ from src.forge_cfg import world
 @pytest.mark.v6
 @pytest.mark.v4
 def test_ca_basic_authentication(dhcp_version):
+    """Test basic authentication.
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    """
     misc.test_setup()
     srv_control.add_unix_socket()
     auth = {

@@ -29,6 +29,9 @@ from src.forge_cfg import world
 def test_rbac_cert_subject(dhcp_version):
     """
     Test assign-role-method set to cert subject
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     # Create certificates.
     certificate = srv_control.generate_certificate()
@@ -147,6 +150,9 @@ def test_rbac_cert_issuer(dhcp_version):
     """
     Test assign-role-method set to cert issuer
     issue https://gitlab.isc.org/isc-projects/kea/-/issues/2475
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     # Create certificates.
     certificate = srv_control.generate_certificate()
@@ -236,6 +242,11 @@ def test_rbac_remote_address(dhcp_version, tls):
     """
     Test assign-role-method set to remote-address, with tls or without
     issue https://gitlab.isc.org/isc-projects/kea/-/issues/2475
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    :param tls: whether TLS is enabled
+    :type tls: bool
     """
     if tls:
         # Create certificates.
@@ -355,7 +366,11 @@ def test_rbac_remote_address(dhcp_version, tls):
 def test_rbac_basic_authentication(dhcp_version, tls):
     """
     Test assign-role-method set to basic authentication, with or without tls enabled
-    :param tls: bool, tls value
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    :param tls: whether TLS is enabled
+    :type tls: bool
     """
     # Create certificates.
     if tls:
@@ -502,7 +517,8 @@ def test_rbac_basic_authentication(dhcp_version, tls):
 def _preconfigure_test():
     """
     A lot of tests below use the same basic configuration
-    :return: list, part of a Control Agent configuration
+
+    :return: list, part of a Control Agent/DHCP configuration
     """
     misc.test_setup()
     srv_control.add_unix_socket()
@@ -577,7 +593,11 @@ def test_rbac_access_by_read_write(dhcp_version, make_sure_file_is_correct):
     """
     Check ACLs based on READ and WRITE key words, also check how changing command definition files
     in share/api will reflect on Control Agent work
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     :param make_sure_file_is_correct: fixture that will backup and restore dhcp-disable.json file
+    :type make_sure_file_is_correct: function
     """
     roles = [
         {
@@ -641,7 +661,11 @@ def test_rbac_access_by_read_write(dhcp_version, make_sure_file_is_correct):
 def test_rbac_access_by_name_removed_file(dhcp_version, make_sure_file_is_correct):
     """
     Check how Control Agent reacts on removed command definition file from share/api
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     :param make_sure_file_is_correct: fixture that will backup and restore dhcp-disable.json file
+    :type make_sure_file_is_correct: function
     """
     roles = [
         {
@@ -689,7 +713,11 @@ def test_rbac_access_by_name_removed_file(dhcp_version, make_sure_file_is_correc
 def test_rbac_access_by_name_removed_file_2(dhcp_version, make_sure_file_is_correct):
     """
     Check how Control Agent reacts on removed command definition file from share/api
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     :param make_sure_file_is_correct: fixture that will backup and restore dhcp-disable.json file
+    :type make_sure_file_is_correct: function
     """
     # remove file that define access level
     f = os.path.join(world.f_cfg.get_share_path(), 'api/dhcp-disable.json')
@@ -770,6 +798,9 @@ def test_rbac_access_by_name_removed_file_2(dhcp_version, make_sure_file_is_corr
 def test_rbac_access_by_all_none(dhcp_version):
     """
     Check key words ALL and NONE in ACL definition and "list-match-first" parameter
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     roles = [
         {
@@ -890,6 +921,9 @@ def test_rbac_access_by_all_none(dhcp_version):
 def test_rbac_access_by_hook_name(dhcp_version):
     """
     Check ACL based on hook names
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     roles = [
         {
@@ -939,8 +973,10 @@ def test_rbac_access_by_hook_name(dhcp_version):
 @pytest.mark.v6
 @pytest.mark.ca
 def test_rbac_access_by_commands_with_other_list(dhcp_version):
-    """
-    Check "other-commands" ACL definition
+    """Check "other-commands" ACL definition
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     roles = [
         {
@@ -1005,9 +1041,11 @@ def test_rbac_access_by_commands_with_other_list(dhcp_version):
 @pytest.mark.v6
 @pytest.mark.ca
 def test_rbac_filter_responses(dhcp_version):
-    """
-    Check response filtering defined in "response-filters": ["list-commands"]
+    """Check response filtering defined in "response-filters": ["list-commands"]
     issue https://gitlab.isc.org/isc-projects/kea/-/issues/2483
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     roles = [
         {
@@ -1069,6 +1107,11 @@ def test_rbac_filter_responses(dhcp_version):
 @pytest.mark.ca
 @pytest.mark.disabled
 def test_default_role(dhcp_version):
+    """Test default role. Disabled.
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    """
     # not sure how to test it
     hook = _preconfigure_test()
     hook[0]["parameters"].update({"default-role": {
@@ -1095,8 +1138,10 @@ def test_default_role(dhcp_version):
 @pytest.mark.v6
 @pytest.mark.ca
 def test_unknown_role(dhcp_version):
-    """
-    Check if redefinition of unknown-rule works
+    """Check if redefinition of unknown-rule works
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     hook = _preconfigure_test()
     hook[0]["parameters"].update({"unknown-role": {
@@ -1143,8 +1188,10 @@ def test_unknown_role(dhcp_version):
 @pytest.mark.v6
 @pytest.mark.ca
 def test_creating_access_list_for_multiple_use_cases(dhcp_version):
-    """
-    Define multiple ACLs in "access-control-lists" and then use those in different roles
+    """Define multiple ACLs in "access-control-lists" and then use those in different roles
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     misc.test_setup()
     srv_control.add_unix_socket()
@@ -1248,8 +1295,10 @@ def test_creating_access_list_for_multiple_use_cases(dhcp_version):
 @pytest.mark.v6
 @pytest.mark.ca
 def test_mixed_roles(dhcp_version):
-    """
-    Test all access lists types and logic in one single ACL
+    """Test all access lists types and logic in one single ACL
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     misc.test_setup()
     srv_control.add_unix_socket()
