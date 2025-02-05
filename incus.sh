@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -eu
+
 export LANGUAGE="C"
 export LC_ALL="C"
 
@@ -71,38 +74,44 @@ function get_os() {
 function prepare_node() {
     # The first argument is the OS name/OS version
     # The second argument is the number of kea nodes
-    # The third argument is the number of internal testing networks
     if [[ "$2" != "forge" ]]; then
         get_os "$1"
     fi
-    log "Creating kea-$2 node - $1"
-    incus launch images:"$1" kea-"$2"
-    sleep 3
+    if ! is_instance_created "kea-${2}"; then
+        log "Creating kea-$2 node - $1"
+        incus launch images:"$1" kea-"$2"
+        sleep 3
+    fi
+}
 
-    if [[ "$2" == "forge" ]]; then
+function update_node() {
+    # The first argument is the number of the kea node or "forge"
+    if [[ "$1" == "forge" ]]; then
         # This is always ubuntu
-        incus exec kea-"$2" -- apt update > "$logFile" 2>&1
-        incus exec kea-"$2" -- apt install python3 python3-venv g++ python3-dev libpcap-dev git tcpdump openssh-server -y > "$logFile" 2>&1
+        incus exec kea-"$1" -- apt update > "$logFile" 2>&1
+        incus exec kea-"$1" -- apt install python3 python3-venv g++ python3-dev libpcap-dev git tcpdump openssh-server -y > "$logFile" 2>&1
         # let's edit ssh config here as well
         printf "Host *\n    StrictHostKeyChecking no\n" > my.conf
         incus file push my.conf kea-forge//etc/ssh/ssh_config.d/my.conf
     else
-        update kea-"$2"
-        install_base_pkgs kea-"$2"
-        prepare_freeradius kea-"$2"
+        update kea-"$1"
+        install_base_pkgs kea-"$1"
+        prepare_freeradius kea-"$1"
         # TODO take hammer from any branch
-        incus exec kea-"$2" -- curl -s -L https://gitlab.isc.org/isc-projects/kea/-/raw/master/hammer.py -o /tmp/hammer.py
-        log "Running hammer, output in /tmp/kea-$2-hammer.log"
+        incus exec kea-"$1" -- curl -s -L https://gitlab.isc.org/isc-projects/kea/-/raw/master/hammer.py -o /tmp/hammer.py
+        log "Running hammer, output in /tmp/kea-$1-hammer.log"
         # This is a neat trick, commands executed by hammer are still printed to stdout
-        incus exec kea-"$2" -- python3 /tmp/hammer.py prepare-system -p local -w mysql pgsql forge shell gssapi netconf > /tmp/kea-"$2"-hammer.log
+        incus exec kea-"$1" -- python3 /tmp/hammer.py prepare-system -p local -w mysql pgsql forge shell gssapi netconf > /tmp/kea-"$1"-hammer.log
     fi
 }
 
 function create_networks() {
     # The first argument is the number of internal networks
-    for i in $(seq 0 $(("$1"-1))); do
-        log "Creating network internal-net-$i"
-        incus network create internal-net-"$i" ipv4.nat=false ipv6.nat=false ipv4.dhcp=false ipv6.dhcp=false ipv4.firewall=false ipv6.firewall=false
+    for i in $(seq 1 ${1}); do
+        if ! is_network_created "internal-net-${i}"; then
+            log "Creating network internal-net-$i"
+            incus network create internal-net-"$i" ipv4.nat=false ipv6.nat=false ipv4.dhcp=false ipv6.dhcp=false ipv4.firewall=false ipv6.firewall=false ipv6.address="2001:db8::${i}/32"
+        fi
     done
     incus network list
 }
@@ -170,35 +179,46 @@ function remove_pkg() {
     esac
 }
 
-function update_nodes() {
-    # The first argument is the number of nodes
-    for i in $(seq 1 "$1"); do
-        update kea-"$i"
-    done
-}
-
 function attach_node_to_network() {
     # The first argument is network name
     # The second argument is node name
     # The third argument is interface name
-    log "Attaching $2 to $1 on interface $3"
-    incus network attach "$1" "$2" "$3"
+    if ! incus network show "${1}" | grep -F "${2}" > /dev/null; then
+        log "Attaching $2 to $1 on interface $3"
+        incus network attach "$1" "$2" "$3"
+    fi
+}
+
+function is_instance_created() {
+  # The first argument is the instance name.
+  incus info "${1}" > /dev/null 2>&1
+}
+
+function is_network_created() {
+  # The first argument is the network name.
+  incus network info "${1}" > /dev/null 2>&1
 }
 
 function remove_incus_containers() {
     # The first argument is the number of kea nodes
     log "Deleting containers"
     for i in $(seq 1 "$1"); do
-        incus delete kea-"$i" --force
+        if is_instance_created "kea-${i}"; then
+            incus delete kea-"$i" --force
+        fi
     done
-    incus delete kea-forge --force
+    if is_instance_created kea-forge; then
+        incus delete kea-forge --force
+    fi
 }
 
 function remove_incus_network() {
     # The first argument is the number of internal networks
-    for i in $(seq 0 $(("$1"-1))); do
+    for i in $(seq 1 "${1}"); do
         log "Deleting network internal-net-$i"
-        incus network delete internal-net-"$i"
+        if is_network_created "internal-net-${i}"; then
+            incus network delete internal-net-"$i"
+        fi
     done
 }
 
@@ -235,16 +255,18 @@ function create_user() {
     # The first argument is a node name
     # The second argument is the OS name/OS version, if not provided $usedSystem will be used
     local system=$usedSystem
-    if [[ -n "$2" ]]; then
+    if [[ -n "${2+x}" ]]; then
         local system="$2"
     fi
     log "Creating user forge in $1 - $system"
-    if [[ "$system" == "fedora" ]]; then
-        incus exec "$1" -- useradd -m -s /bin/bash forge
-        (printf "test0test1") | incus exec "$1" -- passwd --stdin forge
-    else
-        incus exec "$1" -- adduser --disabled-password --gecos "" forge
-        echo 'forge:test0test1' | incus exec "$1" -- chpasswd
+    if ! incus exec "$1" -- id forge > /dev/null; then
+        if [[ "$system" == "fedora" ]]; then
+            incus exec "$1" -- useradd -m -s /bin/bash forge
+            (printf "test0test1") | incus exec "$1" -- passwd --stdin forge
+        else
+            incus exec "$1" -- adduser --disabled-password --gecos "" forge
+            echo 'forge:test0test1' | incus exec "$1" -- chpasswd
+        fi
     fi
     enable_ssh "$1"
     printf "forge ALL=(ALL) NOPASSWD:ALL" > nopasswd
@@ -283,7 +305,9 @@ function set_address() {
     # The second argument is an interface name
     # The third argument is a node name
     log "Configuring address $1 for interface $2 on node $3"
-    incus exec "$3" -- ip addr add "$1" dev "$2"
+    if ! incus exec "$3" -- ip addr show dev "${2}" | grep -E "inet(|6) $1"; then
+        incus exec "$3" -- ip addr add "$1" dev "$2"
+    fi
     incus exec "$3" -- ip link set "$2" up
 }
 
@@ -291,13 +315,18 @@ function configure_internal_network(){
     # The first argument is the number of kea nodes
     # The second argument is the number of internal networks
     for interface in $(seq 1 "$2"); do
-        set_address 192.168.5$((interface-1)).240/24 eth"$interface" kea-forge
-        set_address 2001:db8:"$interface"::1000/64 eth"$interface" kea-forge
-        incus exec kea-forge -- sudo ip -6 route add 2001:db8:"$interface"::/64 dev eth"$interface"
+        eth="eth$((interface - 1))"
+        set_address 192.168.5$interface.240/24 "${eth}" kea-forge
+        set_address 2001:db8:"$interface"::1000/64 "${eth}" kea-forge
+        if ! incus exec kea-forge -- sudo ip -6 route show 2001:db8:"$interface"::/64 dev "${eth}"; then
+            incus exec kea-forge -- sudo ip -6 route add 2001:db8:"$interface"::/64 dev "${eth}"
+        fi
         for node in $(seq 1 "$1"); do
-            set_address 192.168.5$((interface-1)).24"$node"/24 eth"$interface" kea-"$node"
-            set_address 2001:db8:"$interface"::100"$node"/64 eth"$interface" kea-"$node"
-            incus exec kea-"$node" -- sudo ip -6 route add 2001:db8:"$interface"::/64 dev eth"$interface"
+            set_address 192.168.5${interface}.24"$node"/24 "${eth}" kea-"$node"
+            set_address 2001:db8:"$interface"::100"$node"/64 "${eth}" kea-"$node"
+            if ! incus exec kea-"$node" -- sudo ip -6 route show 2001:db8:"$interface"::/64 dev "${eth}"; then
+                incus exec kea-"$node" -- sudo ip -6 route add 2001:db8:"$interface"::/64 dev "${eth}"
+            fi
         done
     done
 }
@@ -440,7 +469,12 @@ function mount_ccache() {
     # The first argument is a node name
     log "Mounting ccache on node $1 using path /mnt/ccache/${usedSystem}/${osVersion}"
     #TODO change amd64 to $arch but make sure it either arm64 or aarch64
-    incus config device add "$1" ccache disk source=/mnt/ccache/"${usedSystem}/${osVersion}/amd64" path=/ccache readonly=false
+    path="/mnt/ccache/${usedSystem}/${osVersion}/amd64"
+    if test ! -e "${path}"; then
+      log "Did not mount ccache on node $1 using path /mnt/ccache/${usedSystem}/${osVersion}"
+      return
+    fi
+    incus config device add "$1" ccache disk source="${path}" path=/ccache readonly=false
     cat << EOF > ccache.conf
 cache_dir = /ccache
 temporary_dir = /tmp/ccache/
@@ -642,14 +676,20 @@ case "$command" in
         create_networks "$numberOfNetworks"
         # connect kea-forge to all networks
         for i in $(seq 1 "$numberOfNetworks"); do
-            attach_node_to_network internal-net-$((i-1)) kea-forge eth"$i"
+            attach_node_to_network internal-net-${i} kea-forge eth"$i"
         done
         # connect all nodes to all networks
         for i in $(seq 1 "$numberOfNodes"); do
             for x in $(seq 1 "$numberOfNetworks"); do
-                attach_node_to_network internal-net-$((x-1)) kea-"$i" eth"$x"
+                attach_node_to_network internal-net-${x} kea-"$i" eth"$x"
             done
         done
+        configure_internal_network "$numberOfNodes" "$numberOfNetworks"
+        for i in $(seq 1 "$numberOfNodes"); do
+            update_node "$i"
+        done
+        # start forge node
+        update_node "forge"
         # create main user in kea-forge and generate key
         create_user kea-forge ubuntu
         generate_rsa_key
@@ -659,7 +699,6 @@ case "$command" in
             migrate_rsa_key kea-"$i"
             mount_ccache kea-"$i"
         done
-        configure_internal_network "$numberOfNodes" "$numberOfNetworks"
         incus list --format json | jq > incus.json
         setup_forge
 
@@ -676,7 +715,7 @@ case "$command" in
         create_networks "$@"
         ;;
     update)
-        update_nodes "$@"
+        update_node "$@"
         ;;
     setup-forge)
         setup_forge
