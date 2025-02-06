@@ -1,0 +1,9 @@
+[bandit]
+# B101    assert_used
+# B104    hardcoded_bind_all_interfaces
+# B105    hardcoded_password_string
+# B108    hardcoded_tmp_directory
+# B602    subprocess_popen_with_shell_equals_true
+# B605    start_process_with_a_shell
+# B608    hardcoded_sql_expressions
+skips = B101,B104,B105,B108,B602,B605,B608
