@@ -1,13 +1,4 @@
 variables:
-  # B101    assert_used
-  # B104    hardcoded_bind_all_interfaces
-  # B108    hardcoded_tmp_directory
-  # B605    start_process_with_a_shell
-  # B602    subprocess_popen_with_shell_equals_true
-  # B608    hardcoded_sql_expressions
-  # B105    hardcoded_password_string
-  BANDIT_SKIPS: 'B101,B104,B108,B605,B602,B608,B105'
-
   CI_REGISTRY_IMAGE: registry.gitlab.isc.org/isc-projects/forge
 
 image: "${CI_REGISTRY_IMAGE}:latest"
@@ -32,7 +23,7 @@ image: "${CI_REGISTRY_IMAGE}:latest"
 bandit:
   script:
     - *get_modified_python_scripts
-    - bandit --skip="${BANDIT_SKIPS}" ${MODIFIED_PYTHON_SCRIPTS}
+    - ./check-style.sh --bandit ${MODIFIED_PYTHON_SCRIPTS}
 
 pages:
   script:
@@ -53,16 +44,23 @@ pages:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: on_success
 
+pycodestyle:
+  script:
+    - *get_modified_python_scripts
+    - ./check-style.sh --pycodestyle ${MODIFIED_PYTHON_SCRIPTS}
+
 pydocstyle:
   script:
     - *get_modified_python_scripts
-    - pydocstyle ${MODIFIED_PYTHON_SCRIPTS}
+    - ./check-style.sh --pydocstyle ${MODIFIED_PYTHON_SCRIPTS}
 
 pydoctor:
   script:
     - *get_modified_python_scripts
-    - pydoctor --docformat restructuredtext ${MODIFIED_PYTHON_SCRIPTS}
+    - ./check-style.sh --pydoctor ${MODIFIED_PYTHON_SCRIPTS}
 
-pylint-and-pycodestyle:
+pylint:
   script:
-    - ./check-style.sh --changed
+    - *get_modified_python_scripts
+    - ./check-style.sh --pylint ${MODIFIED_PYTHON_SCRIPTS}
+
