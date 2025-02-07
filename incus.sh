@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+#set -eu  # temporary disabled
 
 export LANGUAGE="C"
 export LC_ALL="C"
@@ -315,14 +315,14 @@ function configure_internal_network(){
     # The first argument is the number of kea nodes
     # The second argument is the number of internal networks
     for interface in $(seq 1 "$2"); do
-        eth="eth$((interface - 1))"
-        set_address 192.168.5$interface.240/24 "${eth}" kea-forge
+        eth="eth$interface"
+        set_address 192.168.5"$interface".240/24 "${eth}" kea-forge
         set_address 2001:db8:"$interface"::1000/64 "${eth}" kea-forge
         if ! incus exec kea-forge -- sudo ip -6 route show 2001:db8:"$interface"::/64 dev "${eth}"; then
             incus exec kea-forge -- sudo ip -6 route add 2001:db8:"$interface"::/64 dev "${eth}"
         fi
         for node in $(seq 1 "$1"); do
-            set_address 192.168.5${interface}.24"$node"/24 "${eth}" kea-"$node"
+            set_address 192.168.5"$interface".24"$node"/24 "${eth}" kea-"$node"
             set_address 2001:db8:"$interface"::100"$node"/64 "${eth}" kea-"$node"
             if ! incus exec kea-"$node" -- sudo ip -6 route show 2001:db8:"$interface"::/64 dev "${eth}"; then
                 incus exec kea-"$node" -- sudo ip -6 route add 2001:db8:"$interface"::/64 dev "${eth}"
