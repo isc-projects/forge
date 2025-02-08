@@ -84,6 +84,17 @@ function prepare_node() {
     fi
 }
 
+function copy_node() {
+    # The first argument is number of all nodes required
+    # Ther is already one node created
+    for i in $(seq 2 "$1"); do
+        log "Copying kea-1 to kea-$i"
+        incus copy kea-1 kea-"$i"
+        # incus by default is regenerating MAC address for the new container
+        incus start kea-"$i"
+    done
+}
+
 function update_node() {
     # The first argument is the number of the kea node or "forge"
     if [[ "$1" == "forge" ]]; then
@@ -110,7 +121,7 @@ function create_networks() {
     for i in $(seq 1 ${1}); do
         if ! is_network_created "internal-net-${i}"; then
             log "Creating network internal-net-$i"
-            incus network create internal-net-"$i" ipv4.nat=false ipv6.nat=false ipv4.dhcp=false ipv6.dhcp=false ipv4.firewall=false ipv6.firewall=false ipv6.address="2001:db8::${i}/32"
+            incus network create internal-net-"$i" ipv4.nat=false ipv6.nat=false ipv4.dhcp=false ipv6.dhcp=false ipv4.firewall=false ipv6.firewall=false
         fi
     done
     incus network list
@@ -502,6 +513,10 @@ function print_summary() {
     incus image list
     incus list -cns46tSDM
     incus network list
+    log "v6 routes in kea-1:"
+    incus exec kea-1 -- ip -6 route show
+    log "v4 routes in kea-1:"
+    incus exec kea-1 -- ip -4 route show
 }
 
 function check_installed_kea() {
@@ -535,7 +550,7 @@ function setup_forge() {
     upload_pytest
     incus exec kea-forge -- sudo -u forge python3 -m venv /home/forge/venv-client-node
     incus exec kea-forge -- sudo -u forge /home/forge/venv-client-node/bin/pip install -r /home/forge/requirements.txt
-    create_forge_init
+    populate_forge_init
     python3 modify_init_all.py
 }
 
@@ -562,7 +577,9 @@ function run_pytest() {
 
 function get_results() {
     log "Downloading results from kea-forge"
-    incus file pull -r -q kea-forge/home/forge/tests_results .
+    rm -rf tests_results
+    mkdir -p tests_results
+    incus file pull -r -q kea-forge/home/forge/tests_results/* tests_results/.
 }
 
 function get_from_kea_forge() {
@@ -571,10 +588,10 @@ function get_from_kea_forge() {
     incus file pull -r kea-forge//home/forge/"$1" .
 }
 
-function create_forge_init() {
-    log "Creating partial forge init script"
+function populate_forge_init() {
+    log "Upadting forge init script"
 
-cat << EOF > init_all.py
+cat << EOF >> init_all.py
 LOGLEVEL = "info"
 IFACE = "eth1"
 SERVER_IFACE = "eth1"
@@ -632,13 +649,30 @@ function help() {
     printf "Usage: %s {prepare-env|delete|stop} [arguments...]\n" "$0"
     printf "       %s prepare-env <OS-name/OS-version> <number-of-kea-nodes> <number-of-internal-networks>\n" "$0"
     printf "            %s prepare-env ubuntu/24.04 2 2\n" "$0"
+    printf "            prepare-env will create complete testing setup without kea installed.\n"
+    printf "            Example usage steps: prepare-env, install-kea-pkgs/ install-kea-tarball, run-pytest\n"
+    printf "            Advantages: creates complete testing setup before Kea installation.\n"
+    printf "            Disadvantages: requires more time and resources to sequentially install Kea.\n"
+    printf "       %s initialize-container <OS-name/OS-version>\n" "$0"
+    printf "            %s initialize-container ubuntu/24.04\n" "$0"
+    printf "            initialize-container will create a single container from a template and prepare it for kea installation.\n"
+    printf "       %s build-testing-environment <OS-name/OS-version> <number-of-kea-nodes> <number-of-internal-networks>\n" "$0"
+    printf "            %s build-testing-environment ubuntu/24.04 2 2\n" "$0"
+    printf "            build-testing-environment will create complete testing setup from already created container with kea installed in it.\n"
+    printf "            Example usage steps: initialize-container, install-kea-pkgs/ install-kea-tarball, build-testing-environment, run-pytest\n"
+    printf "            Advantages: faster to create testing setup, Kea is installed in the container which later is cloned.\n"
+    printf "            Disadvantages: failure in any procedure that is used to create environment will be seen after Kea installation.\n"
     printf "       %s clear-all <number-of-kea-nodes> <number-of-internal-networks>\n" "$0"
     printf "            %s clear-all 2 1\n" "$0"
+    printf "            clear-all will remove all containers and networks.\n"
     printf "       %s install-kea-pkgs <OS-name/OS-version> <number-of-kea-nodes> <kea-pkgs-version>\n" "$0"
     printf "            %s install-kea-pkgs ubuntu/24.04 2 2.7.3-isc20240903092214\n" "$0"
+    printf "            install-kea-pkgs will install Kea packages from Nexus repository.\n"
     printf "       %s install-kea-tarball <number-of-kea-nodes> <path-to-source-code>\n" "$0"
     printf "            %s install-kea-tarball 2 ~/kea\n" "$0"
+    printf "            install-kea-tarball will install Kea from the source code from provided path.\n"
     printf "       %s update-pytest\n" "$0"
+    printf "            update-pytest will update the pytest files in kea-forge container.\n"
     printf "       %s run-pytest <pytest-arguments>\n" "$0"
     printf "            %s run-pytest -vv tests/dhcp/test_options.py::test_v4_never_send_various_combinations\n" "$0"
     printf "            to reupload forge before executing tests add --upload-pytest option to run-pytest\n"
@@ -660,9 +694,61 @@ case "$command" in
         incus image copy images:alpine/3.20 local:
         incus image list
         ;;
-    prepare-env)
+    initialize-container)
+        # first argument is a OS name/version
+        # this command is used to initialize a container from a template
+        # and prepare it for kea installation. It's just creating one node
+        # which later be cloned, after kea is installed.
+
         # print incus configuration
+        startTime=$(date +%s)
         incus admin init --dump
+        prepare_node "$1" "1"
+        update_node "1"
+        elapsed_time=$(($(date +%s) - startTime))
+        log "Container initialized in: $elapsed_time seconds"
+        ;;
+    build-testing-environment)
+        osName=$1
+        numberOfNodes=$2
+        numberOfNetworks=$3
+        startTime=$(date +%s)
+        copy_node "$numberOfNodes"
+        # start forge node
+        prepare_node "ubuntu/24.04" "forge"
+        create_networks "$numberOfNetworks"
+        # connect kea-forge to all networks
+        for i in $(seq 1 "$numberOfNetworks"); do
+            attach_node_to_network internal-net-${i} kea-forge eth"$i"
+        done
+        # connect all nodes to all networks
+        for i in $(seq 1 "$numberOfNodes"); do
+            for x in $(seq 1 "$numberOfNetworks"); do
+                attach_node_to_network internal-net-${x} kea-"$i" eth"$x"
+            done
+        done
+        configure_internal_network "$numberOfNodes" "$numberOfNetworks"
+        # start forge node
+        update_node "forge"
+        # create main user in kea-forge and generate key
+        create_user kea-forge ubuntu
+        generate_rsa_key
+        # create users in other nodes and migrate key
+        for i in $(seq 1 "$numberOfNodes"); do
+            create_user kea-"$i"
+            migrate_rsa_key kea-"$i"
+            mount_ccache kea-"$i"
+        done
+        incus list --format json | jq > incus.json
+        setup_forge
+
+        elapsed_time=$(($(date +%s) - startTime))
+        print_summary
+        log "Testing environment created in: $elapsed_time seconds"
+        log "Python init script created in: init_all.py"
+        log "Testing environment configuration saved in: incus.json file"
+        ;;
+    prepare-env)
         # start kea nodes kea-1 kea-2 etc
         startTime=$(date +%s)
         osName=$1
@@ -732,6 +818,7 @@ case "$command" in
     clear-all)
         remove_incus_containers "$1"
         remove_incus_network "$2"
+        rm -f init_all.py
         print_summary
         ;;
     install-kea-pkgs)
