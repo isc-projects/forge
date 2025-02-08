@@ -713,6 +713,7 @@ case "$command" in
         numberOfNodes=$2
         numberOfNetworks=$3
         startTime=$(date +%s)
+        get_os "$osName"
         copy_node "$numberOfNodes"
         # start forge node
         prepare_node "ubuntu/24.04" "forge"
