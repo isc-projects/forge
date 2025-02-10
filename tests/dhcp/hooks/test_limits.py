@@ -203,6 +203,11 @@ def test_rate_limits_subnet(dhcp_version, backend, unit):
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
     and counts how many packets were sent, and how many packets were received from Kea.
     If the received packets is the same as limit, the test passes. Some error in number of packets is accounted for.
+    :type dhcp_version: str
+    :param dhcp_version: The DHCP version being tested ('v4' or 'v6').
+    :type backend: str
+    :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
+    :type unit: str
     :param unit:  Defines testing of limit per second or minute
     """
     misc.test_setup()
@@ -288,6 +293,11 @@ def test_rate_limits_class(dhcp_version, backend, unit):
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
     and counts how many packets were sent, and how many packets were received from Kea.
     If the received packets is the same as limit, the test passes. Some error in number of packets is accounted for.
+    :type dhcp_version: str
+    :param dhcp_version: The DHCP version being tested ('v4' or 'v6').
+    :type backend: str
+    :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
+    :type unit: str
     :param unit:  Defines testing of limit per second or minute
     """
     misc.test_setup()
@@ -390,6 +400,11 @@ def test_rate_limits_builtin_class(dhcp_version, backend, unit):
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
     and counts how many packets were sent, and how many packets were received from Kea.
     If the received packets is the same as limit, the test passes. Some error in number of packets is accounted for.
+    :type dhcp_version: str
+    :param dhcp_version: The DHCP version being tested ('v4' or 'v6').
+    :type backend: str
+    :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
+    :type unit: str
     :param unit:  Defines testing of limit per second or minute
     """
     misc.test_setup()
@@ -490,6 +505,10 @@ def test_rate_limits_mix(dhcp_version, backend):
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
     and counts how many packets were sent, and how many packets were received from Kea in different classes.
     If the received packets is the same as limit, the test passes. Some error in number of packets is accounted for.
+    :type dhcp_version: str
+    :param dhcp_version: The DHCP version being tested ('v4' or 'v6').
+    :type backend: str
+    :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -645,6 +664,10 @@ def test_lease_limits_subnet(dhcp_version, backend):
     Test removes leases and tries again to check if the limit is restored.
     If the received leases is the same as limit, the test passes.
     Some error in number of packets is accounted for.
+    :type dhcp_version: str
+    :param dhcp_version: The DHCP version being tested ('v4' or 'v6').
+    :type backend: str
+    :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -768,6 +791,10 @@ def test_lease_limits_class(dhcp_version, backend):
     Test removes leases and tries again to check if the limit is restored.
     If the received leases is the same as limit, the test passes.
     Some error in number of packets is accounted for.
+    :type dhcp_version: str
+    :param dhcp_version: The DHCP version being tested ('v4' or 'v6').
+    :type backend: str
+    :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -945,6 +972,10 @@ def test_lease_limits_builtin_class(dhcp_version, backend):
     Test removes leases and tries again to check if the limit is restored.
     If the received leases is the same as limit, the test passes.
     Some error in number of packets is accounted for.
+    :type dhcp_version: str
+    :param dhcp_version: The DHCP version being tested ('v4' or 'v6').
+    :type backend: str
+    :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -1085,6 +1116,10 @@ def test_lease_limits_mix(dhcp_version, backend):
     Test removes leases and tries again to check if the limit is restored.
     If the received leases is the same as limit, the test passes.
     Some error in number of packets is accounted for.
+    :type dhcp_version: str
+    :param dhcp_version: The DHCP version being tested ('v4' or 'v6').
+    :type backend: str
+    :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -1286,6 +1321,8 @@ def test_lease_limits_mix(dhcp_version, backend):
 def test_lease_limits_v6_multipleIA(backend):
     """
     Test to check correct behaviour when multiple IA-NA and IA-PD address request is made that exceeds limit.
+    :type backend: str
+    :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -1381,7 +1418,12 @@ def test_rate_limits_in_template_class(dhcp_version, backend, unit):
     The test makes DO or SA exchange in the fastest way possible in a unit of time (second or minute)
     and counts how many packets were sent, and how many packets were received from Kea.
     If the received packets is the same as limit, the test passes. Some error in number of packets is accounted for.
+    :type unit: str
     :param unit:  Defines testing of limit per second or minute
+    :type dhcp_version: str
+    :param dhcp_version: The DHCP version being tested ('v4' or 'v6').
+    :type backend: str
+    :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -1498,6 +1540,11 @@ def test_lease_limits_template_class(dhcp_version, backend):
 
     Due to the fact that original test on which this is based relay on exact returned addresses
     additional subnets with class guards were added
+
+    :type dhcp_version: str
+    :param dhcp_version: The DHCP version being tested ('v4' or 'v6').
+    :type backend: str
+    :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
     srv_control.define_temporary_lease_db_backend(backend)
@@ -1737,16 +1784,15 @@ def _get_lease_v4_82_2(address, chaddr, vendor=None):
 @pytest.mark.parametrize('extended_info', [True, False])
 def test_lease_limits_class_extended_info(backend, extended_info):
     """
-    Test of class lease limit in Limits Hook and extended info.
+    Test of class lease limit in Limits Hook with extended info .
     Tests Kea#3702 Issue
     Includes relay agent information option with value 020672656C617931
     The test makes DORA or SARR exchange to acquire leases and counts if dropped or returned
     "no leases available".
-    Test removes leases and tries again to check if the limit is restored.
-    If the received leases is the same as limit, the test passes.
-    Some error in number of packets is accounted for.
 
+    :type backend: str
     :param backend: The backend database used for storing leases ('memfile', 'mysql', 'postgresql').
+    :type extended_info: bool
     :param extended_info: True or False
     """
     misc.test_setup()
@@ -1758,10 +1804,11 @@ def test_lease_limits_class_extended_info(backend, extended_info):
     srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
 
     # hook configuration in user context for classes with limit
+    # Option 82 does not have to be in class test to trigger bug.
     classes = [
         {
             "name": "gold",
-            #"test": "option[82].option[2].hex == 0x72656C617931",
+            # "test": "option[82].option[2].hex == 0x72656C617931",
             "test": "option[60].text == 'PXE'",
             "user-context": {
                 "limits": {
@@ -1771,13 +1818,10 @@ def test_lease_limits_class_extended_info(backend, extended_info):
         }
     ]
 
+    # Verify that test works with or without extended info before testing bug.
     world.dhcp_cfg["client-classes"] = classes
     if extended_info:
         world.dhcp_cfg['store-extended-info'] = True
-
-    srv_control.config_srv_opt('domain-name-servers', '192.168.40.42, 192.168.40.82')
-    option = {"data": "172.28.0.1", "name": "routers"}
-    world.dhcp_cfg["subnet4"][0].update({"option-data": [option]})
 
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
@@ -1792,6 +1836,7 @@ def test_lease_limits_class_extended_info(backend, extended_info):
 
     for i in range(1, to_send + 1):  # Try to acquire more leases than the limit.
         # Try exchanging DORA and add 1 to success counter if Forge got ACK.
+        # Send Discover with option 82 to trigger bug.
         success += _get_lease_v4_82_2(f'192.168.1.{i}', f'ff:01:02:03:04:{i:02}', vendor='PXE')
         # Add 1 to exchanges counter
         exchanges += 1
