@@ -704,6 +704,7 @@ case "$command" in
         startTime=$(date +%s)
         incus admin init --dump
         prepare_node "$1" "1"
+        mount_ccache kea-1
         update_node "1"
         elapsed_time=$(($(date +%s) - startTime))
         log "Container initialized in: $elapsed_time seconds"
@@ -738,7 +739,6 @@ case "$command" in
         for i in $(seq 1 "$numberOfNodes"); do
             create_user kea-"$i"
             migrate_rsa_key kea-"$i"
-            mount_ccache kea-"$i"
         done
         incus list --format json | jq > incus.json
         setup_forge
