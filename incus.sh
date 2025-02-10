@@ -86,7 +86,7 @@ function prepare_node() {
 
 function copy_node() {
     # The first argument is number of all nodes required
-    # Ther is already one node created
+    # There is already one node created
     for i in $(seq 2 "$1"); do
         log "Copying kea-1 to kea-$i"
         incus copy kea-1 kea-"$i"
@@ -658,7 +658,7 @@ function help() {
     printf "            initialize-container will create a single container from a template and prepare it for kea installation.\n"
     printf "       %s build-testing-environment <OS-name/OS-version> <number-of-kea-nodes> <number-of-internal-networks>\n" "$0"
     printf "            %s build-testing-environment ubuntu/24.04 2 2\n" "$0"
-    printf "            build-testing-environment will create complete testing setup from already created container with kea installed in it.\n"
+    printf "            build-testing-environment will create a complete testing setup from the already created container with kea installed in it.\n"
     printf "            Example usage steps: initialize-container, install-kea-pkgs/ install-kea-tarball, build-testing-environment, run-pytest\n"
     printf "            Advantages: faster to create testing setup, Kea is installed in the container which later is cloned.\n"
     printf "            Disadvantages: failure in any procedure that is used to create environment will be seen after Kea installation.\n"
@@ -670,7 +670,7 @@ function help() {
     printf "            install-kea-pkgs will install Kea packages from Nexus repository.\n"
     printf "       %s install-kea-tarball <number-of-kea-nodes> <path-to-source-code>\n" "$0"
     printf "            %s install-kea-tarball 2 ~/kea\n" "$0"
-    printf "            install-kea-tarball will install Kea from the source code from provided path.\n"
+    printf "            install-kea-tarball will install Kea from the source code from the provided path.\n"
     printf "       %s update-pytest\n" "$0"
     printf "            update-pytest will update the pytest files in kea-forge container.\n"
     printf "       %s run-pytest <pytest-arguments>\n" "$0"
@@ -695,10 +695,10 @@ case "$command" in
         incus image list
         ;;
     initialize-container)
-        # first argument is a OS name/version
-        # this command is used to initialize a container from a template
+        # The first argument is an OS name/version
+        # This command is used to initialize a container from a template
         # and prepare it for kea installation. It's just creating one node
-        # which later be cloned, after kea is installed.
+        # which will be cloned after kea is installed.
 
         # print incus configuration
         startTime=$(date +%s)
