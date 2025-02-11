@@ -1325,7 +1325,8 @@ def check_IA_PD(prefix, status_code=None, expect=True):
 def SA(address=None, delegated_prefix=None, relay_information=False,
        status_code_IA_NA=None, status_code_IA_PD=None,
        duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
-       linkaddr='2001:db8:1::1000', ifaceid='port1234'):
+       linkaddr='2001:db8:1::1000', ifaceid='port1234',
+       vendor=None):
     """Do solicit-advertisement.
 
     :param address: (Default value = None)
@@ -1346,19 +1347,22 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     :type linkaddr:
     :param ifaceid: (Default value = 'port1234')
     :type ifaceid:
+    :param vendor: (Default value = None)
+    :type vendor:
     :return:
     :rtype:
     """
     return dhcpmsg.SA(address, delegated_prefix, relay_information,
                       status_code_IA_NA, status_code_IA_PD,
                       duid, iaid,
-                      linkaddr, ifaceid)
+                      linkaddr, ifaceid, vendor)
 
 
 def SARR(address=None, delegated_prefix=None, relay_information=False,
          status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
-         linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None):
+         linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None,
+         vendor=None):
     """Do SARR.
 
     :param address: (Default value = None)
@@ -1383,12 +1387,14 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
     :type ifaceid:
     :param iface: (Default value = None)
     :type iface:
+    :param vendor: (Default value = None)
+    :type vendor:
     :return:
     :rtype:
     """
     return dhcpmsg.SARR(address, delegated_prefix, relay_information,
                         status_code_IA_NA, status_code_IA_PD, exchange,
-                        duid, iaid, linkaddr, ifaceid, iface)
+                        duid, iaid, linkaddr, ifaceid, iface, vendor)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
