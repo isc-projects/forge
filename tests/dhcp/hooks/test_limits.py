@@ -1737,7 +1737,7 @@ def test_lease_limits_template_class(dhcp_version, backend):
 
 def _get_lease_v4_82_2(address, chaddr, vendor=None):
     """
-    Local function used to send Discover and check if Offer is send back.
+    Local function used to send Discover and check if Offer is sent back.
     Includes relay agent information option with value 020672656C617931
     If Offer is received, function continues with Request and Acknowledge
     Can add vendor option to trigger client class in Kea.
