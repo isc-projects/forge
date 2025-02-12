@@ -576,8 +576,7 @@ function run_pytest() {
 function get_results() {
     log "Downloading results from kea-forge"
     rm -rf tests_results
-    mkdir -p tests_results
-    incus file pull -r -q kea-forge/home/forge/tests_results/* tests_results/.
+    incus file pull -r kea-forge//home/forge/tests_results .
 }
 
 function get_from_kea_forge() {
