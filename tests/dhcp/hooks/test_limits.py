@@ -1874,7 +1874,7 @@ def test_lease_limits_extended_info(dhcp_version, backend, extended_info):
         for i in range(1, to_send + 1):  # Try to acquire more leases than the limit.
             # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
             try:
-                srv_msg.SARR(f'2001:db8:1::{hex(i)[2:]}',duid=f'00:03:00:01:f6:f5:f4:f3:f2:{hex(i)[2:]}',
+                srv_msg.SARR(f'2001:db8:1::{hex(i)[2:]}', duid=f'00:03:00:01:f6:f5:f4:f3:f2:{hex(i)[2:]}',
                              vendor='eRouter2.0', relay_information=True)
                 success += 1
             except AssertionError:
@@ -1883,7 +1883,6 @@ def test_lease_limits_extended_info(dhcp_version, backend, extended_info):
         for i in range(1, success + 1):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:1::{hex(i)[2:]}'}}
             srv_msg.send_ctrl_cmd(cmd)
-
 
     # Set threshold to account for small errors in receiving packets.
     threshold = 1
