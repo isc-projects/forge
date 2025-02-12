@@ -3,6 +3,14 @@ variables:
 
 image: "${CI_REGISTRY_IMAGE}:latest"
 
+.rules: &rules
+  rules:
+    # Do not run on MR creation.
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: never
+    # Run on any other event, including push to MR branch and push to master.
+    - when: always
+
 .get_modified_python_scripts: &get_modified_python_scripts
   - |
     MODIFIED_PYTHON_SCRIPTS=
@@ -21,11 +29,16 @@ image: "${CI_REGISTRY_IMAGE}:latest"
     fi
 
 bandit:
+  <<: *rules
   script:
     - *get_modified_python_scripts
     - ./check-style.sh --bandit ${MODIFIED_PYTHON_SCRIPTS}
 
 pages:
+  rules:
+    # Deploy docs only on merge to master.
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: on_success
   script:
     # Add __init__.py files.
     - touch __init__.py
@@ -39,27 +52,27 @@ pages:
   artifacts:
     paths:
       - public
-  rules:
-    # Deploy docs only on merge to master.
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: on_success
 
 pycodestyle:
+  <<: *rules
   script:
     - *get_modified_python_scripts
     - ./check-style.sh --pycodestyle ${MODIFIED_PYTHON_SCRIPTS}
 
 pydocstyle:
+  <<: *rules
   script:
     - *get_modified_python_scripts
     - ./check-style.sh --pydocstyle ${MODIFIED_PYTHON_SCRIPTS}
 
 pydoctor:
+  <<: *rules
   script:
     - *get_modified_python_scripts
     - ./check-style.sh --pydoctor ${MODIFIED_PYTHON_SCRIPTS}
 
 pylint:
+  <<: *rules
   script:
     - *get_modified_python_scripts
     - ./check-style.sh --pylint ${MODIFIED_PYTHON_SCRIPTS}
