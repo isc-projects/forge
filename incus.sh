@@ -326,10 +326,10 @@ function configure_internal_network(){
     # The first argument is the number of kea nodes
     # The second argument is the number of internal networks
 
-    # unfortunately forge tests are not independedt of the testing network, they won't work with any configuration
-    # it's due to relay tests. Forge expect that main testing network is:
+    # Unfortunately, forge tests are not independent of the testing network; they won't work with any configuration.
+    # Because of relay tests, Forge expects that main testing network is:
     # v4: 192.168.50.0/24 and 2001:db8:1::/64
-    # using for loop we can easyli setup all needed networks
+    # Using for loop we can easily setup all needed networks
     # but v4 networks has to have $i - 1 in the ip v4 configuraiton.
     for i in $(seq 1 "$2"); do
         eth="eth$i"
