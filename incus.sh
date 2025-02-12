@@ -325,29 +325,27 @@ function set_address() {
 function configure_internal_network(){
     # The first argument is the number of kea nodes
     # The second argument is the number of internal networks
-    for interface in $(seq 1 "$2"); do
-        eth="eth$interface"
-        set_address 192.168.5"$interface".240/24 "${eth}" kea-forge
-        set_address 2001:db8:"$interface"::1000/64 "${eth}" kea-forge
-        if ! incus exec kea-forge -- sudo ip -6 route show 2001:db8:"$interface"::/64 dev "${eth}"; then
-            incus exec kea-forge -- sudo ip -6 route add 2001:db8:"$interface"::/64 dev "${eth}"
+
+    # unfortunately forge tests are not independedt of the testing network, they won't work with any configuration
+    # it's due to relay tests. Forge expect that main testing network is:
+    # v4: 192.168.50.0/24 and 2001:db8:1::/64
+    # using for loop we can easyli setup all needed networks
+    # but v4 networks has to have $i - 1 in the ip v4 configuraiton.
+    for i in $(seq 1 "$2"); do
+        eth="eth$i"
+        set_address 192.168.5"$(($i - 1))".240/24 "${eth}" kea-forge
+        set_address 2001:db8:"$i"::1000/64 "${eth}" kea-forge
+        if ! incus exec kea-forge -- sudo ip -6 route show 2001:db8:"$i"::/64 dev "${eth}"; then
+            incus exec kea-forge -- sudo ip -6 route add 2001:db8:"$i"::/64 dev "${eth}"
         fi
         for node in $(seq 1 "$1"); do
-            set_address 192.168.5"$interface".24"$node"/24 "${eth}" kea-"$node"
-            set_address 2001:db8:"$interface"::100"$node"/64 "${eth}" kea-"$node"
-            if ! incus exec kea-"$node" -- sudo ip -6 route show 2001:db8:"$interface"::/64 dev "${eth}"; then
-                incus exec kea-"$node" -- sudo ip -6 route add 2001:db8:"$interface"::/64 dev "${eth}"
+            set_address 192.168.5"$(($i - 1)).24$node"/24 "${eth}" kea-"$node"
+            set_address 2001:db8:"$i"::100"$node"/64 "${eth}" kea-"$node"
+            if ! incus exec kea-"$node" -- sudo ip -6 route show 2001:db8:"$i"::/64 dev "${eth}"; then
+                incus exec kea-"$node" -- sudo ip -6 route add 2001:db8:"$i"::/64 dev "${eth}"
             fi
         done
     done
-}
-
-function add_ip_route() {
-    # The first argument is a node name
-    # We assume that no matter of the network configuration DNS traffic always
-    # goes through first testing network that is using eth1 interface (eht0 is ssh)
-    incus exec "$2" -- ip -6 route add 2001:db8:1::/64 dev eth1
-    incus exec "$2" -- ip route add 192.168.50.0/24 dev eth1
 }
 
 function install_nexus_repo() {
