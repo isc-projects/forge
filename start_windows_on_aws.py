@@ -16,22 +16,9 @@ from botocore.exceptions import ClientError
 log = logging.getLogger(__name__)
 logging.basicConfig(format='[WINDOWS ON AWS] %(asctime)-15s %(message)s', level=logging.INFO)
 
-# def _get_win_addresses(vars, version):
-#     vars[f'WIN_DNS_ADDR_{version}'] = ''
-#     if os.path.exists(f'aws-win-ad-dns-vm{version}.txt'):
-#         with open(f'aws-win-ad-dns-vm{version}.txt', 'r') as f:
-#             for line in f.readlines():
-#                 if line.startswith('ip-address='):
-#                     vars[f'WIN_DNS_ADDR_{version}'] = line[11:].strip()
-#                     log.info(f'extended forge configuration with WIN_DNS_ADDR_{version}=%s',
-#                              vars[f'WIN_DNS_ADDR_{version}'])
-#     else:
-#         log.info(f"aws-win-ad-dns-vm{version}.txt not found! Tests for GSS TSIG and ACTIVE DIRECTORY won't work")
-#     return vars
-
-
 
 def _setup_win_ad_dns(ami, domain):
+    """"""
     if os.path.exists(f'aws-win-ad-dns-vm{domain[3:7]}.txt'):
         log.info(f"file aws-win-ad-dns-vm{domain[3:7]}.txt exists it's possible that vm is already running!")
         log.info("please check if that's correct and use terminate-instances before setting up new systems!")
@@ -131,7 +118,8 @@ def main():
                 f.write('ip-address=%s\n' % win_dns_addr)
             with open("init_all.py", 'a') as f:
                 f.write(f'\nWIN_DNS_ADDR_{version}="{win_dns_addr}"\n')
-            log.info('windows %s vm ip-address: %s' % (version, win_dns_addr))
+            log.info('Windows %s vm ip-address: %s' % (version, win_dns_addr))
+            log.info('To access windows %s vm use: ssh Administrator@%s from bikeshed' % (version, vm.public_ip_address))
 
     elif args.id:
         vms = args.id.split(",")

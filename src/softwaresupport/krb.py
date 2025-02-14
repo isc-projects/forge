@@ -218,7 +218,8 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
                              user_loc='wlodek',
                              # Issue: [B106:hardcoded_password_funcarg]
                              # Possible hardcoded password: 'DdU3Hjb2'
-                             password_loc='DdU3Hjb2')  # nosec B106
+                             password_loc='DdU3Hjb2',  # nosec B106
+                             use_sudo=False)
         # than we can upload this to system that is running kea
         fabric_sudo_command("rm -rf /tmp/*.keytab")
         fabric_send_file(os.path.join(world.cfg["test_result_dir"], f"forge{domain[3:7]}.keytab"),

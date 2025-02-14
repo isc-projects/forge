@@ -87,7 +87,8 @@ def fabric_download_file(remote_path, local_path,
                          destination_host=world.f_cfg.mgmt_address,
                          user_loc=world.f_cfg.mgmt_username,
                          password_loc=world.f_cfg.mgmt_password,
-                         ignore_errors=False, hide_all=False):
+                         ignore_errors=False, hide_all=False,
+                         use_sudo=True):
     if '*' in remote_path:  # fabric get needs o+rx permissions on parent directory to properly list files when using *
         try:
             permissions = int(fabric_sudo_command(f'stat -c %a {remote_path.rsplit("/", 1)[0]}',
@@ -103,9 +104,9 @@ def fabric_download_file(remote_path, local_path,
                 fabric.state.output.warnings = False
             if hide_all:
                 with hide('running', 'stdout', 'stderr'):
-                    result = get(remote_path, local_path, use_sudo=True)
+                    result = get(remote_path, local_path, use_sudo=use_sudo)
             else:
-                result = get(remote_path, local_path, use_sudo=True)
+                result = get(remote_path, local_path, use_sudo=use_sudo)
             fabric.state.output.warnings = True
     if '*' in remote_path:  # return permisions to original state
         if int(permissions) >= 0:
