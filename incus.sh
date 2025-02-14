@@ -134,7 +134,7 @@ function install_pkgs() {
     log "On $node - $usedSystem $osVersion installing packages $*"
     case "$usedSystem" in
         "ubuntu"|"debian")
-            incus exec "$node" -- apt install "$@" -y > "$logFile" 2>&1
+            incus exec "$node" --env DEBIAN_FRONTEND=noninteractive -- apt install "$@" -y > "$logFile" 2>&1
             ;;
         "rhel"|"fedora")
             incus exec "$node" -- dnf install -y "$@" > "$logFile" 2>&1
@@ -166,6 +166,21 @@ function update() {
         *)
         printf "Not in the list"
         ;;
+    esac
+}
+
+
+function install_kerberos() {
+    case "$usedSystem" in
+        "ubuntu"|"debian")
+            install_pkgs "$1" krb5-kdc krb5-admin-server libkrb5-dev dnsutils
+            ;;
+        "rhel"|"fedora")
+            install_pkgs "$1" krb5-server krb5-workstation krb5-libs
+            ;;
+        *)
+            log_error "Not implemented yet"
+            ;;
     esac
 }
 
@@ -737,6 +752,7 @@ case "$command" in
             create_user kea-"$i"
             migrate_rsa_key kea-"$i"
         done
+        install_kerberos kea-1
         incus list --format json | jq > incus.json
         setup_forge
 
