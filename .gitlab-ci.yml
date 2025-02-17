@@ -41,12 +41,7 @@ pages:
       when: on_success
   script:
     # Add __init__.py files.
-    - touch __init__.py
-    - >
-      find ./* -type d
-      -not -path './dhcp/burnin/scripts/tci*'
-      -not -path './unused/performance/charts*'
-      -exec touch {}/__init__.py ';'
+    - ./check-style.sh --add-init.py
     # Generate docs.
     - pydoctor --docformat restructuredtext --html-output public .
   artifacts:
@@ -68,8 +63,7 @@ pydocstyle:
 pydoctor:
   <<: *rules
   script:
-    - *get_modified_python_scripts
-    - ./check-style.sh --pydoctor ${MODIFIED_PYTHON_SCRIPTS}
+    - ./check-style.sh --pydoctor
 
 pylint:
   <<: *rules
