@@ -55,7 +55,11 @@ else
   PY_FILES="${*}"
 fi
 
-procs=$(grep -Fc proc < /proc/cpuinfo)
+if [ -f /proc/cpuinfo ]; then
+    procs=$(grep -Fc proc < /proc/cpuinfo)
+else
+    procs=4
+fi
 
 run_bandit() {
   bandit -c bandit.yaml ${PY_FILES} || FAILURE=true
