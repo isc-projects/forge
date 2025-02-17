@@ -12,6 +12,8 @@
 # pylint: disable=unspecified-encoding
 # pylint: disable=useless-object-inheritance
 
+"""Module to keep all functions related to file manipulation on multiple nodes."""
+
 import os
 import logging
 import tarfile
@@ -26,7 +28,6 @@ import fabric.state
 
 from src.forge_cfg import world
 
-
 log = logging.getLogger('forge')
 
 
@@ -34,6 +35,23 @@ def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,
                        user_loc=world.f_cfg.mgmt_username,
                        password_loc=world.f_cfg.mgmt_password, hide_all=False,
                        ignore_errors=False):
+    """Run unprivileged command on a remote node.
+
+    :param cmd: command to run
+    :type cmd: str
+    :param destination_host: destination host
+    :type destination_host: str, optional
+    :param user_loc: user name
+    :type user_loc: str, optional
+    :param password_loc: password
+    :type password_loc: str, optional
+    :param hide_all: hide all output
+    :type hide_all: bool, optional
+    :param ignore_errors: ignore errors
+    :type ignore_errors: bool, optional
+    :return: result of the command
+    :rtype: fabric.result.Result
+    """
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=ignore_errors):
@@ -52,6 +70,25 @@ def fabric_sudo_command(cmd, destination_host=world.f_cfg.mgmt_address,
                         user_loc=world.f_cfg.mgmt_username,
                         password_loc=world.f_cfg.mgmt_password, hide_all=False,
                         sudo_user=None, ignore_errors=False):
+    """Run privileged command on a remote node.
+
+    :param cmd: command to run
+    :type cmd: str
+    :param destination_host: destination host
+    :type destination_host: str, optional
+    :param user_loc: user name
+    :type user_loc: str, optional
+    :param password_loc: password
+    :type password_loc: str, optional
+    :param hide_all: hide all output
+    :type hide_all: bool, optional
+    :param sudo_user: sudo user
+    :type sudo_user: str, optional
+    :param ignore_errors: ignore errors
+    :type ignore_errors: bool, optional
+    :return: result of the command
+    :rtype: fabric.result.Result
+    """
     # print("Executing command: %s" % cmd, "at %s" % destination_host)
     with settings(host_string=destination_host, user=user_loc, password=password_loc,
                   sudo_user=sudo_user, warn_only=ignore_errors):
@@ -75,6 +112,23 @@ def fabric_send_file(file_local, file_remote,
                      user_loc=world.f_cfg.mgmt_username,
                      password_loc=world.f_cfg.mgmt_password,
                      mode=None):
+    """Send a file to a remote node.
+
+    :param file_local: local file path
+    :type file_local: str
+    :param file_remote: remote file path
+    :type file_remote: str
+    :param destination_host: destination host
+    :type destination_host: str, optional
+    :param user_loc: user name
+    :type user_loc: str, optional
+    :param password_loc: password
+    :type password_loc: str, optional
+    :param mode: mode
+    :type mode: str, optional
+    :return: result of the command
+    :rtype: fabric.result.Result
+    """
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
@@ -89,6 +143,27 @@ def fabric_download_file(remote_path, local_path,
                          password_loc=world.f_cfg.mgmt_password,
                          ignore_errors=False, hide_all=False,
                          use_sudo=True):
+    """Download a file from a remote node.
+
+    :param remote_path: remote file path
+    :type remote_path: str
+    :param local_path: local file path
+    :type local_path: str
+    :param destination_host: destination host
+    :type destination_host: str, optional
+    :param user_loc: user name
+    :type user_loc: str, optional
+    :param password_loc: password
+    :type password_loc: str, optional
+    :param ignore_errors: ignore errors
+    :type ignore_errors: bool, optional
+    :param hide_all: hide all output
+    :type hide_all: bool, optional
+    :param use_sudo: use sudo
+    :type use_sudo: bool, optional
+    :return: result of the command
+    :rtype: fabric.result.Result
+    """
     if '*' in remote_path:  # fabric get needs o+rx permissions on parent directory to properly list files when using *
         try:
             permissions = int(fabric_sudo_command(f'stat -c %a {remote_path.rsplit("/", 1)[0]}',
@@ -115,6 +190,13 @@ def fabric_download_file(remote_path, local_path,
 
 
 def make_tarfile(output_filename, source_dir):
+    """Create a tarball of a directory.
+
+    :param output_filename: output filename
+    :type output_filename: str
+    :param source_dir: source directory
+    :type source_dir: str
+    """
     with tarfile.open(output_filename, "w:gz") as tar:
         tar.add(source_dir)
 
@@ -124,6 +206,21 @@ def fabric_remove_file_command(remote_path,
                                user_loc=world.f_cfg.mgmt_username,
                                password_loc=world.f_cfg.mgmt_password,
                                hide_all=True):
+    """Remove a file from a remote node.
+
+    :param remote_path: remote file path
+    :type remote_path: str
+    :param destination_host: destination host
+    :type destination_host: str, optional
+    :param user_loc: user name
+    :type user_loc: str, optional
+    :param password_loc: password
+    :type password_loc: str, optional
+    :param hide_all: hide all output
+    :type hide_all: bool, optional
+    :return: result of the command
+    :rtype: fabric.result.Result
+    """
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=False):
@@ -136,6 +233,15 @@ def fabric_remove_file_command(remote_path,
 
 
 def fabric_is_file(remote_path, destination_host=world.f_cfg.mgmt_address):
+    """Check if a file exists on a remote node.
+
+    :param remote_path: remote file path
+    :type remote_path: str
+    :param destination_host: destination host
+    :type destination_host: str, optional
+    :return: result of the command
+    :rtype: fabric.result.Result
+    """
     result = fabric_sudo_command(
         f'test -f {remote_path}',
         destination_host=destination_host,
@@ -145,6 +251,11 @@ def fabric_is_file(remote_path, destination_host=world.f_cfg.mgmt_address):
 
 
 def remove_local_file(file_local):
+    """Remove a local file.
+
+    :param file_local: local file path
+    :type file_local: str
+    """
     try:
         os.remove(file_local)
     except OSError:
@@ -152,6 +263,17 @@ def remove_local_file(file_local):
 
 
 def save_local_file(value, value_type="string", local_file_name=None, local_location=None):
+    """Save a local file.
+
+    :param value: value to save
+    :type value: str, optional
+    :param value_type: value type
+    :type value_type: str, optional
+    :param local_file_name: local file name
+    :type local_file_name: str, optional
+    :param local_location: local location
+    :type local_location: str, optional
+    """
     local_location = world.cfg["test_result_dir"]
     if local_file_name is None:
         local_file_name = "saved_file"
@@ -166,6 +288,15 @@ def save_local_file(value, value_type="string", local_file_name=None, local_loca
 
 
 def generate_file_name(counter, file_name):
+    """Generate a file name for saved results, config files etc.
+
+    :param counter: counter
+    :type counter: int
+    :param file_name: file name
+    :type file_name: str
+    :return: file name
+    :rtype: str
+    """
     if os.path.isfile(os.path.join(world.cfg["test_result_dir"], file_name)):
         if counter == 1:
             file_name += str(counter)
@@ -176,6 +307,15 @@ def generate_file_name(counter, file_name):
 
 
 def archive_file_name(counter, file_name):
+    """Archive a file name.
+
+    :param counter: counter
+    :type counter: int
+    :param file_name: file name
+    :type file_name: str
+    :return: file name
+    :rtype: str
+    """
     if os.path.isfile(file_name + '.tar.gz'):
         if counter == 1:
             file_name += '_' + str(counter)
@@ -186,13 +326,16 @@ def archive_file_name(counter, file_name):
 
 
 def check_local_path_for_downloaded_files(local_file_path, local_file_name, remote_address):
-    """
-    Function will calculate if downloaded file should be saved in main directory or in specific location in case it
-    will be downloaded from remote location that is not default one
+    """Check if downloaded file should be saved in main directory or in specific location.
+
     :param local_file_path: default path
+    :type local_file_path: str
     :param local_file_name: default file name
+    :type local_file_name: str
     :param remote_address: address of remote server
+    :type remote_address: str
     :return: changed path if remote server is not default one
+    :rtype: str
     """
     if remote_address != world.f_cfg.mgmt_address:
         if not os.path.exists(os.path.join(local_file_path, remote_address)):
@@ -202,6 +345,15 @@ def check_local_path_for_downloaded_files(local_file_path, local_file_name, remo
 
 
 def copy_configuration_file(local_file, file_name='configuration_file', destination_host=world.f_cfg.mgmt_address):
+    """Copy a configuration file into result directory.
+
+    :param local_file: local file path
+    :type local_file: str
+    :param file_name: file name
+    :type file_name: str, optional
+    :param destination_host: destination host
+    :type destination_host: str, optional
+    """
     if world.f_cfg.save_config_file:
         file_name = generate_file_name(1, file_name)
         if not os.path.exists(world.cfg["test_result_dir"]):
@@ -215,11 +367,25 @@ def copy_configuration_file(local_file, file_name='configuration_file', destinat
 
 # Open file, write content and at the end of the context delete the file.
 class TemporaryFile(object):
+    """Create a temporary file, write content to it and delete it at the end of the context."""
+
     def __init__(self, file_name, content):
+        """Initialize a temporary file.
+
+        :param file_name: file name
+        :type file_name: str
+        :param content: content
+        :type content: str
+        """
         self.file_name = file_name
         self.content = content
 
     def __enter__(self):
+        """Enter the context.
+
+        :return: self
+        :rtype: TemporaryFile
+        """
         mode = 'w'
         if isinstance(self.content, bytes):
             mode = 'wb'
@@ -227,10 +393,28 @@ class TemporaryFile(object):
             f.write(self.content)
 
     def __exit__(self, exception_type, exception_value, traceback):
+        """Exit the context.
+
+        :param exception_type: exception type
+        :type exception_type: type
+        :param exception_value: exception value
+        :type exception_value: Exception
+        """
         os.unlink(self.file_name)
 
 
 def send_content(local_path, remote_path, content, subdir):
+    """Send content to a remote path.
+
+    :param local_path: local path
+    :type local_path: str
+    :param remote_path: remote path
+    :type remote_path: str
+    :param content: content
+    :type content: str
+    :param subdir: subdirectory
+    :type subdir: str
+    """
     with TemporaryFile(local_path, content):
         fabric_send_file(local_path, remote_path)
         copy_configuration_file(local_path, os.path.join(subdir, local_path))
@@ -238,16 +422,20 @@ def send_content(local_path, remote_path, content, subdir):
 
 def start_tcpdump(file_name: str = "capture.pcap", iface: str = None, port_filter: str = None,
                   auto_start_dns: bool = False, location: str = 'local'):
-    """
-    Start tcpdump process
+    """Start tcpdump process.
+
     :param file_name: name of a pcap file
+    :type file_name: str
     :param iface: interface on which tcpdump will listen
+    :type iface: str
     :param port_filter: port filter command
+    :type port_filter: str
     :param auto_start_dns: detect if dns traffic is being sent on different interface than dhcp, if so start another
     instance of tcpdump
+    :type auto_start_dns: bool
     :param location: local, or an ip address of vm on which tcpdump should be started
+    :type location: str
     """
-
     if iface is None:
         iface = world.cfg["iface"]
         if location != 'local':
@@ -276,9 +464,10 @@ def start_tcpdump(file_name: str = "capture.pcap", iface: str = None, port_filte
 
 
 def stop_tcpdump(location: str = 'local'):
-    """
-    Kill all instances of tcpdump
+    """Kill all instances of tcpdump.
+
     :param location: ip address of system on which tcpdump should be stopped, by default it's local
+    :type location: str
     """
     cmd = "sudo pkill tcpdump"
     if location == 'local':
@@ -288,10 +477,12 @@ def stop_tcpdump(location: str = 'local'):
 
 
 def download_tcpdump_capture(location, file_name):
-    """
-    If capture on remote server will be generated, forge won't download it by default.
+    """If capture on remote server will be generated, forge won't download it by default.
+
     :param location: ip address of a system from which capture should be downloaded
+    :type location: str
     :param file_name: file name that contains network capture
+    :type file_name: str
     """
     if location == 'local':
         print("Logs from locally running tcpdump are saved in tests results directly")

@@ -12,6 +12,7 @@
 # pylint: disable=consider-using-f-string
 # pylint: disable=f-string-without-interpolation
 # pylint: disable=line-too-long
+"""Manage kerberos operations."""
 
 import os
 import time
@@ -21,10 +22,10 @@ from .multi_server_functions import fabric_sudo_command, send_content, fabric_do
 
 
 def kinit(my_domain):
-    """
-    Execute kinit on debian/redhat based systems in various configurations
-    :param my_domain: sting with domain name
-    :return:
+    """Execute kinit on debian/redhat based systems in various configurations.
+
+    :param my_domain: string with domain name
+    :type my_domain: str
     """
     fabric_sudo_command('cat /etc/krb5.conf')
     if world.server_system == 'debian':
@@ -49,10 +50,12 @@ def kinit(my_domain):
 
 
 def manage_kerb(procedure='stop', ignore=False):
-    """
-    Manage kerberos via systemctl on redhat and ubuntu
-    :param procedure: string, can be start, stop or restart (disable and enable not recommended)
-    :param ignore: bool, decide if possible systemctl error should be ignored
+    """Manage kerberos via systemctl on redhat and ubuntu.
+
+    :param procedure: can be start, stop or restart (disable and enable not recommended)
+    :type procedure: str
+    :param ignore: decide if possible systemctl error should be ignored
+    :type ignore: bool
     """
     if world.server_system == 'redhat':
         fabric_sudo_command(f'systemctl {procedure} krb5kdc kadmin', ignore_errors=ignore)
@@ -66,9 +69,7 @@ def manage_kerb(procedure='stop', ignore=False):
 
 
 def clean_principals():
-    """
-    Remove all non default principals
-    """
+    """Remove all non default principals."""
     result = fabric_sudo_command('kadmin.local -q "getprincs"', ignore_errors=True)
     if result.succeeded:
         for princ in result.stdout.splitlines():
@@ -78,11 +79,14 @@ def clean_principals():
 
 
 def install_krb(dns_addr, domain, key_life=2):
-    """
-    Remove, install and configure (default configuration) kerberos on ubuntu/redhat based system
+    """Remove, install and configure (default configuration) kerberos on ubuntu/redhat based system.
+
     :param dns_addr: string with ip address of dns system
+    :type dns_addr: str
     :param domain: sting with domain name in which we should authenticate
+    :type domain: str
     :param key_life: int, lifetime of a key in seconds
+    :type key_life: int
     """
     clean_principals()
     krb_destroy()
@@ -143,18 +147,19 @@ def install_krb(dns_addr, domain, key_life=2):
 
 
 def krb_destroy():
-    """
-    Execute kdestroy -A
-    """
+    """Execute kdestroy -A."""
     fabric_sudo_command('kdestroy -A', ignore_errors=True)
 
 
 def init_and_start_krb(dns_addr, domain, key_life=2):
-    """
-    Configure and start kerberos with OS specific configuration files.
+    """Initialize and start kerberos with OS specific configuration files.
+
     :param dns_addr: string with ip address of DNS server
+    :type dns_addr: str
     :param domain: string with domain name
+    :type domain: str
     :param key_life: int with key life time in seconds
+    :type key_life: int
     """
     install_krb(dns_addr, domain, key_life)
     # /etc/krb5.conf
@@ -243,7 +248,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
             if world.server_system == 'redhat':
                 fabric_sudo_command('chown named:named /tmp/dns.keytab')
                 fabric_sudo_command(f'chown root:named {kadm5_path}')
-                fabric_sudo_command(f'chown root:named /etc/krb5.conf')
+                fabric_sudo_command('chown root:named /etc/krb5.conf')
             else:
                 fabric_sudo_command('chown root:bind /tmp/dns.keytab')
                 fabric_sudo_command(f'chown root:bind {kadm5_path}')

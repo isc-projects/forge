@@ -6,6 +6,8 @@
 
 # Author: Wlodzimierz Wencel
 
+"""Configuration files for bind9 server."""
+
 # pylint: disable=invalid-name
 config_file_set = {
     # number : [named.conf, rndc.conf, fwd.db, rev.db ]
