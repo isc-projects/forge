@@ -21,7 +21,7 @@ while test ${#} -gt 0; do
   elif echo "${1-}" | grep -E '^--'; then
     # Run linter.
     linter=$(echo "${1}" | sed 's/^--//')
-    linters"${linters} ${linter}"
+    linters="${linters} ${linter}"
     shift
   else
     break
