@@ -29,7 +29,7 @@ def _setup_win_ad_dns(ami, domain):
     """
     if os.path.exists(f'aws-win-ad-dns-vm{domain[3:7]}.txt'):
         log.info("file aws-win-ad-dns-vm%s.txt exists it's possible that vm is already running!", domain[3:7])
-        log.info("please check if that's correct and use terminate-instances before setting up new systems!")
+        log.info("please check if that's correct and use --terminate before setting up new systems!")
         sys.exit()
 
     log.info('Start windows %s vm for gss-tsig testing', domain)
