@@ -109,7 +109,7 @@ function update_node() {
         install_base_pkgs kea-"$1"
         prepare_freeradius kea-"$1"
         # TODO take hammer from any branch
-        incus exec kea-"$1" -- curl -s -L https://gitlab.isc.org/isc-projects/kea/-/raw/master/hammer.py -o /tmp/hammer.py
+        incus exec kea-"$1" -- curl -s -L https://gitlab.isc.org/isc-projects/kea/-/raw/v2_6/hammer.py -o /tmp/hammer.py
         log "Running hammer, output in /tmp/kea-$1-hammer.log"
         # This is a neat trick, commands executed by hammer are still printed to stdout
         incus exec kea-"$1" -- python3 /tmp/hammer.py prepare-system -p local -w mysql pgsql forge shell gssapi netconf > /tmp/kea-"$1"-hammer.log
