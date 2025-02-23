@@ -9,6 +9,7 @@
 # pylint: disable=line-too-long
 
 import re
+import os
 
 from src import srv_msg
 
@@ -346,13 +347,18 @@ def _tweak_radius_config(destination: str = world.f_cfg.mgmt_address):
             world.radius_config = file
             break
 
+    local_radius_conf = '/tmp/radiusd.conf'
     assert world.radius_config is not None, "radius config file not found"
 
+    # remove local file if exists
+    if os.path.exists(local_radius_conf):
+        os.remove(local_radius_conf)
+
     # Download config.
-    fabric_download_file(world.radius_config, '/tmp/radiusd.conf', destination_host=destination)
+    fabric_download_file(world.radius_config, local_radius_conf, destination_host=destination, hide_all=True)
 
     # Read config.
-    with open('/tmp/radiusd.conf', 'r', encoding='utf-8') as file:
+    with open(local_radius_conf, 'r', encoding='utf-8') as file:
         content = file.read()
 
     # Remove comments and empty lines.
@@ -365,11 +371,11 @@ def _tweak_radius_config(destination: str = world.f_cfg.mgmt_address):
     content = content.replace('auth_goodpass = no', 'auth_goodpass = yes')
 
     # Write config back.
-    with open('/tmp/radiusd.conf', 'w', encoding='utf-8') as file:
+    with open(local_radius_conf, 'w', encoding='utf-8') as file:
         file.write(content)
 
     # Send config back.
-    fabric_send_file('/tmp/radiusd.conf', world.radius_config, destination_host=destination)
+    fabric_send_file(local_radius_conf, world.radius_config, destination_host=destination)
 
 
 def get_address(mac: str,
