@@ -194,6 +194,7 @@ def _get_lease_v6(address, duid, vendor=None, ia_na=None, ia_pd=None):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.limits_hook
 @pytest.mark.parametrize('unit', ['second', 'minute'])
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_rate_limits_subnet(dhcp_version, backend, unit):
@@ -278,6 +279,7 @@ def test_rate_limits_subnet(dhcp_version, backend, unit):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.limits_hook
 @pytest.mark.parametrize('unit', ['second', 'minute'])
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_rate_limits_class(dhcp_version, backend, unit):
@@ -379,6 +381,7 @@ def test_rate_limits_class(dhcp_version, backend, unit):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.limits_hook
 @pytest.mark.parametrize('unit', ['second', 'minute'])
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_rate_limits_builtin_class(dhcp_version, backend, unit):
@@ -479,6 +482,7 @@ def test_rate_limits_builtin_class(dhcp_version, backend, unit):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.limits_hook
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_rate_limits_mix(dhcp_version, backend):
     """
@@ -631,6 +635,7 @@ def test_rate_limits_mix(dhcp_version, backend):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.limits_hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_subnet(dhcp_version, backend):
     """
@@ -753,6 +758,7 @@ def test_lease_limits_subnet(dhcp_version, backend):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.limits_hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_class(dhcp_version, backend):
     """
@@ -929,6 +935,7 @@ def test_lease_limits_class(dhcp_version, backend):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.limits_hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_builtin_class(dhcp_version, backend):
     """
@@ -1068,6 +1075,7 @@ def test_lease_limits_builtin_class(dhcp_version, backend):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.limits_hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_mix(dhcp_version, backend):
     """
@@ -1273,6 +1281,7 @@ def test_lease_limits_mix(dhcp_version, backend):
 
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.limits_hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_v6_multipleIA(backend):
     """
@@ -1362,6 +1371,7 @@ def test_lease_limits_v6_multipleIA(backend):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.limits_hook
 @pytest.mark.parametrize('unit', ['minute'])
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_rate_limits_in_template_class(dhcp_version, backend, unit):
@@ -1475,6 +1485,7 @@ def test_rate_limits_in_template_class(dhcp_version, backend, unit):
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.hook
+@pytest.mark.limits_hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_lease_limits_template_class(dhcp_version, backend):
     """

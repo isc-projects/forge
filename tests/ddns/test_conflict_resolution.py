@@ -290,6 +290,7 @@ def send_cmd(cmd, address=world.f_cfg.mgmt_address, exp_result=0, exp_failed=Fal
 
 
 @pytest.mark.v4
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns4_conflict_resolution_check_with_dhcid(level):
@@ -461,6 +462,7 @@ def test_ddns4_conflict_resolution_check_with_dhcid(level):
 
 
 @pytest.mark.v4
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
@@ -624,6 +626,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
 
 
 @pytest.mark.v4
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 @pytest.mark.parametrize(
@@ -739,6 +742,7 @@ def test_ddns4_conflict_resolution(level, conflict):
 
 
 @pytest.mark.v6
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns6_conflict_resolution_check_with_dhcid(level):
@@ -931,6 +935,7 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
 
 
 @pytest.mark.v6
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
@@ -1115,6 +1120,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
 
 
 @pytest.mark.v6
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 @pytest.mark.parametrize(
@@ -1233,6 +1239,7 @@ def test_ddns6_conflict_resolution(level, conflict):
 
 
 @pytest.mark.v6
+@pytest.mark.ddns
 @pytest.mark.ddns_conflict_resolution
 @pytest.mark.parametrize("level", ["global", "subnet", "shared-network"])
 def test_ddns6_conflict_resolution_simple_scenario(level):
