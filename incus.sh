@@ -444,8 +444,6 @@ function install_kea_pkgs() {
                     "isc-kea-admin"
                     "isc-kea-ctrl-agent"
                     "isc-kea-common"
-                    "isc-kea-mysql"
-                    "isc-kea-pgsql"
                     "isc-kea-premium-cb-cmds"
                     "isc-kea-premium-class-cmds"
                     "isc-kea-premium-ddns-tuning"
