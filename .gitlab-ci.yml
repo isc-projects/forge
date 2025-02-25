@@ -16,7 +16,7 @@ pylint:
   image: "${CI_REGISTRY_IMAGE}:latest"
   script:
     - . ./activate-venv.sh
-    - ./check-style.sh
+    - ./check-style.sh --changed
 
 semgrep:
   allow_failure: true

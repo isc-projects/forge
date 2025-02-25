@@ -23,12 +23,11 @@ def generate_ip_address_shift():
     """Function searches for IP addresses that can be used for ping check.
     """
     # shift_list
-        # 1 Empty IP address before CIADDR
-        # 2 New CIADDR
-        # 3 Empty IP address after CIADDR
-        # 4 IP address after CIADDR that will be added do forge interface to respond to PING
-        # 5 Empty IP address after CIADDR
-
+    # 1 Empty IP address before CIADDR
+    # 2 New CIADDR
+    # 3 Empty IP address after CIADDR
+    # 4 IP address after CIADDR that will be added do forge interface to respond to PING
+    # 5 Empty IP address after CIADDR
 
     ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
     srv4_addr = ipaddress.IPv4Interface(f'{world.f_cfg.srv4_addr}/24')
@@ -39,13 +38,12 @@ def generate_ip_address_shift():
     if srv4_addr.ip > ciaddr.ip:
         if (ciaddr - 10).network.subnet_of(ciaddr.network):
             return [-5, -4, -3, -2, -1]
-        else:
-            return [11, 12, 13, 14, 15]
+        return [11, 12, 13, 14, 15]
     if srv4_addr.ip < ciaddr.ip-10:
         return [-5, -4, -3, -2, -1]
     if (ciaddr + 10).network.subnet_of(ciaddr.network):
         return [1, 2, 3, 4, 5]
-    return [-15,-14,-13,-12,-11]
+    return [-15, -14, -13, -12, -11]
 
 
 # Fixture to configure additional IP address for tests.
