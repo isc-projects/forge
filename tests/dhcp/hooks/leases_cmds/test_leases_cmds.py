@@ -55,7 +55,11 @@ def _get_lease(addr='192.168.50.1', mac="ff:01:02:03:ff:04"):
 def test_lease_cmds_list(dhcp_version, channel):
     """
     Check if with loaded hook, lease commands are available
-    @param channel: we accept socket or http
+
+    :type channel: str
+    :param channel: we accept socket or http
+    :type dhcp_version: str
+    :param dhcp_version: we accept v4 or v6
     """
     misc.test_setup()
     srv_control.add_unix_socket()
@@ -103,7 +107,9 @@ def test_lease_cmds_list(dhcp_version, channel):
 def test_v4_lease_cmds_update(backend):
     """
     Check if lease4-update works correctly on existing lease
-    @param backend: 3 types of leases backend kea support
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -256,7 +262,9 @@ def test_v4_lease_cmds_get():
 def test_v4_lease_cmds_add(backend):
     """
     Add leases using lease4-add to different subnets, check with lease4-get and check content of database/lease file
-    @param backend: 3 types of leases backend kea support
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
@@ -385,7 +393,9 @@ def test_v4_lease_cmds_add_with_additional_values(backend):
     """
     Check lease4-add with all values possible to set in lease. Checks if lease is reported as added
     and if it's in database/lease file
-    @param backend: 3 types of leases backend kea support
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
@@ -456,7 +466,9 @@ def test_v4_lease_cmds_add_with_additional_values(backend):
 def test_v4_lease_cmds_del(backend):
     """
     Check if we can delete lease using lease4-del command
-    @param backend: 3 types of leases backend kea support
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -532,7 +544,9 @@ def test_v4_lease_cmds_del(backend):
 def test_v4_lease_cmds_wipe(backend):
     """
     Check lease4-wipe command while multiple leases saved
-    @param backend: 1 type of leases backend kea support; wipeLeases4 is not implemented in MySQL and PostgreSQL
+
+    :type backend: str
+    :param backend: 1 type of leases backend kea support; wipeLeases4 is not implemented in MySQL and PostgreSQL
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
@@ -640,7 +654,8 @@ def test_v4_lease_cmds_lease_add_negative():
                          "ip-address": "192.168.50.300",
                          "hw-address": "1a:1b:1c:1d:1e:1f"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert "Failed to convert '192.168.50.300' to address: Failed to convert string to address '192.168.50.300': Invalid argument" in resp["text"]
+    assert "Failed to convert '192.168.50.300' to address: Failed to convert string to address '192.168.50.300': " \
+           "Invalid argument" in resp["text"]
 
     cmd = {"command": "lease4-add",
            "arguments": {"subnet-id": 1,
@@ -675,7 +690,8 @@ def test_v4_lease_cmds_lease_add_negative():
                          "state": 8,
                          "hw-address": "1a:1b:1c:1d:1e:1f"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Invalid state value: 8, supported values are: 0 (default), 1 (declined), 2 (expired-reclaimed) and 3 (released)"
+    assert resp["text"] == "Invalid state value: 8, supported values are: 0 (default), 1 (declined), " \
+           "2 (expired-reclaimed), 3 (released) and 4 (registered)"
 
 
 @pytest.mark.v4
@@ -758,7 +774,9 @@ def test_v4_lease_cmds_lease_get_negative():
 def test_v4_lease_cmds_write(file):
     """
     Check if lease4-write makes correct memfile.
-    @param file: Select if memfile should be overwritten, or made as new file.
+
+    :type file: str
+    :param file: Select if memfile should be overwritten, or made as new file.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
@@ -1002,7 +1020,9 @@ def test_v4_lease_cmds_write_no_persist():
 def test_v6_lease_cmds_add_valid(backend):
     """
     Add lease using lease6-add, check with Solicit and check content of database/lease file
-    @param backend: 3 types of leases backend kea support
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -1047,7 +1067,9 @@ def test_v6_lease_cmds_add_expired_with_options(backend):
     """
     Add expired lease using lease6-add with additional options,
     check with Solicit and check content of database/lease file
-    @param backend: 3 types of leases backend kea support
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -1098,7 +1120,9 @@ def test_v6_lease_cmds_add_valid_with_options(backend):
     """
     Add valid lease using lease6-add with additional options,
     check with Solicit and check content of database/lease file
-    @param backend: 3 types of leases backend kea support
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -1204,6 +1228,9 @@ def test_v6_lease_cmds_add_notvalid():
 def test_v6_lease_cmds_del_using_address(backend):
     """
     Get lease by SARR, delete it with lease6-del using ip address and check if it is available again
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -1243,6 +1270,9 @@ def test_v6_lease_cmds_del_using_address(backend):
 def test_v6_lease_cmds_del_using_duid(backend):
     """
     Get lease by SARR, delete it with lease6-del using duid and check if it is available again
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -1285,6 +1315,9 @@ def test_v6_lease_cmds_del_using_duid(backend):
 def test_v6_lease_cmds_get_using_address(backend):
     """
     Get lease by SARR, check if returned correctly by lease6-get using ip address
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -1336,6 +1369,9 @@ def test_v6_lease_cmds_get_using_address(backend):
 def test_v6_lease_cmds_get_using_duid(backend):
     """
     Get lease by SARR, check if returned correctly by lease6-get using duid
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -1555,6 +1591,9 @@ def test_v6_lease_cmds_update(backend):
     """
     Get lease by SARR, check if returned correctly by lease6-get,
     update it with lease6-update and check again
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
@@ -2486,7 +2525,9 @@ def test_v6_lease_cmds_update_negative():
 def test_v6_lease_cmds_write(file):
     """
     Check if lease6-write makes correct memfile.
-    @param file: Select if memfile should be overwritten, or made as new file.
+
+    :type file: str
+    :param file: Select if memfile should be overwritten, or made as new file.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -2697,6 +2738,9 @@ def test_v6_lease_cmds_write_no_persist():
 def test_lease_cmds_write_negative(dhcp_version):
     """
     Test leaseX-write command negative responses
+
+    :type dhcp_version: str
+    :param dhcp_version: we accept v4 or v6
     """
     misc.test_setup()
     srv_control.add_unix_socket()
