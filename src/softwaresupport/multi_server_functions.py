@@ -11,6 +11,8 @@
 # pylint: disable=not-context-manager
 # pylint: disable=unspecified-encoding
 # pylint: disable=useless-object-inheritance
+# pylint: disable=too-many-positional-arguments
+
 
 import os
 import logging

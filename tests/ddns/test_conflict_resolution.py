@@ -6,7 +6,7 @@
 
 """DDNS DHCID conflict resolution"""
 
-# pylint: disable=invalid-name, line-too-long
+# pylint: disable=invalid-name, line-too-long, too-many-positional-arguments
 
 import time
 import pytest

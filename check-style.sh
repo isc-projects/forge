@@ -15,7 +15,7 @@ set -eu
 script_path=$(cd "$(dirname "${0}")" && pwd)
 
 if test "${1-}" = '--changed'; then
-  files_to_search="$(git diff --name-only "$(git merge-base origin/master "$(git rev-parse --abbrev-ref HEAD)")")"
+  files_to_search="$(git diff --name-only "$(git merge-base origin/v2_6 "$(git rev-parse --abbrev-ref HEAD)")")"
   shift
 else
   files_to_search='forge src tests'
