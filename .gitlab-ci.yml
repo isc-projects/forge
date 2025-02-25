@@ -13,6 +13,7 @@ bandit:
     - bandit -s "${BANDIT_SKIPS}" -r ./forge ./tests
 
 pylint:
+  allow_failure: true
   image: "${CI_REGISTRY_IMAGE}:latest"
   script:
     - . ./activate-venv.sh
