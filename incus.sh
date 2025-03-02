@@ -419,9 +419,36 @@ function install_kea_pkgs() {
     for node in $(seq 1 "$2"); do
         install_nexus_repo kea-"$node"
         log "Installing kea packages version $pkg_version on node kea-$node on system $usedSystem version $osVersion"
+        pkgs=(
+            "isc-kea-dhcp4"
+            "isc-kea-dhcp6"
+            "isc-kea-dhcp-ddns"
+            "isc-kea-hooks"
+            "isc-kea-admin"
+            "isc-kea-ctrl-agent"
+            "isc-kea-common"
+            "isc-kea-mysql"
+            "isc-kea-pgsql"
+            "isc-kea-premium-cb-cmds"
+            "isc-kea-premium-class-cmds"
+            "isc-kea-premium-ddns-tuning"
+            "isc-kea-premium-flex-id"
+            "isc-kea-premium-forensic-log"
+            "isc-kea-premium-gss-tsig"
+            "isc-kea-premium-host-cache"
+            "isc-kea-premium-host-cmds"
+            "isc-kea-premium-lease-query"
+            "isc-kea-premium-limits"
+            "isc-kea-premium-radius"
+            "isc-kea-premium-rbac"
+            "isc-kea-premium-subnet-cmds"
+            "isc-kea-premium-ping-check"
+        )
         case "$usedSystem" in
             "ubuntu"|"debian")
-                incus exec kea-"$node" -- apt install isc-kea-*="$pkg_version" -y
+                # normal way apt install isc-kea-*=$pkg_version works just for the newest packages in the repo
+                # so we need to build exact list of packages to install
+                incus exec kea-"$node" -- apt install "${pkgs[@]/%/=$pkg_version}" -y
                 ;;
             "rhel"|"fedora")
                 local suffix="fc${osVersion}"
@@ -436,31 +463,6 @@ function install_kea_pkgs() {
                 local
                 rm -rf alpine_pkgs
                 mkdir alpine_pkgs
-                pkgs=(
-                    "isc-kea-dhcp4"
-                    "isc-kea-dhcp6"
-                    "isc-kea-dhcp-ddns"
-                    "isc-kea-hooks"
-                    "isc-kea-admin"
-                    "isc-kea-ctrl-agent"
-                    "isc-kea-common"
-                    "isc-kea-mysql"
-                    "isc-kea-pgsql"
-                    "isc-kea-premium-cb-cmds"
-                    "isc-kea-premium-class-cmds"
-                    "isc-kea-premium-ddns-tuning"
-                    "isc-kea-premium-flex-id"
-                    "isc-kea-premium-forensic-log"
-                    "isc-kea-premium-gss-tsig"
-                    "isc-kea-premium-host-cache"
-                    "isc-kea-premium-host-cmds"
-                    "isc-kea-premium-lease-query"
-                    "isc-kea-premium-limits"
-                    "isc-kea-premium-radius"
-                    "isc-kea-premium-rbac"
-                    "isc-kea-premium-subnet-cmds"
-                    "isc-kea-premium-ping-check"
-                )
                 for pkg in "${pkgs[@]}"; do
                     wget -P alpine_pkgs https://packages.aws.isc.org/repository/kea-"$usedSystem"-"$osVersion"/isc"${pkg_version: -14}"/v"$osVersion"/"$arch"/"$pkg"-"$pkg_version".apk
                 done
