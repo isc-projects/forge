@@ -403,7 +403,7 @@ def apply_message_fields_changes():
 
         try:
             setattr(world.climsg[0], field_details[0], field_details[1])
-        except BaseException: # pylint: disable=broad-exception-caught
+        except BaseException:  # pylint: disable=broad-exception-caught
             assert False, "Message does not contain field: %s " % str(field_details[0])
 
 
@@ -584,7 +584,7 @@ def build_msg(msg_dhcp, iface=None):
     try:
         if len(world.oro.reqopts) > 0:
             msg = add_option_to_msg(msg, world.oro)
-    except BaseException: # pylint: disable=broad-exception-caught
+    except BaseException:  # pylint: disable=broad-exception-caught
         pass
 
     # add all rest options to message.
