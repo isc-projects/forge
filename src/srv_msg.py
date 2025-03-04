@@ -737,10 +737,11 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
 def SARR(address=None, delegated_prefix=None, relay_information=False,
          status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
-         linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None):
+         linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None,
+         vendor=None):
     return dhcpmsg.SARR(address, delegated_prefix, relay_information,
                         status_code_IA_NA, status_code_IA_PD, exchange,
-                        duid, iaid, linkaddr, ifaceid, iface)
+                        duid, iaid, linkaddr, ifaceid, iface, vendor)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
