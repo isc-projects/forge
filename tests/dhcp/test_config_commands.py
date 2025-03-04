@@ -634,3 +634,46 @@ def test_config_hash_get(dhcp_version):
     cmd = {"command": "config-hash-get", "arguments": {}}
     hash7 = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]["hash"]
     assert hash6 == hash7, "hash returned in config-get-hash and config-set are different!"
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.controlchannel
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_config_commands_config_write(dhcp_version, backend):
+    misc.test_setup()
+    if backend != 'memfile':
+        world.dhcp_cfg["hosts-database"] = {"type": backend,
+                                            "name": world.f_cfg.db_name,
+                                            "host": world.f_cfg.db_host,
+                                            "user": world.f_cfg.db_user,
+                                            "password": world.f_cfg.db_passwd,
+                                            "retry-on-startup": True,
+                                            "max-reconnect-tries": 3,
+                                            "reconnect-wait-time": 120,
+                                            "on-fail": "stop-retry-exit"}
+
+    if world.proto == 'v4':
+        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    if world.proto == 'v4':
+        srv_msg.DORA('192.168.50.1')
+    else:
+        srv_msg.SARR('2001:db8:1::50')
+
+    cmd = {"command": "config-write", "arguments": {}}
+    srv_msg.send_ctrl_cmd(cmd, 'http')
+
+    srv_control.start_srv('DHCP', 'reconfigured')
+
+    if world.proto == 'v4':
+        srv_msg.DORA('192.168.50.1')
+    else:
+        srv_msg.SARR('2001:db8:1::50')
