@@ -641,6 +641,13 @@ def test_config_hash_get(dhcp_version):
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_config_commands_config_write(dhcp_version, backend):
+    """Test config-write command with different backends.
+
+    :type: backend: str
+    :param backend: backend type
+    :type: dhcp_version: str
+    :param dhcp_version: DHCP version
+    """
     misc.test_setup()
     if backend != 'memfile':
         world.dhcp_cfg["hosts-database"] = {"type": backend,
