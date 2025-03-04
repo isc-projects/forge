@@ -30,7 +30,7 @@ def _config_get(exp_result: int = 0, exp_failed: bool = False) -> dict:
     :rtype: dict
     """
     cmd = {"command": "config-get"}  # get config
-    rsp = srv_msg.send_ctrl_cmd(cmd, exp_failed=exp_failed, exp_result=exp_result)
+    rsp = srv_msg.send_ctrl_cmd_via_socket(cmd, exp_failed=exp_failed, exp_result=exp_result)
     if "arguments" in rsp:
         return rsp["arguments"]
     return rsp
@@ -47,9 +47,9 @@ def _save_and_reload(exp_result: int = 0, exp_failed: bool = False) -> tuple:
     :rtype: tuple
     """
     cmd = {"command": "config-write", "arguments": {}}  # save config
-    resp1 = srv_msg.send_ctrl_cmd(cmd, exp_failed=exp_failed, exp_result=exp_result)
+    resp1 = srv_msg.send_ctrl_cmd_via_socket(cmd, exp_failed=exp_failed, exp_result=exp_result)
     cmd = {"command": "config-reload", "arguments": {}}  # reload config
-    resp2 = srv_msg.send_ctrl_cmd(cmd, exp_failed=exp_failed, exp_result=exp_result)
+    resp2 = srv_msg.send_ctrl_cmd_via_socket(cmd, exp_failed=exp_failed, exp_result=exp_result)
     return resp1, resp2
 
 
@@ -70,7 +70,7 @@ def _send_command(cmd: str, arguments: dict = None, exp_result: int = 0, exp_fai
     if arguments is None:
         arguments = {}
     cmd = {"command": cmd, "arguments": arguments}
-    rsp = srv_msg.send_ctrl_cmd(cmd, exp_failed=exp_failed, exp_result=exp_result)
+    rsp = srv_msg.send_ctrl_cmd_via_socket(cmd, exp_failed=exp_failed, exp_result=exp_result)
     if "arguments" in rsp:
         return rsp["arguments"]
     return rsp
@@ -1294,6 +1294,8 @@ def test_hook_v4_subnet_delta_del(backend):
     srv_msg.response_check_option_content(51, 'value', '4000')
 
     _check_hash_after_config_reload()
+
+
 @pytest.mark.v4
 @pytest.mark.controlchannel
 @pytest.mark.hook
@@ -1487,6 +1489,8 @@ def test_hook_v4_subnet_delta_del_negative(backend):
     srv_msg.response_check_option_content(51, 'value', '3000')
 
     _check_hash_after_config_reload()
+
+
 @pytest.mark.v6
 @pytest.mark.controlchannel
 @pytest.mark.hook
