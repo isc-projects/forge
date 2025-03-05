@@ -97,6 +97,12 @@ function copy_node() {
 
 function update_node() {
     # The first argument is the number of the kea node or "forge"
+    # The second argument is the branch name of a Kea repository from which hammer will be downloaded
+    hammerBranch="master"
+    if [[ -n "$2" ]]; then
+        hammerBranch="$2"
+    fi
+
     if [[ "$1" == "forge" ]]; then
         # This is always ubuntu
         incus exec kea-"$1" -- apt update > "$logFile" 2>&1
@@ -108,8 +114,7 @@ function update_node() {
         update kea-"$1"
         install_base_pkgs kea-"$1"
         prepare_freeradius kea-"$1"
-        # TODO take hammer from any branch
-        incus exec kea-"$1" -- curl -s -L https://gitlab.isc.org/isc-projects/kea/-/raw/master/hammer.py -o /tmp/hammer.py
+        incus exec kea-"$1" -- curl -s -L "https://gitlab.isc.org/isc-projects/kea/-/raw/$hammerBranch/hammer.py" -o /tmp/hammer.py
         log "Running hammer, output in /tmp/kea-$1-hammer.log"
         # This is a neat trick, commands executed by hammer are still printed to stdout
         incus exec kea-"$1" -- python3 /tmp/hammer.py prepare-system -p local -w mysql pgsql forge shell gssapi netconf > /tmp/kea-"$1"-hammer.log
@@ -661,14 +666,14 @@ fi
 
 function help() {
     printf "Usage: %s {prepare-env|delete|stop} [arguments...]\n" "$0"
-    printf "       %s prepare-env <OS-name/OS-version> <number-of-kea-nodes> <number-of-internal-networks>\n" "$0"
-    printf "            %s prepare-env ubuntu/24.04 2 2\n" "$0"
+    printf "       %s prepare-env <OS-name/OS-version> <number-of-kea-nodes> <number-of-internal-networks> <hammer-branch>\n" "$0"
+    printf "            %s prepare-env ubuntu/24.04 2 2 master\n" "$0"
     printf "            prepare-env will create complete testing setup without kea installed.\n"
     printf "            Example usage steps: prepare-env, install-kea-pkgs/ install-kea-tarball, run-pytest\n"
     printf "            Advantages: creates complete testing setup before Kea installation.\n"
     printf "            Disadvantages: requires more time and resources to sequentially install Kea.\n"
-    printf "       %s initialize-container <OS-name/OS-version>\n" "$0"
-    printf "            %s initialize-container ubuntu/24.04\n" "$0"
+    printf "       %s initialize-container <OS-name/OS-version> <hammer-branch>\n" "$0"
+    printf "            %s initialize-container ubuntu/24.04 master\n" "$0"
     printf "            initialize-container will create a single container from a template and prepare it for kea installation.\n"
     printf "       %s build-testing-environment <OS-name/OS-version> <number-of-kea-nodes> <number-of-internal-networks>\n" "$0"
     printf "            %s build-testing-environment ubuntu/24.04 2 2\n" "$0"
@@ -714,14 +719,18 @@ case "$command" in
         # and prepare it for kea installation. It's just creating one node
         # which will be cloned after kea is installed.
 
-        # print incus configuration
+        hammerBranch="master"
+        if [[ -n "$2" ]]; then
+            hammerBranch="$2"
+        fi
+
         startTime=$(date +%s)
         incus admin init --dump
         prepare_node "$1" "1"
         mount_ccache kea-1
-        update_node "1"
-        elapsed_time=$(($(date +%s) - startTime))
-        log "Container initialized in: $elapsed_time seconds"
+        update_node "1" "$hammerBranch"
+        elapsedTime=$(($(date +%s) - startTime))
+        log "Container initialized in: $elapsedTime seconds"
         ;;
     build-testing-environment)
         osName=$1
@@ -770,6 +779,10 @@ case "$command" in
         osName=$1
         numberOfNodes=$2
         numberOfNetworks=$3
+        hammerBranch="master"
+        if [[ -n "$4" ]]; then
+            hammerBranch="$4"
+        fi
         for i in $(seq 1 "$numberOfNodes"); do
             prepare_node "$osName" "$i"
         done
@@ -788,7 +801,7 @@ case "$command" in
         done
         configure_internal_network "$numberOfNodes" "$numberOfNetworks"
         for i in $(seq 1 "$numberOfNodes"); do
-            update_node "$i"
+            update_node "$i" "$hammerBranch"
         done
         # start forge node
         update_node "forge"
