@@ -1686,3 +1686,121 @@ def test_lease_limits_template_class(dhcp_version, backend):
     else:
         assert abs(4 * limit - success_no2) <= threshold, \
             f'Difference between responses and limit ({abs(4 * limit - success_no2)}) exceeds threshold ({threshold})'
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.hook
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('extended_info', [True, False])
+def test_lease_limits_extended_info(dhcp_version, backend, extended_info):
+    """
+    Test of lease limit in Limits Hook with extended info .
+    Tests Kea#3702 Issue
+    v4 includes relay agent information option with value 020672656C617931
+    The test makes DORA or SARR exchange to acquire leases and counts if dropped or returned
+    "no leases available".
+
+    :type dhcp_version: str
+    :param dhcp_version: The DHCP version being tested ('v4' or 'v6').
+    :type backend: str
+    :param backend: The backend database used for storing leases ('memfile', 'mysql', 'postgresql').
+    :type extended_info: bool
+    :param extended_info: True or False
+    """
+    misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
+    # define limit for hook and test
+    limit = 5
+
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
+        srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::255:255')
+
+    if dhcp_version == 'v4':
+        # hook configuration in user context for classes with limit
+        # Option 82 does not have to be in class test to trigger bug.
+        classes = [
+            {
+                "name": "gold",
+                # "test": "option[82].option[2].hex == 0x72656C617931",
+                "test": "option[60].text == 'PXE'",
+                "user-context": {
+                    "limits": {
+                        "address-limit": limit
+                    }
+                }
+            }
+        ]
+    else:
+        classes = [
+            {
+                "name": "VENDOR_CLASS_eRouter2.0",
+                "user-context": {
+                    "limits": {
+                        "address-limit": limit,
+                        "prefix-limit": limit
+                    }
+                }
+            }
+        ]
+    world.dhcp_cfg["client-classes"] = classes
+
+    # Verify that test works with or without extended info before testing bug.
+    if extended_info:
+        world.dhcp_cfg['store-extended-info'] = True
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_limits.so')
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    success = 0
+    to_send = 9
+
+    if dhcp_version == 'v4':
+        for i in range(1, to_send + 1):  # Try to acquire more leases than the limit.
+            # Try exchanging DORA and add 1 to success counter if Forge got ACK.
+            # Send Discover with option 82 to trigger bug.
+            try:
+                srv_msg.DORA(f'192.168.1.{i}', chaddr=f'ff:01:02:03:04:{i:02}', options={
+                    'vendor_class_id': 'PXE',
+                    'relay_agent_information': '020672656C617931',
+                })
+                success += 1
+            except AssertionError:
+                pass
+
+        for i in range(1, success + 1):  # Delete all acquired leases to reset limit.
+            cmd = {"command": "lease4-del", "arguments": {"ip-address": f'192.168.1.{i}'}}
+            srv_msg.send_ctrl_cmd(cmd)
+
+    else:
+
+        for i in range(1, to_send + 1):  # Try to acquire more leases than the limit.
+            # Try exchanging SARR and add 1 to success counter if Forge got Reply with lease.
+            try:
+                srv_msg.SARR(f'2001:db8:1::{hex(i)[2:]}', duid=f'00:03:00:01:f6:f5:f4:f3:f2:{hex(i)[2:]}',
+                             vendor='eRouter2.0', relay_information=True)
+                success += 1
+            except AssertionError:
+                pass
+
+        for i in range(1, success + 1):  # Delete all acquired leases to reset limit.
+            cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:1::{hex(i)[2:]}'}}
+            srv_msg.send_ctrl_cmd(cmd)
+
+    # Set threshold to account for small errors in receiving packets.
+    threshold = 1
+
+    print(f"exchanges made: {to_send}")
+    print(f"successes made: {success}")
+
+    # Check if difference between limit and received packets is within threshold.
+
+    assert abs(limit - success) <= threshold, \
+        f'Difference between responses and limit ({abs(limit - success)}) exceeds threshold ({threshold})'

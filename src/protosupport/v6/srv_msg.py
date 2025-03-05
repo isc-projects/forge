@@ -403,7 +403,7 @@ def apply_message_fields_changes():
 
         try:
             setattr(world.climsg[0], field_details[0], field_details[1])
-        except BaseException:
+        except BaseException:  # pylint: disable=broad-exception-caught
             assert False, "Message does not contain field: %s " % str(field_details[0])
 
 
@@ -584,7 +584,7 @@ def build_msg(msg_dhcp, iface=None):
     try:
         if len(world.oro.reqopts) > 0:
             msg = add_option_to_msg(msg, world.oro)
-    except BaseException:
+    except BaseException:  # pylint: disable=broad-exception-caught
         pass
 
     # add all rest options to message.
@@ -1563,33 +1563,47 @@ def check_IA_PD(prefix, status_code=None, expect=True):
 def SARR(address=None, delegated_prefix=None, relay_information=False,
          status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
-         linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None):
-    """
-    Sends and ensures receival of 6 packets part of a regular DHCPv6 exchange
-    in the correct sequence: solicit, advertise, request, reply, renew, reply.
+         linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None,
+         vendor=None):
+    """Send and ensure receival of 6 packets part of a regular DHCPv6 exchange.
+
+    Sequence: solicit, advertise, request, reply, renew, reply.
     Inserts options in the client packets based on given parameters and ensures
     that the right options are found in the server packets. A single option
     missing or having incorrect values renders the test failed.
 
-    Args:
-        address: the expected address as value of the IA_Address suboption.
-            For multiple addresses, use additional check_IA_NA() calls.
-        delegated_prefix: the expected prefix in format '<prefix>/<length>'.
-            For multiple prefixes, use additional check_IA_PD() calls.
-        relay_information: whether client packets should be encapsulated in relay
-            forward messages, and by extension whether server packets should be
-            expected to be encapsulated in relay reply messages (default: False)
-        status_code: the expected status code (default: None - expected to be missing)
-        exchange: can have values "sarr-only" for 4-way SARR, "full" meaning
-            SARR + renew-reply or "renew-reply". It is a string instead of a boolean
-            for clearer recognition of test names because this value often comes from
-            pytest parametrization. (default: "full")
-        duid: the DUID to be used in client packets
-            (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
-        iaid: sets IAID for the client
-        linkaddr: sets Link Address in Relayed message
-        ifaceid: sets Interface ID in option 18 in Relayed message
-        iface: sets interface for the client
+    :param address: the expected address as value of the IA_Address suboption.
+    :type address:
+        For multiple addresses, use additional check_IA_NA() calls. (Default value = None)
+    :param delegated_prefix: the expected prefix in format '<prefix>/<length>'.
+        For multiple prefixes, use additional check_IA_PD() calls. (Default value = None)
+    :type delegated_prefix:
+    :param relay_information: whether client packets should be encapsulated in relay
+        forward messages, and by extension whether server packets should be
+        expected to be encapsulated in relay reply messages (default: False)
+    :type relay_information:
+    :param status_code_IA_NA: the expected IA_NA status code (Default value = None)
+    :type status_code_IA_NA:
+    :param status_code_IA_PD: the expected IA_PD status code (Default value = None)
+    :type status_code_IA_PD:
+    :param exchange: can have values "sarr-only" for 4-way SARR, "full" meaning
+        SARR + renew-reply or "renew-reply". It is a string instead of a boolean
+        for clearer recognition of test names because this value often comes from
+        pytest parametrization. (default: "full")
+    :type exchange:
+    :param duid: the DUID to be used in client packets
+        (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+    :type duid:
+    :param iaid: sets IAID for the client (Default value = None)
+    :type iaid:
+    :param linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::1000')
+    :type linkaddr:
+    :param ifaceid: sets Interface ID in option 18 in Relayed message (Default value = 'port1234')
+    :type ifaceid:
+    :param iface: sets interface for the client (Default value = None)
+    :type iface:
+    :param vendor: (Default value = None)
+    :type vendor:
     """
     iface = world.cfg["iface"] if iface is None else iface
     # TODO: Add ability to check that options other than IA_NAs and IA_PDs are not included.
@@ -1598,21 +1612,40 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         SA(address, delegated_prefix, relay_information,
            status_code_IA_NA, status_code_IA_PD,
            duid, iaid, linkaddr, ifaceid, iface)
-
+        if relay_information:
+            world.sender_type = "Client"
+        # Build and send a request.
+        if address is not None:
+            client_copy_option('IA_NA')
+        if delegated_prefix is not None:
+            client_copy_option('IA_PD')
+        client_copy_option('server-id')
+        client_sets_value('DUID', duid)
+        client_does_include('Client', 'client-id')
+        if vendor is not None:
+            client_sets_value('vendor_class_data', vendor)
+            client_does_include('Client', 'vendor-class')
+        client_send_msg('REQUEST', iface)
         if not relay_information:
-            # Build and send a request.
-            if address is not None:
-                client_copy_option('IA_NA')
-            if delegated_prefix is not None:
-                client_copy_option('IA_PD')
-            client_copy_option('server-id')
-            client_sets_value('DUID', duid)
-            client_does_include('Client', 'client-id')
-            client_send_msg('REQUEST', iface)
-
             # Expect a reply.
             misc.pass_criteria()
             send_wait_for_message('MUST', True, 'REPLY', iface=iface)
+            check_IA_NA(address, status_code=status_code_IA_NA)
+            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
+        else:
+            # Encapsulate the solicit in a relay forward message.
+            client_sets_value('linkaddr', linkaddr)
+            client_sets_value('ifaceid', ifaceid)
+            client_does_include('RelayAgent', 'interface-id')
+            create_relay_forward()
+            # Send message and expect a relay reply.
+            misc.pass_criteria()
+            send_wait_for_message('MUST', True, 'RELAYREPLY', iface=iface)
+            response_check_include_option(True, 'interface-id')
+            response_check_include_option(True, 'relay-msg')
+            response_check_option_content('relay-msg', True, 'Relayed', 'Message')
+            response_check_include_option(True, 'client-id')
+            response_check_include_option(True, 'server-id')
             check_IA_NA(address, status_code=status_code_IA_NA)
             check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
 
@@ -1638,6 +1671,9 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         client_copy_option('server-id')
         client_does_include('Client', 'client-id', None)
         client_add_saved_option(False)
+        if vendor is not None:
+            client_sets_value('vendor_class_data', vendor)
+            client_does_include('Client', 'vendor-class')
         client_send_msg('RENEW', iface)
 
         # Expect a reply.
@@ -1649,30 +1685,43 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
 def SA(address=None, delegated_prefix=None, relay_information=False,
        status_code_IA_NA=None, status_code_IA_PD=None,
        duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
-       linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None):
-    """
-    Sends and ensures receival of 2 packets part of a regular DHCPv6 exchange
-    in the correct sequence: solicit, advertise.
+       linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None,
+       vendor=None):
+    """Send and ensure receival of 2 packets part of a regular DHCPv6 exchange.
+
+    Sequence: solicit, advertise.
     Inserts options in the client packets based on given parameters and ensures
     that the right options are found in the server packets. A single option
     missing or having incorrect values renders the test failed.
 
-    Args:
-        address: the expected address as value of the IA_Address suboption.
-            For multiple addresses, use additional check_IA_NA() calls.
-        delegated_prefix: the expected prefix in format '<prefix>/<length>'.
-            For multiple prefixes, use additional check_IA_PD() calls.
-        relay_information: whether client packets should be encapsulated in relay
-            forward messages, and by extension whether server packets should be
-            expected to be encapsulated in relay reply messages (default: False)
-        status_code: the expected status code (default: None - expected to be missing)
-        duid: the DUID to be used in client packets
-            (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
-        iaid: sets IAID for the client
-        linkaddr: sets Link Address in Relayed message
-        ifaceid: sets Interface ID in option 18 in Relayed message
-        """
-
+    :param address: the expected address as value of the IA_Address suboption.
+        For multiple addresses, use additional check_IA_NA() calls. (Default value = None)
+    :type address:
+    :param delegated_prefix: the expected prefix in format '<prefix>/<length>'.
+        For multiple prefixes, use additional check_IA_PD() calls. (Default value = None)
+    :type delegated_prefix:
+    :param relay_information: whether client packets should be encapsulated in relay
+        forward messages, and by extension whether server packets should be
+        expected to be encapsulated in relay reply messages (default: False)
+    :type relay_information:
+    :param status_code_IA_NA: the expected IA_NA status code (Default value = None)
+    :type status_code_IA_NA:
+    :param status_code_IA_PD: the expected IA_PD status code (Default value = None)
+    :type status_code_IA_PD:
+    :param duid: the DUID to be used in client packets
+        (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+    :type duid:
+    :param iaid: sets IAID for the client (Default value = None)
+    :type iaid:
+    :param linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::1000')
+    :type linkaddr:
+    :param ifaceid: sets Interface ID in option 18 in Relayed message (Default value = 'port1234')
+    :type ifaceid:
+    :param iface: Default value = None)
+    :type iface:
+    :param vendor: (Default value = None)
+    :type vendor:
+    """
     iface = world.cfg["iface"] if iface is None else iface
     # Kea sends NoAddrsAvail or NoPrefixAvail in ADVERTISE when there are no
     # leases available, as opposed to no IA_NA at all in REPLY.
@@ -1694,6 +1743,9 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     client_does_include('Client', 'IA-NA')
     client_does_include('Client', 'IA_Prefix')
     client_does_include('Client', 'IA-PD')
+    if vendor is not None:
+        client_sets_value('vendor_class_data', vendor)
+        client_does_include('Client', 'vendor-class')
     client_send_msg('SOLICIT', iface)
 
     if relay_information:
