@@ -649,7 +649,9 @@ def test_config_commands_config_write(dhcp_version, backend):
     :param dhcp_version: DHCP version
     """
     misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
     if backend != 'memfile':
+
         world.dhcp_cfg["hosts-database"] = {"type": backend,
                                             "name": world.f_cfg.db_name,
                                             "host": world.f_cfg.db_host,
@@ -672,8 +674,10 @@ def test_config_commands_config_write(dhcp_version, backend):
 
     if dhcp_version == 'v4':
         srv_msg.DORA('192.168.50.1')
+        srv_msg.check_leases([{'address': '192.168.50.1', 'hwaddr': 'ff:01:02:03:ff:04'}], backend=backend)
     else:
         srv_msg.SARR('2001:db8:1::50')
+        srv_msg.check_leases([{'address': '2001:db8:1::50', 'duid': '00:03:00:01:f6:f5:f4:f3:f2:01'}], backend=backend)
 
     cmd = {"command": "config-write", "arguments": {}}
     srv_msg.send_ctrl_cmd(cmd, 'http')
@@ -682,5 +686,7 @@ def test_config_commands_config_write(dhcp_version, backend):
 
     if world.proto == 'v4':
         srv_msg.DORA('192.168.50.1')
+        srv_msg.check_leases([{'address': '192.168.50.1', 'hwaddr': 'ff:01:02:03:ff:04'}], backend=backend)
     else:
         srv_msg.SARR('2001:db8:1::50')
+        srv_msg.check_leases([{'address': '2001:db8:1::50', 'duid': '00:03:00:01:f6:f5:f4:f3:f2:01'}], backend=backend)
