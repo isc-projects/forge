@@ -434,20 +434,9 @@ function install_kea_pkgs() {
             "isc-kea-common"
             "isc-kea-mysql"
             "isc-kea-pgsql"
-            "isc-kea-premium-cb-cmds"
-            "isc-kea-premium-class-cmds"
-            "isc-kea-premium-ddns-tuning"
-            "isc-kea-premium-flex-id"
-            "isc-kea-premium-forensic-log"
-            "isc-kea-premium-gss-tsig"
-            "isc-kea-premium-host-cache"
-            "isc-kea-premium-host-cmds"
-            "isc-kea-premium-lease-query"
-            "isc-kea-premium-limits"
-            "isc-kea-premium-radius"
-            "isc-kea-premium-rbac"
-            "isc-kea-premium-subnet-cmds"
-            "isc-kea-premium-ping-check"
+            "isc-kea-gss-tsig"
+            "isc-kea-subscriber-cb-cmds"
+            "isc-kea-subscriber-rbac"
         )
         case "$usedSystem" in
             "ubuntu"|"debian")
