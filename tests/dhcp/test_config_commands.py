@@ -634,3 +634,45 @@ def test_config_hash_get(dhcp_version):
     cmd = {"command": "config-hash-get", "arguments": {}}
     hash7 = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]["hash"]
     assert hash6 == hash7, "hash returned in config-get-hash and config-set are different!"
+
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.ca
+@pytest.mark.controlchannel
+def test_config_output_options(dhcp_version):
+    """
+    Test check if output-options is properly handled by config commands.
+    Checks kea#3594
+
+    :type dhcp_version: str
+    :param dhcp_version: DHCP version
+    """
+
+    misc.test_setup()
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Get current config
+    cmd = {"command": "config-get", "arguments": {}}
+    cfg_get = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]
+    del cfg_get['hash']
+    # let's set something different as a config and check if has changed
+    cfg_get[f"Dhcp{dhcp_version[1]}"]["loggers"][0]["output_options"] = cfg_get[
+        f"Dhcp{dhcp_version[1]}"
+    ]["loggers"][0].pop("output-options")
+
+    cmd = {"command": "config-set", "arguments": cfg_get}
+    srv_msg.send_ctrl_cmd(cmd, 'http')
+
+    cmd = {"command": "config-get", "arguments": {}}
+    cfg_get2 = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]
+    del cfg_get2['hash']
+
+    assert (
+        "output_options" in cfg_get2[f"Dhcp{dhcp_version[1]}"]["loggers"][0]
+        or "output-options" in cfg_get2[f"Dhcp{dhcp_version[1]}"]["loggers"][0]
+    ), "output_options or output-options not found in config"
