@@ -638,6 +638,7 @@ def test_config_hash_get(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
+@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_config_commands_config_write(dhcp_version, backend):
@@ -692,6 +693,7 @@ def test_config_commands_config_write(dhcp_version, backend):
 
 @pytest.mark.v4
 @pytest.mark.v6
+@pytest.mark.ca
 @pytest.mark.controlchannel
 def test_config_output_options(dhcp_version):
     """
