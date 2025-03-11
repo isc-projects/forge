@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -424,9 +424,9 @@ def test_config_commands_usercontext(scope: str, dhcp_version: str):
     Config snippets are added to result of "config-get" and sent to server by "config-set"
     Forge uses "config-get" and "config-write" to check if changes were applied.
 
-    :type: scope: str
-    :param scope: scope of the test
-    :type: dhcp_version: str
+    :type scope: str
+    :param scope: Scope of the config
+    :type dhcp_version: str
     :param dhcp_version: DHCP version
     """
 
@@ -508,7 +508,7 @@ def test_config_commands_empty_reservations(dhcp_version: str):
     Config snippets are added to result of "config-get" and sent to server by "config-set"
     Forge uses "config-get" and "config-write" to check if changes were applied.
 
-    :type: dhcp_version: str
+    :type dhcp_version: str
     :param dhcp_version: DHCP version
     """
 
@@ -592,7 +592,7 @@ def test_config_hash_get(dhcp_version: str):
     Config snippets are added to result of "config-get" and sent to server by "config-set"
     Forge uses "config-get" and "config-write" to check if changes were applied.
 
-    :type: dhcp_version: str
+    :type dhcp_version: str
     :param dhcp_version: DHCP version
     """
 
@@ -654,9 +654,9 @@ def test_config_hash_get(dhcp_version: str):
 def test_config_commands_config_write(dhcp_version: str, backend: str):
     """Test config-write command with different backends.
 
-    :type: backend: str
+    :type backend: str
     :param backend: backend type
-    :type: dhcp_version: str
+    :type dhcp_version: str
     :param dhcp_version: DHCP version
     """
     misc.test_setup()
@@ -697,3 +697,43 @@ def test_config_commands_config_write(dhcp_version: str, backend: str):
     else:
         srv_msg.SARR('2001:db8:1::50')
     srv_msg.check_leases(srv_msg.get_all_leases(), backend=backend)
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.controlchannel
+def test_config_output_options(dhcp_version):
+    """
+    Test check if output-options is properly handled by config commands.
+    Checks kea#3594
+
+    :type dhcp_version: str
+    :param dhcp_version: DHCP version
+    """
+
+    misc.test_setup()
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Get current config
+    cmd = {"command": "config-get", "arguments": {}}
+    cfg_get = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]
+    del cfg_get['hash']
+    # let's set something different as a config and check if has changed
+    cfg_get[f"Dhcp{dhcp_version[1]}"]["loggers"][0]["output_options"] = cfg_get[
+        f"Dhcp{dhcp_version[1]}"
+    ]["loggers"][0].pop("output-options")
+
+    cmd = {"command": "config-set", "arguments": cfg_get}
+    srv_msg.send_ctrl_cmd(cmd, 'http')
+
+    cmd = {"command": "config-get", "arguments": {}}
+    cfg_get2 = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]
+    del cfg_get2['hash']
+
+    assert (
+        "output_options" in cfg_get2[f"Dhcp{dhcp_version[1]}"]["loggers"][0]
+        or "output-options" in cfg_get2[f"Dhcp{dhcp_version[1]}"]["loggers"][0]
+    ), "output_options or output-options not found in config"
