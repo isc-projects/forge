@@ -731,7 +731,6 @@ def test_config_commands_config_write(dhcp_version, backend):
     srv_msg.check_leases(srv_msg.get_all_leases(), backend=backend)
 
 
-
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
