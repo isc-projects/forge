@@ -692,7 +692,6 @@ def test_config_commands_config_write(dhcp_version, backend):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 def test_config_output_options(dhcp_version):
     """
