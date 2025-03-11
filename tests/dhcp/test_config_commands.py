@@ -636,7 +636,6 @@ def test_config_hash_get(dhcp_version):
     assert hash6 == hash7, "hash returned in config-get-hash and config-set are different!"
 
 
-
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
