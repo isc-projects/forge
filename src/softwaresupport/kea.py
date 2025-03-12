@@ -1340,6 +1340,10 @@ def add_parameter_to_hook(hook_name, parameter_name, parameter_value):
         parameter_value = False
     elif parameter_value.isdigit():
         parameter_value = int(parameter_value)
+    # Add database hook if legal log is used with mysql, postgresql or pgsql as type
+    elif hook_name == "libdhcp_legal_log.so" and parameter_name == "type" and parameter_value in ["mysql", "postgresql", "pgsql"]:
+        add_database_hook(parameter_value)
+
     world.dhcp_cfg["hooks-libraries"][hook_no]["parameters"][parameter_name] = parameter_value
 
 

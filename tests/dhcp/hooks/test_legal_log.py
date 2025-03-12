@@ -1435,6 +1435,8 @@ def test_v4_legal_log_rebind_state_db(backend):
 def test_legal_log_rotation(dhcp_version):
     """
     Test to check if Kea makes new log file after specific time unit.
+    :param dhcp_version: The DHCP version to use.
+    :type dhcp_version: str
     """
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
@@ -1507,6 +1509,8 @@ def test_legal_log_rotation(dhcp_version):
 def test_legal_log_basename(dhcp_version):
     """
     Test to check if Kea makes log file with custom filename.
+    :param dhcp_version: The DHCP version to use.
+    :type dhcp_version: str
     """
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('custom-log*.txt'))
@@ -1556,6 +1560,8 @@ def test_legal_log_basename(dhcp_version):
 def test_legal_log_rotate_actions(dhcp_version):
     """
     Test to check if Kea makes prerotate and postrotate actions.
+    :param dhcp_version: The DHCP version to use.
+    :type dhcp_version: str
     """
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
