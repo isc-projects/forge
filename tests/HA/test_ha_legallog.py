@@ -72,6 +72,10 @@ def _message(server, ip_address, mac):
 def test_ha_legallog(dhcp_version, backend):
     """
     Test if both HA servers log proper messages in Legal Log.
+    :param backend: database backend
+    :type backend: str
+    :param dhcp_version:
+    :type dhcp_version: str
     """
     # HA SERVER 1
     misc.test_setup()
@@ -90,6 +94,7 @@ def test_ha_legallog(dhcp_version, backend):
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_database_hook(backend)
     srv_control.add_hooks('libdhcp_legal_log.so')
     if backend != 'file':
         srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
@@ -131,6 +136,7 @@ def test_ha_legallog(dhcp_version, backend):
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_database_hook(backend)
     srv_control.add_hooks('libdhcp_legal_log.so')
     if backend != 'file':
         srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')

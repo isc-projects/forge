@@ -188,6 +188,7 @@ def test_v6_full_disk_testing_pgsql():
     full_current_location, pgsql_conf = _move_pgsql_to_ram_disk()
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::500')
+    srv_control.add_database_hook('postgresql')
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
@@ -231,6 +232,7 @@ def test_v6_full_disk_testing_memfile():
     _create_ramdisk()
 
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::500')
+    srv_control.add_database_hook('memfile')
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
@@ -271,6 +273,7 @@ def test_v4_full_disk_testing():
     _create_ramdisk()
 
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.150')
+    srv_control.add_database_hook('memfile')
     srv_control.add_hooks('libdhcp_legal_log.so')
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
