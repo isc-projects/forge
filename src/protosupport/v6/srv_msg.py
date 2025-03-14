@@ -656,7 +656,9 @@ def build_msg(msg_dhcp, iface=None):
         src = world.cfg["cli_link_local2"]
     else:
         src = world.cfg["cli_link_local"]
-    msg = IPv6(dst=world.cfg["address_v6"], src=src)
+
+    dst = world.cfg["address_v6"] if iface is None else f"{world.cfg['address_v6']}%{iface}"
+    msg = IPv6(dst=dst, src=src)
     msg /= UDP(sport=world.cfg["source_port"], dport=world.cfg["destination_port"])
 
     # print("IP/UDP layers in bytes: ", raw(msg))
@@ -718,7 +720,7 @@ def create_relay_forward(level=1):
         msg = relay_msg
 
     # build full message
-    full_msg = IPv6(dst=world.cfg["address_v6"],
+    full_msg = IPv6(dst=f"{world.cfg['address_v6']}%{world.cfg['iface']}",
                     src=world.cfg["cli_link_local"])
     full_msg /= UDP(sport=world.cfg["source_port"],
                     dport=world.cfg["destination_port"])
@@ -890,7 +892,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
 
     if protocol == 'UDP':
         ans, unans = sr(world.climsg,
-                        iface=iface,
+                        # iface=iface, deprecated
                         timeout=factor * world.cfg['wait_interval'],
                         nofilter=1,
                         verbose=int(world.f_cfg.forge_verbose))
