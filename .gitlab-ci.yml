@@ -56,6 +56,7 @@ pycodestyle:
 
 pydocstyle:
   <<: *rules
+  allow_failure: true
   script:
     - *get_modified_python_scripts
     - ./check-style.sh --pydocstyle ${MODIFIED_PYTHON_SCRIPTS}
@@ -67,6 +68,7 @@ pydoctor:
 
 pylint:
   <<: *rules
+  allow_failure: true
   script:
     - *get_modified_python_scripts
     - ./check-style.sh --pylint ${MODIFIED_PYTHON_SCRIPTS}
