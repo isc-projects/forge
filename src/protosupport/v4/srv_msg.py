@@ -31,7 +31,8 @@ import secrets
 
 from time import time
 
-from scapy.all import get_if_raw_hwaddr, Ether, srp, raw
+from scapy.all import Ether, srp, raw
+from scapy.arch.unix import get_if_raw_hwaddr
 from scapy.config import conf
 from scapy.fields import Field
 from scapy.layers.dhcp import BOOTP, DHCP, DHCPOptions
