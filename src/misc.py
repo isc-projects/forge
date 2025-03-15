@@ -72,11 +72,7 @@ def test_procedure():
                     world.prl = ""  # don't request anything by default
 
             if world.proto == "v6":
-                # Start with fresh, empty ORO (v6)
-                if hasattr(world, 'oro'):
-                    world.oro = DHCP6OptOptReq()
-                    # Scapy creates ORO with 23, 24 options request. Let's get rid of them
-                    world.oro.reqopts = []  # don't request anything by default
+                world.oro = []  # Start with fresh, empty ORO (v6)
 
             # some tests skip "test setup" procedure and goes to "test procedure"
             # e.g. tests for server configuration. Then we need to setup
