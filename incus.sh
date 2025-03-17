@@ -41,7 +41,7 @@ function install_base_pkgs() {
     # let's check it when we gonna need it
     case "$usedSystem" in
         "ubuntu"|"debian")
-            install_pkgs "$1" bind9 ccache curl freeradius gnupg net-tools openssh-server socat tcpdump vim
+            install_pkgs "$1" bind9 ccache curl freeradius gnupg net-tools openssh-server python3 python3-venv socat tcpdump vim
             ;;
         "fedora"|"rhel")
             install_pkgs "$1" bind ccache freeradius net-tools openssh-server socat tcpdump vim python3
