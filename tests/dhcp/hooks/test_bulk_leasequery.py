@@ -23,9 +23,30 @@ from tests.HA.steps import increase_mac
 # pylint: disable=cell-var-from-loop
 
 
-def _get_lease(mac="01:02:0c:03:0a:00", leases_count=10, remote_id=None,
-               relay_id=None, addr_count=1, pd_count=1, relay=True, link_addr='2001:db8:1::1000',
-               v4=False):
+def _get_lease(mac: str = "01:02:0c:03:0a:00", leases_count: int = 10, remote_id: str = None,
+               relay_id: str = None, addr_count: int = 1, pd_count: int = 1, relay: bool = True,
+               link_addr: str = '2001:db8:1::1000', v4: bool = False):
+    """Perform message exchange to get leases.
+
+    :param mac: mac address
+    :type mac: str
+    :param leases_count: how many leases to get
+    :type leases_count: int
+    :param remote_id: remote id value
+    :type remote_id: str, optional
+    :param relay_id: relay id value
+    :type relay_id: str, optional
+    :param addr_count: how many addresses to get
+    :type addr_count: int
+    :param pd_count: how many prefixes to get
+    :type pd_count: int
+    :param relay: relay
+    :type relay: bool
+    :param link_addr: link address value
+    :type link_addr: str
+    :param v4: v4
+    :type v4: bool
+    """
     leases = []
     if v4:
         for _ in range(leases_count):
@@ -133,8 +154,21 @@ def _get_lease(mac="01:02:0c:03:0a:00", leases_count=10, remote_id=None,
     return leases
 
 
-def _send_leasequery(lq_type, sleep=0, relay_id=None, remote_id=None, lq_address="0::0",
-                     duid=None):
+def _send_leasequery(lq_type: str, sleep: int = 0, relay_id: str = None, remote_id: str = None,
+                     lq_address: str = "0::0", duid: str = None):
+    """Send leasequery message.
+
+    :param lq_type: leasequery type
+    :type lq_type: str
+    :param sleep: sleep time
+    :type sleep: int, optional
+    :param relay_id: relay id
+    :type relay_id: str, optional
+    :param remote_id: remote id
+    :type remote_id: str, optional
+    :param lq_address: leasequery address
+    :type lq_address: str, optional
+    """
     srv_msg.forge_sleep(sleep)
     srv_msg.client_sets_value('Client', 'tr_id', secrets.randbelow(2000) + 1)
     if relay_id is not None:
@@ -156,7 +190,12 @@ def _send_leasequery(lq_type, sleep=0, relay_id=None, remote_id=None, lq_address
     srv_msg.send_wait_for_message('MUST', 'LEASEQUERY-REPLY', protocol='TCP')
 
 
-def _check_leasequery_relay_data(linkaddr=None):
+def _check_leasequery_relay_data(linkaddr: str = None):
+    """Check leasequery option - relay data.
+
+    :param linkaddr: link address
+    :type linkaddr: str, optional
+    """
     # check leasequery option - relay data
     # in this test it's pretty easy, except linkaddr everything should be the same
     opt_47 = srv_msg.response_check_option_content(45, 'sub-option', 47)[0]
@@ -170,7 +209,16 @@ def _check_leasequery_relay_data(linkaddr=None):
         assert opt_47.linkaddr == linkaddr, "Relay data included incorrect linkaddr"
 
 
-def _check_address_and_duid_in_single_lq_message(duid, addr=None, prefix=None):
+def _check_address_and_duid_in_single_lq_message(duid: str, addr: str = None, prefix: str = None):
+    """Check if address and duid are included in single LQ message.
+
+    :param duid: duid
+    :type duid: str
+    :param addr: address
+    :type addr: str, optional
+    :param prefix: prefix
+    :type prefix: str, optional
+    """
     srv_msg.response_check_include_option(45)
     srv_msg.response_check_option_content(45, 'sub-option', 1)
     srv_msg.response_check_suboption_content(1, 45, 'duid', duid)
@@ -187,8 +235,34 @@ def _check_address_and_duid_in_single_lq_message(duid, addr=None, prefix=None):
 
 
 # pylint: disable=too-many-arguments
-def _send_leasequery_v4(sleep=0, relay_id=None, remote_id=None, client_id=None, hlen=0, htype=0, chaddr='',
-                        msg='LEASEACTIVE', yiaddr='0.0.0.0', ciaddr='0.0.0.0', siaddr='0.0.0.0'):
+def _send_leasequery_v4(sleep: int = 0, relay_id: str = None, remote_id: str = None, client_id: str = None,
+                        hlen: int = 0, htype: int = 0, chaddr: str = '', msg: str = 'LEASEACTIVE',
+                        yiaddr: str = '0.0.0.0', ciaddr: str = '0.0.0.0', siaddr: str = '0.0.0.0'):
+    """Send leasequery v4 message.
+
+    :param sleep: sleep time
+    :type sleep: int, optional
+    :param relay_id: relay id
+    :type relay_id: str, optional
+    :param remote_id: remote id
+    :type remote_id: str, optional
+    :param client_id: client id
+    :type client_id: str, optional
+    :param hlen: hardware length
+    :type hlen: int, optional
+    :param htype: hardware type
+    :type htype: int, optional
+    :param chaddr: client hardware address
+    :type chaddr: str, optional
+    :param msg: message type
+    :type msg: str, optional
+    :param yiaddr: your IP address
+    :type yiaddr: str, optional
+    :param ciaddr: client IP address
+    :type ciaddr: str, optional
+    :param siaddr: server IP address
+    :type siaddr: str, optional
+    """
 
     srv_msg.forge_sleep(sleep)
     misc.test_procedure()
@@ -216,7 +290,20 @@ def _send_leasequery_v4(sleep=0, relay_id=None, remote_id=None, client_id=None, 
     srv_msg.send_wait_for_message('MUST', msg, protocol='TCP')
 
 
-def _check_leaseactive(lease, start_time, renew_time, rebind_time, valid_lifetime):
+def _check_leaseactive(lease: dict, start_time: int, renew_time: int, rebind_time: int, valid_lifetime: int):
+    """Check if leaseactive message is correctly composed.
+
+    :param lease: lease data
+    :type lease: dict
+    :param start_time: start time
+    :type start_time: int
+    :param renew_time: renew time
+    :type renew_time: int
+    :param rebind_time: rebind time
+    :type rebind_time: int
+    :param valid_lifetime: valid lifetime
+    :type valid_lifetime: int
+    """
     stop_time = time()
     # let's get transaction id from message sent
     assert world.blq_trid == world.srvmsg[0].xid, "Transaction id in LEASEQUERY and it's response is not equal"
@@ -262,7 +349,10 @@ def _check_leaseactive(lease, start_time, renew_time, rebind_time, valid_lifetim
 def test_v6_multiple_networks(backend):  # pylint: disable=too-many-branches
     """
     Configure 4 different subnets and assign multiple leases from each. Than send multiple
-    bulk leasequery messages with different query types to check if returned leases are correct
+    bulk leasequery messages with different query types to check if returned leases are correct.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     bulk_leasequery_configuration = {"parameters": {
                 "requesters": [world.f_cfg.client_ipv6_addr_global],
@@ -292,7 +382,7 @@ def test_v6_multiple_networks(backend):  # pylint: disable=too-many-branches
     srv_control.config_srv_prefix('2001:db8:5::', 3, 64, 80)
 
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -519,15 +609,17 @@ def test_v6_multiple_networks(backend):  # pylint: disable=too-many-branches
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_assign_and_reply_simultaneously(backend):
     """
-    Let's trigger BLQ over TCP while assigning leases
-    :param backend: string, backends used in this test
+    Let's trigger BLQ over TCP while assigning leases.
+
+    :param backend: lease backend type
+    :type backend: str
     """
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 64, 128)
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -632,14 +724,17 @@ def test_v6_assign_and_reply_simultaneously(backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_message_build(backend):
     """
-    Check if leasequery reply, data and done messages are correctly composed
+    Check if leasequery reply, data and done messages are correctly composed.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 64, 128)
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -700,13 +795,16 @@ def test_v6_message_build(backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_negative(backend):
     """
-    Couple negative cases
+    Couple negative cases of v6 bulk lease query messages.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:99:99')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -857,13 +955,16 @@ def test_v6_negative(backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_junk_over_tcp(backend):
     """
-    Let's see if kea survive junk sent over multiple channels
+    Let's see if kea survive junk sent over multiple channels.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 64, 128)
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -928,7 +1029,10 @@ def test_v6_junk_over_tcp(backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_multiple_relays(backend):
     """
-    Test of v6 lease query messages asking for ip address, se multiple relay ids and remote ids in the same subnet
+    Test of v6 lease query messages asking for ip address, se multiple relay ids and remote ids in the same subnet.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     bulk_leasequery_configuration = {"parameters": {
                 "requesters": [world.f_cfg.client_ipv6_addr_global],
@@ -948,7 +1052,7 @@ def test_v6_multiple_relays(backend):
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::100')
 
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -1003,8 +1107,11 @@ def test_v6_multiple_relays(backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v4_check_messages_correctness(backend):
     """
-    Check correctness of all messages send by Kea, OFFER, REPLY, LEASEACTIVE and LEASEQUERY_DONE
-    Also shows how to build or check messages step by step
+    Check correctness of all messages send by Kea, OFFER, REPLY, LEASEACTIVE and LEASEQUERY_DONE.
+    Also shows how to build or check messages step by step.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     # failing due to #2794
     bulk_leasequery_configuration = {"parameters": {
@@ -1034,7 +1141,7 @@ def test_v4_check_messages_correctness(backend):
     srv_control.set_time('valid-lifetime', valid_lifetime)
 
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 
@@ -1210,7 +1317,10 @@ def test_v4_check_messages_correctness(backend):
 def test_v4_multiple_networks(backend):
     """
     Configure 4 different subnets and assign multiple leases from each. Than send multiple
-    bulk leasequery messages with different query types to check if returned leases are correct
+    bulk leasequery messages with different query types to check if returned leases are correct.
+
+    :param backend: lease backend type
+    :type backend: str
     """
 
     bulk_leasequery_configuration = {"parameters": {
@@ -1248,7 +1358,7 @@ def test_v4_multiple_networks(backend):
     srv_control.set_time('valid-lifetime', valid_lifetime)
 
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 
@@ -1318,6 +1428,12 @@ def test_v4_multiple_networks(backend):
 @pytest.mark.hook
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v4_negative(backend):
+    """
+    Test for negative cases of v4 bulk lease query messages. Kea shouldn't respond with correct data.
+
+    :param backend: lease backend type
+    :type backend: str
+    """
 
     def simple_check_for_zeroed_addresses():
         srv_msg.response_check_content('chaddr', '00:00:00:00:00:00')
@@ -1346,7 +1462,7 @@ def test_v4_negative(backend):
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
 
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 
@@ -1416,7 +1532,10 @@ def test_v4_negative(backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v4_junk_over_tcp(backend):
     """
-    Let's see if kea survive junk sent over multiple channels
+    Let's see if kea survive junk sent over multiple channels.
+
+    :param backend: lease backend type
+    :type backend: str
     """
 
     bulk_leasequery_configuration = {"parameters": {
@@ -1444,7 +1563,7 @@ def test_v4_junk_over_tcp(backend):
     srv_control.set_time('valid-lifetime', valid_lifetime)
 
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 
@@ -1497,8 +1616,10 @@ def test_v4_junk_over_tcp(backend):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v4_assign_and_reply_simultaneously(backend):
     """
-    Let's trigger BLQ over TCP while assigning leases
-    :param backend: string, backends used in this test
+    Let's trigger BLQ over TCP while assigning leases.
+
+    :param backend: lease backend type
+    :type backend: str
     """
 
     bulk_leasequery_configuration = {"parameters": {
@@ -1526,7 +1647,7 @@ def test_v4_assign_and_reply_simultaneously(backend):
     srv_control.set_time('valid-lifetime', valid_lifetime)
 
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 

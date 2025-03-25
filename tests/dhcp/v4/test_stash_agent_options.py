@@ -205,7 +205,7 @@ def test_v4_lease_circuit(backend, stash):
         "relay", '{"ip-addresses": ["$(GIADDR4)"]}', 0
     )
 
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.enable_db_backend_reservation(backend)
     srv_control.add_hooks("libdhcp_host_cmds.so")
     srv_control.add_hooks("libdhcp_lease_cmds.so")
@@ -340,7 +340,7 @@ def test_v4_lease_agent_option(backend, option, stash):
                                       "identifier-expression",
                                       f"relay4[{12 if option == 'relay_id' else 2}].hex")
 
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.enable_db_backend_reservation(backend)
 
     srv_control.add_hooks("libdhcp_host_cmds.so")

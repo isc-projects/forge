@@ -54,7 +54,7 @@ def test_RADIUS(dhcp_version: str,
     # Configure and start Kea.
     configs = radius.configurations()
     setup_server_with_radius(**configs[config_type])
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == 'v4_bootp':
         srv_control.add_hooks('libdhcp_bootp.so')
     if radius_reservation_in_pool == 'radius-reservation-in-pool':
@@ -426,6 +426,7 @@ def test_RADIUS_Delegated_IPv6_Prefix(dhcp_version: str,
     Check the Delegated-IPv6-Prefix RADIUS attribute.
 
     :param dhcp_version: the DHCP version being tested
+    :param pool: whether to use a pool or not
     :param reselect: whether to enable reselect-subnet-* in the RADIUS hook library
     """
 

@@ -29,10 +29,11 @@ def test_v4_lease_dump(backend):
     Server is restarted using dumped CSV as new memfile.
     Last test checks if leases are restored from dump file as memfile.
     :param backend: 2 types of leases backend kea support (without memfile)
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -118,7 +119,7 @@ def test_v4_lease_dump(backend):
     # Restart server using database dump as memfile
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.define_temporary_lease_db_backend('memfile')
+    srv_control.define_lease_db_backend('memfile')
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -161,10 +162,11 @@ def test_v4_lease_upload(backend):
     Next CSV file is uploaded using kea-admin lease-upload command..
     Last test checks if leases are restored from memfile to database.
     :param backend: 2 types of leases backend kea support (without memfile)
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.define_temporary_lease_db_backend('memfile')
+    srv_control.define_lease_db_backend('memfile')
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -195,7 +197,7 @@ def test_v4_lease_upload(backend):
     # Restart Kea with selected database
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -248,10 +250,11 @@ def test_v4_lease_upload_duplicate(backend):
     Next CSV file is uploaded using kea-admin lease-upload command.
     Last test checks if leases are restored from memfile to database.
     :param backend: 2 types of leases backend kea support (without memfile)
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.define_temporary_lease_db_backend('memfile')
+    srv_control.define_lease_db_backend('memfile')
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -306,7 +309,7 @@ def test_v4_lease_upload_duplicate(backend):
     # Restart Kea with selected database
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.5')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -358,13 +361,14 @@ def test_v6_lease_dump(backend):
     Server is restarted using dumped CSV as new memfile.
     Last test checks if leases are restored from dump file as memfile.
     :param backend: 2 types of leases backend kea support (without memfile)
+    :type backend: str
     """
     misc.test_setup()
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::1')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -554,7 +558,7 @@ def test_v6_lease_dump(backend):
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::1')
-    srv_control.define_temporary_lease_db_backend('memfile')
+    srv_control.define_lease_db_backend('memfile')
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -639,13 +643,14 @@ def test_v6_lease_upload(backend):
     Next CSV file is uploaded using kea-admin lease-upload command.
     Last test checks if leases are restored from memfile to database.
     :param backend: 2 types of leases backend kea support (without memfile)
+    :type backend: str
     """
     misc.test_setup()
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::1')
-    srv_control.define_temporary_lease_db_backend('memfile')
+    srv_control.define_lease_db_backend('memfile')
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -722,7 +727,7 @@ def test_v6_lease_upload(backend):
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::1-2001:db8:2::1')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -816,11 +821,12 @@ def test_v6_lease_upload_duplicate(backend):
     Next CSV file is uploaded using kea-admin lease-upload command.
     Last test checks if leases are restored from memfile to database.
     :param backend: 2 types of leases backend kea support (without memfile)
+    :type backend: str
     """
     misc.test_setup()
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
-    srv_control.define_temporary_lease_db_backend('memfile')
+    srv_control.define_lease_db_backend('memfile')
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -877,7 +883,7 @@ def test_v6_lease_upload_duplicate(backend):
     misc.test_setup()
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')

@@ -61,13 +61,16 @@ def _get_address(mac, address, cli_id=None, fqdn=None):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_control_channel_lease4_get_by_positive(backend):
     """
-    Check various options of lease4-get-by-* commands
+    Check various options of lease4-get-by-* commands.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.6')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
                                                        '192.168.51.10-192.168.51.11')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     world.dhcp_cfg.update({"ddns-send-updates": False})
     world.dhcp_cfg["subnet4"][1].update({"ddns-send-updates": False})
@@ -349,13 +352,16 @@ def test_control_channel_lease4_get_by_negative():
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_lease_get_by_positive(backend):
     """
-    Check various options of lease6-get-by-* commands
+    Check various options of lease6-get-by-* commands.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::5-2001:db8:2::6')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')

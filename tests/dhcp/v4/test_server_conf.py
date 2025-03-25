@@ -92,16 +92,21 @@ def test_v4_authoritative(backend, requested_address, authoritative, has_existin
     with different values of authoritative.
 
     :param backend: the lease database backend type
+    :type backend: str
     :param requested_address: what value the client uses for option 50
+    :type requested_address: str
     :param authoritative: the value for the server's authoritative setting
+    :type authoritative: bool
     :param has_existing_lease: whether the client has an existing lease at the moment
         it requests the address
+    :type has_existing_lease: bool
     :param init_reboot: whether the client is in an INIT-REBOOT state when it
         requests the address
+    :type init_reboot: bool
     '''
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.100')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     world.dhcp_cfg['authoritative'] = authoritative
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')

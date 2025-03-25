@@ -37,10 +37,13 @@ def test_hot_standby_maintenance(backend):
     correctness of going from maintenance mode to partner down and return to normal hot standby setup.
 
     Tests both scenarios when maintenance-start command is send to primary as well as to standby node.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     # HA SERVER 1
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
     srv_control.config_srv_id('LLT', '00:01:00:02:52:7b:a8:f0:08:00:27:58:f1:e8')
@@ -61,7 +64,7 @@ def test_hot_standby_maintenance(backend):
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
@@ -217,10 +220,13 @@ def test_load_balancing_maintenance(backend):
 
     Tests both scenarios when maintenance-start command is send first to server1 and after returning
     to load balancing mode than to server2.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     # HA SERVER 1
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::30')
     world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
@@ -244,7 +250,7 @@ def test_load_balancing_maintenance(backend):
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 

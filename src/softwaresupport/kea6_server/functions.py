@@ -8,6 +8,8 @@
 
 # Author: Wlodzimierz Wencel
 
+"""Functions for Kea 6 server. Useless file, up for deletion."""
+
 from src.softwaresupport.kea import build_config_files, build_and_send_config_files
 from src.softwaresupport.kea import clear_all, clear_logs, clear_leases, start_srv
 from src.softwaresupport.kea import stop_srv, restart_srv, reconfigure_srv
@@ -27,5 +29,6 @@ from src.softwaresupport.kea import update_ha_hook_parameter, db_setup, generate
 from src.softwaresupport.kea import disable_lease_affinity, update_expired_leases_processing, configure_multi_threading
 from src.softwaresupport.kea import add_prefix_to_subnet, config_pool_client_classification
 from src.softwaresupport.kea import add_database_hook, enable_https
+from src.softwaresupport.kea import define_host_db_backend, define_lease_db_backend
 
 # TODO remove this file :) but this is another set of reworks so for another time

@@ -196,7 +196,7 @@ def test_v6_full_disk_testing_pgsql():
     # set memfile and log location to created ramdisk
     # world.dhcp_cfg["lease-database"] = {"type": "memfile", "name": "/tmp/kea_ram_disk/dhcp.leases"}
     # or set pgsql as lease backend
-    # srv_control.define_temporary_lease_db_backend("postgresql")
+    # srv_control.define_lease_db_backend("postgresql")
     world.dhcp_cfg["hooks-libraries"][0].update({"parameters": {"path": "/tmp/kea_ram_disk_pgsql",
                                                                 "base-name": "kea-forensic",
                                                                 'name': '$(DB_NAME)',
@@ -237,7 +237,9 @@ def test_v6_full_disk_testing_memfile():
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     # set memfile and log location to created ramdisk
-    world.dhcp_cfg["lease-database"] = {"type": "memfile", "name": "/tmp/kea_ram_disk/dhcp.leases"}
+    srv_control.define_lease_db_backend("memfile",
+                                        name="/tmp/kea_ram_disk/dhcp.leases")
+
     world.dhcp_cfg["loggers"] = [{"debuglevel": 99,
                                   "name": "kea-dhcp6",
                                   "output-options": [{"output": "/tmp/kea_ram_disk/kea.log"}],
@@ -278,7 +280,8 @@ def test_v4_full_disk_testing():
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     # set memfile and log location to created ramdisk
-    world.dhcp_cfg["lease-database"] = {"type": "memfile", "name": "/tmp/kea_ram_disk/dhcp.leases"}
+    srv_control.define_lease_db_backend("memfile",
+                                        name="/tmp/kea_ram_disk/dhcp.leases")
     world.dhcp_cfg["loggers"] = [{"debuglevel": 99,
                                   "name": "kea-dhcp4",
                                   "output-options": [{"output": "/tmp/kea_ram_disk/kea.log"}],

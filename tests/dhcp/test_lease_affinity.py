@@ -218,6 +218,9 @@ def test_v6_lease_affinity(backend):
     - check if lease state changes after expiration
     - check if leases were removed on time
     It's making detailed checks on all messages
+
+    :param backend: lease backend type
+    :type backend: str
     """
     vlt = 10
     affinity = 10
@@ -230,7 +233,7 @@ def test_v6_lease_affinity(backend):
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::11-2001:db8:1::14')
     srv_control.config_srv_prefix('2001:db8:2::', 0, 124, 126)
     srv_control.config_srv_id('LL', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -446,6 +449,9 @@ def test_v4_lease_affinity(backend):
     - check if lease state changes after expiration
     - check if leases were removed on time
     It's making detailed checks on all messages
+
+    :param backend: lease backend type
+    :type backend: str
     """
     vlt = 10
     affinity = 10
@@ -455,7 +461,7 @@ def test_v4_lease_affinity(backend):
     srv_control.set_time('valid-lifetime', vlt)
 
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.11-192.168.50.14')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')

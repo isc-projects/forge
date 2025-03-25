@@ -505,39 +505,29 @@ def build_database(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
 
 
 @step(r'Use (\S+) as lease database backend.')
-def define_temporary_lease_db_backend(lease_db_type):
-    """Define temporary lease database backend.
+def define_lease_db_backend(lease_db_type: str,
+                            db_user: str = world.f_cfg.db_user,
+                            db_passwd: str = world.f_cfg.db_passwd,
+                            db_name: str = world.f_cfg.db_name,
+                            db_host: str = world.f_cfg.db_host,
+                            **kwargs):
+    """Define lease database backend.
 
-    :param lease_db_type:
-    :type lease_db_type:
+    :param lease_db_type: mysql, pgsql, postgres or memfile, if memfile is used, db_user, db_passwd, db_name and db_host are ignored
+    :type lease_db_type: str
+    :param db_user: (Default value = world.f_cfg.db_user)
+    :type db_user: str
+    :param db_passwd: (Default value = world.f_cfg.db_passwd)
+    :type db_passwd: str
+    :param db_name: (Default value = world.f_cfg.db_name)
+    :type db_name: str
+    :param db_host: (Default value = world.f_cfg.db_host)
+    :type db_host: str
+    :param kwargs: additional arguments for lease-database section
+    :type kwargs: dict
     """
-    lease_db_type = test_define_value(lease_db_type)[0]
     world.f_cfg.db_type = lease_db_type
-    dhcp.add_database_hook(lease_db_type)
-
-
-@step(r'Credentials for (\S+) database. User: (\S+); Passwd: (\S+); DB-name: (\S+); Host: (\S+);')
-def define_temporary_lease_db_backend_credentials(db_type, tmp_db_user, tmp_db_passwd, tmp_db_name, tmp_db_host):
-    """Define temporary lease database backend credentials.
-
-    :param db_type:
-    :type db_type:
-    :param tmp_db_user:
-    :type tmp_db_user:
-    :param tmp_db_passwd:
-    :type tmp_db_passwd:
-    :param tmp_db_name:
-    :type tmp_db_name:
-    :param tmp_db_host:
-    :type tmp_db_host:
-    """
-    # for now it's just support for leases.
-    assert world.f_cfg.tmp_db_type is not None, 'world.f_cfg.tmp_db_type is None'
-    assert db_type in ["leases"], 'db_type not in ["leases"]'
-    world.f_cfg.db_host = tmp_db_host
-    world.f_cfg.db_name = tmp_db_name
-    world.f_cfg.db_passwd = tmp_db_passwd
-    world.f_cfg.db_user = tmp_db_user
+    dhcp.define_lease_db_backend(lease_db_type, db_user, db_passwd, db_name, db_host, **kwargs)
 
 
 def add_database_hook(db_type):
@@ -551,21 +541,38 @@ def add_database_hook(db_type):
 
 # START Reservation backend section
 @step(r'Use (\S+) reservation system.')
-def enable_db_backend_reservation(db_type, clear=True):
+def enable_db_backend_reservation(db_type, clear=True,
+                                  db_host=world.f_cfg.db_host,
+                                  db_user=world.f_cfg.db_user,
+                                  db_passwd=world.f_cfg.db_passwd,
+                                  db_name=world.f_cfg.db_name,
+                                  **kwargs):
     """Enable database backend reservation.
 
-    :param db_type:
-    :type db_type:
-    :param clear: (Default value = True)
-    :type clear:
+    :param db_type: mysql, pgsql or memfile
+    :type db_type: str
+    :param clear: Clear database reservations (Default value = True)
+    :type clear: bool
+    :param db_host: database host IP address
+    :type db_host: str
+    :param db_user: database user name
+    :type db_user: str
+    :param db_passwd: database password
+    :type db_passwd: str
+    :param db_name: database name
+    :type db_name: str
+    :param kwargs: additional arguments for host-database section
+    :type kwargs: dict
     """
     # for now we are not implementing new configuration system for this one host reservation in databases
     if db_type.lower() == 'mysql':
         mysql_reservation.enable_db_backend_reservation()
+        dhcp.define_host_db_backend(db_type, db_host, db_user, db_passwd, db_name, **kwargs)
         if clear:
             mysql_reservation.clear_all_reservations()
     elif db_type.lower() == 'postgresql':
         pgsql_reservation.enable_db_backend_reservation()
+        dhcp.define_host_db_backend(db_type, db_host, db_user, db_passwd, db_name, **kwargs)
         if clear:
             pgsql_reservation.clear_all_reservations()
     elif db_type == "memfile":

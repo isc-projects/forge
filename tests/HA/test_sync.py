@@ -203,7 +203,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
     # HA SERVER 1
     misc.test_setup()
 
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     if dhcp_version == 'v6':
@@ -232,7 +232,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
     # HA SERVER 2
     misc.test_setup()
 
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
@@ -382,7 +382,7 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
 
     # HA SERVER 1
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
         srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
@@ -401,7 +401,7 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
@@ -498,7 +498,7 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
 
     # HA SERVER 1
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == "v6":
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::5')
         world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
@@ -526,7 +526,7 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
@@ -618,7 +618,7 @@ def test_HA_load_balancing_both_scopes_for_primary(dhcp_version: str, backend: s
 
     # HA SERVER 1
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == "v6":
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::20')
         world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
@@ -680,7 +680,7 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version: str, backend:
 
     # HA SERVER 1
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == "v6":
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::20')
         world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
@@ -708,7 +708,7 @@ def test_HA_load_balancing_both_scopes_for_secondary(dhcp_version: str, backend:
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
@@ -855,7 +855,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
     setup_server_with_radius(**configs[config_type])
 
     # Configure the backend.
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # Load necessary hook libraries.
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -917,7 +917,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
                              **configs[config_type])
 
     # Configure the backend.
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     # Load necessary hook libraries.
     load_hook_libraries(dhcp_version, hook_order)

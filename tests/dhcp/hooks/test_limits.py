@@ -211,7 +211,7 @@ def test_rate_limits_subnet(dhcp_version, backend, unit):
     :param unit:  Defines testing of limit per second or minute
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     # define test duration in seconds
     duration = 1 if unit == 'second' else 60
@@ -301,7 +301,7 @@ def test_rate_limits_class(dhcp_version, backend, unit):
     :param unit:  Defines testing of limit per second or minute
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
         srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
@@ -408,7 +408,7 @@ def test_rate_limits_builtin_class(dhcp_version, backend, unit):
     :param unit:  Defines testing of limit per second or minute
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
         srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
@@ -511,7 +511,7 @@ def test_rate_limits_mix(dhcp_version, backend):
     :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     limit = 200
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.1.0/24', '192.168.1.1-192.168.1.255')
@@ -670,7 +670,7 @@ def test_lease_limits_subnet(dhcp_version, backend):
     :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # define limit for hook and test
     limit = 5
     if dhcp_version == 'v4':
@@ -797,7 +797,7 @@ def test_lease_limits_class(dhcp_version, backend):
     :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # define limit for hook and test
     limit = 5
     if dhcp_version == 'v4':
@@ -978,7 +978,7 @@ def test_lease_limits_builtin_class(dhcp_version, backend):
     :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # define limit for hook and test
     limit = 5
     if dhcp_version == 'v4':
@@ -1122,7 +1122,7 @@ def test_lease_limits_mix(dhcp_version, backend):
     :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # define limit for hook and test
     limit_subnet = 15
     limit_class = 5
@@ -1325,7 +1325,7 @@ def test_lease_limits_v6_multipleIA(backend):
     :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # define limit for hook and test
     limit = 2
     # define addresses number to try to get
@@ -1426,7 +1426,7 @@ def test_rate_limits_in_template_class(dhcp_version, backend, unit):
     :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     # define test duration in seconds
     duration = 1 if unit == 'second' else 60
@@ -1547,7 +1547,7 @@ def test_lease_limits_template_class(dhcp_version, backend):
     :param backend: The backend being used for the test ('memfile', 'mysql', or 'postgresql').
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # define limit for hook and test
     limit = 5
     if dhcp_version == 'v4':
@@ -1799,7 +1799,7 @@ def test_lease_limits_extended_info(dhcp_version, backend, extended_info):
     :param extended_info: True or False
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # define limit for hook and test
     limit = 5
 

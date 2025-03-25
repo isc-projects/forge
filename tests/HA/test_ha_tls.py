@@ -59,6 +59,11 @@ def test_ha_tls_with_ca(dhcp_version, backend):
     and check both databases for it.
     If status is acquired and lease is propagated to both backends
     we can assume TLS connection is working.
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    :param backend: lease backend type
+    :type backend: str
     """
     # HA SERVER 1
     # Create certificates.
@@ -70,7 +75,7 @@ def test_ha_tls_with_ca(dhcp_version, backend):
     server2_key = certificate.download('server2_key')
 
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
         srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
@@ -106,7 +111,7 @@ def test_ha_tls_with_ca(dhcp_version, backend):
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',
@@ -187,10 +192,12 @@ def test_ha_tls_without_ca(dhcp_version, backend):
     """
     Basic test of TLS functionality in HA Setup.
     Test generates certificate for both HA peers.
-    We check for hot-standby HA status after server start and then try top get a lease
-    and check both databases for it.
-    If status is acquired and lease is propagated to both backends
-    we can assume TLS connection is working.
+    We check for hot-standby HA status after server st
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    :param backend: lease backend type
+    :type backend: str
     """
     # HA SERVER 1
     # Create certificates.
@@ -202,7 +209,7 @@ def test_ha_tls_without_ca(dhcp_version, backend):
     server2_key = certificate.download('server2_key')
 
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
         srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
@@ -240,7 +247,7 @@ def test_ha_tls_without_ca(dhcp_version, backend):
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',

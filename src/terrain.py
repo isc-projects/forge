@@ -13,6 +13,8 @@
 # pylint: disable=unspecified-encoding
 # pylint: disable=unused-import
 
+"""All the bits to prepare the test environment."""
+
 import os
 import time
 import logging
@@ -143,24 +145,32 @@ world.set_values = _set_values
 
 
 def client_id(mac):
+    """Set client DUID value.
+
+    :param mac: client MAC address
+    :type mac: str
+    """
     world.cfg["cli_duid"] = DUID_LLT(timeval=int(time.time()), lladdr=mac)
     if "values" in world.cfg:
         world.cfg["values"]["cli_duid"] = world.cfg["cli_duid"]
 
 
 def ia_id():
+    """Set IA ID value."""
     world.cfg["ia_id"] = randbelow(99998) + 1
     if "values" in world.cfg:
         world.cfg["values"]["ia_id"] = world.cfg["ia_id"]
 
 
 def ia_pd():
+    """Set IA PD value."""
     world.cfg["ia_pd"] = randbelow(99998) + 1
     if "values" in world.cfg:
         world.cfg["values"]["ia_pd"] = world.cfg["ia_pd"]
 
 
 def _v4_initialize():
+    """Initialize v4 configuration."""
     # Setup scapy for v4
     # conf.iface = IFACE
     conf.checkIPaddr = False  # DHCPv4 is sent from 0.0.0.0, so response matching may confuse scapy
@@ -225,6 +235,11 @@ def _define_software(dhcp_version):
 
 
 def declare_all(dhcp_version=None):
+    """Declare all variables.
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    """
     world.climsg = []  # Message(s) to be sent
     world.srvmsg = []  # Server's response(s)
     world.rlymsg = []  # Server's response(s) Relayed by Relay Agent
@@ -291,18 +306,12 @@ def declare_all(dhcp_version=None):
     world.radius_config = None
     world.radius_log = None
 
-    # clear tmp DB values to use default from configuration
-    world.f_cfg.db_type = world.f_cfg.db_type_bk
-    world.f_cfg.db_host = world.f_cfg.db_host_bk
-    world.f_cfg.db_name = world.f_cfg.db_name_bk
-    world.f_cfg.db_passwd = world.f_cfg.db_passwd_bk
-    world.f_cfg.db_user = world.f_cfg.db_user_bk
-
 
 # @before.all
 def test_start():
     """
     Server starting before testing.
+
     Runs once per forge invocation.
     """
     # clear tests results
@@ -376,6 +385,11 @@ def _clear_remainings():
 
 
 def initialize(request):
+    """Initialize the test environment.
+
+    :param request: pytest request object
+    :type request: pytest.SubRequest
+    """
     # try to automagically detect DHCP version based on fixture presence
     # or marker presence
     try:
@@ -409,7 +423,7 @@ def initialize(request):
         world.subcfg = [["", "", "", "", "", "", ""]]
 
     world.cfg["cfg_file_2"] = "second_server.cfg"
-    world.reservation_backend = ""
+    world.f_cfg.db_type = ""
     test_result_dir = str(request.node.name).replace(".", "_").replace('[', '_').replace(']', '_').replace('/', '_')
     world.cfg["test_result_dir"] = os.path.join('tests_results', test_result_dir)
     world.cfg["subnet"] = ""
@@ -471,8 +485,10 @@ def initialize(request):
 
 # @after.each_scenario
 def cleanup(scenario):
-    """
-    Global cleanup for each scenario. Implemented within tests by "Server is started."
+    """Global cleanup for each scenario.
+
+    :param scenario: pytest scenario object
+    :type scenario: pytest.SubRequest
     """
     info = str(scenario.name) + '\n' + str(scenario.failed)
     if 'outline' not in info:
@@ -502,9 +518,7 @@ def cleanup(scenario):
 
 # @after.all
 def say_goodbye():
-    """
-    Server stopping after whole work
-    """
+    """Clean up after all tests."""
     if world.f_cfg.history:
         result = open('result', 'w')
         for item in world.result:

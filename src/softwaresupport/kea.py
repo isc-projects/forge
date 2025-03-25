@@ -1224,26 +1224,80 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
         world.dhcp_cfg[sub][subnet]["reservations"][reservation_number].update({reservation_type: reserved_value})
 
 
-def _config_db_backend():
-    """_config_db_backend."""
-    if world.f_cfg.db_type == "" or world.f_cfg.db_type == "memfile":
-        if "lease-database" not in world.dhcp_cfg:
-            world.dhcp_cfg["lease-database"] = {"type": "memfile"}
-    else:
-        world.dhcp_cfg["lease-database"] = {"type": world.f_cfg.db_type,
-                                            "name": world.f_cfg.db_name,
-                                            "host": world.f_cfg.db_host,
-                                            "user": world.f_cfg.db_user,
-                                            "password": world.f_cfg.db_passwd}
+def define_host_db_backend(host_db_type: str,
+                           db_user: str = world.f_cfg.db_user,
+                           db_passwd: str = world.f_cfg.db_passwd,
+                           db_name: str = world.f_cfg.db_name,
+                           db_host: str = world.f_cfg.db_host,
+                           **kwargs):
+    """Define host database backend.
 
-    # set reservations
-    if world.reservation_backend in ["mysql", "postgresql"]:
-        world.dhcp_cfg["hosts-database"] = {"type": world.reservation_backend,
-                                            "name": world.f_cfg.db_name,
-                                            "host": world.f_cfg.db_host,
-                                            "user": world.f_cfg.db_user,
-                                            "password": world.f_cfg.db_passwd}
-    add_database_hook(world.f_cfg.db_type)
+    :param host_db_type: mysql, pgsql or memfile
+    :type host_db_type: str
+    :param db_user: database user name
+    :type db_user: str, optional
+    :param db_passwd: database password
+    :type db_passwd: str, optional
+    :param db_name: database name
+    :type db_name: str, optional
+    :param db_host: database host IP address
+    :type db_host: str, optional
+    :param kwargs: additional parameters that will be added to "hosts-database" section
+    :type kwargs: dict, optional
+    """
+    if host_db_type in ["mysql", "postgresql"]:
+        world.dhcp_cfg["hosts-database"] = {"type": host_db_type,
+                                            "name": db_name,
+                                            "host": db_host,
+                                            "user": db_user,
+                                            "password": db_passwd}
+        for x, y in kwargs.items():
+            if y is not None:
+                world.dhcp_cfg["hosts-database"].update({x.replace("_", "-"): y})
+
+
+def define_lease_db_backend(lease_db_type: str,
+                            db_user: str = world.f_cfg.db_user,
+                            db_passwd: str = world.f_cfg.db_passwd,
+                            db_name: str = world.f_cfg.db_name,
+                            db_host: str = world.f_cfg.db_host,
+                            **kwargs):
+    """Define lease database backend.
+
+    :param lease_db_type: mysql, pgsql, postgres or memfile, if memfile is used, db_user, db_passwd, db_name and db_host are ignored
+    :type lease_db_type: str
+    :param db_user: database user name
+    :type db_user: str, optional
+    :param db_passwd: database password
+    :type db_passwd: str, optional
+    :param db_name: database name
+    :type db_name: str, optional
+    :param db_host: database host IP address
+    :type db_host: str, optional
+    :param kwargs: additional parameters that will be added to "lease-database" section
+    :type kwargs: dict, optional
+    """
+    if lease_db_type == "memfile":
+        world.dhcp_cfg["lease-database"] = {"type": "memfile"}
+
+    else:
+        add_database_hook(lease_db_type)
+        world.dhcp_cfg["lease-database"] = {"type": lease_db_type,
+                                            "name": db_name,
+                                            "host": db_host,
+                                            "user": db_user,
+                                            "password": db_passwd}
+
+    for x, y in kwargs.items():
+        if y is not None:
+            world.dhcp_cfg["lease-database"].update({x.replace("_", "-"): y})
+
+
+def _add_default_memfile_lease_db():
+    """If no lease database backend is defined, add memfile backend."""
+    if "lease-database" not in world.dhcp_cfg or world.dhcp_cfg["lease-database"] == {}:
+        world.dhcp_cfg["lease-database"] = {"type": "memfile"}
+        world.f_cfg.db_type = "memfile"
 
 
 def add_hooks(library_path):
@@ -1742,7 +1796,7 @@ def _cfg_write():
 
     add_logger(f'kea-dhcp{world.proto[1]}', "DEBUG", 99, logging_file)
 
-    _config_db_backend()
+    _add_default_memfile_lease_db()
 
     dhcp = f'Dhcp{world.proto[1]}'
 

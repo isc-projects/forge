@@ -29,12 +29,15 @@ from src.protosupport.multi_protocol_functions import sort_container
 def test_v4_lease_user_context(backend, channel):
     """
     Test adding and getting user-context by lease4 commands.
+
     :param backend: database backends as test parameter
+    :type backend: str
     :param channel: communication channel as test parameter
+    :type channel: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -92,6 +95,7 @@ def test_v4_lease_user_context_negative(channel):
     """
     Test invalid values send as user context by lease4-add and lease4-update
     :param channel: communication channel as test parameter
+    :type channel: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
@@ -133,11 +137,12 @@ def test_v4_lease_extended_info(backend):
     """
     Test storing extended info of acquired lease and retrieving it by lease4-get
     :param backend: database backends as test parameter
+    :type backend: str
     """
     misc.test_setup()
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -203,11 +208,13 @@ def test_v6_lease_user_context(backend, channel):
     """
     Test adding and getting user-context by lease6 commands.
     :param backend: database backends as test parameter
+    :type backend: str
     :param channel: communication channel as test parameter
+    :type channel: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
@@ -273,6 +280,7 @@ def test_v6_lease_user_context_negative(channel):
     """
     Test invalid values send as user context by lease6-add and lease4-update
     :param channel: communication channel as test parameter
+    :type channel: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -324,11 +332,12 @@ def test_v6_lease_extended_info(backend):
     Test storing extended info of acquired lease and retrieving it by lease6-get
     Communication with Kea is made by relayed messages to trigger storing relay info in user-context
     :param backend: database backends as test parameter
+    :type backend: str
     """
     misc.test_setup()
     world.dhcp_cfg['store-extended-info'] = True
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')

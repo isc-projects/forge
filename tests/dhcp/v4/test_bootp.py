@@ -24,11 +24,13 @@ def test_bootp_basic_request_reply(dhcp_version, backend):
     '''Checks that two separate clients can get separate leases from the same pool
     through BOOTP and DHCP respectively.
 
-    Arguments:
-    backend -- the type of lease database
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    :param backend: the type of lease database
+    :type backend: str
     '''
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.add_hooks('libdhcp_bootp.so')
     srv_control.build_and_send_config_files()
@@ -52,12 +54,15 @@ def test_bootp_basic_request_reply_same_chaddr(dhcp_version, backend, bootp_firs
     '''Checks that the same client can get the same lease by switching from
     BOOTP to DHCP and from DHCP to BOOTP.
 
-    Arguments:
-    backend -- the type of lease database
-    bootp_first -- whether the first request should be BOOTP or DHCP
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    :param backend: the type of lease database
+    :type backend: str
+    :param bootp_first: whether the first request should be BOOTP or DHCP
+    :type bootp_first: bool
     '''
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.add_hooks('libdhcp_bootp.so')
     srv_control.build_and_send_config_files()
@@ -82,11 +87,13 @@ def test_bootp_basic_request_reply_classes(dhcp_version, backend):
     and DHCP respectively from separate pools matched by the special BOOTP
     client class.
 
-    Arguments:
-    backend -- the type of lease database
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    :param backend: the type of lease database
+    :type backend: str
     '''
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.new_pool('192.168.50.10-192.168.50.10', 0)
     srv_control.add_hooks('libdhcp_bootp.so')

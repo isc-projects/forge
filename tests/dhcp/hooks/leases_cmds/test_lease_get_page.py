@@ -20,13 +20,16 @@ from src import srv_control
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_control_channel_lease4_get_page_positive(backend):
     """
-    Check correct responses of Kea lease-get-all and lease-get-page
+    Check correct responses of Kea lease-get-all and lease-get-page.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     misc.test_setup()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.14')
     srv_control.config_srv_another_subnet_no_interface('192.168.60.0/24', '192.168.60.5-192.168.60.14')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
@@ -344,12 +347,15 @@ def test_control_channel_lease4_get_page_negative():
 def test_v6_lease_get_page_positive(backend):
     """
     Check various options of lease6-get-page and lease6-get-all commands
+
+    :param backend: lease backend type
+    :type backend: str
     """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::10-2001:db8:1::21')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
                                                        '2001:db8:2::10-2001:db8:2::21')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.add_hooks('libdhcp_lease_cmds.so')

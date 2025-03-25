@@ -661,16 +661,15 @@ def test_config_commands_config_write(dhcp_version: str, backend: str):
     """
     misc.test_setup()
     if backend != 'memfile':
-        srv_control.define_temporary_lease_db_backend(backend)
-        world.dhcp_cfg["hosts-database"] = {"type": backend,
-                                            "name": world.f_cfg.db_name,
-                                            "host": world.f_cfg.db_host,
-                                            "user": world.f_cfg.db_user,
-                                            "password": world.f_cfg.db_passwd,
-                                            "retry-on-startup": True,
-                                            "max-reconnect-tries": 3,
-                                            "reconnect-wait-time": 120,
-                                            "on-fail": "stop-retry-exit"}
+        srv_control.define_lease_db_backend(backend,
+                                            db_name=world.f_cfg.db_name,
+                                            db_host=world.f_cfg.db_host,
+                                            db_user=world.f_cfg.db_user,
+                                            db_passwd=world.f_cfg.db_passwd,
+                                            retry_on_startup=True,
+                                            max_reconnect_tries=3,
+                                            reconnect_wait_time=120,
+                                            on_fail="stop-retry-exit")
 
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')

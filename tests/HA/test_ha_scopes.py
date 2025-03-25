@@ -47,7 +47,7 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, mode: str):
     # HA SERVER 1
     misc.test_setup()
 
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     if dhcp_version == 'v6':
@@ -79,7 +79,7 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, mode: str):
     # HA SERVER 2
     misc.test_setup()
 
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 

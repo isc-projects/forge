@@ -377,7 +377,7 @@ def test_v6_statuscode_success_release(backend):
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

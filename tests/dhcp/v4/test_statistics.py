@@ -86,7 +86,14 @@ class StatsState4:
             assert expected == received, f'stat {key}: expected {expected}, received {received}'
 
 
-def get_stat(name):
+def get_stat(name: str) -> list:
+    """Send statistic-get command and return statistic value.
+
+    :param name: statistic name
+    :type name: str
+    :return: statistic value
+    :rtype: list
+    """
     cmd = {"command": "statistic-get", "arguments": {"name": name}}
     result = srv_msg.send_ctrl_cmd_via_socket(cmd)
     result = [r[0] for r in result['arguments'][name]]
@@ -655,9 +662,10 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
     - remove leases from the server (using del or expire method)
     - check if statistics are updated correctly
 
-    Args:
-        lease_remove_method: method of removing leases from server.
-        backend: lease backend to use
+    :param backend: lease backend to use
+    :type backend: str
+    :param lease_remove_method: method of removing leases from server.
+    :type lease_remove_method: str
     """
     # lease4-wipe is not used in test:
     # - method fails to remove statistics kea#3422
@@ -679,7 +687,7 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
     if lease_remove_method == 'expire':
         srv_control.set_time('valid-lifetime', int(leases_to_get * 0.3 + 1))
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.disable_leases_affinity()
     srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
@@ -776,8 +784,8 @@ def test_stats_pool_id_decline(backend):
     - decline leases
     - check if statistics are updated correctly
 
-    Args:
-        backend: lease backend to use
+    :param backend: lease backend to use
+    :type backend: str
     """
 
     pool_0_A_size = 2
@@ -796,7 +804,7 @@ def test_stats_pool_id_decline(backend):
     # Probation period must be longer, than time required to Decline all leases
     srv_control.add_line({"decline-probation-period": int(leases_to_get * 0.4 + 1)})
     srv_control.disable_leases_affinity()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')

@@ -106,7 +106,7 @@ def test_v4_allocators(backend, scope):
         srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
         srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     srv_control.build_and_send_config_files()
 
@@ -132,7 +132,7 @@ def test_v4_allocator_randomness(backend):
     misc.test_setup()
     srv_control.config_srv_subnet('192.167.0.0/16', '192.167.0.0/16', allocator='random')
     srv_control.config_srv_another_subnet_no_interface('192.168.0.0/16', '192.168.0.0/16', allocator='flq')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -149,7 +149,7 @@ def test_v4_allocator_randomness(backend):
     misc.test_setup()
     srv_control.config_srv_subnet('192.167.0.0/16', '192.167.0.0/16', allocator='random')
     srv_control.config_srv_another_subnet_no_interface('192.168.0.0/16', '192.168.0.0/16', allocator='flq')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -185,7 +185,7 @@ def test_v4_allocator_exhausted_pool(backend, allocator):
     srv_control.new_pool('192.167.0.6-192.167.0.8', 0)
     srv_control.new_pool('192.167.0.10-192.167.0.14', 0)
 
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -381,7 +381,7 @@ def test_v6_allocators(backend, scope):
         srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
 
     srv_control.config_srv_id('LL', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     srv_control.build_and_send_config_files()
 
@@ -443,7 +443,7 @@ def test_v6_allocator_randomness(backend, prefix_allocator):
 
     srv_control.config_srv_prefix('2001:db7:1::', 0, netmask, 125)
     srv_control.config_srv_id('LL', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -464,7 +464,7 @@ def test_v6_allocator_randomness(backend, prefix_allocator):
 
     srv_control.config_srv_prefix('2001:db7:1::', 0, netmask, 125)
     srv_control.config_srv_id('LL', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -505,7 +505,7 @@ def test_v6_allocators_exhausted_pools_address(backend):
     srv_control.new_pool('2001:db8:1::a-2001:db8:1::d', 0)
 
     srv_control.config_srv_id('LL', '00:03:00:01:ff:ff:ff:ff:ff:01')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     srv_control.build_and_send_config_files()
 
@@ -534,7 +534,7 @@ def test_v6_allocators_exhausted_prefix(backend):
     srv_control.add_prefix_to_subnet('2001:db7:2::', 123, 126, 0)
     srv_control.add_prefix_to_subnet('2001:db7:3::', 122, 126, 0)
 
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')

@@ -150,9 +150,16 @@ def test_v4_ddns_tuning_basic(backend, hostname_type, option):
     DORA/SARR exchange acquires lease and leaseX-get command returns hostname applied to lease.
     We then compare returned lease with expected.
     Parameter 'suffix' and 'empty' check for proper behaviour with global suffix applied or global tuning disabled.
+
+    :param backend: lease backend type
+    :type backend: str
+    :param hostname_type: hostname type
+    :type hostname_type: str
+    :param option: option type
+    :type option: str
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
 
@@ -207,9 +214,14 @@ def test_v6_ddns_tuning_basic(backend, hostname_type):
     DORA/SARR exchange acquires lease and leaseX-get command returns hostname applied to lease.
     We then compare returned lease with expected.
     Parameter 'suffix' and 'empty' check for proper behaviour with global suffix applied or global tuning disabled.
+
+    :param backend: lease backend type
+    :type backend: str
+    :param hostname_type: hostname type
+    :type hostname_type: str
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::21')
 
@@ -261,10 +273,17 @@ def test_v4_ddns_tuning_subnets(backend, hostname_type, option):
     DORA exchange acquires lease and lease4-get command returns hostname applied to lease.
     We then compare returned lease with expected.
     Parameter 'suffix' and 'empty' check for proper behaviour with global suffix applied or global tuning disabled.
+
+    :param backend: lease backend type
+    :type backend: str
+    :param hostname_type: hostname type
+    :type hostname_type: str
+    :param option: option type
+    :type option: str
     """
     nbr_of_subnets = 3  # number of subnets to use in test: from 2 to 9
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     # Configure subnets
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
@@ -339,10 +358,15 @@ def test_v6_ddns_tuning_subnets(backend, hostname_type):
     SARR exchange acquires lease and leas6-get command returns hostname applied to lease.
     We then compare returned lease with expected.
     Parameter 'suffix' and 'empty' check for proper behaviour with global suffix applied or global tuning disabled.
+
+    :param backend: lease backend type
+    :type backend: str
+    :param hostname_type: hostname type
+    :type hostname_type: str
     """
     nbr_of_subnets = 3  # number of subnets to use in test: from 2 to 9
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     # Configure subnets
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -407,9 +431,14 @@ def test_v4_ddns_tuning_skip(backend, option):
     including text and hardware address.
     Reservation with SKIP_DDNS class is made for one MAC address.
     Two leases are acquired and ddns server is checked if records are updated only for one lease.
+
+    :param backend: lease backend type
+    :type backend: str
+    :param option: option type
+    :type option: str
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
 
@@ -486,9 +515,12 @@ def test_v6_ddns_tuning_skip(backend):
     including text and hardware address.
     Reservation with SKIP_DDNS class is made for one MAC address.
     Two leases are acquired and ddns server is checked if records are updated only for one lease.
+
+    :param backend: lease backend type
+    :type backend: str
     """
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
 
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::21')
 

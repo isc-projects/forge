@@ -19,7 +19,7 @@ from src import srv_msg
 def test_v4_request_selecting_success_chaddr(backend):
 
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -54,7 +54,7 @@ def test_v4_request_selecting_success_chaddr(backend):
 def test_v4_request_selecting_success_chaddr_multiple_pools(backend):
 
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.new_pool('192.168.50.2-192.168.50.2', 0)
     srv_control.new_pool('192.168.50.3-192.168.50.3', 0)
@@ -187,7 +187,7 @@ def test_v4_request_selecting_success_chaddr_empty_pool():
 def test_v4_request_selecting_success_client_id(backend):
 
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')

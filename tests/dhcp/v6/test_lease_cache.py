@@ -132,7 +132,7 @@ def test_lease_cache_disabled(backend, parameter):
     world.dhcp_cfg.update({"preferred-lifetime": 10, "rebind-timer": 10,
                            "renew-timer": 10, "valid-lifetime": 10})
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
 
     srv_control.build_and_send_config_files()
@@ -160,7 +160,7 @@ def test_lease_cache_disabled(backend, parameter):
 def test_lease_cache_enabled(backend, parameter):
     misc.test_setup()
     srv_control.add_unix_socket()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     address = "2001:db8:a::1"
@@ -239,7 +239,7 @@ def test_lease_cache_different_levels(backend):
     srv_control.create_new_class('Client_Class_3')
     srv_control.add_test_to_class(3, 'test', 'option[1].hex == 0x00030001111122222211')
     srv_control.add_unix_socket()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:b::/64',
@@ -348,7 +348,7 @@ def test_lease_cache_ddns(parameter, backend):
     srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     world.dhcp_cfg.update(parameter)
 
     srv_control.add_ddns_server('127.0.0.1', '53001')

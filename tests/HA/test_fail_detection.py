@@ -40,7 +40,7 @@ def kill_kea_on_second_system():
 def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     # HA SERVER 1
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::ffff')
         srv_control.config_srv_prefix('2001:db8:2::', 0, 48, 91)
@@ -64,7 +64,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
@@ -143,7 +143,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     # in shared networks let's add small pools to insure that during test addresses from both pools will be assigned
     # HA SERVER 1
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.3')
         srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
@@ -176,7 +176,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
@@ -270,7 +270,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     # TODO maybe we should run this tests just with one backend
     # HA SERVER 1
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == "v6":
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::30')
         world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
@@ -298,7 +298,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 
@@ -395,7 +395,7 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
     # TODO maybe we should run this tests just with one backend
     # HA SERVER 1
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     if dhcp_version == "v6":
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::30')
         world.dhcp_cfg["subnet6"][0]["pools"][0].update({"client-classes": ["HA_server1"]})
@@ -423,7 +423,7 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
 
     # HA SERVER 2
     misc.test_setup()
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
 

@@ -24,13 +24,18 @@ def test_v4_leasequery_ip(backend, rai_version):
     """
     Test of v4 lease query messages asking for ip address.
     Test sends queries to trigger "leaseunknown", "leaseunassigned", and "leaseactive" responses.
+
+    :param backend: lease backend type
+    :type backend: str
+    :param rai_version: RAI version
+    :type rai_version: str
     """
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -124,7 +129,11 @@ def test_v4_leasequery_mac(backend, rai_version):
     """
     Test of v4 lease query messages asking for mac address.
     Test sends queries to trigger "leaseunknown" and "leaseactive" responses.
-    :param backend:
+
+    :param backend: lease backend type
+    :type backend: str
+    :param rai_version: RAI version
+    :type rai_version: str
     """
 
     misc.test_setup()
@@ -132,7 +141,7 @@ def test_v4_leasequery_mac(backend, rai_version):
     srv_control.config_srv_another_subnet_no_interface('192.168.60.0/24',
                                                        '192.168.60.0-192.168.60.1')
     srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -227,7 +236,11 @@ def test_v4_leasequery_client(backend, rai_version):
     """
     Test of v4 lease query messages asking for client id
     Test sends queries to trigger "leaseunknown" and "leaseactive" responses.
-    :param backend:
+
+    :param backend: lease backend type
+    :type backend: str
+    :param rai_version: RAI version
+    :type rai_version: str
     """
 
     misc.test_setup()
@@ -235,7 +248,7 @@ def test_v4_leasequery_client(backend, rai_version):
     srv_control.config_srv_another_subnet_no_interface('192.168.60.0/24',
                                                        '192.168.60.0-192.168.60.1')
     srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -405,11 +418,18 @@ def test_v4_leasequery_denied():
 @pytest.mark.hook
 @pytest.mark.parametrize('backend', ['memfile'])
 def test_v6_negative(backend):
+    """
+    Test of v6 lease query messages asking for ip address.
+    Test sends queries to trigger "leaseunknown", "leaseunassigned", and "leaseactive" responses.
+
+    :param backend: lease backend type
+    :type backend: str
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     srv_control.config_srv_prefix('2001:db8:3::', 0, 126, 128)
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -594,7 +614,7 @@ def test_v6_negative(backend):
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     srv_control.config_srv_prefix('2001:db8:3::', 0, 126, 128)
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -634,13 +654,16 @@ def test_v6_negative(backend):
 def test_v6_get_leases(backend):
     """
     Test of v6 lease query messages asking for all assigned leases, with request by link and duid
+
+    :param backend: lease backend type
+    :type backend: str
     """
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     srv_control.config_srv_prefix('2001:db8:3::', 0, 126, 128)
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters
@@ -835,13 +858,16 @@ def test_v6_query_address_get_back_prefix(backend):
     """
     If client asks for address and it wasn't assigned directly, but it was included in a prefix that was delegated
     server should send back this prefix
+
+    :param backend: lease backend type
+    :type backend: str
     """
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     srv_control.config_srv_prefix('2001:db8:3::', 0, 110, 112)
     world.dhcp_cfg['store-extended-info'] = True
-    srv_control.define_temporary_lease_db_backend(backend)
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     # adding hook and required parameters

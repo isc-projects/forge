@@ -104,16 +104,15 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-    world.dhcp_cfg["lease-database"] = {"type": backend,
-                                        "name": world.f_cfg.db_name,
-                                        "host": world.f_cfg.db_host,
-                                        "user": world.f_cfg.db_user,
-                                        "password": world.f_cfg.db_passwd,
-                                        "retry-on-startup": True,
-                                        "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": wait_time,
-                                        "on-fail": "stop-retry-exit"}
-    srv_control.add_database_hook(backend)
+    srv_control.define_lease_db_backend(backend,
+                                        db_name=world.f_cfg.db_name,
+                                        db_host=world.f_cfg.db_host,
+                                        db_user=world.f_cfg.db_user,
+                                        db_passwd=world.f_cfg.db_passwd,
+                                        retry_on_startup=True,
+                                        max_reconnect_tries=retries,
+                                        reconnect_wait_time=wait_time,
+                                        on_fail="stop-retry-exit")
     srv_control.add_http_control_channel()
     srv_control.add_unix_socket()
 
@@ -213,16 +212,15 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
         srv_control.config_srv_opt('preference', '123')
-    world.dhcp_cfg["lease-database"] = {"type": backend,
-                                        "name": world.f_cfg.db_name,
-                                        "host": world.f_cfg.db_host,
-                                        "user": world.f_cfg.db_user,
-                                        "password": world.f_cfg.db_passwd,
-                                        "retry-on-startup": True,
-                                        "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": wait_time,
-                                        "on-fail": "serve-retry-exit"}
-    srv_control.add_database_hook(backend)
+    srv_control.define_lease_db_backend(backend,
+                                        db_name=world.f_cfg.db_name,
+                                        db_host=world.f_cfg.db_host,
+                                        db_user=world.f_cfg.db_user,
+                                        db_passwd=world.f_cfg.db_passwd,
+                                        retry_on_startup=True,
+                                        max_reconnect_tries=retries,
+                                        reconnect_wait_time=wait_time,
+                                        on_fail="serve-retry-exit")
     srv_control.add_http_control_channel()
     srv_control.add_unix_socket()
 
@@ -323,16 +321,15 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
     else:
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
         srv_control.config_srv_opt('preference', '123')
-    world.dhcp_cfg["lease-database"] = {"type": backend,
-                                        "name": world.f_cfg.db_name,
-                                        "host": world.f_cfg.db_host,
-                                        "user": world.f_cfg.db_user,
-                                        "password": world.f_cfg.db_passwd,
-                                        "retry-on-startup": True,
-                                        "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": wait_time,
-                                        "on-fail": "serve-retry-continue"}
-    srv_control.add_database_hook(backend)
+    srv_control.define_lease_db_backend(backend,
+                                        db_name=world.f_cfg.db_name,
+                                        db_host=world.f_cfg.db_host,
+                                        db_user=world.f_cfg.db_user,
+                                        db_passwd=world.f_cfg.db_passwd,
+                                        retry_on_startup=True,
+                                        max_reconnect_tries=retries,
+                                        reconnect_wait_time=wait_time,
+                                        on_fail="serve-retry-continue")
     srv_control.add_http_control_channel()
     srv_control.add_unix_socket()
     # Start Kea
@@ -445,17 +442,11 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
         srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, backend, 1)
         srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', backend, 1)
     srv_control.upload_db_reservation(backend)
-
-    world.reservation_backend = None  # Allow to override hosts-database settings
-    world.dhcp_cfg["hosts-database"] = {"type": backend,
-                                        "name": world.f_cfg.db_name,
-                                        "host": world.f_cfg.db_host,
-                                        "user": world.f_cfg.db_user,
-                                        "password": world.f_cfg.db_passwd,
-                                        "retry-on-startup": True,
-                                        "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": wait_time,
-                                        "on-fail": "stop-retry-exit"}
+    srv_control.enable_db_backend_reservation(backend,
+                                              retry_on_startup=True,
+                                              max_reconnect_tries=retries,
+                                              reconnect_wait_time=wait_time,
+                                              on_fail="stop-retry-exit")
     srv_control.add_database_hook(backend)
     srv_control.add_http_control_channel()
     srv_control.add_unix_socket()
@@ -543,16 +534,11 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
         srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', backend, 1)
     srv_control.upload_db_reservation(backend)
 
-    world.reservation_backend = None  # Allow to override hosts-database settings
-    world.dhcp_cfg["hosts-database"] = {"type": backend,
-                                        "name": world.f_cfg.db_name,
-                                        "host": world.f_cfg.db_host,
-                                        "user": world.f_cfg.db_user,
-                                        "password": world.f_cfg.db_passwd,
-                                        "retry-on-startup": True,
-                                        "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": wait_time,
-                                        "on-fail": "serve-retry-exit"}
+    srv_control.enable_db_backend_reservation(backend,
+                                              retry_on_startup=True,
+                                              max_reconnect_tries=retries,
+                                              reconnect_wait_time=wait_time,
+                                              on_fail="serve-retry-exit")
     srv_control.add_database_hook(backend)
     srv_control.add_http_control_channel()
     srv_control.add_unix_socket()
@@ -644,17 +630,11 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
         srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, backend, 1)
         srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', backend, 1)
     srv_control.upload_db_reservation(backend)
-
-    world.reservation_backend = None  # Allow to override hosts-database settings
-    world.dhcp_cfg["hosts-database"] = {"type": backend,
-                                        "name": world.f_cfg.db_name,
-                                        "host": world.f_cfg.db_host,
-                                        "user": world.f_cfg.db_user,
-                                        "password": world.f_cfg.db_passwd,
-                                        "retry-on-startup": True,
-                                        "max-reconnect-tries": retries,
-                                        "reconnect-wait-time": wait_time,
-                                        "on-fail": "serve-retry-continue"}
+    srv_control.enable_db_backend_reservation(backend,
+                                              retry_on_startup=True,
+                                              max_reconnect_tries=retries,
+                                              reconnect_wait_time=wait_time,
+                                              on_fail="serve-retry-continue")
     srv_control.add_database_hook(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
