@@ -567,12 +567,12 @@ def enable_db_backend_reservation(db_type, clear=True,
     # for now we are not implementing new configuration system for this one host reservation in databases
     if db_type.lower() == 'mysql':
         mysql_reservation.enable_db_backend_reservation()
-        dhcp.define_host_db_backend(db_type, db_host, db_user, db_passwd, db_name, **kwargs)
+        dhcp.define_host_db_backend(db_type, db_user, db_passwd, db_name, db_host, **kwargs)
         if clear:
             mysql_reservation.clear_all_reservations()
     elif db_type.lower() == 'postgresql':
         pgsql_reservation.enable_db_backend_reservation()
-        dhcp.define_host_db_backend(db_type, db_host, db_user, db_passwd, db_name, **kwargs)
+        dhcp.define_host_db_backend(db_type, db_user, db_passwd, db_name, db_host, **kwargs)
         if clear:
             pgsql_reservation.clear_all_reservations()
     elif db_type == "memfile":

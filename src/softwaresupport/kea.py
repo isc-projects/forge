@@ -1245,8 +1245,8 @@ def define_host_db_backend(host_db_type: str,
     :param kwargs: additional parameters that will be added to "hosts-database" section
     :type kwargs: dict, optional
     """
-    if host_db_type in ["mysql", "postgresql"]:
-        world.dhcp_cfg["hosts-database"] = {"type": host_db_type,
+    if host_db_type.lower() in ["mysql", "postgresql"]:
+        world.dhcp_cfg["hosts-database"] = {"type": host_db_type.lower(),
                                             "name": db_name,
                                             "host": db_host,
                                             "user": db_user,
