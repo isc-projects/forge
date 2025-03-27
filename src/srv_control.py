@@ -547,7 +547,7 @@ def enable_db_backend_reservation(db_type, clear=True,
                                   db_passwd=world.f_cfg.db_passwd,
                                   db_name=world.f_cfg.db_name,
                                   **kwargs):
-    """Enable database backend reservation.
+    """Enable database backend reservation. By deafult it will clear all reservations at the beginning.
 
     :param db_type: mysql, pgsql or memfile
     :type db_type: str

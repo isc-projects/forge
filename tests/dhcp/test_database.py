@@ -441,12 +441,12 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
         srv_control.new_db_backend_reservation(backend, 'hw-address', 'f6:f5:f4:f3:f2:01')
         srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, backend, 1)
         srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', backend, 1)
-    srv_control.upload_db_reservation(backend)
     srv_control.enable_db_backend_reservation(backend,
                                               retry_on_startup=True,
                                               max_reconnect_tries=retries,
                                               reconnect_wait_time=wait_time,
                                               on_fail="stop-retry-exit")
+    srv_control.upload_db_reservation(backend)
     srv_control.add_database_hook(backend)
     srv_control.add_http_control_channel()
     srv_control.add_unix_socket()
@@ -532,13 +532,12 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
         srv_control.new_db_backend_reservation(backend, 'hw-address', 'f6:f5:f4:f3:f2:01')
         srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, backend, 1)
         srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', backend, 1)
-    srv_control.upload_db_reservation(backend)
-
     srv_control.enable_db_backend_reservation(backend,
                                               retry_on_startup=True,
                                               max_reconnect_tries=retries,
                                               reconnect_wait_time=wait_time,
                                               on_fail="serve-retry-exit")
+    srv_control.upload_db_reservation(backend)
     srv_control.add_database_hook(backend)
     srv_control.add_http_control_channel()
     srv_control.add_unix_socket()
@@ -591,6 +590,7 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
     wait_for_message_in_log(
         f'DHCP{dhcp_version[1]}_DB_RECONNECT_SUCCEEDED database connection recovered.', count=1,
         timeout=retries*wait_time/1000+1)
+    srv_msg.forge_sleep(5)
 
     if dhcp_version == 'v4':
         srv_msg.DORA('192.168.50.100', chaddr='ff:01:02:03:ff:04')
@@ -629,12 +629,12 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
         srv_control.new_db_backend_reservation(backend, 'hw-address', 'f6:f5:f4:f3:f2:01')
         srv_control.update_db_backend_reservation('dhcp6_subnet_id', 1, backend, 1)
         srv_control.ipv6_address_db_backend_reservation('2001:db8:1::100', '$(EMPTY)', backend, 1)
-    srv_control.upload_db_reservation(backend)
     srv_control.enable_db_backend_reservation(backend,
                                               retry_on_startup=True,
                                               max_reconnect_tries=retries,
                                               reconnect_wait_time=wait_time,
                                               on_fail="serve-retry-continue")
+    srv_control.upload_db_reservation(backend)
     srv_control.add_database_hook(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
