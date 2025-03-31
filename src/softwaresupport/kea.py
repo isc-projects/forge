@@ -36,7 +36,7 @@ from src.protosupport.multi_protocol_functions import remove_file_from_server, c
 from src.protosupport.multi_protocol_functions import sort_container
 from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
-from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_sudo_command
+from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_is_file, fabric_sudo_command
 from src.softwaresupport.multi_server_functions import fabric_remove_file_command, fabric_download_file
 from src.softwaresupport.multi_server_functions import check_local_path_for_downloaded_files
 
@@ -1902,6 +1902,10 @@ def clear_logs(destination_address=world.f_cfg.mgmt_address):
     """
     fabric_remove_file_command(world.f_cfg.log_join('kea*'),
                                destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+    if fabric_is_file("/tmp/keactrl.log", destination_address):
+        fabric_remove_file_command(
+            "/tmp/keactrl.log", destination_address, hide_all=world.f_cfg.forge_verbose
+        )
     # clear kea logs in journald (actually all logs)
     if world.f_cfg.install_method != 'make':
         if world.server_system == 'alpine':
@@ -2426,6 +2430,14 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
     fabric_download_file(log_path, local_dest_dir,
                          destination_host=destination_address, ignore_errors=True,
                          hide_all=not world.f_cfg.forge_verbose)
+
+    if fabric_is_file('/tmp/keactrl.log', destination_address):
+        fabric_download_file(
+            "/tmp/keactrl.log",
+            local_dest_dir,
+            destination_host=destination_address,
+            hide_all=not world.f_cfg.forge_verbose,
+        )
 
 
 def save_ddns_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address):
