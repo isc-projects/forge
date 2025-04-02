@@ -418,14 +418,17 @@ def add_line_to_subnet(subnetid, command):
 
 
 @step(r'Add hooks library located (\S+).')
-def add_hooks(library_path):
+def add_hooks(hook_library, determine_full_path=False):
     """Add hooks library to configuration. Only Kea.
 
-    :param library_path:
-    :type library_path:
+    :param hook_library: name of hook library to load e.g. "libdhcp_lease_cmds.so"
+    :type hook_library: str
+    :param determine_full_path: whether to generate full path, or otherwise let Kea figure it out
+    :type determine_full_path: bool
     """
-    full_library_path = world.f_cfg.hooks_join(library_path)
-    dhcp.add_hooks(full_library_path)
+    if determine_full_path:
+        hook_library = world.f_cfg.hooks_join(hook_library)
+    dhcp.add_hooks(hook_library)
 
 
 def delete_hooks(hook_patterns):
