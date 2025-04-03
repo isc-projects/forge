@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -42,7 +42,7 @@ def test_v4_all_hooks_start():
     srv_control.add_hooks('libdhcp_host_cache.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.add_parameter_to_ha_hook('this-server-name', '"server1"')
     srv_control.add_parameter_to_ha_hook('mode', '"load-balancing"')
     srv_control.add_parameter_to_ha_hook('heartbeat-delay', 1000)

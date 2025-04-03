@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -71,7 +71,7 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -101,7 +101,7 @@ def test_HA_load_balancing_hold_state_always(dhcp_version, channel):
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -250,7 +250,7 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -282,7 +282,7 @@ def test_HA_load_balancing_hold_state_once(dhcp_version):
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(LOAD_BALANCING)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -406,7 +406,7 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 10000,
@@ -439,7 +439,7 @@ def test_HA_hot_standby_hold_state_once(channel, dhcp_version):
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
 
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 10000,
@@ -594,7 +594,7 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -626,7 +626,7 @@ def test_HA_hot_standby_hold_state_always(dhcp_version):
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -808,7 +808,7 @@ def test_HA_ha_reset(dhcp_version, mode):
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(config[mode])
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -834,7 +834,7 @@ def test_HA_ha_reset(dhcp_version, mode):
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(config[mode])
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,

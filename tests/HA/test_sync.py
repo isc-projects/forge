@@ -91,7 +91,7 @@ def test_HA_hot_standby_multiple_leases_v6(trigger, hook_order: str):
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
 
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,

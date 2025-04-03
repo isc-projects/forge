@@ -143,7 +143,7 @@ def test_ha_configuration():
     srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     world.dhcp_cfg.update({'offer-lifetime': offer_lifetime})
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
 
     srv_control.update_ha_hook_parameter(HOT_STANDBY)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
@@ -168,7 +168,7 @@ def test_ha_configuration():
     world.dhcp_cfg.update({'offer-lifetime': offer_lifetime})
     srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
 
     srv_control.update_ha_hook_parameter(HOT_STANDBY)

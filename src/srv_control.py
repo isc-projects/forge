@@ -456,18 +456,6 @@ def add_parameter_to_hook(hook_name, parameter_name, parameter_value=None):
     dhcp.add_parameter_to_hook(hook_name, parameter_name, parameter_value)
 
 
-@step(r'Add High-Availability hook library located (\S+).')
-def add_ha_hook(library_path):
-    """Add HA hook.
-
-    :param library_path:
-    :type library_path:
-    """
-    full_library_path = world.f_cfg.hooks_join(library_path)
-    dhcp.ha_add_parameter_to_hook("lib", full_library_path)
-    dhcp.add_hooks(full_library_path)
-
-
 @step(r'To HA hook configuration add (\S+) with value: (.+)')
 def add_parameter_to_ha_hook(parameter_name, parameter_value, relationship=0):
     """Add parameter to HA hook.

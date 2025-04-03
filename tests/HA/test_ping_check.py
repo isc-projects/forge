@@ -1,4 +1,4 @@
-# Copyright (C) 2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2024-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -119,7 +119,7 @@ def test_v4_ping_check_basic_ha(ha_state):
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", 60)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -148,7 +148,7 @@ def test_v4_ping_check_basic_ha(ha_state):
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", 60)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -240,7 +240,7 @@ def test_v4_ping_check_requests_ha(ha_state):
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", 60)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -267,7 +267,7 @@ def test_v4_ping_check_requests_ha(ha_state):
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", 60)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -341,7 +341,7 @@ def test_v4_ping_check_timeout_ha(ha_state):
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", 60)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -368,7 +368,7 @@ def test_v4_ping_check_timeout_ha(ha_state):
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", 60)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -461,7 +461,7 @@ def test_v4_ping_check_cltt_ha(ha_state):
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", ping_cltt)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,
@@ -489,7 +489,7 @@ def test_v4_ping_check_cltt_ha(ha_state):
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", ping_cltt)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     srv_control.update_ha_hook_parameter(HA_CONFIG)
     srv_control.update_ha_hook_parameter({"heartbeat-delay": 1000,
                                           "max-ack-delay": 100,

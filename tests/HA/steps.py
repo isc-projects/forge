@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2023 Internet Systems Consortium.
+# Copyright (C) 2020-2025 Internet Systems Consortium.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -353,11 +353,11 @@ def load_hook_libraries(dhcp_version, hook_order):
     if hook_order == 'alphabetical':
         if dhcp_version == 'v4_bootp':
             srv_control.add_hooks('libdhcp_bootp.so')
-        srv_control.add_ha_hook('libdhcp_ha.so')
+        srv_control.add_hooks('libdhcp_ha.so')
         srv_control.add_hooks('libdhcp_lease_cmds.so')
     else:
         srv_control.add_hooks('libdhcp_lease_cmds.so')
-        srv_control.add_ha_hook('libdhcp_ha.so')
+        srv_control.add_hooks('libdhcp_ha.so')
         if dhcp_version == 'v4_bootp':
             srv_control.add_hooks('libdhcp_bootp.so')
 

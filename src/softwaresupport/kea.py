@@ -1391,8 +1391,6 @@ def ha_add_parameter_to_hook(parameter_name, parameter_value, relationship=0):
                     parameter_value.strip("'")
                     parameter_value = json.loads(parameter_value)
                 hook["parameters"]["high-availability"][relationship]["peers"].append(parameter_value)
-            elif parameter_name == "lib":
-                pass
             else:
                 if parameter_value.isdigit():
                     parameter_value = int(parameter_value)

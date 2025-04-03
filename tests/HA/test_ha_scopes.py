@@ -61,7 +61,7 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, mode: str):
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     if dhcp_version == 'v4_bootp':
         srv_control.add_hooks('libdhcp_bootp.so')
 
@@ -99,7 +99,7 @@ def test_HA_ha_scopes(dhcp_version: str, backend: str, mode: str):
     srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_ha_hook('libdhcp_ha.so')
+    srv_control.add_hooks('libdhcp_ha.so')
     if dhcp_version == 'v4_bootp':
         srv_control.add_hooks('libdhcp_bootp.so')
 
