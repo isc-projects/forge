@@ -1291,7 +1291,7 @@ def add_database_hook(db_type):
     if check_hook_presence(f'libdhcp_{db_type}.so'):
         return
 
-    add_hooks(world.f_cfg.hooks_join(f'libdhcp_{db_type}.so'))
+    add_hooks(f'libdhcp_{db_type}.so')
 
 
 def delete_hooks(hook_patterns):

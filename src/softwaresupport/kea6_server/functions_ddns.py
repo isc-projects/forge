@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -165,7 +165,7 @@ def ddns_add_gss_tsig(addr, dns_system,
                       server_principal="DNS/server.example.com@EXAMPLE.COM",
                       tkey_lifetime=3600):
     gss_tsig_cfg = {
-        "library": world.f_cfg.hooks_join("libddns_gss_tsig.so"),
+        "library": "libddns_gss_tsig.so",
         "parameters": {
             "server-principal": server_principal,
             "tkey-protocol": "TCP",

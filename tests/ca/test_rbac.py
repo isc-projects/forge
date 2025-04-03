@@ -66,7 +66,7 @@ def test_rbac_cert_subject(dhcp_version):
         True
     )
     hook = [{
-        "library": world.f_cfg.hooks_join("libca_rbac.so"),
+        "library": "libca_rbac.so",
         "parameters": {
             "assign-role-method": "cert-subject",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -172,7 +172,7 @@ def test_rbac_cert_issuer(dhcp_version):
         True
     )
     hook = [{
-        "library": world.f_cfg.hooks_join("libca_rbac.so"),
+        "library": "libca_rbac.so",
         "parameters": {
             "assign-role-method": "cert-issuer",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -268,7 +268,7 @@ def test_rbac_remote_address(dhcp_version, tls):
             True
         )
     hook = [{
-        "library": world.f_cfg.hooks_join("libca_rbac.so"),
+        "library": "libca_rbac.so",
         "parameters": {
             "assign-role-method": "remote-address",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -412,7 +412,7 @@ def test_rbac_basic_authentication(dhcp_version, tls):
         )
 
     hook = [{
-        "library": world.f_cfg.hooks_join("libca_rbac.so"),
+        "library": "libca_rbac.so",
         "parameters": {
             "assign-role-method": "basic-authentication",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -549,7 +549,7 @@ def _preconfigure_test():
         srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
-        "library": world.f_cfg.hooks_join("libca_rbac.so"),
+        "library": "libca_rbac.so",
         "parameters": {
             "assign-role-method": "basic-authentication",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -1220,7 +1220,7 @@ def test_creating_access_list_for_multiple_use_cases(dhcp_version):
         srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
-        "library": world.f_cfg.hooks_join("libca_rbac.so"),
+        "library": "libca_rbac.so",
         "parameters": {
             "assign-role-method": "basic-authentication",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -1320,7 +1320,7 @@ def test_mixed_roles(dhcp_version):
         srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
-        "library": world.f_cfg.hooks_join("libca_rbac.so"),
+        "library": "libca_rbac.so",
         "parameters": {
             "assign-role-method": "basic-authentication",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),

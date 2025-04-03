@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -766,7 +766,7 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
 
 
 def setup_server_for_config_backend_cmds(**kwargs):
-    default_cfg = {"hooks-libraries": [{"library": world.f_cfg.hooks_join("libdhcp_cb_cmds.so")}],
+    default_cfg = {"hooks-libraries": [{"library": "libdhcp_cb_cmds.so"}],
                    "server-tag": "abc",
                    "parked-packet-limit": 256}
     db = {"config-control": {"config-databases": [{"user": "$(DB_USER)",
@@ -784,14 +784,17 @@ def setup_server_for_config_backend_cmds(**kwargs):
         db["config-control"]["config-databases"][0]["type"] = kwargs["backend-type"]
 
         if kwargs["backend-type"] == "postgresql":
-            default_cfg["hooks-libraries"].append({"library": world.f_cfg.hooks_join("libdhcp_pgsql.so")})
+            # default_cfg["hooks-libraries"].append({"library": world.f_cfg.hooks_join("libdhcp_pgsql.so")})
+            default_cfg["hooks-libraries"].append({"library": "libdhcp_pgsql.so"})
         else:
-            default_cfg["hooks-libraries"].append({"library": world.f_cfg.hooks_join("libdhcp_mysql.so")})
+            # default_cfg["hooks-libraries"].append({"library": world.f_cfg.hooks_join("libdhcp_mysql.so")})
+            default_cfg["hooks-libraries"].append({"library": "libdhcp_mysql.so"})
 
         del kwargs["backend-type"]
     else:  # let' for now keep default value, but it may result in missing some tests with pgsql backend
         db["config-control"]["config-databases"][0]["type"] = "mysql"
-        default_cfg["hooks-libraries"].append({"library": world.f_cfg.hooks_join("libdhcp_mysql.so")})
+        # default_cfg["hooks-libraries"].append({"library": world.f_cfg.hooks_join("libdhcp_mysql.so")})
+        default_cfg["hooks-libraries"].append({"library": "libdhcp_mysql.so"})
 
     if "hooks-libraries" in kwargs:
         default_cfg["hooks-libraries"] += kwargs["hooks-libraries"]
@@ -825,10 +828,10 @@ def setup_server_with_radius(destination: str = world.f_cfg.mgmt_address,
         # Load the host cache hook library. It is needed by the RADIUS
         # library to keep the attributes from authorization to later user
         # for accounting.
-        "library": world.f_cfg.hooks_join("libdhcp_host_cache.so")
+        "library": "libdhcp_host_cache.so"
     }, {
         # Load the RADIUS hook library.
-        "library": world.f_cfg.hooks_join("libdhcp_radius.so"),
+        "library": "libdhcp_radius.so",
         "parameters": {
             "client-id-printable": True,
             "reselect-subnet-address": True,
