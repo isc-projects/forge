@@ -192,7 +192,8 @@ def test_ha_tls_without_ca(dhcp_version, backend):
     """
     Basic test of TLS functionality in HA Setup.
     Test generates certificate for both HA peers.
-    We check for hot-standby HA status after server st
+    We check for hot-standby HA status after server start with TLS enabled.
+    Then we acquire a lease and check if it is present on both nodes.
 
     :param dhcp_version: DHCP version
     :type dhcp_version: str
