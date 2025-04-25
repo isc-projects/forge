@@ -5,8 +5,7 @@ git+https://github.com/wwencel/scapy.git@b1fa81116b38c6e89af39c429cb755f538a08a3
 # required by forge
 fabric3
 netifaces
-# pytest == 6.2.5 was used in 2.4 cycle
-pytest
+pytest == 6.2.5
 PyCryptodome
 requests
 boto3
