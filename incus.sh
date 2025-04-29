@@ -80,7 +80,12 @@ function prepare_node() {
     if ! is_instance_created "kea-${2}"; then
         log "Creating kea-$2 node - $1"
         incus launch images:"$1" kea-"$2"
-        sleep 3
+        sleep 5
+        if [[ "$1" == "fedora/41" ]]; then
+            log "Some jobs listed as running, should be killed"
+            incus exec kea-"$2" -- systemctl list-jobs
+            incus exec kea-"$2" -- bash -c 'systemctl list-jobs | awk "NR>1 && \$4==\"running\" {print \$2}" | xargs -r systemctl stop'
+        fi
     fi
 }
 
