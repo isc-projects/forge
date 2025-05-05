@@ -16,6 +16,8 @@ from src import srv_control
 
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import file_contains_line
+from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
+from src.softwaresupport.multi_server_functions import fabric_sudo_command
 
 
 @pytest.mark.v4
@@ -247,3 +249,106 @@ def test_v4_all_hooks_test_cooperation():
     # Response MUST include option 54.
     # Response option 54 MUST contain value $(SRV4_ADDR).
     srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+
+
+@pytest.mark.v4
+@pytest.mark.hook
+@pytest.mark.parametrize("hook", ["nonexistent", "existing", "invalid", "valid"])
+def test_v4_hooks_path_configfile(hook):
+    """Test is Kea restricting path that hooks can be loaded from.
+
+    :param hook: state of hook file and it's path.
+    :type hook: str
+    """
+    if hook == "nonexistent":
+        srv_msg.remove_file_from_server(world.f_cfg.hooks_join('libdhcp_nonexistent.so'))
+        path = "libdhcp_nonexistent.so"
+        message = 'HOOKS_OPEN_ERROR failed to open hook library .* ' \
+            'cannot open shared object file: No such file or directory'
+        anti_message = 'HOOKS_LOAD_SUCCESS \'load\' function in hook library .* returned success'
+        should_succeed = False
+    elif hook == "existing":
+        srv_msg.remove_file_from_server('/tmp/libdhcp_legal_log.so')
+        fabric_sudo_command(f'cp {world.f_cfg.hooks_join("libdhcp_legal_log.so")} /tmp/libdhcp_legal_log.so')
+        path = "/tmp/libdhcp_legal_log.so"
+        message = 'DHCP4_PARSER_FAIL failed to create or run parser for configuration element hooks-libraries: ' \
+            'hooks library configuration error: invalid path specified: \'/tmp\''
+        anti_message = 'HOOKS_LOAD_SUCCESS \'load\' function in hook library .* returned success'
+        should_succeed = False
+    elif hook == "invalid":
+        srv_msg.remove_file_from_server('/tmp/libdhcp_invalid.so')
+        fabric_sudo_command("echo 'fake content' > /tmp/libdhcp_invalid.so")
+        path = "/tmp/libdhcp_invalid.so"
+        message = 'DHCP4_PARSER_FAIL failed to create or run parser for configuration element hooks-libraries: ' \
+            'hooks library configuration error: invalid path specified: \'/tmp\''
+        anti_message = 'HOOKS_LOAD_SUCCESS \'load\' function in hook library .* returned success'
+        should_succeed = False
+    else:
+        path = world.f_cfg.hooks_join('libdhcp_legal_log.so')
+        message = 'HOOKS_LOAD_SUCCESS \'load\' function in hook library .* returned success'
+        anti_message = 'DHCP4_PARSER_FAIL failed to create or run parser for configuration element hooks-libraries: ' \
+            'hooks library configuration error: invalid path specified: \'/tmp\''
+        should_succeed = True
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+
+    srv_control.add_hooks(path)
+
+    srv_control.add_unix_socket()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started', should_succeed=should_succeed)
+
+    log_contains(message)
+    log_doesnt_contain(anti_message)
+
+
+@pytest.mark.v4
+@pytest.mark.hook
+@pytest.mark.parametrize("hook", ["nonexistent", "existing", "invalid", "valid"])
+def test_v4_hooks_path_config_set(hook):
+    """Test is Kea restricting path that hooks can be loaded from.
+
+    :param hook: state of hook file and it's path.
+    :type hook: str
+    """
+    if hook == "nonexistent":
+        srv_msg.remove_file_from_server(world.f_cfg.hooks_join('libdhcp_nonexistent.so'))
+        path = "libdhcp_nonexistent.so"
+        message = 'hooks libraries failed to validate'
+        exp_result = 1
+    elif hook == "existing":
+        srv_msg.remove_file_from_server('/tmp/libdhcp_legal_log.so')
+        fabric_sudo_command(f'cp {world.f_cfg.hooks_join("libdhcp_legal_log.so")} /tmp/libdhcp_legal_log.so')
+        path = "/tmp/libdhcp_legal_log.so"
+        message = 'hooks library configuration error: invalid path specified:'
+        exp_result = 1
+    elif hook == "invalid":
+        srv_msg.remove_file_from_server('/tmp/libdhcp_invalid.so')
+        fabric_sudo_command("echo 'fake content' > /tmp/libdhcp_invalid.so")
+        path = "/tmp/libdhcp_invalid.so"
+        message = 'hooks library configuration error: invalid path specified:'
+        exp_result = 1
+    else:
+        path = world.f_cfg.hooks_join('libdhcp_legal_log.so')
+        message = 'Configuration successful.'
+        exp_result = 0
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+
+    srv_control.add_unix_socket()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    config = srv_msg.send_ctrl_cmd({"command": "config-get", "service": ["dhcp4"], "arguments": {}},
+                                   'socket')['arguments']
+    del config['hash']
+    config['Dhcp4']["hooks-libraries"] = [
+        {
+            "library": path
+        }
+    ]
+    response = srv_msg.send_ctrl_cmd({"command": "config-set", "service": ["dhcp4"], "arguments": config},
+                                     'socket', exp_result=exp_result)
+    assert message in response['text']

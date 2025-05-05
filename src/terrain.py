@@ -329,20 +329,13 @@ def test_start():
     # Initialize the common logger.
     logging_facility.logger_initialize(world.f_cfg.loglevel)
 
-    # let's assume debian is always
-    world.server_system = 'debian'
-    # and now check if it's redhat or alpine
-    result = fabric_run_command('ls -al /etc/redhat-release',
-                                hide_all=True, ignore_errors=True)
-    if result.succeeded:
-        world.server_system = 'redhat'
-        world.server_system_version = result.stdout
-    else:
-        result = fabric_run_command('ls -al /etc/alpine-release',
-                                    hide_all=True, ignore_errors=True)
+    # Determine system type.
+    world.server_system = 'unknown'
+    for system_candidate, release_file in [('alpine', 'alpine-release'), ('debian', 'debian_version'),
+                                           ('redhat', 'redhat-release')]:
+        result = fabric_run_command(f'ls -al "/etc/{release_file}"', hide_all=True, ignore_errors=True)
         if result.succeeded:
-            world.server_system = 'alpine'
-            world.server_system_version = result.stdout
+            world.server_system = system_candidate
     print('server running on %s based system' % world.server_system)
 
     # let's assume x86_64 is the default architecture
