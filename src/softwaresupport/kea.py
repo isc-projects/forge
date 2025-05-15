@@ -2055,7 +2055,7 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
                      db_user=db_user,
                      db_passwd=db_passwd,
                      db_name=db_name)
-    fabric_run_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+    fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
     # use kea script for cleaning pgsql
     cmd = 'PGPASSWORD={db_passwd} bash {software_install_path}/share/kea/scripts/pgsql/wipe_data.sh '
@@ -2066,7 +2066,7 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
                      db_user=db_user,
                      db_passwd=db_passwd,
                      db_name=db_name)
-    fabric_run_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+    fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
 
 def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
@@ -2448,6 +2448,13 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
     """
     if world.f_cfg.install_method == 'make':
         log_path = world.f_cfg.log_join('kea.log*')
+        # Logs are copied to temp directory because fabric has prolems with listing non world readable folders.
+        cmd = 'rm -rf /tmp/kealogs/'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        cmd = f'mkdir -p /tmp/kealogs/ ;' \
+            f'cp {log_path} /tmp/kealogs/.'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        log_path = '/tmp/kealogs/kea.log*'
     else:
         if world.server_system in ['redhat', 'alpine']:
             service_name = f'kea-dhcp{world.proto[1]}'
