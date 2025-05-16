@@ -2451,7 +2451,7 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
         fabric_sudo_command(cmd, destination_host=destination_address)
         cmd = 'mkdir -p /tmp/kealogs/'
         fabric_sudo_command(cmd, destination_host=destination_address)
-        cmd = f'cp bash -c \'cp {log_path} /tmp/kealogs/\''
+        cmd = f'cp {log_path} /tmp/kealogs/'
         fabric_sudo_command(cmd, destination_host=destination_address)
         log_path = '/tmp/kealogs/kea.log*'
     else:
