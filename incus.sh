@@ -41,7 +41,7 @@ function install_base_pkgs() {
     # let's check it when we gonna need it
     case "$usedSystem" in
         "ubuntu"|"debian")
-            install_pkgs "$1" bind9 ccache curl freeradius gnupg net-tools openssh-server python3 python3-venv socat tcpdump vim
+            install_pkgs "$1" bind9 ccache curl freeradius git gnupg net-tools openssh-server python3 python3-venv socat tcpdump vim
             ;;
         "fedora"|"rhel")
             install_pkgs "$1" bind ccache freeradius net-tools openssh-server socat tcpdump vim python3
@@ -430,24 +430,33 @@ function install_kea_pkgs() {
         install_nexus_repo kea-"$node"
         log "Installing kea packages version $pkg_version on node kea-$node on system $usedSystem version $osVersion"
         pkgs=(
-            "isc-kea-dhcp4"
-            "isc-kea-dhcp6"
-            "isc-kea-dhcp-ddns"
-            "isc-kea-hooks"
+            "isc-kea-common"
             "isc-kea-admin"
             "isc-kea-ctrl-agent"
-            "isc-kea-common"
-            "isc-kea-mysql"
-            "isc-kea-pgsql"
-            "isc-kea-gss-tsig"
-            "isc-kea-subscriber-cb-cmds"
-            "isc-kea-subscriber-rbac"
+            "isc-kea-dev"
+            "isc-kea-dhcp-ddns"
+            "isc-kea-dhcp4"
+            "isc-kea-dhcp6"
+            "isc-kea-hooks"
+            "isc-kea-premium-cb-cmds"
+            "isc-kea-premium-class-cmds"
+            "isc-kea-premium-ddns-tuning"
+            "isc-kea-premium-flex-id"
+            "isc-kea-premium-forensic-log"
+            "isc-kea-premium-gss-tsig"
+            "isc-kea-premium-host-cache"
+            "isc-kea-premium-host-cmds"
+            "isc-kea-premium-lease-query"
+            "isc-kea-premium-limits"
+            "isc-kea-premium-rbac"
+            "isc-kea-premium-subnet-cmds"
         )
         case "$usedSystem" in
             "ubuntu"|"debian")
                 # normal way apt install isc-kea-*=$pkg_version works just for the newest packages in the repo
                 # so we need to build exact list of packages to install
-                incus exec kea-"$node" -- apt install "${pkgs[@]/%/=$pkg_version}" -y
+                # radius is missing in apline, it's easier to add it here than to remove if from alpine list
+                incus exec kea-"$node" -- apt install "${pkgs[@]/%/=$pkg_version}" isc-kea-premium-radius=$pkg_version -y
                 ;;
             "rhel"|"fedora")
                 local suffix="fc${osVersion}"

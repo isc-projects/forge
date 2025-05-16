@@ -6,28 +6,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # This module will load incus.json file and use data to modufy init_all.py file
-
-# pylint: disable=redefined-outer-name
 import json
 import sys
-
-
 def print_json(data):
     print(json.dumps(data, indent=4))
 
-
 def load_json():
-    with open('incus.json', encoding='utf-8') as json_file:
+    with open('incus.json') as json_file:
         data = json.load(json_file)
     return data
-
 
 def save_to_init_all(key, value):
     # print(f'ADD TO init_all.py: {key}="{value}"')
     # append key=value to init_all.py
-    with open('init_all.py', 'a', encoding='utf-8') as file:
+    with open('init_all.py', 'a') as file:
         file.write(f'\n{key} = "{value}"')
-
 
 def get_addresses(addresses_lst):
     ipv4_addr = None
@@ -38,7 +31,7 @@ def get_addresses(addresses_lst):
             ipv4_addr = addr['address']
         if addr['family'] == 'inet6' and addr['scope'] == 'global':
             ipv6_global = addr['address']
-        if addr['family'] == 'inet6' and addr['scope'] == 'link':
+        if addr['family'] == 'inet6'  and addr['scope'] == 'link':
             ipv6_link_local = addr['address']
     # check if all are not None
     if ipv4_addr is None or ipv6_global is None or ipv6_link_local is None:
@@ -47,10 +40,10 @@ def get_addresses(addresses_lst):
     return ipv4_addr, ipv6_global, ipv6_link_local
 
 
+
 if __name__ == '__main__':
     data = load_json()
-    # this is temporary solution, we need to redesign address management
-    # if we want to have a proper hub-and-spoke tests.
+    # this is temporary solution, we need to redesign address management if we want to have a proper hub-and-spoke tests.
     for device in data:
         if device['name'] == 'kea-forge':
             for key, value in device['state']["network"].items():
@@ -76,8 +69,9 @@ if __name__ == '__main__':
                         save_to_init_all("MGMT_ADDRESS", ipv4)
                     else:
                         save_to_init_all(f"MGMT_ADDRESS_{device['name'][-1]}", ipv4)
+                    continue
                 else:
-                    if device['name'] == 'kea-1':
+                    if device['name'] == 'kea-1' :
                         save_to_init_all("SRV4_ADDR", ipv4)
                         save_to_init_all("DNS4_ADDR", ipv4)
                         save_to_init_all("DNS6_ADDR", ipv6_global)

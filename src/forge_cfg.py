@@ -42,10 +42,14 @@ SETTINGS = {
     'REL4_ADDR': '0.0.0.0',
     'GIADDR4': None,
     'IFACE': None,
+    'IFACE2': '',
     'CLI_LINK_LOCAL': '',
+    'CLI_LINK_LOCAL2': '',
     'CLIENT_IPV6_ADDR_GLOBAL': '',
     'SERVER_IFACE': None,
+    'SERVER_IFACE2': '',
     'SERVER2_IFACE': '',
+    'SERVER3_IFACE': '',
     'OUTPUT_WAIT_INTERVAL': 1,
     'OUTPUT_WAIT_MAX_INTERVALS': 2,
     'PACKET_WAIT_INTERVAL': 1,
@@ -100,6 +104,7 @@ class ForgeConfiguration:
         self.dhcp_used = ["kea4_server", "kea6_server", "none_server", "isc_dhcp4_server", "isc_dhcp6_server"]
         self.mgmt_address = None  # will be reconfigured, added to keep pycodestyle quiet
         self.mgmt_address_2 = None
+        self.mgmt_address_3 = None
 
         self._load_settings()
 
@@ -155,6 +160,19 @@ class ForgeConfiguration:
                     addr = addr.split('%')[0]
                 if addr.startswith('fe80'):
                     self.cli_link_local = addr
+                    break
+
+        if self.cli_link_local2 == '' and self.iface2 != '':
+            addrs = netifaces.ifaddresses(self.iface2)
+            if netifaces.AF_INET6 not in addrs:
+                raise Exception("ERROR: IPv6 is required on interface '%s'." % self.iface2)
+            addrs6 = addrs[netifaces.AF_INET6]
+            for addr in addrs6:
+                addr = addr['addr']
+                if '%' in addr:
+                    addr = addr.split('%')[0]
+                if addr.startswith('fe80'):
+                    self.cli_link_local2 = addr
                     break
         # it could be simplified but let's keep it completely separate from cli_link_local
         # address detection
@@ -252,7 +270,7 @@ class ForgeConfiguration:
                 return os.path.join('/usr/lib64/kea/hooks', sub_path)
             if world.server_system == 'alpine':
                 return os.path.join('/usr/lib/kea/hooks', sub_path)
-            return os.path.join('/usr/lib/x86_64-linux-gnu/kea/hooks', sub_path)
+            return os.path.join(f'/usr/lib/{world.server_architecture}-linux-gnu/kea/hooks', sub_path)
 
     def run_join(self, sub_path):
         if self.install_method == 'make':

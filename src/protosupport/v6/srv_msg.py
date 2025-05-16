@@ -22,12 +22,14 @@
 # pylint: disable=possibly-unused-variable
 # pylint: disable=redefined-outer-name
 # pylint: disable=too-many-branches
+# pylint: disable=too-many-nested-blocks
 # pylint: disable=too-many-function-args
 # pylint: disable=undefined-variable
 # pylint: disable=unknown-option-value
 # pylint: disable=unidiomatic-typecheck
 # pylint: disable=unused-argument
 # pylint: disable=unused-variable
+# pylint: disable=too-many-arguments
 
 import codecs
 import random
@@ -115,13 +117,9 @@ def client_requests_option(opt_type):
     """
     Add RequestOption to message.
     """
-    if not hasattr(world, 'oro'):
-        # There was no ORO at all, create new one
-        world.oro = dhcp6.DHCP6OptOptReq()
-        # Scapy creates ORO with 23, 24 options request. Let's get rid of them
-        world.oro.reqopts = []  # don't request anything by default
-
-    world.oro.reqopts.append(int(opt_type))
+    # Ensure the option code is an integer.
+    opt_type = get_option_code(opt_type)
+    world.oro.append(opt_type)
 
 
 def client_send_msg(msgname, iface=None, addr=None):
@@ -130,39 +128,39 @@ def client_send_msg(msgname, iface=None, addr=None):
     Parameters:
     msg ('<msg> message'): name of the message.
     """
-    # iface and addr not used for v6 for now.
 
     # Remove previous message waiting to be sent, just in case this is a
     # REQUEST after we received ADVERTISE. We don't want to send SOLICIT
     # the second time.
+    iface = world.cfg["iface"] if iface is None else iface
     world.climsg = []
 
     if msgname == "SOLICIT":
-        msg = build_msg(dhcp6.DHCP6_Solicit())
+        msg = build_msg(dhcp6.DHCP6_Solicit(), iface)
 
     elif msgname == "REQUEST":
-        msg = build_msg(dhcp6.DHCP6_Request())
+        msg = build_msg(dhcp6.DHCP6_Request(), iface)
 
     elif msgname == "CONFIRM":
-        msg = build_msg(dhcp6.DHCP6_Confirm())
+        msg = build_msg(dhcp6.DHCP6_Confirm(), iface)
 
     elif msgname == "RENEW":
-        msg = build_msg(dhcp6.DHCP6_Renew())
+        msg = build_msg(dhcp6.DHCP6_Renew(), iface)
 
     elif msgname == "REBIND":
-        msg = build_msg(dhcp6.DHCP6_Rebind())
+        msg = build_msg(dhcp6.DHCP6_Rebind(), iface)
 
     elif msgname == "DECLINE":
-        msg = build_msg(dhcp6.DHCP6_Decline())
+        msg = build_msg(dhcp6.DHCP6_Decline(), iface)
 
     elif msgname == "RELEASE":
-        msg = build_msg(dhcp6.DHCP6_Release())
+        msg = build_msg(dhcp6.DHCP6_Release(), iface)
 
     elif msgname == "INFOREQUEST":
-        msg = build_msg(dhcp6.DHCP6_InfoRequest())
+        msg = build_msg(dhcp6.DHCP6_InfoRequest(), iface)
 
     elif msgname == "LEASEQUERY":
-        msg = build_msg(dhcp6.DHCP6_Leasequery())
+        msg = build_msg(dhcp6.DHCP6_Leasequery(), iface)
 
     else:
         assert False, "Invalid message type: %s" % msgname
@@ -172,7 +170,7 @@ def client_send_msg(msgname, iface=None, addr=None):
     if msg:
         world.climsg.append(msg)
 
-    log.debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
+    log.debug("Message %s will be sent over %s interface." % (msgname, iface))
 
 
 def client_sets_value(value_name, new_value):
@@ -202,6 +200,7 @@ def client_does_include(sender_type, opt_type, value=None):
     Include options to message. This function refers to @step in lettuce
     """
 
+    assert sender_type is not None, "sender_type is None"
     assert sender_type in ["Client", "RelayAgent", "Relay-Supplied-Option"], "Two sender type accepted: Client or" \
                                                                              " RelayAgent, your choice is: " \
                                                                              + sender_type
@@ -344,7 +343,7 @@ def client_does_include(sender_type, opt_type, value=None):
 
     elif opt_type == "client-link-layer-addr":
         add_client_option(dhcp6.DHCP6OptClientLinkLayerAddr(lltype=world.cfg["values"]["address_type"],
-                                                            clladdr=world.cfg["values"]["link_local_mac_addr"]))
+                                                            clladdr=world.cfg["values"]["link_local_mac_addr"] if value is None else value))
 
     elif opt_type == "remote-id":
         add_client_option(dhcp6.DHCP6OptRemoteID(enterprisenum=world.cfg["values"]["enterprisenum"],
@@ -397,7 +396,7 @@ def apply_message_fields_changes():
 
         try:
             setattr(world.climsg[0], field_details[0], field_details[1])
-        except BaseException:
+        except BaseException:  # pylint: disable=broad-exception-caught
             assert False, "Message does not contain field: %s " % str(field_details[0])
 
 
@@ -552,8 +551,14 @@ def build_raw(msg, append):
         world.climsg[0] = world.climsg[0] / Raw(load=append)
 
 
-def build_msg(msg_dhcp):
-    msg = IPv6(dst=world.cfg["address_v6"], src=world.cfg["cli_link_local"])
+def build_msg(msg_dhcp, iface=None):
+    if iface == world.cfg["iface2"]:
+        src = world.cfg["cli_link_local2"]
+    else:
+        src = world.cfg["cli_link_local"]
+
+    dst = world.cfg["address_v6"] if iface is None else f"{world.cfg['address_v6']}%{iface}"
+    msg = IPv6(dst=dst, src=src)
     msg /= UDP(sport=world.cfg["source_port"], dport=world.cfg["destination_port"])
 
     # print("IP/UDP layers in bytes: ", raw(msg))
@@ -572,9 +577,12 @@ def build_msg(msg_dhcp):
 
     # add option request if any
     try:
-        if len(world.oro.reqopts) > 0:
-            msg = add_option_to_msg(msg, world.oro)
-    except BaseException:
+        if len(world.oro) > 0:
+            # add ORO to message
+            msg = add_option_to_msg(msg, dhcp6.DHCP6OptOptReq(reqopts=world.oro))
+            # clear ORO
+            world.oro = []
+    except BaseException:  # pylint: disable=broad-exception-caught
         pass
 
     # add all rest options to message.
@@ -613,7 +621,7 @@ def create_relay_forward(level=1):
         msg = relay_msg
 
     # build full message
-    full_msg = IPv6(dst=world.cfg["address_v6"],
+    full_msg = IPv6(dst=f"{world.cfg['address_v6']}%{world.cfg['iface']}",
                     src=world.cfg["cli_link_local"])
     full_msg /= UDP(sport=world.cfg["source_port"],
                     dport=world.cfg["destination_port"])
@@ -720,7 +728,8 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
 
 
 def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
-                          protocol: str = 'UDP', address: str = None, port: int = None):
+                          protocol: str = 'UDP', address: str = None, port: int = None, iface=None,
+                          ignore_response: bool = False):
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # debug.recv=[]
     # Uncomment this to get debug.recv filled with all received messages
@@ -734,6 +743,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     world.srvmsg = []
     world.tcpmsg = []
     received_name = ""
+    iface = world.cfg["iface"] if iface is None else iface
 
     pytest_current_test = os.environ.get('PYTEST_CURRENT_TEST')
     if 'HA' in pytest_current_test.split('/'):
@@ -746,7 +756,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
 
     if protocol == 'UDP':
         ans, unans = sr(world.climsg,
-                        iface=world.cfg["iface"],
+                        # iface=iface, deprecated
                         timeout=factor * world.cfg['wait_interval'],
                         nofilter=1,
                         verbose=int(world.f_cfg.forge_verbose))
@@ -775,15 +785,15 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
         for msg in world.srvmsg:
             log.info("Received packet %s (code %s)" % (get_msg_type(msg), msg.msgtype))
 
-    if exp_message is not None:
-        for x in unans:
-            log.error(("Unanswered packet type=%s" % get_msg_type(x)))
-
-    if presence:
-        assert len(world.srvmsg) != 0, "No response received."
-        assert received_name == exp_message, f"Expected message {exp_message} not received (got {received_name})"
-    elif not presence:
-        assert len(world.srvmsg) == 0, f"Response received ({received_name}) was not expected!"
+    if not ignore_response:
+        if exp_message is not None:
+            for x in unans:
+                log.error(("Unanswered packet type=%s" % get_msg_type(x)))
+        if presence:
+            assert len(world.srvmsg) != 0, "No response received."
+            assert received_name == exp_message, f"Expected message {exp_message} not received (got {received_name})"
+        elif not presence:
+            assert len(world.srvmsg) == 0, f"Response received ({received_name}) was not expected!"
 
     return world.srvmsg
 
@@ -961,7 +971,7 @@ def response_check_include_option(must_include, opt_code):
 
     opt_descr = _get_opt_descr(opt_code)
     if must_include:
-        assert opt, "Expected option {opt_descr} not present in the message.".format(**locals()) + \
+        assert opt, "Expected option {opt_descr}, but it is not present in the message.".format(**locals()) + \
                     "\nPacket:" + str(world.srvmsg[0].show(dump=True))
     else:
         assert len(opt) == 0, "Unexpected option {opt_descr} found in the message.".format(**locals()) + \
@@ -1057,13 +1067,15 @@ def response_check_include_suboption(opt_code, expect, expected_value):
     opt_descr = _get_opt_descr(opt_code)
     subopt_descr = _get_opt_descr(expected_value)
     if expect:
-        assert len(x) > 0, "Expected sub-option {subopt_descr} not present in the option {opt_descr}".format(**locals())
+        assert len(x) > 0, "Expected sub-option {subopt_descr}, but it is not present in the option {opt_descr}".format(**locals())
     else:
         assert len(x) == 0, "NOT expected sub-option {subopt_descr} is present in the option {opt_descr}".format(**locals())
     return x
 
 
-values_equivalent = {7: "prefval", 13: "statuscode", 21: "sipdomains", 22: "sipservers", 23: "dnsservers",
+values_equivalent = {7: "prefval", 13: "statuscode",
+                     17: "vso",
+                     21: "sipdomains", 22: "sipservers", 23: "dnsservers",
                      24: "dnsdomains", 27: "nisservers", 28: "nispservers", 29: "nisdomain", 30: "nispdomain",
                      31: "sntpservers", 32: "reftime"}
 
@@ -1151,7 +1163,7 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
 
     opt_descr = _get_opt_descr(opt_code)
 
-    assert x, "Expected option {opt_descr} not present in the message.".format(**locals())
+    assert x, "Expected option {opt_descr}, but it is not present in the message.".format(**locals())
     # test all collected options,:
     # couple tweaks to make checking smoother
 
@@ -1170,7 +1182,19 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
                     data_type = values_equivalent.get(opt_code)
                     tmp_field = each.fields.get(data_type)
                 if type(tmp_field) is list:
-                    received.append(",".join(tmp_field))
+                    if len(tmp_field):
+                        if isinstance(tmp_field[0], str):
+                            # The join only works on str.
+                            received.append(",".join(tmp_field))
+                        else:
+                            # Otherwise, get a full representation of the object.
+                            printables = []
+                            for i in tmp_field:
+                                # Just repr() would have also been fine, but let's convert non-printables to hex.
+                                if not all(chr(c).isprintable() for c in i.optdata):
+                                    i.optdata = ''.join([f'{c:0{2}x}' for c in i.optdata])
+                                printables.append(repr(i))
+                            received.append(",".join(printables))
                 else:
                     if isinstance(tmp_field, bytes):
                         received.append(tmp_field.decode('utf-8'))
@@ -1189,6 +1213,10 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
             assert expected_value not in received, "Received value of " + data_type + ": " + ",".join(received) + \
                                                    " should not be equal to value from client - " + str(expected_value)
     return received
+
+
+def response_check_option_content_more(opt_code, data_type, expected):
+    pass
 
 
 def save_value_from_option(value_name, option_name):
@@ -1266,7 +1294,7 @@ def tcp_messages_include(**kwargs):
     :param kwargs: types of messages e.g. leasequery_reply=1, leasequery_data=199, leasequery_done=1
     """
     expected_msg_count = sum(list(kwargs.values()))
-    assert expected_msg_count == len(world.tcpmsg),\
+    assert expected_msg_count == len(world.tcpmsg), \
         f"Expected message count is {expected_msg_count} but number of received messages is {len(world.tcpmsg)}"
     received_msg_count = {}
     for msg in world.tcpmsg:
@@ -1290,6 +1318,7 @@ def tcp_get_message(**kwargs):
     :return: DHCP6 message
     """
     # we can look for address or prefix, address in scapy is represented by addr and prefix is represented by prefix
+    print(".", end="", flush=True)
     scapy_field = "addr"
     if "prefix" in kwargs:
         scapy_field = "prefix"
@@ -1455,129 +1484,176 @@ def save_info():
     pass
 
 
-def check_IA_NA(address, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
+def check_IA_NA(address, status_code=None, expect=True):
     """
     Check that the latest received response has an IA_NA option containing
-    an IA_Address suboption with the given address and containing the given
-    status code.
+    an IA_Address suboption with the given address and the given status code.
 
-    :param address: the expected address as value of the IA_Address suboption
-    :param status_code: the expected status code (default: Success)
-    :param expect: True if the address is expected to be found,
-                   False if it is expected to be missing
+    :param address: the expected address as value of the IA_Address suboption.
+                    None means that it is expected for the IA_Address to be missing.
+    :param status_code: the expected status code (default: None - expected to be missing).
+    :param expect: whether the given address or status_code is expected to be found (True),
+                   or expected to be missing (False). If the two need different values for expect,
+                   the function can be called twice, one for each.
     """
 
-    response_check_include_option(True, 'IA_NA')
-    # RFC 8415: If the Status Code option does not appear in a
-    # message in which the option could appear, the status of the message
-    # is assumed to be Success.
-    if get_suboption('IA_NA', 'status-code'):
-        response_check_suboption_content('status-code', 'IA_NA', expect, 'statuscode', status_code)
-    else:
-        assert status_code == DHCPv6_STATUS_CODES['Success'], \
-            f'status code missing so it is Success by default, but expected {status_code}'
+    if address is None and status_code is None:
+        response_check_include_option(False, 'IA_NA')
+        # No IA_NA so nothing else to check.
+        return
 
-    if status_code == DHCPv6_STATUS_CODES['Success']:
+    # If we expect either an address or a status_code, IA_NA needs to be there.
+    response_check_include_option(True, 'IA_NA')
+
+    response_check_include_suboption('IA_NA', address is not None, 'IA_address')
+    if address is not None:
         response_check_suboption_content('IA_address', 'IA_NA', expect, 'addr', address)
 
+    response_check_include_suboption('IA_NA', status_code is not None, 'status-code')
+    if status_code is not None:
+        response_check_suboption_content('status-code', 'IA_NA', expect, 'statuscode', status_code)
 
-def check_IA_PD(prefix, prefix_length=None, status_code=DHCPv6_STATUS_CODES['Success'], expect=True):
+
+def check_IA_PD(prefix, status_code=None, expect=True):
     """
     Check that the latest received response has an IA_PD option containing
-    an IA_Prefix suboption with the given address and containing the given
-    status code.
+    an IA-Prefix suboption with the given address and the given status code.
 
-    :param prefix: the expected prefix value inside the IA Prefix suboption
-    :param prefix_length: the expected prefix length value inside the IA Prefix suboption.
-                          If None, it is not checked.
-    :param status_code: the expected status code (default: Success)
-    :param expect: True if the prefix is expected to be found,
-                   False if it is expected to be missing
+    :param prefix: the expected prefix in format '<prefix>/<length>'.
+                   None means that it is expected for the IA-Prefix to be missing.
+    :param status_code: the expected status code (default: None - expected to be missing).
+    :param expect: whether the given address or status_code is expected to be found (True),
+                   or expected to be missing (False). If the two need different values for expect,
+                   the function can be called twice, one for each.
     """
 
-    response_check_include_option(True, 'IA_PD')
-    # RFC 8415: If the Status Code option does not appear in a
-    # message in which the option could appear, the status of the message
-    # is assumed to be Success.
-    if get_suboption('status-code', 'IA_PD'):
-        response_check_suboption_content('status-code', 'IA_PD', 'statuscode', status_code)
-    else:
-        assert status_code == DHCPv6_STATUS_CODES['Success'], \
-            f'status code missing so it is Success by default, but expected {status_code}'
+    if prefix is None and status_code is None:
+        response_check_include_option(False, 'IA_PD')
+        # No IA_PD so nothing else to check.
+        return
 
-    if status_code == DHCPv6_STATUS_CODES['Success']:
-        response_check_suboption_content('IA-Prefix', 'IA_PD', expect, 'prefix', prefix)
-        if prefix_length is not None:
-            response_check_suboption_content('IA-Prefix', 'IA_PD', expect, 'plen', prefix_length)
+    # If we expect either a prefix or a status_code, IA_PD needs to be there.
+    response_check_include_option(True, 'IA_PD')
+
+    options = response_check_include_suboption('IA_PD', prefix is not None, 'IA-Prefix')
+    if prefix is not None:
+        assert '/' in prefix, 'prefix expected to be in format <prefix>/<length>'
+        prefix, prefix_length = prefix.split('/')
+        # We cannot use response_check_suboption_content because it cannot check if two fields
+        # belong to the same suboption. So we iterate ourselves.
+        received_prefixes = []
+        for o in options:
+            received_prefix = str(o.fields.get('prefix'))
+            received_plen = str(o.fields.get('plen'))
+            received_prefixes.append({'prefix': received_prefix, 'plen': received_plen})
+            if received_prefix == prefix and received_plen == prefix_length:
+                # Found.
+                assert expect, f'got {prefix}/{prefix_length} in IA_PD, but was not expected'
+                return
+        assert not expect, f'expected {prefix}/{prefix_length} in IA_PD, but was not found. ' \
+                           f'Here are all the received_prefixes: {str(received_prefixes)}'
+
+    response_check_include_suboption('IA_PD', status_code is not None, 'status-code')
+    if status_code is not None:
+        response_check_suboption_content('status-code', 'IA_PD', expect, 'statuscode', status_code)
 
 
 def SARR(address=None, delegated_prefix=None, relay_information=False,
-         status_code=DHCPv6_STATUS_CODES['Success'], exchange='full',
+         status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
-         linkaddr='2001:db8:1::1000', ifaceid='port1234'):
-    """
-    Sends and ensures receival of 6 packets part of a regular DHCPv6 exchange
-    in the correct sequence: solicit, advertise, request, reply, renew, reply.
+         linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None,
+         vendor=None):
+    """Send and ensure receival of 6 packets part of a regular DHCPv6 exchange.
+
+    Sequence: solicit, advertise, request, reply, renew, reply.
     Inserts options in the client packets based on given parameters and ensures
     that the right options are found in the server packets. A single option
     missing or having incorrect values renders the test failed.
 
-    Args:
-        address: the expected address as value of the IA_Address suboption.
-            For multiple addresses, use additional check_IA_NA() calls.
-        delegated_prefix: the expected prefix as value of the IA_Prefix suboption.
-            For multiple prefixes, use additional check_IA_PD() calls.
-        relay_information: whether client packets should be encapsulated in relay
-            forward messages, and by extension whether server packets should be
-            expected to be encapsulated in relay reply messages (default: False)
-        status_code: the expected status code (default: Success)
-        exchange: can have values "full" meaning SARR + renew-reply or
-            "renew-reply". It is a string instead of a boolean for
-            clearer recognition of test names because this value often comes from
-            pytest parametrization. (default: "full")
-        duid: the DUID to be used in client packets
-            (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
-        iaid: sets IAID for the client
-        linkaddr: sets Link Address in Relayed message
-        ifaceid: sets Interface ID in option 18 in Relayed message
+    :param address: the expected address as value of the IA_Address suboption.
+    :type address:
+        For multiple addresses, use additional check_IA_NA() calls. (Default value = None)
+    :param delegated_prefix: the expected prefix in format '<prefix>/<length>'.
+        For multiple prefixes, use additional check_IA_PD() calls. (Default value = None)
+    :type delegated_prefix:
+    :param relay_information: whether client packets should be encapsulated in relay
+        forward messages, and by extension whether server packets should be
+        expected to be encapsulated in relay reply messages (default: False)
+    :type relay_information:
+    :param status_code_IA_NA: the expected IA_NA status code (Default value = None)
+    :type status_code_IA_NA:
+    :param status_code_IA_PD: the expected IA_PD status code (Default value = None)
+    :type status_code_IA_PD:
+    :param exchange: can have values "sarr-only" for 4-way SARR, "full" meaning
+        SARR + renew-reply or "renew-reply". It is a string instead of a boolean
+        for clearer recognition of test names because this value often comes from
+        pytest parametrization. (default: "full")
+    :type exchange:
+    :param duid: the DUID to be used in client packets
+        (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+    :type duid:
+    :param iaid: sets IAID for the client (Default value = None)
+    :type iaid:
+    :param linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::1000')
+    :type linkaddr:
+    :param ifaceid: sets Interface ID in option 18 in Relayed message (Default value = 'port1234')
+    :type ifaceid:
+    :param iface: sets interface for the client (Default value = None)
+    :type iface:
+    :param vendor: (Default value = None)
+    :type vendor:
     """
-    # TODO where should be a way to make sure that IA_PD/IA_NA option is not included
-    # and same with any other option
-    if exchange == 'full':
+    iface = world.cfg["iface"] if iface is None else iface
+    # TODO: Add ability to check that options other than IA_NAs and IA_PDs are not included.
+    if exchange in ['full', 'sarr-only']:
         # Build and send Solicit and await Advertisement
-        SA(address, delegated_prefix, relay_information, status_code, duid, iaid, linkaddr, ifaceid)
-
+        SA(address, delegated_prefix, relay_information,
+           status_code_IA_NA, status_code_IA_PD,
+           duid, iaid, linkaddr, ifaceid, iface)
+        if relay_information:
+            world.sender_type = "Client"
+        # Build and send a request.
+        if address is not None:
+            client_copy_option('IA_NA')
+        if delegated_prefix is not None:
+            client_copy_option('IA_PD')
+        client_copy_option('server-id')
+        client_sets_value('DUID', duid)
+        client_does_include('Client', 'client-id')
+        if vendor is not None:
+            client_sets_value('vendor_class_data', vendor)
+            client_does_include('Client', 'vendor-class')
+        client_send_msg('REQUEST', iface)
         if not relay_information:
-            # Build and send a request.
-            if address is not None:
-                client_copy_option('IA_NA')
-            if delegated_prefix is not None:
-                client_copy_option('IA_PD')
-            client_copy_option('server-id')
-            client_sets_value('DUID', duid)
-            client_does_include('Client', 'client-id')
-            if status_code == DHCPv6_STATUS_CODES['NoAddrsAvail']:
-                if address is not None:
-                    client_sets_value('IA_Address', address)
-                if delegated_prefix is not None:
-                    client_sets_value('IA-Prefix', delegated_prefix)
-            client_send_msg('REQUEST')
-
             # Expect a reply.
             misc.pass_criteria()
-            send_wait_for_message('MUST', True, 'REPLY')
-            if address is not None:
-                check_IA_NA(address)
-            if delegated_prefix is not None:
-                check_IA_PD(delegated_prefix)
+            send_wait_for_message('MUST', True, 'REPLY', iface=iface)
+            check_IA_NA(address, status_code=status_code_IA_NA)
+            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
+        else:
+            # Encapsulate the solicit in a relay forward message.
+            client_sets_value('linkaddr', linkaddr)
+            client_sets_value('ifaceid', ifaceid)
+            client_does_include('RelayAgent', 'interface-id')
+            create_relay_forward()
+            # Send message and expect a relay reply.
+            misc.pass_criteria()
+            send_wait_for_message('MUST', True, 'RELAYREPLY', iface=iface)
+            response_check_include_option(True, 'interface-id')
+            response_check_include_option(True, 'relay-msg')
+            response_check_option_content('relay-msg', True, 'Relayed', 'Message')
+            response_check_include_option(True, 'client-id')
+            response_check_include_option(True, 'server-id')
+            check_IA_NA(address, status_code=status_code_IA_NA)
+            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
 
-    # @todo: forge doesn't receive a reply on renews if the initial solicit was
+    # TODO: forge doesn't receive a reply on renews if the initial solicit was
     # encapsulated in a relay forward message. After an investigation is done,
     # if it is decided that it is normal behavior, you may remove this comment
     # block. If there was a bug in this function, then the following if
     # statement is a hack and should be removed and the code block within should
     # be bumped one scope level up at function level i.e. always executed.
-    if not relay_information:
+    if not relay_information and exchange != 'sarr-only':
         misc.test_procedure()
         client_sets_value('DUID', duid)
         if iaid is not None:
@@ -1593,46 +1669,64 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         client_copy_option('server-id')
         client_does_include('Client', 'client-id', None)
         client_add_saved_option(False)
-        if status_code == DHCPv6_STATUS_CODES['NoAddrsAvail']:
-            if address is not None:
-                client_sets_value('IA_Address', address)
-            if delegated_prefix is not None:
-                client_sets_value('IA_Prefix', delegated_prefix)
-        client_send_msg('RENEW')
+        if vendor is not None:
+            client_sets_value('vendor_class_data', vendor)
+            client_does_include('Client', 'vendor-class')
+        client_send_msg('RENEW', iface)
 
         # Expect a reply.
-        send_wait_for_message('MUST', True, 'REPLY')
-        if address is not None:
-            check_IA_NA(address)
-        if delegated_prefix is not None:
-            check_IA_PD(delegated_prefix)
+        send_wait_for_message('MUST', True, 'REPLY', iface=iface)
+        check_IA_NA(address, status_code=status_code_IA_NA)
+        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
 
 
 def SA(address=None, delegated_prefix=None, relay_information=False,
-       status_code=DHCPv6_STATUS_CODES['Success'], duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
-       linkaddr='2001:db8:1::1000', ifaceid='port1234'):
-    """
-    Sends and ensures receival of 2 packets part of a regular DHCPv6 exchange
-    in the correct sequence: solicit, advertise.
+       status_code_IA_NA=None, status_code_IA_PD=None,
+       duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
+       linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None,
+       vendor=None):
+    """Send and ensure receival of 2 packets part of a regular DHCPv6 exchange.
+
+    Sequence: solicit, advertise.
     Inserts options in the client packets based on given parameters and ensures
     that the right options are found in the server packets. A single option
     missing or having incorrect values renders the test failed.
 
-    Args:
-        address: the expected address as value of the IA_Address suboption.
-            For multiple addresses, use additional check_IA_NA() calls.
-        delegated_prefix: the expected prefix as value of the IA_Prefix suboption.
-            For multiple prefixes, use additional check_IA_PD() calls.
-        relay_information: whether client packets should be encapsulated in relay
-            forward messages, and by extension whether server packets should be
-            expected to be encapsulated in relay reply messages (default: False)
-        status_code: the expected status code (default: Success)
-        duid: the DUID to be used in client packets
-            (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
-        iaid: sets IAID for the client
-        linkaddr: sets Link Address in Relayed message
-        ifaceid: sets Interface ID in option 18 in Relayed message
-        """
+    :param address: the expected address as value of the IA_Address suboption.
+        For multiple addresses, use additional check_IA_NA() calls. (Default value = None)
+    :type address:
+    :param delegated_prefix: the expected prefix in format '<prefix>/<length>'.
+        For multiple prefixes, use additional check_IA_PD() calls. (Default value = None)
+    :type delegated_prefix:
+    :param relay_information: whether client packets should be encapsulated in relay
+        forward messages, and by extension whether server packets should be
+        expected to be encapsulated in relay reply messages (default: False)
+    :type relay_information:
+    :param status_code_IA_NA: the expected IA_NA status code (Default value = None)
+    :type status_code_IA_NA:
+    :param status_code_IA_PD: the expected IA_PD status code (Default value = None)
+    :type status_code_IA_PD:
+    :param duid: the DUID to be used in client packets
+        (default: '00:03:00:01:f6:f5:f4:f3:f2:01' - a value commonly used in tests)
+    :type duid:
+    :param iaid: sets IAID for the client (Default value = None)
+    :type iaid:
+    :param linkaddr: sets Link Address in Relayed message (Default value = '2001:db8:1::1000')
+    :type linkaddr:
+    :param ifaceid: sets Interface ID in option 18 in Relayed message (Default value = 'port1234')
+    :type ifaceid:
+    :param iface: Default value = None)
+    :type iface:
+    :param vendor: (Default value = None)
+    :type vendor:
+    """
+    iface = world.cfg["iface"] if iface is None else iface
+    # Kea sends NoAddrsAvail or NoPrefixAvail in ADVERTISE when there are no
+    # leases available, as opposed to no IA_NA at all in REPLY.
+    if address is None and status_code_IA_NA is None:
+        status_code_IA_NA = DHCPv6_STATUS_CODES['NoAddrsAvail']
+    if delegated_prefix is None and status_code_IA_PD is None:
+        status_code_IA_PD = DHCPv6_STATUS_CODES['NoPrefixAvail']
 
     misc.test_procedure()
     client_sets_value('DUID', duid)
@@ -1643,13 +1737,14 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
         client_sets_value('ia_pd', iaid)
     # Build and send a solicit.
     client_does_include('Client', 'client-id')
-    if address is not None:
-        client_does_include('Client', 'IA_Address')
-        client_does_include('Client', 'IA-NA')
-    if delegated_prefix is not None:
-        client_does_include('Client', 'IA_Prefix')
-        client_does_include('Client', 'IA-PD')
-    client_send_msg('SOLICIT')
+    client_does_include('Client', 'IA_Address')
+    client_does_include('Client', 'IA-NA')
+    client_does_include('Client', 'IA_Prefix')
+    client_does_include('Client', 'IA-PD')
+    if vendor is not None:
+        client_sets_value('vendor_class_data', vendor)
+        client_does_include('Client', 'vendor-class')
+    client_send_msg('SOLICIT', iface)
 
     if relay_information:
         # Encapsulate the solicit in a relay forward message.
@@ -1660,23 +1755,19 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
 
         # Expect a relay reply.
         misc.pass_criteria()
-        send_wait_for_message('MUST', True, 'RELAYREPLY')
+        send_wait_for_message('MUST', True, 'RELAYREPLY', iface=iface)
         response_check_include_option(True, 'interface-id')
         response_check_include_option(True, 'relay-msg')
         response_check_option_content('relay-msg', True, 'Relayed', 'Message')
         response_check_include_option(True, 'client-id')
         response_check_include_option(True, 'server-id')
-        if address is not None:
-            check_IA_NA(address, status_code)
-        if delegated_prefix is not None:
-            check_IA_PD(delegated_prefix, status_code=status_code)
+        check_IA_NA(address, status_code=status_code_IA_NA)
+        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
     else:
         # Expect an advertise.
         misc.pass_criteria()
-        send_wait_for_message('MUST', True, 'ADVERTISE')
+        send_wait_for_message('MUST', True, 'ADVERTISE', iface=iface)
         response_check_include_option(True, 'client-id')
         response_check_include_option(True, 'server-id')
-        if address is not None:
-            check_IA_NA(address, status_code)
-        if delegated_prefix is not None:
-            check_IA_PD(delegated_prefix, status_code=status_code)
+        check_IA_NA(address, status_code=status_code_IA_NA)
+        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)

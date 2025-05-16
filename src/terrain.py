@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2024 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,6 +24,8 @@ from Crypto.Random.random import randint
 from scapy.config import conf
 from scapy.layers.dhcp6 import DUID_LLT
 
+from icecream import install
+
 from . import dependencies
 from .forge_cfg import world
 from .softwaresupport.multi_server_functions import make_tarfile, archive_file_name, \
@@ -31,6 +33,9 @@ from .softwaresupport.multi_server_functions import make_tarfile, archive_file_n
 from .softwaresupport import kea
 from . import logging_facility
 from .srv_control import start_srv
+
+# install simple debbuging tool `icecream`. Use by envoking `ic()` in any test.
+install()
 
 log = logging.getLogger('forge')
 
@@ -179,6 +184,7 @@ def _v6_initialize():
     # All DHCP_Servers ff05::1:3.
     world.cfg["address_v6"] = "ff02::1:2"
     world.cfg["cli_link_local"] = world.f_cfg.cli_link_local
+    world.cfg["cli_link_local2"] = world.f_cfg.cli_link_local2
     world.cfg["unicast"] = False
     world.cfg["relay"] = False
     world.cfg["space"] = "dhcp6"
@@ -211,7 +217,8 @@ def _define_software(dhcp_version):
     world.cfg["dns_under_test"] = ""
     for name in world.f_cfg.software_under_test:
         if name in world.f_cfg.dhcp_used:
-            world.cfg["dhcp_under_test"] = name.replace('6', '4') if dhcp_version in ['v4', 'v4_bootp'] else name.replace('4', '6')
+            world.cfg["dhcp_under_test"] = name.replace('6', '4') if dhcp_version in [
+                'v4', 'v4_bootp'] else name.replace('4', '6')
             # world.cfg["dns_under_test"] = ""
         elif name in world.f_cfg.dns_used:
             world.cfg["dns_under_test"] = name
@@ -281,6 +288,11 @@ def declare_all(dhcp_version=None):
     world.ctrl_enable = False
     world.fuzzing = False
 
+    world.radius_authorize_file = None
+    world.radius_clients_file = None
+    world.radius_config = None
+    world.radius_log = None
+
     # clear tmp DB values to use default from configuration
     world.f_cfg.db_type = world.f_cfg.db_type_bk
     world.f_cfg.db_host = world.f_cfg.db_host_bk
@@ -326,6 +338,17 @@ def test_start():
             world.server_system_version = result.stdout
     print('server running on %s based system' % world.server_system)
 
+    # let's assume x86_64 is the default architecture
+    world.server_architecture = 'x86_64'
+    # chech what architecture system is returning
+    result = fabric_run_command('arch',
+                                hide_all=True, ignore_errors=True)
+    if result.succeeded:
+        world.server_architecture = result.stdout.rstrip()
+        print(f'server running on {world.server_architecture} architecture')
+    else:
+        print('server running on UNKNOWN architecture, defaulting to x86_64')
+
     # stop any SUT running
     kea_under_test = False
     if not world.f_cfg.no_server_management:
@@ -342,6 +365,8 @@ def test_start():
         kea.db_setup()
         if world.f_cfg.mgmt_address_2:
             kea.db_setup(dest=world.f_cfg.mgmt_address_2)
+        if world.f_cfg.mgmt_address_3:
+            kea.db_setup(dest=world.f_cfg.mgmt_address_3)
 
 
 def _clear_remainings():
@@ -370,6 +395,7 @@ def initialize(scenario):
     declare_all(dhcp_version)
 
     world.cfg["iface"] = world.f_cfg.iface
+    world.cfg["iface2"] = world.f_cfg.iface2
     # world.cfg["server_type"] = SOFTWARE_UNDER_TEST for now I'll leave it here,
     # now we use world.cfg["dhcp_under_test"] and world.cfg["dns_under_test"] (in function _define_software)
     # it is being filled with values in srv_control

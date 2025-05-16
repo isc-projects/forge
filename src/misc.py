@@ -72,11 +72,7 @@ def test_procedure():
                     world.prl = ""  # don't request anything by default
 
             if world.proto == "v6":
-                # Start with fresh, empty ORO (v6)
-                if hasattr(world, 'oro'):
-                    world.oro = DHCP6OptOptReq()
-                    # Scapy creates ORO with 23, 24 options request. Let's get rid of them
-                    world.oro.reqopts = []  # don't request anything by default
+                world.oro = []  # Start with fresh, empty ORO (v6)
 
             # some tests skip "test setup" procedure and goes to "test procedure"
             # e.g. tests for server configuration. Then we need to setup
@@ -97,10 +93,10 @@ def merge_containers(target, source, identify=None, last_list_parent_key=None):
                      to limit the places where these unique keys are considered. Values in this dict
                      are the unique IDs for the elements in the source and target lists being
                      merged. By default None which means no smart merging is attempted.
-                     E.g. {'output_options': 'output'} for:
+                     E.g. {'output-options': 'output'} for:
                      {
                          "name": "kea-dhcp6",
-                         "output_options": [
+                         "output-options": [
                              {
                                  "output": "/opt/kea/var/log/kea.log",
                                  "flush": true,
