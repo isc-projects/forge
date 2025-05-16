@@ -291,7 +291,7 @@ def declare_all(dhcp_version=None):
                                            f'var/lib/kea/kea-leases{world.proto[1]}.csv')
 
     world.cfg['kea_log_file'] = os.path.join(world.f_cfg.software_install_path + '/var/log/kea/kea.log')
-    world.cfg['kea_ca_log_file'] = os.path.join(world.f_cfg.software_install_path + '/var/log/kea-ctrl-agent.log')
+    world.cfg['kea_ca_log_file'] = os.path.join(world.f_cfg.software_install_path + '/var/log/kea/kea-ctrl-agent.log')
 
     world.loops = {"active": False,
                    "save_leases_details": False}

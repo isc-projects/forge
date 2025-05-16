@@ -1903,8 +1903,6 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     if destination_address not in world.f_cfg.multiple_tested_servers:
         world.multiple_tested_servers.append(destination_address)
 
-    # use mode="0o666" to make config writable to enable config-write tests
-
     # send to server
     if world.f_cfg.install_method == 'make':
         fabric_send_file(world.cfg["cfg_file_2"],
@@ -1914,19 +1912,19 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     fabric_send_file(f'kea-dhcp{world.proto[1]}.conf',
                      world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf'),
                      destination_host=destination_address,
-                     mode="0o666")
+                     mode="0o640")
 
     if world.f_cfg.control_agent:
         fabric_send_file("kea-ctrl-agent.conf",
                          world.f_cfg.etc_join("kea-ctrl-agent.conf"),
                          destination_host=destination_address,
-                         mode="0o666")
+                         mode="0o640")
 
     if world.ddns_enable:
         fabric_send_file("kea-dhcp-ddns.conf",
                          world.f_cfg.etc_join("kea-dhcp-ddns.conf"),
                          destination_host=destination_address,
-                         mode="0o666")
+                         mode="0o640")
 
     # store files back to local for debug purposes
     if world.f_cfg.install_method == 'make':
@@ -2451,8 +2449,9 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
         # Logs are copied to temp directory because fabric has prolems with listing non world readable folders.
         cmd = 'rm -rf /tmp/kealogs/'
         fabric_sudo_command(cmd, destination_host=destination_address)
-        cmd = f'mkdir -p /tmp/kealogs/ ;' \
-            f'cp {log_path} /tmp/kealogs/.'
+        cmd = f'mkdir -p /tmp/kealogs/ ;'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        cmd =  f'cp bash -c \'cp {path} /tmp/kealogs/\''
         fabric_sudo_command(cmd, destination_host=destination_address)
         log_path = '/tmp/kealogs/kea.log*'
     else:
