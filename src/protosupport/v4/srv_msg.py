@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -49,8 +49,10 @@ log = logging.getLogger('forge')
 
 # DHCPv4 option codes indexed by name
 OPTIONS = {
-    "subnet-mask": 1,
+    'subnet-mask': 1,
     'server-id': 54,
+    'vendor-class-identifier': 60,
+    'vivso-suboptions': 125,
 }
 
 
@@ -70,9 +72,12 @@ def get_option_code(opt_code) -> int:
 
 
 def client_requests_option(opt_type):
+    # Ensure the option code is an integer.
+    opt_type = get_option_code(opt_type)
+
     if not hasattr(world, 'prl'):
         world.prl = ""  # don't request anything by default
-    world.prl += chr(int(opt_type))  # put a single byte there
+    world.prl += chr(opt_type)  # put a single byte there
 
 
 def build_raw(msg, append):
@@ -92,8 +97,7 @@ def client_send_msg(msgname, iface=None, addr=None):
     addr: address to send to (default: None)
     """
     # set different ethernet interface than default one.
-    if iface is not None:
-        world.cfg["iface"] = iface
+    if addr is not None:
         world.cfg["srv4_addr"] = addr
 
     world.climsg = []
@@ -114,31 +118,31 @@ def client_send_msg(msgname, iface=None, addr=None):
     if msgname == "DISCOVER":
         # msg code: 1
         # world.cfg["values"]["broadcastBit"] = True
-        msg = build_msg([("message-type", "discover")] + options)
+        msg = build_msg([("message-type", "discover")] + options, iface)
 
     elif msgname == "REQUEST":
         # msg code: 3
-        msg = build_msg([("message-type", "request")] + options)
+        msg = build_msg([("message-type", "request")] + options, iface)
 
     elif msgname == "DECLINE":
         # msg code: 4
-        msg = build_msg([("message-type", "decline")] + options)
+        msg = build_msg([("message-type", "decline")] + options, iface)
 
     elif msgname == "RELEASE":
         # msg code: 7
-        msg = build_msg([("message-type", "release")] + options)
+        msg = build_msg([("message-type", "release")] + options, iface)
 
     elif msgname == "INFORM":
         # msg code: 8
-        msg = build_msg([("message-type", "inform")] + options)
+        msg = build_msg([("message-type", "inform")] + options, iface)
 
     elif msgname == "LEASEQUERY":
         # msg code: 10
-        msg = build_msg([("message-type", "lease_query")] + options)
+        msg = build_msg([("message-type", "lease_query")] + options, iface)
 
     elif msgname == "BULK_LEASEQUERY":
         # msg code: 14
-        msg = build_msg([("message-type", "bulk_leasequery")] + options)
+        msg = build_msg([("message-type", "bulk_leasequery")] + options, iface)
 
     elif msgname == "BOOTP_REQUEST":
         world.cfg["values"]["broadcastBit"] = True
@@ -147,7 +151,7 @@ def client_send_msg(msgname, iface=None, addr=None):
         # should be the magic cookie, but the magic cookie is right before it, placed by scapy, and
         # that's where Kea correctly ends up reading it from. So let's put some four-byte padding.
         padding = ['\x00\x00\x00\x00']
-        msg = build_msg(padding + options)
+        msg = build_msg(padding + options, iface)
     else:
         assert False, "Invalid message type: %s" % msgname
 
@@ -156,7 +160,7 @@ def client_send_msg(msgname, iface=None, addr=None):
     if msg:
         world.climsg.append(msg)
 
-    log.debug("Message %s will be sent over %s interface." % (msgname, world.cfg["iface"]))
+    log.debug("Message %s will be sent over %s interface." % (msgname, iface))
 
 
 def client_sets_value(value_name, new_value):
@@ -202,10 +206,10 @@ def client_does_include(sender_type, opt_type, value):
         # flags, RCODE1, RCODE2, domain name
         # RCODE1 and RCODE2 are deprecated but we need to add them.
         if 'E' not in world.cfg["values"]["FQDN_flags"]:
-            fqdn = (flags + '\x00\x00' + world.cfg["values"]["FQDN_domain_name"])
+            fqdn = flags + '\x00\x00' + world.cfg["values"]["FQDN_domain_name"]
         else:
             domain = "".join(map(lambda z: chr(len(z))+z, world.cfg["values"]["FQDN_domain_name"].split('.')))
-            fqdn = (flags + '\x00\x00' + domain)
+            fqdn = flags + '\x00\x00' + domain
         world.cliopts += [('client_FQDN', fqdn)]
     elif opt_type == 'pxe_client_architecture':
         # code - 93
@@ -283,9 +287,12 @@ def convert_to_hex(mac):
     return codecs.decode(mac.replace(":", ""), 'hex')
 
 
-def build_msg(opts):
+def build_msg(opts, iface=None):
     conf.checkIPaddr = False
-    fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
+    if iface is None:
+        fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
+    else:
+        fam, hw = get_if_raw_hwaddr(str(iface))
 
     # we need to choose if we want to use chaddr, or client id.
     # also we can include both: client_id and chaddr
@@ -455,7 +462,7 @@ def tcp_messages_include(**kwargs):
     :param kwargs: types of messages e.g. leasequery_reply=1, leasequery_data=199, leasequery_done=1
     """
     expected_msg_count = sum(list(kwargs.values()))
-    assert expected_msg_count == len(world.tcpmsg),\
+    assert expected_msg_count == len(world.tcpmsg), \
         f"Expected message count is {expected_msg_count} but number of received messages is {len(world.tcpmsg)}"
     received_msg_count = {}
     for msg in world.tcpmsg:
@@ -495,7 +502,8 @@ def tcp_get_message(**kwargs):
 
 
 def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
-                          protocol: str = 'UDP', address: str = None, port: int = None):
+                          protocol: str = 'UDP', address: str = None, port: int = None, iface=None,
+                          ignore_response: bool = False):
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # We need to use srp() here (send and receive on layer 2)
     factor = 1
@@ -508,6 +516,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     world.srvmsg = []
     world.tcpmsg = []
     received_name = ""
+    iface = world.cfg["iface"] if iface is None else iface
 
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
@@ -515,7 +524,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
 
     if protocol == 'UDP':
         ans, unans = srp(world.climsg,
-                         iface=world.cfg["iface"],
+                         iface=iface,
                          timeout=factor * world.cfg['wait_interval'],
                          multi=False,
                          verbose=int(world.f_cfg.forge_verbose))
@@ -543,15 +552,15 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
         for msg in world.srvmsg:
             log.info("Received packet %s" % (get_msg_type(msg)))
 
-    if exp_message is not None:
-        for x in unans:
-            log.error(("Unanswered packet type=%s" % get_msg_type(x)))
-
-    if presence:
-        assert len(world.srvmsg) != 0, "No response received."
-        assert received_name == exp_message, f"Expected message {exp_message} not received (got {received_name})"
-    elif not presence:
-        assert len(world.srvmsg) == 0, f"Response received ({received_name}) was not expected!"
+    if not ignore_response:
+        if exp_message is not None:
+            for x in unans:
+                log.error(("Unanswered packet type=%s" % get_msg_type(x)))
+        if presence:
+            assert len(world.srvmsg) != 0, "No response received."
+            assert received_name == exp_message, f"Expected message {exp_message} not received (got {received_name})"
+        elif not presence:
+            assert len(world.srvmsg) == 0, f"Response received ({received_name}) was not expected!"
 
     return world.srvmsg
 
@@ -583,12 +592,16 @@ def get_option(msg, opt_code):
     else:
         x = msg.getlayer(1)  # if tcp connection is used, than BOOTP is layer 0 and DHCP options is 1
     # BOOTP messages may be optionless, so check first
+    returned_option = None
     if x is not None:
         for opt in x.options:
             if opt[0] is opt_name:
                 world.opts.append(opt)
-                return opt
-    return None
+                # Put all options in world.opts, but only return the first option, since, most of
+                # the time, there is a single option of a given code in v4.
+                if returned_option is None:
+                    returned_option = opt
+    return returned_option
 
 
 def byte_to_hex(byte_str):
@@ -653,7 +666,7 @@ def response_check_include_option(expected, opt_code):
     opt_descr = _get_opt_descr(opt_code)
 
     if expected:
-        assert opt, "Expected option {opt_descr} not present in the message.".format(**locals()) + \
+        assert opt, "Expected option {opt_descr}, but it is not present in the message.".format(**locals()) + \
                     "\nPacket:" + str(world.srvmsg[0].show(dump=True))
     else:
         assert opt is None, "Expected option {opt_descr} present in the message. But not expected!".format(**locals()) + \
@@ -680,6 +693,8 @@ def response_check_option_content(opt_code, expect, data_type, expected):
         expected = convert_to_hex(expected)
     elif opt_code == 82:
         expected = convert_to_hex(expected)
+    elif opt_code == 121:
+        received = received[1]
     elif isinstance(received[1], bytes):
         received = (received[0], received[1])
 
@@ -694,6 +709,30 @@ def response_check_option_content(opt_code, expect, data_type, expected):
         assert not outcome, "Invalid {opt_descr} option received: {received}" \
                             " that value has been excluded from correct values".format(**locals()) + \
                             "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+
+
+def response_check_option_content_more(opt_code, data_type, expected):
+    opt_descr = _get_opt_descr(opt_code)
+
+    assert len(world.opts), f"Not even the initial option {opt_descr} is there. " + \
+                            "This is most likely a test issue. Have you called " + \
+                            "response_check_option_content() first?" + \
+                            "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+
+    world.opts.pop(0)
+
+    if expected is None:
+        assert len(world.opts) == 0, f"Option {opt_descr} is found, although not expected." + \
+                                     "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+        return
+
+    assert len(world.opts), f"No more {opt_descr} options." + \
+                            "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+
+    outcome, received = test_option(opt_code, world.opts[0], expected)
+
+    assert outcome, f"Invalid {opt_descr} option received: {received} but expected {expected}" + \
+                    "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
 
 def get_all_leases(decode_duid=True):
@@ -718,7 +757,7 @@ def get_all_leases(decode_duid=True):
     return lease
 
 
-def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04'):
+def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
     """
     Sends a discover and expects an offer. Inserts options in the client
     packets based on given parameters and ensures that the right options are
@@ -733,25 +772,26 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04'):
     :param chaddr: the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
     """
+    iface = world.cfg["iface"] if iface is None else iface
     # Send a discover.
     client_sets_value('chaddr', chaddr)
     if options:
         for k, v in options.items():
             client_does_include(None, k, v)
-    client_send_msg('DISCOVER')
+    client_send_msg('DISCOVER', iface)
 
     # If the test requires an address, expect it in the offer, otherwise expect
     # no message back.
     if address is None:
-        send_wait_for_message('MUST', False, None)
+        send_wait_for_message('MUST', False, None, iface=iface)
     else:
-        send_wait_for_message('MUST', True, 'OFFER')
+        send_wait_for_message('MUST', True, 'OFFER', iface=iface)
         response_check_content(True, 'yiaddr', address)
         client_sets_value('chaddr', chaddr)
 
 
 def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
-       init_reboot=False, subnet_mask='255.255.255.0', fqdn=None):
+       init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
     """
     Sends a request and expects an advertise. Inserts options in the client
     packets based on given parameters and ensures that the right options are
@@ -770,6 +810,7 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
     :param subnet_mask: the value for option 1 subnet mask expected in a DHCPACK
     """
+    iface = world.cfg["iface"] if iface is None else iface
     client_sets_value('chaddr', chaddr)
     # Copy server ID if the client is not simulating an INIT-REBOOT state and if
     # there was a server response in the past to copy it from.
@@ -789,12 +830,12 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
         client_sets_value('FQDN_domain_name', fqdn)
         client_sets_value('FQDN_flags', 'S')
         client_does_include(None, 'fqdn', 'fqdn')
-    client_send_msg('REQUEST')
+    client_send_msg('REQUEST', iface)
 
     if response_type is None:
-        send_wait_for_message('MUST', False, None)
+        send_wait_for_message('MUST', False, None, iface=iface)
     elif response_type == 'ACK':
-        send_wait_for_message('MUST', True, 'ACK')
+        send_wait_for_message('MUST', True, 'ACK', iface=iface)
         response_check_content(True, 'yiaddr', address)
         response_check_include_option(True, 'subnet-mask')
         response_check_option_content('subnet-mask', True, 'value', subnet_mask)
@@ -802,11 +843,11 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
             response_check_include_option(True, 81)
             response_check_option_content(81, True, 'fqdn', fqdn)
     elif response_type == 'NAK':
-        send_wait_for_message('MUST', True, 'NAK')
+        send_wait_for_message('MUST', True, 'NAK', iface=iface)
 
 
 def DORA(address=None, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04',
-         init_reboot=False, subnet_mask='255.255.255.0', fqdn=None):
+         init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
     """
     Sends and ensures receival of 6 packets part of a regular DHCPv4 exchange
     in the correct sequence: discover, offer, request,
@@ -821,28 +862,32 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
     :param options: any additional options to be inserted in the client packets in
         dictionary form with option names as keys and option values as values.
         (default: {})
-    :param exchange: can have values 'full' meaning DORA plus an additional
-        request-reply for the renew scenario or "renew-only". It is a string
-        instead of a boolean for clearer test names because this value often
+    :param exchange: can have values 'dora-only' for 4 way DORA exhange, 'full' meaning
+        DORA plus an additional request-reply for the re-new scenario or "renew-only".
+        It is a string instead of a boolean for clearer test names because this value often
         comes from pytest parametrization. (default: 'full')
     :param response_type: the type of response to be expected in the server packet.
         Can have values 'ACK' or 'NAK'. (default: 'ACK')
     :param chaddr: the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
     :param subnet_mask: the value for option 1 subnet mask expected in a DHCPACK
+    :param iface: the interface to send and receive packets on
     """
     misc.test_procedure()
     client_sets_value('chaddr', chaddr)
     if exchange == 'full':
         # Send a discover and expect an offer.
-        DO(address, options, chaddr)
+        DO(address, options, chaddr, iface=iface)
 
         # Send a request and expect an acknowledgement.
-        RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn)
+        RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
+    if exchange == 'dora-only':
+        # Send a discover and expect an offer.
+        DO(address, options, chaddr, iface=iface)
 
     # Send a request and expect an acknowledgement.
     # This is supposed to be the renew scenario after DORA.
-    RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn)
+    RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,

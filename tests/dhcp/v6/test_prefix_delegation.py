@@ -1823,7 +1823,7 @@ def test_prefix_length_hints_baseline_sarr():
 
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:2::', 88)
+    srv_msg.check_IA_PD('2001:db8:0:0:2::/88')
 
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_copy_option('IA_PD')
@@ -1833,7 +1833,7 @@ def test_prefix_length_hints_baseline_sarr():
 
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:2::', 88)
+    srv_msg.check_IA_PD('2001:db8:0:0:2::/88')
 
 
 @pytest.mark.v6
@@ -1863,7 +1863,7 @@ def test_prefix_length_hints_sarr_with_exact_hint():
 
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:3::', 96)
+    srv_msg.check_IA_PD('2001:db8:0:0:3::/96')
 
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:3::')
@@ -1876,7 +1876,7 @@ def test_prefix_length_hints_sarr_with_exact_hint():
 
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:3::', 96)
+    srv_msg.check_IA_PD('2001:db8:0:0:3::/96')
 
 
 @pytest.mark.v6
@@ -1907,7 +1907,7 @@ def test_prefix_length_hints_sarr_with_exact_length_but_different_prefix():
 
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:3::', 96)
+    srv_msg.check_IA_PD('2001:db8:0:0:3::/96')
 
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:2::')
@@ -1923,7 +1923,7 @@ def test_prefix_length_hints_sarr_with_exact_length_but_different_prefix():
     # in the request and have the same lease as advertised in the reply.
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8::3:1:0:0', 96)
+    srv_msg.check_IA_PD('2001:db8::3:1:0:0/96')
 
 
 @pytest.mark.v6
@@ -1953,7 +1953,7 @@ def test_prefix_length_hints_sarr_with_lowest_hint():
 
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:2::', 88)
+    srv_msg.check_IA_PD('2001:db8:0:0:2::/88')
 
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:2::')
@@ -1966,7 +1966,7 @@ def test_prefix_length_hints_sarr_with_lowest_hint():
 
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:2::', 88)
+    srv_msg.check_IA_PD('2001:db8:0:0:2::/88')
 
 
 @pytest.mark.v6
@@ -1996,7 +1996,7 @@ def test_prefix_length_hints_sarr_with_lower_hint():
 
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:2::', 88)
+    srv_msg.check_IA_PD('2001:db8:0:0:2::/88')
 
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:3::')
@@ -2012,7 +2012,7 @@ def test_prefix_length_hints_sarr_with_lower_hint():
     # in the request and have the same lease as advertised in the reply.
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8::2:100:0:0', 88)
+    srv_msg.check_IA_PD('2001:db8::2:100:0:0/88')
 
 
 @pytest.mark.v6
@@ -2042,7 +2042,7 @@ def test_prefix_length_hints_sarr_with_higher_hint():
 
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:3::', 96)
+    srv_msg.check_IA_PD('2001:db8:0:0:3::/96')
 
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:3::')
@@ -2055,7 +2055,7 @@ def test_prefix_length_hints_sarr_with_higher_hint():
 
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:3::', 96)
+    srv_msg.check_IA_PD('2001:db8:0:0:3::/96')
 
 
 @pytest.mark.v6
@@ -2085,7 +2085,7 @@ def test_prefix_length_hints_sarr_with_highest_hint():
 
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:4::', 104)
+    srv_msg.check_IA_PD('2001:db8:0:0:4::/104')
 
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_sets_value('Client', 'prefix', '2001:db8:0:0:4::')
@@ -2098,4 +2098,4 @@ def test_prefix_length_hints_sarr_with_highest_hint():
 
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.check_IA_NA('2001:db8:0:0:1::')
-    srv_msg.check_IA_PD('2001:db8:0:0:4::', 104)
+    srv_msg.check_IA_PD('2001:db8:0:0:4::/104')
