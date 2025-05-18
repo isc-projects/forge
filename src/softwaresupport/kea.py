@@ -1943,7 +1943,7 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     fabric_sudo_command(cmd, destination_host=dest)
     if init_db:
         cmd = "{kea_admin} db-init mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
-        result = fabric_run_command(cmd, destination_host=dest)
+        result = fabric_sudo_command(cmd, destination_host=dest)
     assert result.succeeded
 
     # ------------------------------ PostgreSQL ------------------------------ #
@@ -1974,7 +1974,7 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     assert result.succeeded
     if init_db:
         cmd = "{kea_admin} db-init pgsql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
-        result = fabric_run_command(cmd, destination_host=dest)
+        result = fabric_sudo_command(cmd, destination_host=dest)
     assert result.succeeded
 
 
