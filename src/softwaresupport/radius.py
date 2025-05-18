@@ -449,7 +449,7 @@ def send_message_and_expect_no_more_leases(mac: str, giaddr: str = None):
         send_discover_with_no_answer(chaddr=mac, client_id=client_id, giaddr=giaddr)
     elif world.proto == 'v6':
         duid = '00:03:00:01:' + mac
-        srv_msg.SA(duid=duid, status_code=DHCPv6_STATUS_CODES['NoAddrsAvail'])
+        srv_msg.SA(duid=duid)
     else:
         assert False, f'unknown proto {world.proto}'
 

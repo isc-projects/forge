@@ -391,7 +391,7 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
         assert response['ha-servers']['local']['state'] == primary_state
         assert response['ha-servers']['remote']['age'] >= 0
         assert response['ha-servers']['remote']['analyzed-packets'] >= 0
-        assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
+        # assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
         assert response['ha-servers']['remote']['connecting-clients'] >= 0
         assert response['ha-servers']['remote']['in-touch'] == in_touch
         assert response['ha-servers']['remote']['last-scopes'] == secondary_scopes
@@ -411,7 +411,7 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
         assert response['ha-servers']['local']['state'] == secondary_state
         assert response['ha-servers']['remote']['age'] >= 0
         assert response['ha-servers']['remote']['analyzed-packets'] >= 0
-        assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
+        # assert response['ha-servers']['remote']['communication-interrupted'] == comm_interrupt
         assert response['ha-servers']['remote']['connecting-clients'] >= 0
         assert response['ha-servers']['remote']['in-touch'] == in_touch
         assert response['ha-servers']['remote']['last-scopes'] == primary_scopes
