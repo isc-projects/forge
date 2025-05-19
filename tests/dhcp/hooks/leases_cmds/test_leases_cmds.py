@@ -9,6 +9,7 @@
 # pylint: disable=line-too-long
 # pylint: disable=unused-argument
 
+import os
 import time
 import pytest
 
@@ -2815,4 +2816,5 @@ def test_lease_cmds_write_path(dhcp_version):
         resp = srv_msg.send_ctrl_cmd(cmd, exp_result=exp_result)
         assert exp_text in resp["text"], f"Expected {exp_text} in response, got {resp['text']}"
         if exp_result == 0:
-            verify_file_permissions(path + 'kealeases.csv')
+            path = os.path.dirname(world.f_cfg.get_leases_path())
+            verify_file_permissions(os.path.join(path, 'kealeases.csv'))
