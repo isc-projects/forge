@@ -15,8 +15,8 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 from src.forge_cfg import world
-from src.protosupport.multi_protocol_functions import file_contains_line_n_times, file_doesnt_contain_line
-from src.softwaresupport.multi_server_functions import fabric_sudo_command
+from src.protosupport.multi_protocol_functions import file_contains_line_n_times, file_doesnt_contain_line, log_contains
+from src.softwaresupport.multi_server_functions import fabric_sudo_command, verify_file_permissions
 
 
 # number of messages that the client will send in each test
@@ -1491,11 +1491,15 @@ def test_legal_log_rotation(dhcp_version):
     srv_msg.forge_sleep(2, 'seconds')
 
     # make a list of produced log files
-    log_files = fabric_sudo_command(f"cd {world.f_cfg.data_join('')} ; ls -1 kea-legal*.txt").splitlines()
+    log_files = fabric_sudo_command(f"cd {world.f_cfg.log_join('')} ; ls -1 kea-legal*.txt").splitlines()
+
+    # Check if files have 640 permissions
+    for name in log_files:
+        verify_file_permissions(world.f_cfg.log_join(name))
 
     # copy log files to forge results folder
     for name in log_files:
-        srv_msg.copy_remote(world.f_cfg.data_join(name), local_filename=name)
+        srv_msg.copy_remote(world.f_cfg.log_join(name), local_filename=name)
 
     # Check if there are 3 log files
     assert len(log_files) == 3
@@ -1511,7 +1515,7 @@ def test_legal_log_rotation(dhcp_version):
 
     # Check contents of the log files
     for name in log_files:
-        file_contains_line_n_times(world.f_cfg.data_join(name), 3, log_message)
+        file_contains_line_n_times(world.f_cfg.log_join(name), 3, log_message)
 
 
 # v4 disabled for time saving:
@@ -1525,7 +1529,7 @@ def test_legal_log_basename(dhcp_version):
     :type dhcp_version: str
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('custom-log*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('custom-log*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -1562,7 +1566,105 @@ def test_legal_log_basename(dhcp_version):
     # acquire date from server
     date = fabric_sudo_command('date +"%Y%m%d"')
     # Check contents of the log files
-    file_contains_line_n_times(world.f_cfg.data_join(f'custom-log.{date}.txt'), 3, log_message)
+    file_contains_line_n_times(world.f_cfg.log_join(f'custom-log.{date}.txt'), 3, log_message)
+    # Check if file has 640 permissions
+    verify_file_permissions(world.f_cfg.log_join(f'custom-log.{date}.txt'))
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.legal_logging
+def test_legal_log_path_configfile(dhcp_version):
+    """
+    Test to check if Kea makes log file in custom path.
+    :param dhcp_version: The DHCP version to use.
+    :type dhcp_version: str
+    """
+    misc.test_procedure()
+    illegal_paths = [
+        [world.f_cfg.log_join(''), True, 'LEGAL_LOG_STORE_OPENED Legal store opened'],
+        ['/tmp/', False, 'An error occurred loading the library: invalid path specified:'],
+        ['~/', False, 'An error occurred loading the library: invalid path specified:'],
+        ['/var/', False, 'An error occurred loading the library: invalid path specified:'],
+        ['/srv/', False, 'An error occurred loading the library: invalid path specified:'],
+        ['/etc/kea/', False, 'An error occurred loading the library: invalid path specified:'],
+    ]
+
+    for path, should_succeed, message in illegal_paths:
+        srv_control.clear_some_data('logs')
+        srv_msg.remove_file_from_server(path + 'custom-log*.txt')
+        misc.test_setup()
+        srv_control.set_time('renew-timer', 100)
+        srv_control.set_time('rebind-timer', 200)
+        srv_control.set_time('valid-lifetime', 600)
+        if dhcp_version == 'v4':
+            srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+        else:
+            srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+            srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+
+        srv_control.add_hooks('libdhcp_legal_log.so')
+        # set custom name
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'base-name', 'custom-log')
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'path', path)
+
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started', should_succeed=should_succeed)
+
+        log_contains(message)
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.legal_logging
+def test_legal_log_path_config_set(dhcp_version):
+    """
+    Test to check if Kea makes log file in custom path.
+    :param dhcp_version: The DHCP version to use.
+    :type dhcp_version: str
+    """
+
+    illegal_paths = [
+        ['/tmp/', 1, 'One or more hook libraries failed to load'],
+        ['~/', 1, 'One or more hook libraries failed to load'],
+        ['/var/', 1, 'One or more hook libraries failed to load'],
+        ['/srv/', 1, 'One or more hook libraries failed to load'],
+        ['/etc/kea/', 1, 'One or more hook libraries failed to load'],
+    ]
+
+    misc.test_procedure()
+
+    misc.test_setup()
+    srv_control.set_time('renew-timer', 100)
+    srv_control.set_time('rebind-timer', 200)
+    srv_control.set_time('valid-lifetime', 600)
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+        srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+
+    srv_control.add_hooks('libdhcp_legal_log.so')
+    # set custom name
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'base-name', 'custom-log')
+
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Get current config
+    cmd = {"command": "config-get", "arguments": {}}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    config_set = response['arguments']
+    del config_set['hash']
+
+    for path, exp_result, message in illegal_paths:
+        srv_msg.remove_file_from_server(path + 'custom-log*.txt')
+        config_set[f"Dhcp{dhcp_version[1]}"]['hooks-libraries'][0]['parameters']['path'] = path
+        cmd = {"command": "config-set", "arguments": config_set}
+        resp = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=exp_result)
+        assert message in resp['text']
 
 
 # v4 disabled for time saving:
@@ -1637,6 +1739,7 @@ def test_legal_log_rotate_actions(dhcp_version):
     # copy log files to forge results folder
     for name in log_files:
         srv_msg.copy_remote(world.f_cfg.data_join(name), local_filename=name)
+        verify_file_permissions(world.f_cfg.data_join(name))
     srv_msg.copy_remote(world.f_cfg.data_join("actions_pre.txt"), local_filename="actions_pre.txt")
     srv_msg.copy_remote(world.f_cfg.data_join("actions_post.txt"), local_filename="actions_post.txt")
 

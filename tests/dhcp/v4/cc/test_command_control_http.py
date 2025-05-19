@@ -399,11 +399,9 @@ def test_control_channel_http_config_write():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # Write configuration to file.
     srv_msg.send_ctrl_cmd_via_http('{"command": "list-commands", "service": ["dhcp4"],"arguments": {} }',
                                    '$(SRV4_ADDR)')
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-write", "service": ["dhcp4"],"arguments": {"filename": "/tmp/config-modified-2017-03-15.json"}}',  # TODO probably confing file location/name',
-                                   '$(SRV4_ADDR)')
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-write", "service": ["dhcp4"],"arguments": {"filename": "config-modified-2017-03-15.json"}}', '$(SRV4_ADDR)')
 
     # Send DISCOVER.
     misc.test_procedure()

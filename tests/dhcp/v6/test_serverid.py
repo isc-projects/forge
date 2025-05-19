@@ -12,6 +12,10 @@ from src import misc
 from src import srv_msg
 from src import srv_control
 
+from src.softwaresupport.multi_server_functions import verify_file_permissions
+from src.protosupport.multi_protocol_functions import file_contains_line
+from src.forge_cfg import world
+
 
 @pytest.mark.v6
 @pytest.mark.server_id
@@ -80,3 +84,19 @@ def test_v6_server_id_ll():
     srv_msg.response_check_option_content(2, 'duid', '00:03:00:01:ff:ff:ff:ff:ff:01')
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'duid', '00:03:00:01:ff:ff:ff:ff:ff:01', expect_include=False)
+
+
+@pytest.mark.v6
+@pytest.mark.server_id
+def test_v6_server_id_file():
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.config_srv_id('EN', '00:02:00:00:09:09:87:02:68:71:58:75:45')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    path = world.f_cfg.data_join('kea-dhcp6-serverid')
+    file_contains_line(path, '00:02:00:00:09:09:87:02:68:71:58:75:45')
+    verify_file_permissions(path)

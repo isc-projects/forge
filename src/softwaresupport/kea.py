@@ -578,20 +578,19 @@ def open_control_channel_socket(socket_name: str = None) -> None:
     :type socket_name: str, optional
     """
     if socket_name is None:
-        socket_name = 'control_socket'
-    socket_path = world.f_cfg.run_join(socket_name)
+        socket_name = world.f_cfg.run_join('control_socket')
 
     if "control-sockets" not in world.dhcp_cfg:
         world.dhcp_cfg["control-sockets"] = []
 
     for socket in world.dhcp_cfg["control-sockets"]:
-        if socket["socket-type"] == "unix" and socket["socket-name"] == socket_path:
+        if socket["socket-type"] == "unix" and socket["socket-name"] == socket_name:
             # let's not add the same socket twice
             # there is a bit of a mess in HA + Radius test, this one is using
             # src/softwaresupport/kea.py configuration way and src/softwaresupport/cb_model.py
             # this was never planned to work together.
             return
-    world.dhcp_cfg["control-sockets"].append({"socket-type": "unix", "socket-name": socket_path})
+    world.dhcp_cfg["control-sockets"].append({"socket-type": "unix", "socket-name": socket_name})
 
 
 def create_new_class(class_name):

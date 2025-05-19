@@ -17,6 +17,7 @@ from src import misc
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import sort_container
 from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
+from src.softwaresupport.multi_server_functions import verify_file_permissions
 
 # Configuration snippets used in tests
 GLOBAL_CONFIG = {
@@ -486,6 +487,7 @@ def test_config_commands_usercontext(scope: str, dhcp_version: str):
     remove_file_from_server(remote_path)
     cmd = {"command": "config-write", "arguments": {"filename": remote_path}}
     srv_msg.send_ctrl_cmd(cmd, 'http')
+    verify_file_permissions(remote_path)
     local_path = copy_file_from_server(remote_path, 'config-export.json')
 
     # Open downloaded file and sort it for easier comparison
@@ -570,6 +572,7 @@ def test_config_commands_empty_reservations(dhcp_version: str):
     remove_file_from_server(remote_path)
     cmd = {"command": "config-write", "arguments": {"filename": remote_path}}
     srv_msg.send_ctrl_cmd(cmd, 'http')
+    verify_file_permissions(remote_path)
     local_path = copy_file_from_server(remote_path, 'config-export.json')
 
     # Open downloaded file and sort it for easier comparison
@@ -687,7 +690,8 @@ def test_config_commands_config_write(dhcp_version: str, backend: str):
         srv_msg.SARR('2001:db8:1::50')
     srv_msg.check_leases(srv_msg.get_all_leases(), backend=backend)
     cmd = {"command": "config-write", "arguments": {}}
-    srv_msg.send_ctrl_cmd(cmd, 'http')
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    verify_file_permissions(response['arguments']['filename'])
 
     srv_control.start_srv('DHCP', 'reconfigured')
 
@@ -696,6 +700,44 @@ def test_config_commands_config_write(dhcp_version: str, backend: str):
     else:
         srv_msg.SARR('2001:db8:1::50')
     srv_msg.check_leases(srv_msg.get_all_leases(), backend=backend)
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.controlchannel
+def test_config_commands_config_write_path(dhcp_version: str):
+    """Test config-write limitig output paths.
+
+    :type dhcp_version: str
+    :param dhcp_version: DHCP version
+    """
+    misc.test_setup()
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    cmd = {"command": "config-write", "arguments": {}}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    verify_file_permissions(response['arguments']['filename'])
+
+    illegal_paths = [
+        ['/tmp/config-write.json', 1, 'not allowed to write config into'],
+        ['~/config-write.json', 1, 'not allowed to write config into'],
+        ['/var/config-write.json', 1, 'not allowed to write config into'],
+        ['/srv/config-write.json', 1, 'not allowed to write config into'],
+        ['/etc/kea/config-write.json', 1, 'not allowed to write config into'],
+    ]
+    for path, exp_result, exp_text in illegal_paths:
+        srv_msg.remove_file_from_server(path)
+        cmd = {"command": "config-write", "arguments": {"filename": path}}
+        response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=exp_result)
+        assert exp_text in response['text']
 
 
 @pytest.mark.v4

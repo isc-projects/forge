@@ -180,6 +180,10 @@ def test_control_channel_http_config_set_basic():
 
     srv_control.start_srv('DHCP', 'started')
 
+    srv_msg.send_ctrl_cmd_via_http('{"command": "list-commands", "service": ["dhcp6"],"arguments": {} }',
+                                   '$(SRV6_ADDR)')
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-write", "service": ["dhcp6"],"arguments": {"filename": "config-modified-2017-03-15.json"}}', '$(SRV6_ADDR)')
+
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'client-id')
@@ -473,11 +477,6 @@ def test_control_channel_http_config_write():
     srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
-
-    srv_msg.send_ctrl_cmd_via_http('{"command": "list-commands", "service": ["dhcp6"],"arguments": {} }',
-                                   '$(SRV4_ADDR)')
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-write", "service": ["dhcp6"],"arguments": {"filename": "/tmp/config-modified-2017-03-15.json"}}',  # TODO probably confing file location/name',
-                                   '$(SRV4_ADDR)')
 
     # 1. check if configured subnet works and assigns addresses from 3000:
     misc.test_procedure()
