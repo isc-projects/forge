@@ -2448,10 +2448,10 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
         # Logs are copied to temp directory because fabric has prolems with listing non world readable folders.
         cmd = 'rm -rf /tmp/kealogs/'
         fabric_sudo_command(cmd, destination_host=destination_address)
-        cmd = 'mkdir -p /tmp/kealogs/'
+        cmd = 'mkdir -m 777 -p /tmp/kealogs/'
         fabric_sudo_command(cmd, destination_host=destination_address)
-        cmd = f'bash -c \'cp {log_path} /tmp/kealogs/\''
-        fabric_sudo_command(cmd, destination_host=destination_address)
+        cmd = f'for file in {log_path}; do cp "$file" "/tmp/kealogs/.";done'
+        fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
         log_path = '/tmp/kealogs/kea.log*'
     else:
         if world.server_system in ['redhat', 'alpine']:
