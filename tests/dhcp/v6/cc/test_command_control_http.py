@@ -181,8 +181,8 @@ def test_control_channel_http_config_set_basic():
     srv_control.start_srv('DHCP', 'started')
 
     srv_msg.send_ctrl_cmd_via_http('{"command": "list-commands", "service": ["dhcp6"],"arguments": {} }',
-                                   '$(SRV6_ADDR)')
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-write", "service": ["dhcp6"],"arguments": {"filename": "config-modified-2017-03-15.json"}}', '$(SRV6_ADDR)')
+                                   '$(SRV4_ADDR)')
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-write", "service": ["dhcp6"],"arguments": {"filename": "config-modified-2017-03-15.json"}}', '$(SRV4_ADDR)')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')

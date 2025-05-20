@@ -576,7 +576,7 @@ def test_ddns6_control_channel_usercontext():
     assert hash1 != hash2, "After changes hash is the same!"
 
     # Write config to file and download it
-    remote_path = world.f_cfg.data_join('config-export.json')
+    remote_path = world.f_cfg.etc_join('config-export.json')
     remove_file_from_server(remote_path)
     cmd = dict(command='config-write', arguments={"filename": remote_path})
     response = _send_through_ddns_socket(cmd)

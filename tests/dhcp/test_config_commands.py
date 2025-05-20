@@ -483,7 +483,7 @@ def test_config_commands_usercontext(scope: str, dhcp_version: str):
     assert hash1 != hash2 == hash3, "First hash should be different than two returned later in the test"
 
     # Write config to file and download it
-    remote_path = world.f_cfg.data_join('config-export.json')
+    remote_path = world.f_cfg.etc_join('config-export.json')
     remove_file_from_server(remote_path)
     cmd = {"command": "config-write", "arguments": {"filename": remote_path}}
     srv_msg.send_ctrl_cmd(cmd, 'http')
@@ -568,7 +568,7 @@ def test_config_commands_empty_reservations(dhcp_version: str):
     assert hash1 != hash2 == hash3, "First hash should be different than two returned later in the test"
 
     # Write config to file and download it
-    remote_path = world.f_cfg.data_join('config-export.json')
+    remote_path = world.f_cfg.etc_join('config-export.json')
     remove_file_from_server(remote_path)
     cmd = {"command": "config-write", "arguments": {"filename": remote_path}}
     srv_msg.send_ctrl_cmd(cmd, 'http')

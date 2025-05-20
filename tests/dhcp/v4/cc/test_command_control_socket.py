@@ -259,12 +259,11 @@ def test_control_channel_socket_change_socket_during_reconfigure():
     srv_control.add_unix_socket('control_socket2')
 
     srv_control.build_config_files()
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket({"command": "config-set","arguments": world.dhcp_cfg})
 
-    misc.test_procedure()
     for socket in world.dhcp_cfg["Dhcp4"]["control-sockets"]:
         if socket["socket-type"] == "unix":
-            verify_file_permissions(socket["socket-name"], '750')
+            verify_file_permissions(world.f_cfg.run_join(socket["socket-name"]), '750')
 
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
