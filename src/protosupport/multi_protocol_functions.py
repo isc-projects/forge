@@ -78,12 +78,30 @@ def test_pause():
 # ------------------------------- FILE TRANSFER ------------------------------ #
 
 
-def copy_file_from_server(remote_path, local_filename='downloaded_file'):
+def copy_file_from_server(remote_path, local_filename='downloaded_file', dest=world.f_cfg.mgmt_address):
+    """Copy file from remote server via ssh. Address/login/password from init_all.py.
+
+    :param remote_path:
+    :type remote_path: str
+    :param local_filename: (Default value = 'downloaded_file')
+    :type local_filename:
+    :param dest: Default value = world.f_cfg.mgmt_address)
+    :type dest:
+    :return:
+    :rtype:
     """
-    Copy file from remote server via ssh. Address/login/password from init_all.py
-    Path required.
-    """
-    fabric_download_file(remote_path, world.cfg["test_result_dir"] + f'/{local_filename}')
+    if '*' in remote_path:
+        # Logs are copied to temp directory because fabric has prolems with listing non world readable folders.
+        cmd = 'rm -rf /tmp/forge_downloads/'
+        fabric_sudo_command(cmd, destination_host=dest)
+        cmd = 'mkdir -m 777 -p /tmp/forge_downloads/'
+        fabric_sudo_command(cmd, destination_host=dest)
+        cmd = f'for file in {remote_path}; do cp "$file" "/tmp/forge_downloads/.";done'
+        fabric_sudo_command(cmd, destination_host=dest)
+        remote_path = os.path.join('/tmp/forge_downloads/', os.path.basename(remote_path))
+        local_filename = '.'
+
+    fabric_download_file(remote_path, world.cfg["test_result_dir"] + f'/{local_filename}', destination_host=dest)
     return world.cfg["test_result_dir"] + f'/{local_filename}'
 
 

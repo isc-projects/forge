@@ -16,6 +16,7 @@ from src import srv_control
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import sort_container
 from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
+from src.softwaresupport.multi_server_functions import verify_file_permissions
 
 
 def _send_through_ddns_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_socket'),
@@ -441,7 +442,8 @@ def test_ddns6_control_channel_config_write():
 
     cmd = dict(command='config-write', arguments={"filename": world.f_cfg.data_join("new_kea_config_file")})
 
-    _send_through_ddns_socket(cmd)
+    response = _send_through_ddns_socket(cmd)
+    verify_file_permissions(response['arguments']['filename'])
 
     srv_msg.copy_remote(world.f_cfg.data_join("new_kea_config_file"))
 
@@ -569,7 +571,8 @@ def test_ddns6_control_channel_usercontext():
     remote_path = world.f_cfg.data_join('config-export.json')
     remove_file_from_server(remote_path)
     cmd = dict(command='config-write', arguments={"filename": remote_path})
-    _send_through_ddns_socket(cmd)
+    response = _send_through_ddns_socket(cmd)
+    verify_file_permissions(response['arguments']['filename'])
     local_path = copy_file_from_server(remote_path, 'config-export.json')
 
     # Open downloaded file and sort it for easier comparison

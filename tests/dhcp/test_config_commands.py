@@ -17,6 +17,7 @@ from src import misc
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import sort_container
 from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
+from src.softwaresupport.multi_server_functions import verify_file_permissions
 
 # Configuration snippets used in tests
 GLOBAL_CONFIG = {
@@ -481,6 +482,7 @@ def test_config_commands_usercontext(scope, dhcp_version):
     remove_file_from_server(remote_path)
     cmd = {"command": "config-write", "arguments": {"filename": remote_path}}
     srv_msg.send_ctrl_cmd(cmd, 'http')
+    verify_file_permissions(remote_path)
     local_path = copy_file_from_server(remote_path, 'config-export.json')
 
     # Open downloaded file and sort it for easier comparison
@@ -562,6 +564,7 @@ def test_config_commands_empty_reservations(dhcp_version):
     remove_file_from_server(remote_path)
     cmd = {"command": "config-write", "arguments": {"filename": remote_path}}
     srv_msg.send_ctrl_cmd(cmd, 'http')
+    verify_file_permissions(remote_path)
     local_path = copy_file_from_server(remote_path, 'config-export.json')
 
     # Open downloaded file and sort it for easier comparison
@@ -634,3 +637,138 @@ def test_config_hash_get(dhcp_version):
     cmd = {"command": "config-hash-get", "arguments": {}}
     hash7 = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]["hash"]
     assert hash6 == hash7, "hash returned in config-get-hash and config-set are different!"
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.ca
+@pytest.mark.controlchannel
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_config_commands_config_write(dhcp_version, backend):
+    """Test config-write command with different backends.
+
+    :type: backend: str
+    :param backend: backend type
+    :type: dhcp_version: str
+    :param dhcp_version: DHCP version
+    """
+    misc.test_setup()
+    srv_control.define_temporary_lease_db_backend(backend)
+    if backend != 'memfile':
+
+        world.dhcp_cfg["hosts-database"] = {"type": backend,
+                                            "name": world.f_cfg.db_name,
+                                            "host": world.f_cfg.db_host,
+                                            "user": world.f_cfg.db_user,
+                                            "password": world.f_cfg.db_passwd,
+                                            "retry-on-startup": True,
+                                            "max-reconnect-tries": 3,
+                                            "reconnect-wait-time": 120,
+                                            "on-fail": "stop-retry-exit"}
+
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    if dhcp_version == 'v4':
+        srv_msg.DORA('192.168.50.1')
+    else:
+        srv_msg.SARR('2001:db8:1::50')
+    srv_msg.check_leases(srv_msg.get_all_leases(), backend=backend)
+
+    cmd = {"command": "config-write", "arguments": {}}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    verify_file_permissions(response['arguments']['filename'])
+
+    srv_control.start_srv('DHCP', 'reconfigured')
+
+    if world.proto == 'v4':
+        srv_msg.DORA('192.168.50.1')
+    else:
+        srv_msg.SARR('2001:db8:1::50')
+    srv_msg.check_leases(srv_msg.get_all_leases(), backend=backend)
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.controlchannel
+def test_config_commands_config_write_path(dhcp_version: str):
+    """Test config-write limitig output paths.
+
+    :type dhcp_version: str
+    :param dhcp_version: DHCP version
+    """
+    misc.test_setup()
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    cmd = {"command": "config-write", "arguments": {}}
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    verify_file_permissions(response['arguments']['filename'])
+
+    illegal_paths = [
+        ['/tmp/config-write.json', 1, 'not allowed to write config into'],
+        ['~/config-write.json', 1, 'not allowed to write config into'],
+        ['/var/config-write.json', 1, 'not allowed to write config into'],
+        ['/srv/config-write.json', 1, 'not allowed to write config into'],
+        ['/etc/kea/config-write.json', 1, 'not allowed to write config into'],
+    ]
+    for path, exp_result, exp_text in illegal_paths:
+        srv_msg.remove_file_from_server(path)
+        cmd = {"command": "config-write", "arguments": {"filename": path}}
+        response = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=exp_result)
+        assert exp_text in response['text']
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.ca
+@pytest.mark.controlchannel
+def test_config_output_options(dhcp_version):
+    """
+    Test check if output-options is properly handled by config commands.
+    Checks kea#3594
+
+    :type dhcp_version: str
+    :param dhcp_version: DHCP version
+    """
+
+    misc.test_setup()
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Get current config
+    cmd = {"command": "config-get", "arguments": {}}
+    cfg_get = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]
+    del cfg_get['hash']
+    # let's set something different as a config and check if has changed
+    cfg_get[f"Dhcp{dhcp_version[1]}"]["loggers"][0]["output_options"] = cfg_get[
+        f"Dhcp{dhcp_version[1]}"
+    ]["loggers"][0].pop("output-options")
+
+    cmd = {"command": "config-set", "arguments": cfg_get}
+    srv_msg.send_ctrl_cmd(cmd, 'http')
+
+    cmd = {"command": "config-get", "arguments": {}}
+    cfg_get2 = srv_msg.send_ctrl_cmd(cmd, 'http')["arguments"]
+    del cfg_get2['hash']
+
+    assert (
+        "output_options" in cfg_get2[f"Dhcp{dhcp_version[1]}"]["loggers"][0]
+        or "output-options" in cfg_get2[f"Dhcp{dhcp_version[1]}"]["loggers"][0]
+    ), "output_options or output-options not found in config"

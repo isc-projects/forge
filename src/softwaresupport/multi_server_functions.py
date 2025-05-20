@@ -133,6 +133,60 @@ def fabric_remove_file_command(remote_path,
     return result
 
 
+def fabric_is_file(remote_path, destination_host=world.f_cfg.mgmt_address):
+    result = fabric_sudo_command(
+        f'test -f {remote_path}',
+        destination_host=destination_host,
+        ignore_errors=True
+    )
+    return result.succeeded
+
+
+def fabric_file_permissions(remote_path, destination_host=world.f_cfg.mgmt_address, ignore_errors=False):
+    """Get file permissions on a remote node.
+
+    :param remote_path: remote file path
+    :type remote_path: str
+    :param destination_host: destination host
+    :type destination_host: str, optional
+    :return: file permissions
+    :rtype: str
+    :param ignore_errors: ignore errors
+    :type ignore_errors: bool, optional
+    """
+    result = fabric_sudo_command(
+        f'stat -c %a {remote_path}',
+        destination_host=destination_host,
+        ignore_errors=ignore_errors
+    )
+    return result
+
+
+def verify_file_permissions(remote_path, required_permissions='640', destination_host=world.f_cfg.mgmt_address,
+                            ignore_errors=False):
+    """Check if file is saved with 640 permissions that we consider safe for all output files.
+
+    :param remote_path: remote file path
+    :type remote_path: str
+    :param required_permissions: required permissions, can use * as a wildcard for any permission
+    :type required_permissions: str, optional
+    :param destination_host: destination host
+    :type destination_host: str, optional
+    :return: True if file exists and has required permissions, False otherwise
+    :rtype: bool
+    :param ignore_errors: ignore errors
+    :type ignore_errors: bool, optional
+    """
+    permissions = fabric_file_permissions(remote_path, destination_host, ignore_errors)
+    if len(permissions) != len(required_permissions):
+        return False
+    for required, current in zip(required_permissions, permissions):
+        if required != '*':
+            assert required == current, \
+                f"File {remote_path} should have {required_permissions} permissions, but has {permissions}"
+    return True
+
+
 def remove_local_file(file_local):
     try:
         os.remove(file_local)

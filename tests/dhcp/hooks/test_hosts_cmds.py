@@ -17,6 +17,7 @@ from src import srv_control
 from src import srv_msg
 
 from src.forge_cfg import world
+from src.softwaresupport.multi_server_functions import verify_file_permissions
 
 
 def _reservation_add(reservation: dict, target: str = None, channel: str = 'http', exp_result: int = 0,
@@ -4177,7 +4178,9 @@ def test_save_reservation_to_the_config_file(dhcp_version):
     # save config file and restart Kea, filename is not defined, so it should overwrite
     # current config
     cmd = {"command": "config-write"}
-    srv_msg.send_ctrl_cmd(cmd, 'http')
+    response = srv_msg.send_ctrl_cmd(cmd, 'http')
+    verify_file_permissions(response['arguments']['filename'])
+
 
     srv_control.start_srv('DHCP', 'restarted')
 

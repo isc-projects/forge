@@ -240,7 +240,7 @@ class ForgeConfiguration:
 
     def log_join(self, sub_path):
         if self.install_method == 'make':
-            return os.path.join(self.software_install_path, 'var/log', sub_path)
+            return os.path.join(self.software_install_path, 'var/log/kea', sub_path)
         else:
             return os.path.join('/var/log/kea', sub_path)
 

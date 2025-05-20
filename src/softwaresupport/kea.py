@@ -1366,8 +1366,6 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     if destination_address not in world.f_cfg.multiple_tested_servers:
         world.multiple_tested_servers.append(destination_address)
 
-    # use mode="0o666" to make config writable to enable config-write tests
-
     # send to server
     if world.f_cfg.install_method == 'make':
         fabric_send_file(world.cfg["cfg_file_2"],
@@ -1377,19 +1375,19 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     fabric_send_file(f'kea-dhcp{world.proto[1]}.conf',
                      world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf'),
                      destination_host=destination_address,
-                     mode="0o666")
+                     mode="0o640")
 
     if world.ctrl_enable:
         fabric_send_file("kea-ctrl-agent.conf",
                          world.f_cfg.etc_join("kea-ctrl-agent.conf"),
                          destination_host=destination_address,
-                         mode="0o666")
+                         mode="0o640")
 
     if world.ddns_enable:
         fabric_send_file("kea-dhcp-ddns.conf",
                          world.f_cfg.etc_join("kea-dhcp-ddns.conf"),
                          destination_host=destination_address,
-                         mode="0o666")
+                         mode="0o640")
 
     # store files back to local for debug purposes
     if world.f_cfg.install_method == 'make':
@@ -1471,7 +1469,7 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
                      db_user=db_user,
                      db_passwd=db_passwd,
                      db_name=db_name)
-    fabric_run_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+    fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
     # use kea script for cleaning pgsql
     cmd = 'PGPASSWORD={db_passwd} bash {software_install_path}/share/kea/scripts/pgsql/wipe_data.sh '
@@ -1482,7 +1480,7 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
                      db_user=db_user,
                      db_passwd=db_passwd,
                      db_name=db_name)
-    fabric_run_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+    fabric_sudo_command(cmd, destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
     # clear kea logs in journald (actually all logs)
     if world.f_cfg.install_method != 'make':
@@ -1800,6 +1798,14 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
     """
     if world.f_cfg.install_method == 'make':
         log_path = world.f_cfg.log_join('kea.log*')
+        # Logs are copied to temp directory because fabric has prolems with listing non world readable folders.
+        cmd = 'rm -rf /tmp/kealogs/'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        cmd = 'mkdir -m 777 -p /tmp/kealogs/'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        cmd = f'for file in {log_path}; do cp "$file" "/tmp/kealogs/.";done'
+        fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
+        log_path = '/tmp/kealogs/kea.log*'
     else:
         if world.server_system in ['redhat', 'alpine']:
             service_name = f'kea-dhcp{world.proto[1]}'

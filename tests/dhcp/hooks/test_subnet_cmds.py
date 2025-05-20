@@ -17,6 +17,174 @@ from src import misc
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
+from src.softwaresupport.multi_server_functions import verify_file_permissions
+
+
+def _config_get(exp_result: int = 0, exp_failed: bool = False) -> dict:
+    """_config_get sent config-get command and return arguments part of the response
+
+    :param exp_result: expected result from Kea (0,1,3), defaults to 0
+    :type exp_result: int, optional
+    :param exp_failed: does the test expect failure in sending the message, defaults to False
+    :type exp_failed: bool, optional
+    :return: arguments part of the response
+    :rtype: dict
+    """
+    cmd = {"command": "config-get"}  # get config
+    rsp = srv_msg.send_ctrl_cmd_via_socket(cmd, exp_failed=exp_failed, exp_result=exp_result)
+    if "arguments" in rsp:
+        return rsp["arguments"]
+    return rsp
+
+
+def _save_and_reload(exp_result: int = 0, exp_failed: bool = False) -> tuple:
+    """_save_and_reload Save Kea confing using config-write and reload it using config-reload
+
+    :param exp_result: expected result from Kea (0,1,3), defaults to 0
+    :type exp_result: int, optional
+    :param exp_failed: does the test expect failure in sending the message, defaults to False
+    :type exp_failed: bool, optional
+    :return: return both responses from kea
+    :rtype: tuple
+    """
+    cmd = {"command": "config-write", "arguments": {}}  # save config
+    resp1 = srv_msg.send_ctrl_cmd_via_socket(cmd, exp_failed=exp_failed, exp_result=exp_result)
+    verify_file_permissions(resp1['arguments']['filename'])
+    cmd = {"command": "config-reload", "arguments": {}}  # reload config
+    resp2 = srv_msg.send_ctrl_cmd_via_socket(cmd, exp_failed=exp_failed, exp_result=exp_result)
+    return resp1, resp2
+
+
+def _send_command(cmd: str, arguments: dict = None, exp_result: int = 0, exp_failed: bool = False) -> dict:
+    """_send_command Send command to Kea server
+
+    :param cmd: command to send
+    :type cmd: str
+    :param arguments: arguments if needed, defaults to None
+    :type arguments: dict, optional
+    :param exp_result: expected result from Kea (0,1,3), defaults to 0
+    :type exp_result: int, optional
+    :param exp_failed: does the test expect failure in sending the message, defaults to False
+    :type exp_failed: bool, optional
+    :return: arguments part of the response
+    :rtype: dict
+    """
+    if arguments is None:
+        arguments = {}
+    cmd = {"command": cmd, "arguments": arguments}
+    rsp = srv_msg.send_ctrl_cmd_via_socket(cmd, exp_failed=exp_failed, exp_result=exp_result)
+    if "arguments" in rsp:
+        return rsp["arguments"]
+    return rsp
+
+
+def _check_hash_after_config_reload() -> None:
+    """_check_hash_after_config_reload Sent config-get and save hash, than use _save_and_reload to save
+    save config and restart Kea, than send config-get again and check if hash is the same
+    """
+    old_hash = _config_get()["hash"]
+    _save_and_reload()
+    srv_msg.forge_sleep(2)
+    new_hash = _config_get()["hash"]
+    assert (
+        old_hash == new_hash
+    ), "Config hash after reload should be the same as before reload"
+
+
+def _discover(mac: str, addr: str = None) -> str:
+    """_discover send DISCOVER message with mac and check if Kea response with OFFER, if address
+    is not provided, test expect no response in return.
+
+    :param mac: MAC address of the client
+    :type mac: str
+    :param addr: IP v4 address, defaults to None
+    :type addr: str, optional
+    :return: ip address Kea assigned to the client
+    :rtype: str
+    """
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_sets_value("Client", "chaddr", mac)
+    srv_msg.client_send_msg("DISCOVER")
+
+    misc.pass_criteria()
+    if addr:
+        rsp = srv_msg.send_wait_for_message("MUST", "OFFER")[0]
+        srv_msg.response_check_content("yiaddr", addr)
+        srv_msg.response_check_content("chaddr", mac)
+        srv_msg.response_check_include_option(1)
+        srv_msg.response_check_option_content(1, "value", "255.255.255.0")
+        return rsp.yiaddr
+    srv_msg.send_dont_wait_for_message()
+    return ""
+
+
+def _request(mac: str, addr: str) -> None:
+    """_request sent REQUEST message with mac and check if Kea response with ACK
+
+    :param mac: MAC address of a client
+    :type mac: str
+    :param addr: IP v4 address expected to be assigned to the client
+    :type addr: str
+    """
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', mac)
+    srv_msg.client_does_include_with_value('requested_addr', addr)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content("chaddr", mac)
+    srv_msg.response_check_content('yiaddr', addr)
+
+
+def _solicit(duid, addr=None):
+    """_solicit send Solicit message with specified DUID and address. Check response.
+    If address is missing test will expect status code 2 in response.
+
+    :param duid: DUID
+    :type duid: str
+    :param addr: ip v6 address, defaults to None
+    :type addr: str, optional
+    """
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', duid)
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    if addr:
+        srv_msg.response_check_option_content(3, 'sub-option', 5)
+        srv_msg.response_check_suboption_content(5, 3, 'addr', addr)
+    else:
+        srv_msg.response_check_option_content(3, 'sub-option', 13)
+        srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
+
+
+def _request6(duid, addr):
+    """_request6 send Request message with specified DUID and address. Check response.
+
+    :param duid: DUID
+    :type duid: str
+    :param addr: ip v6 address
+    :type addr: str
+    """
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', duid)
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', addr)
 
 
 @pytest.mark.v4
