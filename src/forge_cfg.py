@@ -276,7 +276,9 @@ class ForgeConfiguration:
         if self.install_method == 'make':
             return os.path.join(self.software_install_path, 'var/run/kea', sub_path)
         else:
-            return os.path.join('/run/kea', sub_path)
+            # THIS SHOULD BE CHANGED BACK TO /run/kea
+            # I am doing this only for night testing
+            return os.path.join('/var/run/kea', sub_path)
 
     def get_share_path(self):
         if self.install_method == 'make':
