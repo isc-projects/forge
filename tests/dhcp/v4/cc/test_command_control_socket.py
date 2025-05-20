@@ -259,7 +259,7 @@ def test_control_channel_socket_change_socket_during_reconfigure():
     srv_control.add_unix_socket('control_socket2')
 
     srv_control.build_config_files()
-    srv_msg.send_ctrl_cmd_via_socket({"command": "config-set","arguments": world.dhcp_cfg})
+    srv_msg.send_ctrl_cmd_via_socket({"command": "config-set", "arguments": world.dhcp_cfg})
 
     for socket in world.dhcp_cfg["Dhcp4"]["control-sockets"]:
         if socket["socket-type"] == "unix":

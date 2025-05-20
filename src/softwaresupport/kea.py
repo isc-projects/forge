@@ -1889,7 +1889,9 @@ def build_config_files(cfg=None):
 
 
 def set_ownership_of_a_file(file_path):
-    """set_ownership_of_a_file Based on what system is used for testing and
+    """set_ownership_of_a_file Change ownership of a file.
+
+    Based on what system is used for testing and
     if packages are used, set ownership of a file.
 
     :param file_path: path to the file to set ownership of
