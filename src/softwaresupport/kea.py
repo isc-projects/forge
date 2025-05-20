@@ -220,6 +220,7 @@ class CreateCert:
         if isinstance(p, list):
             p = " ".join(p)
         fabric_sudo_command(f'chmod 644 {p}')
+        # set_ownership_of_a_file(p) it shouldn't be needed.
 
     def clear(self, name: str = None):
         """Remove all default keys and certs or just one singled out by name.
@@ -1887,6 +1888,22 @@ def build_config_files(cfg=None):
         _write_cfg2(cfg)
 
 
+def set_ownership_of_a_file(file_path):
+    """set_ownership_of_a_file Based on what system is used for testing and
+    if packages are used, set ownership of a file.
+
+    :param file_path: path to the file to set ownership of
+    :type file_path: str
+    """
+    if world.f_cfg.install_method == 'native':
+        if world.server_system == 'debian':
+            fabric_sudo_command(f'chown _kea:_kea {file_path}',
+                                destination_host=world.f_cfg.mgmt_address)
+        else:
+            fabric_sudo_command(f'chown kea:kea {file_path}',
+                                destination_host=world.f_cfg.mgmt_address)
+
+
 def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):
     """Generate final config file, save it to test result directory and send it to remote system.
 
@@ -1912,18 +1929,21 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
                      world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf'),
                      destination_host=destination_address,
                      mode="0o640")
+    set_ownership_of_a_file(world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf'))
 
     if world.f_cfg.control_agent:
         fabric_send_file("kea-ctrl-agent.conf",
                          world.f_cfg.etc_join("kea-ctrl-agent.conf"),
                          destination_host=destination_address,
                          mode="0o640")
+        set_ownership_of_a_file(world.f_cfg.etc_join("kea-ctrl-agent.conf"))
 
     if world.ddns_enable:
         fabric_send_file("kea-dhcp-ddns.conf",
                          world.f_cfg.etc_join("kea-dhcp-ddns.conf"),
                          destination_host=destination_address,
                          mode="0o640")
+        set_ownership_of_a_file(world.f_cfg.etc_join("kea-dhcp-ddns.conf"))
 
     # store files back to local for debug purposes
     if world.f_cfg.install_method == 'make':
@@ -2294,7 +2314,6 @@ def _check_kea_process_result(succeed: bool, result: str, action: str):
     """
     errors = ["Failed to apply configuration", "Failed to initialize server",
               "Service failed", "failed to initialize Kea"]
-
     if succeed:
         if any(error_message in result for error_message in errors):
             assert False, 'Server operation: ' + action + ' failed! '
