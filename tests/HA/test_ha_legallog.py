@@ -40,11 +40,11 @@ HA_CONFIG = {
 def _save_log_files():
     # Files are first copied to `/tmp` because of problematic permissions on Alpine that prevents
     # using fabric's `get` directly.
-    cmd = f'cp {world.f_cfg.data_join("kea-legal*.txt")} /tmp/server1_kea-legal.txt'
+    cmd = f'cp {world.f_cfg.log_join("kea-legal*.txt")} /tmp/server1_kea-legal.txt'
     fabric_sudo_command(cmd, ignore_errors=False, destination_host=world.f_cfg.mgmt_address)
     srv_msg.copy_remote('/tmp/server1_kea-legal.txt', local_filename='server1_kea-legal.txt',
                         dest=world.f_cfg.mgmt_address)
-    cmd = f'cp {world.f_cfg.data_join("kea-legal*.txt")} /tmp/server2_kea-legal.txt'
+    cmd = f'cp {world.f_cfg.log_join("kea-legal*.txt")} /tmp/server2_kea-legal.txt'
     fabric_sudo_command(cmd, ignore_errors=False, destination_host=world.f_cfg.mgmt_address_2)
     srv_msg.copy_remote('/tmp/server2_kea-legal.txt', local_filename='server2_kea-legal.txt',
                         dest=world.f_cfg.mgmt_address_2)
@@ -80,7 +80,7 @@ def test_ha_legallog(dhcp_version, backend):
     # HA SERVER 1
     misc.test_setup()
     if backend == 'file':
-        srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'), dest=world.f_cfg.mgmt_address)
+        srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'), dest=world.f_cfg.mgmt_address)
     else:
         srv_msg.remove_from_db_table('logs', backend, destination=world.f_cfg.mgmt_address)
     if dhcp_version == 'v6':
@@ -118,7 +118,7 @@ def test_ha_legallog(dhcp_version, backend):
     misc.test_setup()
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
     if backend == 'file':
-        srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'), dest=world.f_cfg.mgmt_address_2)
+        srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'), dest=world.f_cfg.mgmt_address_2)
     else:
         srv_msg.remove_from_db_table('logs', backend, destination=world.f_cfg.mgmt_address_2)
     if dhcp_version == 'v6':
@@ -179,16 +179,16 @@ def test_ha_legallog(dhcp_version, backend):
 
         if backend == 'file':
             _save_log_files()
-            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+            file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 1,
                                        _message('primary', '2001:db8:1::1', '00:03:00:01:66:55:44:33:22:11'),
                                        destination=world.f_cfg.mgmt_address)
-            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+            file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 1,
                                        _message('standby', '2001:db8:1::1', '00:03:00:01:66:55:44:33:22:11'),
                                        destination=world.f_cfg.mgmt_address_2)
-            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
+            file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 2,
                                        _message('primary', '2001:db8:1::2', '00:03:00:01:66:55:44:33:22:22'),
                                        destination=world.f_cfg.mgmt_address)
-            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
+            file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 2,
                                        _message('standby', '2001:db8:1::2', '00:03:00:01:66:55:44:33:22:22'),
                                        destination=world.f_cfg.mgmt_address_2)
         else:
@@ -217,16 +217,16 @@ def test_ha_legallog(dhcp_version, backend):
         srv_msg.check_leases(leases, dest=world.f_cfg.mgmt_address_2)
         if backend == 'file':
             _save_log_files()
-            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+            file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 1,
                                        _message('primary', '192.168.50.1', 'ff:01:02:03:ff:04'),
                                        destination=world.f_cfg.mgmt_address)
-            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
+            file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 1,
                                        _message('standby', '192.168.50.1', 'ff:01:02:03:ff:04'),
                                        destination=world.f_cfg.mgmt_address_2)
-            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
+            file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 2,
                                        _message('primary', '192.168.50.2', 'ff:01:02:03:ff:05'),
                                        destination=world.f_cfg.mgmt_address)
-            file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2,
+            file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 2,
                                        _message('standby', '192.168.50.2', 'ff:01:02:03:ff:05'),
                                        destination=world.f_cfg.mgmt_address_2)
         else:

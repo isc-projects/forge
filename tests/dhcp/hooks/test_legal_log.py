@@ -373,7 +373,7 @@ def _add_guarded_subnet_with_logging_off6(class_test=False):
 @pytest.mark.parametrize('mode', ['global', 'subnet'])
 def test_v6_legal_log_address_assigned_duid(mode):
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -392,13 +392,13 @@ def test_v6_legal_log_address_assigned_duid(mode):
     if mode == 'subnet':
         _send_client_requests(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
     if mode == 'subnet':
-        file_doesnt_contain_line(world.f_cfg.data_join('kea-legal*.txt'),
+        file_doesnt_contain_line(world.f_cfg.log_join('kea-legal*.txt'),
                                  'Address: 2001:db8:20::5 has been assigned for 0 hrs 10 mins 0 secs '
                                  'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:05 '
                                  'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
@@ -452,7 +452,7 @@ def test_v6_legal_log_address_assigned_duid_db(backend, mode):
 @pytest.mark.parametrize('mode', ['global', 'subnet'])
 def test_v6_legal_log_address_renewed_duid(mode):
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -475,14 +475,14 @@ def test_v6_legal_log_address_renewed_duid(mode):
         _send_client_requests(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
         _send_client_renews(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
                                'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
 
     if mode == 'subnet':
-        file_doesnt_contain_line(world.f_cfg.data_join('kea-legal*.txt'),
+        file_doesnt_contain_line(world.f_cfg.log_join('kea-legal*.txt'),
                                  'Address: 2001:db8:20::5 has been assigned for 0 hrs 10 mins 0 secs '
                                  'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:05 '
                                  'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
@@ -541,7 +541,7 @@ def test_v6_legal_log_address_renewed_duid_db(backend, mode):
 @pytest.mark.parametrize('mode', ['global', 'subnet'])
 def test_v6_legal_log_address_rebind_duid(mode):
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -564,13 +564,13 @@ def test_v6_legal_log_address_rebind_duid(mode):
         _send_client_requests(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
         _send_client_rebinds(MESSAGE_COUNT, duid='00:03:00:01:f6:f5:f4:f3:f2:05')
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
                                'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
     if mode == 'subnet':
-        file_doesnt_contain_line(world.f_cfg.data_join('kea-legal*.txt'),
+        file_doesnt_contain_line(world.f_cfg.log_join('kea-legal*.txt'),
                                  'Address: 2001:db8:20::5 has been assigned for 0 hrs 10 mins 0 secs '
                                  'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:05 '
                                  'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
@@ -628,7 +628,7 @@ def test_v6_legal_log_address_rebind_duid_db(backend, mode):
 @pytest.mark.legal_logging
 def test_v6_legal_log_address_assigned_docsis_modem():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -644,8 +644,8 @@ def test_v6_legal_log_address_assigned_docsis_modem():
 
     _send_client_requests_with_docsis(MESSAGE_COUNT)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DOCSIS MODEM)')
@@ -688,7 +688,7 @@ def test_v6_legal_log_address_assigned_docsis_modem_db(backend):
 @pytest.mark.relay
 def test_v6_legal_log_address_assigned_docsis_cmts():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -704,8 +704,8 @@ def test_v6_legal_log_address_assigned_docsis_cmts():
 
     _send_relayed_client_requests_with_docsis(MESSAGE_COUNT)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:01 '
                                'and hardware address: hwtype=1 00:f5:f4:00:f2:01 (from DOCSIS CMTS)')
@@ -749,7 +749,7 @@ def test_v6_legal_log_address_assigned_docsis_cmts_db(backend):
 @pytest.mark.relay
 def test_v6_legal_log_address_assigned_relay():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -764,13 +764,13 @@ def test_v6_legal_log_address_assigned_relay():
 
     _send_relayed_client_requests(MESSAGE_COUNT)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01 '
                                'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID) '
                                'connected via relay at address:')
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'for client on link address: 2001:db8:1::1005, hop count: 4')
 
 
@@ -813,7 +813,7 @@ def test_v6_legal_log_address_assigned_relay_db(backend):
 @pytest.mark.legal_logging
 def test_v6_legal_log_with_flex_id_address_assigned():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -839,8 +839,8 @@ def test_v6_legal_log_with_flex_id_address_assigned():
 
     _send_client_requests_for_flex_id(MESSAGE_COUNT)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Address: 2001:db8:1::f has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
@@ -897,7 +897,7 @@ def test_v6_legal_log_parser_format():
     Log file is checked for proper content.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
@@ -927,7 +927,7 @@ def test_v6_legal_log_parser_format():
 
     _send_client_requests(MESSAGE_COUNT)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
     request_line = f'{world.f_cfg.server_iface}' \
                    f'{world.f_cfg.cli_link_local}' \
                    f'ff02::1:2' \
@@ -945,8 +945,8 @@ def test_v6_legal_log_parser_format():
                     f'{world.cfg["values"]["tr_id"]}' \
                     f''
 
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)
 
 
 @pytest.mark.v6
@@ -959,7 +959,7 @@ def test_v6_legal_log_parser_format_via_relay():
     Log file is checked for proper content.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
@@ -991,7 +991,7 @@ def test_v6_legal_log_parser_format_via_relay():
 
     _send_relayed_client_requests(MESSAGE_COUNT)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
     request_line = f'{world.f_cfg.server_iface}' \
                    f'{world.f_cfg.cli_link_local}' \
                    f'ff02::1:2' \
@@ -1011,8 +1011,8 @@ def test_v6_legal_log_parser_format_via_relay():
                     f'2001:db8:1::1005' \
                     f'{world.f_cfg.cli_link_local}'
 
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT, request_line)
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT, response_line)
 
 
 @pytest.mark.v6
@@ -1025,7 +1025,7 @@ def test_v6_legal_log_parser_format_dual_ip():
     Log file is checked for proper content.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
@@ -1059,7 +1059,7 @@ def test_v6_legal_log_parser_format_dual_ip():
 
     _send_client_requests(MESSAGE_COUNT, ia_pd=True)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
     request_line_na = f'{world.f_cfg.server_iface}' \
                       f'2001:db8:1::5' \
                       f'none' \
@@ -1081,8 +1081,8 @@ def test_v6_legal_log_parser_format_dual_ip():
                        f'{world.cfg["values"]["tr_id"]}' \
                        f''
 
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_na)
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_na)
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_na)
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_na)
 
     request_line_pd = f'{world.f_cfg.server_iface}' \
                       f'none' \
@@ -1105,8 +1105,8 @@ def test_v6_legal_log_parser_format_dual_ip():
                        f'{world.cfg["values"]["tr_id"]}' \
                        f''
 
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_pd)
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_pd)
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT, request_line_pd)
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT, response_line_pd)
 
 
 @pytest.mark.v6
@@ -1118,7 +1118,7 @@ def test_v6_legal_log_dual_ip():
     Log file is checked for proper content.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -1133,12 +1133,12 @@ def test_v6_legal_log_dual_ip():
 
     _send_client_requests(MESSAGE_COUNT, ia_pd=True)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 '
                                'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Prefix: 2001:db8:2::4:0:0/94 has been assigned for 0 hrs 10 mins 0 '
                                'secs to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 and '
                                'hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)')
@@ -1148,7 +1148,7 @@ def test_v6_legal_log_dual_ip():
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 3)
@@ -1161,8 +1161,8 @@ def test_v4_legal_log_assigned_address():
 
     _send_client_requests4(MESSAGE_COUNT)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
                                'client-id: 00:01:02:03:04:05:06')
@@ -1201,7 +1201,7 @@ def test_v4_legal_log_assigned_address_db(backend):
 @pytest.mark.legal_logging
 def test_v4_legal_log_assigned_address_without_client_id():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 3)
@@ -1214,11 +1214,11 @@ def test_v4_legal_log_assigned_address_without_client_id():
 
     _send_client_requests4(MESSAGE_COUNT, client_id=False)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04')
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 0,
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 0,
                                'client-id:')
 
 
@@ -1256,7 +1256,7 @@ def test_v4_legal_log_assigned_address_without_client_id_db(backend):
 @pytest.mark.relay
 def test_v4_legal_log_assigned_address_via_relay():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 3)
@@ -1269,8 +1269,8 @@ def test_v4_legal_log_assigned_address_via_relay():
 
     _send_client_requests_via_relay4(MESSAGE_COUNT)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05, '
                                'client-id: 00:01:02:03:04:05:77 '
@@ -1282,7 +1282,7 @@ def test_v4_legal_log_assigned_address_via_relay():
 @pytest.mark.relay
 def test_v4_legal_log_assigned_address_via_relay_one_address():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 3)
@@ -1295,8 +1295,8 @@ def test_v4_legal_log_assigned_address_via_relay_one_address():
 
     _send_client_requests_via_relay4(MESSAGE_COUNT, '192.168.50.2')
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), MESSAGE_COUNT,
                                'Address: 192.168.50.2 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05, '
                                'client-id: 00:01:02:03:04:05:77 '
@@ -1338,7 +1338,7 @@ def test_v4_legal_log_assigned_address_via_relay_db(backend):
 @pytest.mark.legal_logging
 def test_v4_legal_log_renew_state():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 3)
@@ -1351,8 +1351,8 @@ def test_v4_legal_log_renew_state():
 
     _send_client_requests_in_renew_state4(MESSAGE_COUNT)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
                                'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
                                'client-id: 00:01:02:03:04:05:06')
@@ -1391,7 +1391,7 @@ def test_v4_legal_log_renew_state_db(backend):
 @pytest.mark.legal_logging
 def test_v4_legal_log_rebind_state():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 3)
@@ -1404,8 +1404,8 @@ def test_v4_legal_log_rebind_state():
 
     _send_client_requests_in_rebind_state4(MESSAGE_COUNT)
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 2 * MESSAGE_COUNT,
                                'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs '
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, '
                                'client-id: 00:01:02:03:04:05:06')
@@ -1451,7 +1451,7 @@ def test_legal_log_rotation(dhcp_version):
     :type dhcp_version: str
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -1678,20 +1678,20 @@ def test_legal_log_rotate_actions(dhcp_version):
     :type dhcp_version: str
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script*.sh'))
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('actions*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('script*.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('actions*.txt'))
 
     # Prepare action scripts executed by kea to log rotation filenames
     script_pre = f'#!/bin/bash \n' \
-                 f'echo $1 >> {world.f_cfg.data_join("actions_pre.txt")}'
+                 f'echo $1 >> {world.f_cfg.log_join("actions_pre.txt")}'
     script_post = f'#!/bin/bash \n' \
-                  f'echo $1 >> {world.f_cfg.data_join("actions_post.txt")}'
+                  f'echo $1 >> {world.f_cfg.log_join("actions_post.txt")}'
 
     # transfer scripts to server and make them executable
-    fabric_sudo_command(f"echo '{script_pre}' > {world.f_cfg.data_join('script_pre.sh')}")
-    fabric_sudo_command(f"echo '{script_post}' > {world.f_cfg.data_join('script_post.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script*.sh')}")
+    fabric_sudo_command(f"echo '{script_pre}' > {world.f_cfg.log_join('script_pre.sh')}")
+    fabric_sudo_command(f"echo '{script_post}' > {world.f_cfg.log_join('script_post.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.log_join('script*.sh')}")
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -1709,8 +1709,8 @@ def test_legal_log_rotate_actions(dhcp_version):
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'count', 20 if dhcp_version == 'v4' else 15)
 
     # Configure log rotation actions
-    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'prerotate', world.f_cfg.data_join('script_pre.sh'))
-    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'postrotate', world.f_cfg.data_join('script_post.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'prerotate', world.f_cfg.log_join('script_pre.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'postrotate', world.f_cfg.log_join('script_post.sh'))
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1734,23 +1734,23 @@ def test_legal_log_rotate_actions(dhcp_version):
     # Wait to be sure that logs are written to file
     srv_msg.forge_sleep(2, 'seconds')
     # make a list of produced log files
-    log_files = fabric_sudo_command(f"cd {world.f_cfg.data_join('')} ; ls -1 kea-legal*.txt").splitlines()
+    log_files = fabric_sudo_command(f"cd {world.f_cfg.log_join('')} ; ls -1 kea-legal*.txt").splitlines()
 
     # copy log files to forge results folder
     for name in log_files:
-        srv_msg.copy_remote(world.f_cfg.data_join(name), local_filename=name)
-        verify_file_permissions(world.f_cfg.data_join(name))
-    srv_msg.copy_remote(world.f_cfg.data_join("actions_pre.txt"), local_filename="actions_pre.txt")
-    srv_msg.copy_remote(world.f_cfg.data_join("actions_post.txt"), local_filename="actions_post.txt")
+        srv_msg.copy_remote(world.f_cfg.log_join(name), local_filename=name)
+        verify_file_permissions(world.f_cfg.log_join(name))
+    srv_msg.copy_remote(world.f_cfg.log_join("actions_pre.txt"), local_filename="actions_pre.txt")
+    srv_msg.copy_remote(world.f_cfg.log_join("actions_post.txt"), local_filename="actions_post.txt")
 
     # Check if there are 3 log files
     assert len(log_files) == 3
 
     # Check contents of prerotate actions file. It should contain first and second log file name (third was not closed)
-    file_contains_line_n_times(world.f_cfg.data_join('actions_pre.txt'), 1, world.f_cfg.data_join(log_files[0]))
-    file_contains_line_n_times(world.f_cfg.data_join('actions_pre.txt'), 1, world.f_cfg.data_join(log_files[1]))
+    file_contains_line_n_times(world.f_cfg.log_join('actions_pre.txt'), 1, world.f_cfg.log_join(log_files[0]))
+    file_contains_line_n_times(world.f_cfg.log_join('actions_pre.txt'), 1, world.f_cfg.log_join(log_files[1]))
 
     # Check contents of postrotate actions file. It should contain second and third log file name
     # (first was open on server start, and not on rotation)
-    file_contains_line_n_times(world.f_cfg.data_join('actions_post.txt'), 1, world.f_cfg.data_join(log_files[1]))
-    file_contains_line_n_times(world.f_cfg.data_join('actions_post.txt'), 1, world.f_cfg.data_join(log_files[2]))
+    file_contains_line_n_times(world.f_cfg.log_join('actions_post.txt'), 1, world.f_cfg.log_join(log_files[1]))
+    file_contains_line_n_times(world.f_cfg.log_join('actions_post.txt'), 1, world.f_cfg.log_join(log_files[2]))

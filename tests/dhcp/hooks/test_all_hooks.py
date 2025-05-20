@@ -67,7 +67,7 @@ def test_v4_all_hooks_start():
 @pytest.mark.v4
 @pytest.mark.hook
 def test_v4_all_hooks_test_cooperation():
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
@@ -222,16 +222,16 @@ def test_v4_all_hooks_test_cooperation():
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.response_check_option_content(61, 'value', '00010203040506')
 
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
 
-    file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
+    file_contains_line(world.f_cfg.log_join('kea-legal*.txt'),
                        'Address: 192.168.50.1 has been assigned for 1 hrs 6 mins '
                        '40 secs to a device with hardware address: hwtype=1 '
                        'ff:01:02:03:ff:04, client-id: 00:01:02:03:04:05:06')
 
     # lease commands
     srv_msg.send_ctrl_cmd_via_socket('{"command":"lease4-add","arguments":{"ip-address": "192.168.50.10","hostname": "newhostname.example.org","hw-address": "1a:1b:1c:1d:1e:1f","subnet-id":1,"valid-lft":500000}}')
-    file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
+    file_contains_line(world.f_cfg.log_join('kea-legal*.txt'),
                        'Administrator added a lease of address: 192.168.50.10 to a '
                        'device with hardware address: 1a:1b:1c:1d:1e:1f for 5 days '
                        '18 hrs 53 mins 20 secs')
@@ -248,7 +248,7 @@ def test_v4_all_hooks_test_cooperation():
     # Response MUST contain yiaddr 192.168.50.10.
     # Response MUST include option 54.
     # Response option 54 MUST contain value $(SRV4_ADDR).
-    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
 
 
 @pytest.mark.v4

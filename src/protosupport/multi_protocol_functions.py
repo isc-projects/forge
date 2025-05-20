@@ -102,6 +102,17 @@ def copy_file_from_server(remote_path, local_filename='downloaded_file', dest=wo
     :return:
     :rtype:
     """
+    if '*' in remote_path:
+        # Logs are copied to temp directory because fabric has prolems with listing non world readable folders.
+        cmd = 'rm -rf /tmp/forge_downloads/'
+        fabric_sudo_command(cmd, destination_host=dest)
+        cmd = 'mkdir -m 777 -p /tmp/forge_downloads/'
+        fabric_sudo_command(cmd, destination_host=dest)
+        cmd = f'for file in {remote_path}; do cp "$file" "/tmp/forge_downloads/.";done'
+        fabric_sudo_command(cmd, destination_host=dest)
+        remote_path = os.path.join('/tmp/forge_downloads/', os.path.basename(remote_path))
+        local_filename = '.'
+
     fabric_download_file(remote_path, world.cfg["test_result_dir"] + f'/{local_filename}', destination_host=dest)
     return world.cfg["test_result_dir"] + f'/{local_filename}'
 
