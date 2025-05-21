@@ -1888,7 +1888,7 @@ def build_config_files(cfg=None):
         _write_cfg2(cfg)
 
 
-def set_ownership_of_a_file(file_path):
+def set_ownership_of_a_file(file_path, destination_address=world.f_cfg.mgmt_address):
     """set_ownership_of_a_file Change ownership of a file.
 
     Based on what system is used for testing and
@@ -1931,21 +1931,21 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
                      world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf'),
                      destination_host=destination_address,
                      mode="0o640")
-    set_ownership_of_a_file(world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf'))
+    set_ownership_of_a_file(world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf'), destination_address)
 
     if world.f_cfg.control_agent:
         fabric_send_file("kea-ctrl-agent.conf",
                          world.f_cfg.etc_join("kea-ctrl-agent.conf"),
                          destination_host=destination_address,
                          mode="0o640")
-        set_ownership_of_a_file(world.f_cfg.etc_join("kea-ctrl-agent.conf"))
+        set_ownership_of_a_file(world.f_cfg.etc_join("kea-ctrl-agent.conf"), destination_address)
 
     if world.ddns_enable:
         fabric_send_file("kea-dhcp-ddns.conf",
                          world.f_cfg.etc_join("kea-dhcp-ddns.conf"),
                          destination_host=destination_address,
                          mode="0o640")
-        set_ownership_of_a_file(world.f_cfg.etc_join("kea-dhcp-ddns.conf"))
+        set_ownership_of_a_file(world.f_cfg.etc_join("kea-dhcp-ddns.conf"), destination_address)
 
     # store files back to local for debug purposes
     if world.f_cfg.install_method == 'make':
