@@ -1894,6 +1894,9 @@ def set_ownership_of_a_file(file_path, destination_address=world.f_cfg.mgmt_addr
     Based on what system is used for testing and
     if packages are used, set ownership of a file.
 
+    :param destination_address: address of remote system where the chown command is run,
+        (Default value = world.f_cfg.mgmt_address)
+    :type destination_address: str
     :param file_path: path to the file to set ownership of
     :type file_path: str
     """
