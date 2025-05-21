@@ -8,13 +8,14 @@
 
 # pylint: disable=line-too-long
 
+import os
 import time
 import pytest
 
 from src import misc
 from src import srv_msg
 from src import srv_control
-from src.softwaresupport.multi_server_functions import fabric_sudo_command
+from src.softwaresupport.multi_server_functions import fabric_sudo_command, verify_file_permissions
 from src.protosupport.multi_protocol_functions import file_contains_line, sort_container
 from src.forge_cfg import world
 
@@ -2729,9 +2730,43 @@ def test_lease_cmds_write_negative(dhcp_version):
     cmd = {"command": f'lease{dhcp_version[1]}-write',
            "arguments": {"filename": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "'filename' parameter is empty"
+    assert resp["text"] == "'filename' parameter is invalid: path: '' has no filename"
 
-    cmd = {"command": f'lease{dhcp_version[1]}-write',
-           "arguments": {"filename": ""}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "'filename' parameter is empty"
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.controlchannel
+@pytest.mark.hook
+@pytest.mark.lease_cmds
+def test_lease_cmds_write_path(dhcp_version):
+    """
+    Test leaseX-write command paths that it can write files to.
+
+    :type dhcp_version: str
+    :param dhcp_version: we accept v4 or v6
+    """
+    illegal_paths = [
+        ['', 0, 'lease database into'],
+        ['/tmp/', 1, '\'filename\' parameter is invalid: invalid path specified'],
+        ['~/', 1, '\'filename\' parameter is invalid: invalid path specified'],
+        ['/var/', 1, '\'filename\' parameter is invalid: invalid path specified'],
+        ['/srv/', 1, '\'filename\' parameter is invalid: invalid path specified'],
+        ['/etc/kea/', 1, '\'filename\' parameter is invalid: invalid path specified'],
+    ]
+    misc.test_setup()
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    for path, exp_result, exp_text in illegal_paths:
+        srv_msg.remove_file_from_server(path + 'kealeases.csv')
+        cmd = {"command": f'lease{dhcp_version[1]}-write',
+               "arguments": {"filename": path + 'kealeases.csv'}}
+        resp = srv_msg.send_ctrl_cmd(cmd, exp_result=exp_result)
+        assert exp_text in resp["text"], f"Expected {exp_text} in response, got {resp['text']}"
+        if exp_result == 0:
+            path = os.path.dirname(world.f_cfg.get_leases_path())
+            verify_file_permissions(os.path.join(path, 'kealeases.csv'))

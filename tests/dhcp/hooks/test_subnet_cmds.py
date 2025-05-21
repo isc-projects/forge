@@ -17,6 +17,7 @@ from src import misc
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
+from src.softwaresupport.multi_server_functions import verify_file_permissions
 
 
 def _config_get(exp_result: int = 0, exp_failed: bool = False) -> dict:
@@ -48,6 +49,7 @@ def _save_and_reload(exp_result: int = 0, exp_failed: bool = False) -> tuple:
     """
     cmd = {"command": "config-write", "arguments": {}}  # save config
     resp1 = srv_msg.send_ctrl_cmd_via_socket(cmd, exp_failed=exp_failed, exp_result=exp_result)
+    verify_file_permissions(resp1['arguments']['filename'])
     cmd = {"command": "config-reload", "arguments": {}}  # reload config
     resp2 = srv_msg.send_ctrl_cmd_via_socket(cmd, exp_failed=exp_failed, exp_result=exp_result)
     return resp1, resp2

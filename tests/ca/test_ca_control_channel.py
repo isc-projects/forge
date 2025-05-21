@@ -14,6 +14,7 @@ from src import misc
 from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
+from src.softwaresupport.multi_server_functions import verify_file_permissions, fabric_is_file
 
 
 def _send_directly_to_ca(cmd, exp_result=0, address='$(SRV4_ADDR)', exp_failed=False):
@@ -301,11 +302,12 @@ def test_ca_config_write():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    cmd = dict(command='config-write', arguments={"filename": world.f_cfg.data_join("new_CA_config_file")})
+    cmd = dict(command='config-write', arguments={"filename": world.f_cfg.etc_join("new_CA_config_file")})
 
     _send_directly_to_ca(cmd)
+    verify_file_permissions(world.f_cfg.etc_join("new_CA_config_file"))
 
-    srv_msg.copy_remote(world.f_cfg.data_join("new_CA_config_file"))
+    srv_msg.copy_remote(world.f_cfg.etc_join("new_CA_config_file"))
 
     # let's load json from downloaded file and check if it is the same what we configured kea with
     with open(os.path.join(world.cfg["test_result_dir"], 'downloaded_file'), 'r', encoding='utf-8') as f:
@@ -315,6 +317,35 @@ def test_ca_config_write():
     del downloaded_config["Control-agent"]["hooks-libraries"]
 
     assert downloaded_config["Control-agent"] == world.ca_cfg["Control-agent"]
+
+
+@pytest.mark.v6
+@pytest.mark.ca
+@pytest.mark.controlchannel
+def test_ca_config_write_path():
+    """
+    Test checks if Control Agent restricts the config-write command to the correct path.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+    srv_control.open_control_channel()
+    srv_control.agent_control_channel('$(SRV4_ADDR)')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    illegal_paths = [
+        ['/tmp/config-write.json', 1, 'not allowed to write config into'],
+        ['~/config-write.json', 1, 'not allowed to write config into'],
+        ['/var/config-write.json', 1, 'not allowed to write config into'],
+        ['/srv/config-write.json', 1, 'not allowed to write config into'],
+        ['/etc/kea/config-write.json', 1, 'not allowed to write config into'],
+    ]
+
+    for path, exp_result, exp_text in illegal_paths:
+        cmd = dict(command='config-write', arguments={"filename": path})
+        response = _send_directly_to_ca(cmd, exp_result=exp_result)
+        assert exp_text in response['text'], f"Expected {exp_text} in response, got {response['text']}"
+        assert fabric_is_file(path) is False, f"File {path} should not exist"
 
 
 @pytest.mark.v6
@@ -402,3 +433,31 @@ def test_ca_config_hash_get():
     cmd = {"command": "config-hash-get", "arguments": {}}
     hash7 = _send_directly_to_ca(cmd)["arguments"]["hash"]
     assert hash6 == hash7, "hash returned in config-get-hash and config-set are different!"
+
+
+@pytest.mark.v6
+@pytest.mark.ca
+@pytest.mark.controlchannel
+def test_ca_logger_path():
+    """
+    Test checks if Control Agent restricts loggers to the correct path.
+    """
+    illegal_paths = [
+        ['kea-ctrl-agent.log', True],
+        ['/tmp/kea-ctrl-agent.log', False],
+        ['~/kea-ctrl-agent.log', False],
+        ['/var/kea-ctrl-agent.log', False],
+        ['/srv/kea-ctrl-agent.log', False],
+        ['/etc/kea/kea-ctrl-agent.log', False],
+
+    ]
+    for path, should_succeed in illegal_paths:
+        misc.test_setup()
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
+        srv_control.open_control_channel()
+        srv_control.agent_control_channel('$(SRV4_ADDR)')
+        world.ca_cfg["Control-agent"]["loggers"][0]["output-options"][0]["output"] = path
+        srv_control.build_and_send_config_files()
+        srv_control.start_srv('DHCP', 'started', should_succeed=should_succeed)
+
+        # There is no easy way to check log content when path is invalid.
