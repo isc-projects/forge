@@ -331,8 +331,13 @@ def test_start():
 
     # Determine system type.
     world.server_system = 'unknown'
-    for system_candidate, release_file in [('alpine', 'alpine-release'), ('ubuntu', 'ubuntu-advantage'),
-                                           ('debian', 'debian_version'), ('redhat', 'redhat-release')]:
+    for system_candidate, release_file in [
+        ('alpine', 'alpine-release'),
+        ('ubuntu', 'ubuntu-advantage'),
+        ('debian', 'debian_version'),
+        ('fedora', 'fedora-release'),
+        ('redhat', 'redhat-release'),
+    ]:
         result = fabric_run_command(f'ls -al "/etc/{release_file}"', hide_all=True, ignore_errors=True)
         if result.succeeded:
             world.server_system = system_candidate
