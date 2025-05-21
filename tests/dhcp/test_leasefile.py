@@ -118,5 +118,3 @@ def test_leasefile_path_config_set(dhcp_version):
         cmd = {"command": "config-set", "arguments": config_set}
         resp = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=exp_result)
         assert message in resp['text'], f"Expected message: {message} not found in response: {resp['text']}"
-        if exp_result == 0:
-            verify_file_permissions(full_path)

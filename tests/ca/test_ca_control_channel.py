@@ -292,8 +292,8 @@ def test_ca_build_report():
     # there is no good way to check specific values, so let's just check that there is there
     assert "Valgrind" in response["text"]
     assert "CXX_VERSION" in response["text"]
-    assert "MYSQL_VERSION" in response["text"]
-    assert "Included Hooks" in response["text"]
+    assert "MySQL" in response["text"]
+    assert "Premium hooks" in response["text"]
 
 
 @pytest.mark.v6
@@ -308,11 +308,11 @@ def test_ca_config_write():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    cmd = dict(command='config-write', arguments={"filename": world.f_cfg.data_join("new_CA_config_file")})
+    cmd = dict(command='config-write', arguments={"filename": world.f_cfg.etc_join("new_CA_config_file")})
     _send_directly_to_ca(cmd)
-    verify_file_permissions(world.f_cfg.data_join("new_CA_config_file"))
+    verify_file_permissions(world.f_cfg.etc_join("new_CA_config_file"))
 
-    srv_msg.copy_remote(world.f_cfg.data_join("new_CA_config_file"))
+    srv_msg.copy_remote(world.f_cfg.etc_join("new_CA_config_file"))
 
     # let's load json from downloaded file and check if it is the same what we configured kea with
     with open(os.path.join(world.cfg["test_result_dir"], 'downloaded_file'), 'r', encoding='utf-8') as f:
@@ -343,7 +343,6 @@ def test_ca_config_write_path():
         ['~/config-write.json', 1, 'not allowed to write config into'],
         ['/var/config-write.json', 1, 'not allowed to write config into'],
         ['/srv/config-write.json', 1, 'not allowed to write config into'],
-        ['/etc/kea/config-write.json', 1, 'not allowed to write config into'],
     ]
 
     for path, exp_result, exp_text in illegal_paths:

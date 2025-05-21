@@ -2773,12 +2773,7 @@ def test_lease_cmds_write_negative(dhcp_version):
     cmd = {"command": f'lease{dhcp_version[1]}-write',
            "arguments": {"filename": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "'filename' parameter is empty"
-
-    cmd = {"command": f'lease{dhcp_version[1]}-write',
-           "arguments": {"filename": ""}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "'filename' parameter is empty"
+    assert resp["text"] == "'filename' parameter is invalid: path: '' has no filename"
 
 
 @pytest.mark.v4
