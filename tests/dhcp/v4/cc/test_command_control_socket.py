@@ -310,11 +310,11 @@ def test_control_channel_socket_after_restart_load_config_file():
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
 
-    misc.test_procedure()
     for socket in world.dhcp_cfg["Dhcp4"]["control-sockets"]:
         if socket["socket-type"] == "unix":
             verify_file_permissions(socket["socket-name"], '750')
 
+    misc.test_procedure()
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
 

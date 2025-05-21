@@ -28,11 +28,11 @@ def kinit(my_domain):
     :type my_domain: str
     """
     fabric_sudo_command('cat /etc/krb5.conf')
-    if world.server_system == 'debian':
+    if world.server_system in ['debian', 'ubuntu']:
         fabric_sudo_command('cat /etc/krb5kdc/kdc.conf')
 
     manage_kerb(procedure='restart')
-    if world.server_system == 'debian' and world.f_cfg.install_method == 'native':
+    if world.server_system in ['debian', 'ubuntu'] and world.f_cfg.install_method == 'native':
         # kea is running using user _kea this is for now only one distinction
         # all the rest is divided between windows and linux
         if 'win' in my_domain:
@@ -91,7 +91,7 @@ def install_krb(dns_addr, domain, key_life=2):
     clean_principals()
     krb_destroy()
     manage_kerb()
-    if world.server_system == 'debian':
+    if world.server_system in ['debian', 'ubuntu']:
         manage_kerb(ignore=True)  # stop all, do not care about error
         fabric_sudo_command('apt-get purge -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user', ignore_errors=True)
         fabric_sudo_command('rm -rf /var/lib/krb5kdc /etc/krb5kdc /etc/krb5kdc/kadm5.acl /var/tmp/DNS_0 /var/tmp/kadmin_0 /tmp/krb5cc_0 /tmp/krb5*')
@@ -208,7 +208,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
 
     send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
 
-    kadm5_path = '/etc/krb5kdc/kadm5.acl' if world.server_system == 'debian' else '/var/kerberos/krb5kdc/kadm5.acl'
+    kadm5_path = '/etc/krb5kdc/kadm5.acl' if world.server_system in ['debian', 'ubuntu'] else '/var/kerberos/krb5kdc/kadm5.acl'
     if 'win' in domain:
         # on each configured windows system there is keytab generated, e.g command used:
         # PS C:\Users\Administrator> ktpass -out /Users/forge/forge.keytab -mapUser forge +rndPass -mapOp set +DumpSalt -crypto AES256-SHA1 -ptype KRB5_NT_PRINCIPAL -princ DHCP/forge.win2019ad.aws.isc.org@WIN2019AD.AWS.ISC.ORG
@@ -261,7 +261,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
     keytab_file = "/tmp/dhcp.keytab" if "win" not in domain else f"/tmp/forge{domain[3:7]}.keytab"
 
     fabric_sudo_command(f'chmod 440 {keytab_file}')
-    if world.server_system == 'debian' and world.f_cfg.install_method == 'native':
+    if world.server_system in ['debian', 'ubuntu'] and world.f_cfg.install_method == 'native':
         fabric_sudo_command(f'chown root:_kea {keytab_file}')
     else:
         fabric_sudo_command(f'chown root:root {keytab_file}')

@@ -22,6 +22,7 @@ class StatsState6:
         self.s = {
             'cumulative-assigned-nas': 0,
             'cumulative-assigned-pds': 0,
+            'cumulative-registered-nas': 0,
             'declined-addresses': 0,
             'pkt6-advertise-received': 0,
             'pkt6-advertise-sent': 0,
@@ -42,12 +43,17 @@ class StatsState6:
             'pkt6-sent': 0,
             'pkt6-solicit-received': 0,
             'pkt6-unknown-received': 0,
+            'pkt6-addr-reg-inform-received': 0,
+            'pkt6-addr-reg-reply-received': 0,
+            'pkt6-addr-reg-reply-sent': 0,
             'reclaimed-declined-addresses': 0,
             'reclaimed-leases': 0,
             'subnet[1].assigned-nas': 0,
             'subnet[1].assigned-pds': 0,
             'subnet[1].cumulative-assigned-nas': 0,
             'subnet[1].cumulative-assigned-pds': 0,
+            'subnet[1].cumulative-registered-nas': 0,
+            'subnet[1].registered-nas': 0,
             'subnet[1].declined-addresses': 0,
             'subnet[1].reclaimed-declined-addresses': 0,
             'subnet[1].reclaimed-leases': 0,
@@ -86,7 +92,7 @@ class StatsState6:
                 statistics_not_found.append(key)
         assert len(statistics_not_found) == 0, f'The following statistics were received, but not expected: {statistics_not_found}'
 
-        assert len(statistics_from_kea) == 48, 'Number of all statistics is incorrect.'
+        assert len(statistics_from_kea) == 54, 'Number of all statistics is incorrect.'
 
         for key, expected in self.s.items():
             received = statistics_from_kea[key][0][0]

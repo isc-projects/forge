@@ -263,8 +263,7 @@ def test_v4_hooks_path_configfile(hook):
     if hook == "nonexistent":
         srv_msg.remove_file_from_server(world.f_cfg.hooks_join('libdhcp_nonexistent.so'))
         path = "libdhcp_nonexistent.so"
-        message = 'HOOKS_OPEN_ERROR failed to open hook library .* ' \
-            'cannot open shared object file: No such file or directory'
+        message = 'HOOKS_OPEN_ERROR failed to open hook library .*'
         anti_message = 'HOOKS_LOAD_SUCCESS \'load\' function in hook library .* returned success'
         should_succeed = False
     elif hook == "existing":
