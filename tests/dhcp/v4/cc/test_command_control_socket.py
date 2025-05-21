@@ -169,6 +169,10 @@ def test_control_channel_socket_config_set_basic():
 
     srv_control.start_srv('DHCP', 'started')
 
+    socket = world.dhcp_cfg["Dhcp4"]["control-socket"]
+    if socket["socket-type"] == "unix":
+        verify_file_permissions(socket["socket-name"], '750')
+
     misc.test_procedure()
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
@@ -319,7 +323,6 @@ def test_control_channel_socket_after_restart_load_config_file():
 
     srv_control.start_srv('DHCP', 'restarted')
 
-    socket = world.dhcp_cfg["Dhcp4"]["control-socket"]
     if socket["socket-type"] == "unix":
         verify_file_permissions(socket["socket-name"], '750')
 

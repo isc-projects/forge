@@ -174,7 +174,7 @@ def test_control_channel_socket_config_set_basic():
 
     srv_control.start_srv('DHCP', 'started')
 
-    socket = world.dhcp_cfg["Dhcp6"]["control-sockets"]
+    socket = world.dhcp_cfg["Dhcp6"]["control-socket"]
     if socket["socket-type"] == "unix":
         verify_file_permissions(socket["socket-name"], '750')
 
@@ -256,7 +256,7 @@ def test_control_channel_socket_change_socket_during_reconfigure():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    socket = world.dhcp_cfg["Dhcp6"]["control-sockets"]
+    socket = world.dhcp_cfg["Dhcp6"]["control-socket"]
     if socket["socket-type"] == "unix":
         verify_file_permissions(socket["socket-name"], '750')
 
@@ -311,7 +311,7 @@ def test_control_channel_socket_after_restart_load_config_file():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    socket = world.dhcp_cfg["Dhcp6"]["control-sockets"]
+    socket = world.dhcp_cfg["Dhcp6"]["control-socket"]
     if socket["socket-type"] == "unix":
         verify_file_permissions(socket["socket-name"], '750')
 
@@ -351,7 +351,6 @@ def test_control_channel_socket_after_restart_load_config_file():
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
     srv_control.start_srv('DHCP', 'restarted')
 
-    socket = world.dhcp_cfg["Dhcp6"]["control-sockets"]
     if socket["socket-type"] == "unix":
         verify_file_permissions(socket["socket-name"], '750')
 
@@ -445,7 +444,7 @@ def test_control_channel_socket_config_write():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    socket = world.dhcp_cfg["Dhcp6"]["control-sockets"]
+    socket = world.dhcp_cfg["Dhcp6"]["control-socket"]
     if socket["socket-type"] == "unix":
         verify_file_permissions(socket["socket-name"], '750')
 

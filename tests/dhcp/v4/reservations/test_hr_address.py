@@ -298,7 +298,8 @@ def test_v4_host_reservation_empty(backend):
         world.dhcp_cfg.update({
             "reservations": [
                 {
-                    "hw-address": "ff:01:02:03:ff:04"
+                    "hw-address": "ff:01:02:03:ff:04",
+                    "subnet-id": 0
                 }
             ],
             "reservations-global": True,
@@ -322,6 +323,7 @@ def test_v4_host_reservation_empty(backend):
             "arguments": {
                 "reservation": {
                     "hw-address": "ff:01:02:03:ff:04",
+                    "subnet-id": 0
                 }
             },
             "command": "reservation-add"
