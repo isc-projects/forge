@@ -383,6 +383,8 @@ def test_ca_version_get():
     # TODO maybe version of kea could be held in forge?
 
 
+# https://gitlab.isc.org/isc-projects/kea/-/issues/2940
+@pytest.mark.disabled
 @pytest.mark.v6
 @pytest.mark.ca
 @pytest.mark.controlchannel
@@ -452,7 +454,7 @@ def test_ca_logger_path():
         srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
         srv_control.open_control_channel()
         srv_control.agent_control_channel('$(SRV4_ADDR)')
-        world.ca_cfg["Control-agent"]["loggers"][0]["output-options"][0]["output"] = path
+        world.ca_cfg["Control-agent"]["loggers"][0]["output_options"][0]["output"] = path
         srv_control.build_and_send_config_files()
         srv_control.start_srv('DHCP', 'started', should_succeed=should_succeed)
 

@@ -336,6 +336,7 @@ def test_v6_host_reservation_empty(backend):
             "arguments": {
                 "reservation": {
                     "duid": "00:03:00:01:f6:f5:f4:f3:f2:22",
+                    "subnet-id": 0
                 }
             },
             "command": "reservation-add"

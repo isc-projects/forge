@@ -478,7 +478,7 @@ def test_config_commands_usercontext(scope, dhcp_version):
     assert hash1 != hash2 == hash3, "First hash should be different than two returned later in the test"
 
     # Write config to file and download it
-    remote_path = world.f_cfg.data_join('config-export.json')
+    remote_path = world.f_cfg.etc_join('config-export.json')
     remove_file_from_server(remote_path)
     cmd = {"command": "config-write", "arguments": {"filename": remote_path}}
     srv_msg.send_ctrl_cmd(cmd, 'http')
@@ -560,7 +560,7 @@ def test_config_commands_empty_reservations(dhcp_version):
     assert hash1 != hash2 == hash3, "First hash should be different than two returned later in the test"
 
     # Write config to file and download it
-    remote_path = world.f_cfg.data_join('config-export.json')
+    remote_path = world.f_cfg.etc_join('config-export.json')
     remove_file_from_server(remote_path)
     cmd = {"command": "config-write", "arguments": {"filename": remote_path}}
     srv_msg.send_ctrl_cmd(cmd, 'http')
@@ -660,11 +660,7 @@ def test_config_commands_config_write(dhcp_version, backend):
                                             "name": world.f_cfg.db_name,
                                             "host": world.f_cfg.db_host,
                                             "user": world.f_cfg.db_user,
-                                            "password": world.f_cfg.db_passwd,
-                                            "retry-on-startup": True,
-                                            "max-reconnect-tries": 3,
-                                            "reconnect-wait-time": 120,
-                                            "on-fail": "stop-retry-exit"}
+                                            "password": world.f_cfg.db_passwd}
 
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -759,7 +755,7 @@ def test_config_output_options(dhcp_version):
     # let's set something different as a config and check if has changed
     cfg_get[f"Dhcp{dhcp_version[1]}"]["loggers"][0]["output_options"] = cfg_get[
         f"Dhcp{dhcp_version[1]}"
-    ]["loggers"][0].pop("output-options")
+    ]["loggers"][0].pop("output_options")
 
     cmd = {"command": "config-set", "arguments": cfg_get}
     srv_msg.send_ctrl_cmd(cmd, 'http')

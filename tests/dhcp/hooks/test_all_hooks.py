@@ -55,7 +55,7 @@ def test_v4_all_hooks_start():
     srv_control.add_parameter_to_ha_hook('peers',
                                          '{"name":"server1","url":"http://$(MGMT_ADDRESS):8080/","role":"primary","auto-failover":true}')
     srv_control.add_parameter_to_ha_hook('peers',
-                                         '{"name":"server2","url":"http://$(MGMT_ADDRESS_2):8080/","role":"secondary","auto-failover":true}')
+                                         '{"name":"server2","url":"http://$(MGMT_ADDRESS):8080/","role":"secondary","auto-failover":true}')
 
     srv_control.open_control_channel()
     srv_control.build_and_send_config_files()

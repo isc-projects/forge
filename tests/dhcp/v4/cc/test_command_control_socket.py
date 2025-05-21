@@ -319,7 +319,6 @@ def test_control_channel_socket_after_restart_load_config_file():
 
     srv_control.start_srv('DHCP', 'restarted')
 
-    socket = world.dhcp_cfg["Dhcp4"]["control-socket"]
     if socket["socket-type"] == "unix":
         verify_file_permissions(socket["socket-name"], '750')
 
