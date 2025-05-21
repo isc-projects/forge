@@ -1363,7 +1363,7 @@ def set_ownership_of_a_file(file_path, destination_host=world.f_cfg.mgmt_address
     default it's world.f_cfg.mgmt_address
     """
     if world.f_cfg.install_method == 'native':
-        if world.server_system == 'debian':
+        if world.server_system == 'debian' or world.server_system == 'ubuntu':
             fabric_sudo_command(f'chown _kea:_kea {file_path}',
                                 destination_host=destination_host)
         else:

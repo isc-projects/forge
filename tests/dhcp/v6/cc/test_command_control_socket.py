@@ -311,9 +311,15 @@ def test_control_channel_socket_after_restart_load_config_file():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+<<<<<<< HEAD
     socket = world.dhcp_cfg["Dhcp6"]["control-socket"]
     if socket["socket-type"] == "unix":
         verify_file_permissions(socket["socket-name"], '750')
+=======
+    for socket in world.dhcp_cfg["Dhcp6"]["control-sockets"]:
+        if socket["socket-type"] == "unix":
+            verify_file_permissions(socket["socket-name"], '750')
+>>>>>>> c5a4725e (2.7 fix based on jenkins)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -336,6 +342,13 @@ def test_control_channel_socket_after_restart_load_config_file():
 
     srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set","arguments":  $(DHCP_CONFIG) }')
 
+<<<<<<< HEAD
+=======
+    for socket in world.dhcp_cfg["Dhcp6"]["control-sockets"]:
+        if socket["socket-type"] == "unix":
+            verify_file_permissions(socket["socket-name"], '750')
+
+>>>>>>> c5a4725e (2.7 fix based on jenkins)
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'client-id')

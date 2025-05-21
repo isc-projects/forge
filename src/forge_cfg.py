@@ -264,8 +264,15 @@ class ForgeConfiguration:
 
     def hooks_join(self, sub_path):
         if self.install_method == 'make':
+            if world.server_system == 'debian':
+                return os.path.join(self.software_install_path,
+                                    f'lib/{world.server_architecture}-linux-gnu/kea/hooks', sub_path)
+            if world.server_system in ['redhat', 'ubuntu']:
+                return os.path.join(self.software_install_path, 'lib64/kea/hooks', sub_path)
             return os.path.join(self.software_install_path, 'lib/kea/hooks', sub_path)
         else:
+            if world.server_system in ['redhat', 'ubuntu']:
+                return os.path.join(f'/usr/lib/{world.server_architecture}-linux-gnu/kea/hooks', sub_path)
             if world.server_system == 'redhat':
                 return os.path.join('/usr/lib64/kea/hooks', sub_path)
             if world.server_system == 'alpine':

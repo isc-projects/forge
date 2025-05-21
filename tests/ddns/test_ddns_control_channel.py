@@ -440,12 +440,12 @@ def test_ddns6_control_channel_config_write():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    cmd = dict(command='config-write', arguments={"filename": world.f_cfg.data_join("new_kea_config_file")})
+    cmd = dict(command='config-write', arguments={"filename": world.f_cfg.etc_join("new_kea_config_file")})
 
     response = _send_through_ddns_socket(cmd)
     verify_file_permissions(response['arguments']['filename'])
 
-    srv_msg.copy_remote(world.f_cfg.data_join("new_kea_config_file"))
+    srv_msg.copy_remote(world.f_cfg.etc_join("new_kea_config_file"))
 
     # let's load json from downloaded file and check if it is the same what we configured kea with
     with open(os.path.join(world.cfg["test_result_dir"], 'downloaded_file'), 'r', encoding='utf-8') as f:
