@@ -414,28 +414,28 @@ def network_variable(value_name, value):
 
 
 @step(r'Table (\S+) in (\S+) database MUST (NOT )?contain line or phrase: (.+)')
-def table_contains_line(table_name, db_type, line, expect=True):
+def table_contains_line(table_name, db_type, line, expect=True, dest=world.f_cfg.mgmt_address):
     """
     Check if in table X in database type Y include line.
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     table_name, db_type, line = test_define_value(table_name, db_type, line)
-    multi_protocol_functions.db_table_contains_line(table_name, db_type, line=line, expect=expect)
+    multi_protocol_functions.db_table_contains_line(table_name, db_type, line=line, expect=expect, destination=dest)
 
 
-def table_contains_line_n_times(table_name, db_type, n, line):
+def table_contains_line_n_times(table_name, db_type, n, line, dest=world.f_cfg.mgmt_address):
     """
     Check if in table X in database type Y include line.
     Be aware that tested line is every thing after "line: " until end of the line.
     """
     table_name, db_type, line = test_define_value(table_name, db_type, line)
-    multi_protocol_functions.db_table_contains_line_n_times(table_name, db_type, n=n, line=line)
+    multi_protocol_functions.db_table_contains_line_n_times(table_name, db_type, n=n, line=line, destination=dest)
 
 
 @step(r'Remove all records from table (\S+) in (\S+) database.')
-def remove_from_db_table(table_name, db_type):
+def remove_from_db_table(table_name, db_type, destination_address=world.f_cfg.mgmt_address):
     table_name, db_type = test_define_value(table_name, db_type)
-    multi_protocol_functions.remove_from_db_table(table_name, db_type)
+    multi_protocol_functions.remove_from_db_table(table_name, db_type, destination_address=destination_address)
 
 
 @step(r'Sleep for (\S+) (seconds|second|milliseconds|millisecond).')
@@ -469,40 +469,40 @@ def test_fail():
 
 
 @step(r'Client download file from server stored in: (\S+).')
-def copy_remote(remote_path, local_filename='downloaded_file'):
+def copy_remote(remote_path, local_filename='downloaded_file', dest=world.f_cfg.mgmt_address):
     """
     Download file from remote server. It is stored in test directory.
     And named "downloaded_file"
     """
     remote_path = test_define_value(remote_path)[0]
-    multi_protocol_functions.copy_file_from_server(remote_path, local_filename)
+    multi_protocol_functions.copy_file_from_server(remote_path, local_filename, dest=dest)
 
 
 @step(r'Client compares downloaded file from server with local file stored in: (\S+).')
-def compare_file(remote_path):
+def compare_file(remote_path, dest=world.f_cfg.mgmt_address):
     """
     Compare two files, our local and "downloaded_file".
     """
     remote_path = test_define_value(remote_path)[0]
-    multi_protocol_functions.compare_file(remote_path)
+    multi_protocol_functions.compare_file(remote_path, dest=dest)
 
 
 @step(r'Client sends local file stored in: (\S+) to server, to location: (\S+).')
-def send_file_to_server(local_path, remote_path):
+def send_file_to_server(local_path, remote_path, dest=world.f_cfg.mgmt_address):
     """
     If you need send some file to server, use that step.
     """
     local_path, remote_path = test_define_value(local_path, remote_path)
-    multi_protocol_functions.send_file_to_server(local_path, remote_path)
+    multi_protocol_functions.send_file_to_server(local_path, remote_path, dest=dest)
 
 
 @step(r'Client removes file from server located in: (\S+).')
-def remove_file_from_server(remote_path):
+def remove_file_from_server(remote_path, dest=world.f_cfg.mgmt_address):
     """
     If you need to remove file from a server, please do so.
     """
     remote_path = test_define_value(remote_path)[0]
-    multi_protocol_functions.remove_file_from_server(remote_path)
+    multi_protocol_functions.remove_file_from_server(remote_path, dest=dest)
 
 
 @step(r'Add environment variable named (\S+) to value (.+)')

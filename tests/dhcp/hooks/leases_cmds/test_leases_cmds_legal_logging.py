@@ -27,7 +27,7 @@ from src.protosupport.multi_protocol_functions import lease_file_contains, lease
 @pytest.mark.legal_logging
 def test_v4_lease_cmds_legal_logging_update():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -68,8 +68,8 @@ def test_v4_lease_cmds_legal_logging_update():
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"lease4-update","arguments":{"ip-address": "192.168.50.1","hostname": "newhostname.example.org","hw-address": "1a:1b:1c:1d:1e:1f","subnet-id":1,"valid-lft":500000}}')
 
-    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
-    file_contains_line(world.f_cfg.log_join('kea-legal*.txt'),
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                        'Administrator updated information on the lease of address: '
                        '192.168.50.1 to a device with hardware address: '
                        '1a:1b:1c:1d:1e:1f for 5 days 18 hrs 53 mins 20 secs')
@@ -81,7 +81,7 @@ def test_v4_lease_cmds_legal_logging_update():
 @pytest.mark.lease_cmds
 def test_v4_lease_cmds_legal_logging_add():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.5')
@@ -101,8 +101,8 @@ def test_v4_lease_cmds_legal_logging_add():
     lease_file_contains('123456789')
     lease_file_contains('my.host.some.name')
 
-    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
-    file_contains_line(world.f_cfg.log_join('kea-legal*.txt'),
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                        'Administrator added a lease of address: 192.168.50.5 to a '
                        'device with hardware address: 1a:1b:1c:1d:1e:1f, '
                        'client-id: aa:bb:cc:dd:11:22 for 2 hrs 9 mins 37 secs')
@@ -114,7 +114,7 @@ def test_v4_lease_cmds_legal_logging_add():
 @pytest.mark.lease_cmds
 def test_v4_lease_cmds_legal_logging_del_using_address():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -170,8 +170,8 @@ def test_v4_lease_cmds_legal_logging_del_using_address():
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
-    file_contains_line(world.f_cfg.log_join('kea-legal*.txt'),
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                        'Administrator deleted the lease for address: 192.168.50.1')
 
 
@@ -181,7 +181,7 @@ def test_v4_lease_cmds_legal_logging_del_using_address():
 @pytest.mark.lease_cmds
 def test_v4_lease_cmds_legal_logging_del_using_hw_address():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -237,8 +237,8 @@ def test_v4_lease_cmds_legal_logging_del_using_hw_address():
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
-    file_contains_line(world.f_cfg.log_join('kea-legal*.txt'),
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                        'Administrator deleted a lease for a device identified by: '
                        'hw-address of ff:01:02:03:ff:04')
 
@@ -252,7 +252,7 @@ def test_v4_lease_cmds_legal_logging_wipe():
     Check that the lease4-wipe is logged in the forensic log.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
@@ -332,15 +332,15 @@ def test_v4_lease_cmds_legal_logging_wipe():
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 1,
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
                                'Address: 192.168.50.1 has been assigned for 1 hrs 6 mins 40 secs '
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04')
-    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 1,
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
                                'Address: 192.168.50.2 has been assigned for 1 hrs 6 mins 40 secs '
                                'to a device with hardware address: hwtype=1 ff:01:02:03:ff:05')
     # TODO:
-    # file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 1,
+    # file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
     #                            'Administrator wiped the lease database.')
 
 
@@ -351,7 +351,7 @@ def test_v4_lease_cmds_legal_logging_wipe():
 @pytest.mark.legal_logging
 def test_v6_lease_cmds_legal_logging_add():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -393,8 +393,8 @@ def test_v6_lease_cmds_legal_logging_add():
     srv_msg.response_check_option_content(3, 'sub-option', 13)
     srv_msg.response_check_suboption_content(13, 3, 'statuscode', 2)
 
-    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
-    file_contains_line(world.f_cfg.log_join('kea-legal*.txt'),
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                        'Administrator added a lease of address: 2001:db8:1::1 to '
                        'a device with DUID: 1a:1b:1c:1d:1e:1f:20:21:22:23:24')
 
@@ -406,7 +406,7 @@ def test_v6_lease_cmds_legal_logging_add():
 @pytest.mark.legal_logging
 def test_v6_lease_cmds_legal_logging_del_using_address():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -471,8 +471,8 @@ def test_v6_lease_cmds_legal_logging_del_using_address():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
-    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
-    file_contains_line(world.f_cfg.log_join('kea-legal*.txt'),
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                        'Administrator deleted the lease for address: 2001:db8:1::1')
 
 
@@ -483,7 +483,7 @@ def test_v6_lease_cmds_legal_logging_del_using_address():
 @pytest.mark.legal_logging
 def test_v6_lease_cmds_legal_logging_del_using_duid():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
@@ -549,8 +549,8 @@ def test_v6_lease_cmds_legal_logging_del_using_duid():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
-    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
-    file_contains_line(world.f_cfg.log_join('kea-legal*.txt'),
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                        'Administrator deleted a lease for a device identified by: '
                        'duid of 00:03:00:01:66:55:44:33:22:11')
 
@@ -565,7 +565,7 @@ def test_v6_lease_cmds_legal_logging_wipe():
     Check that the lease6-wipe is logged in the forensic log.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
@@ -648,17 +648,17 @@ def test_v6_lease_cmds_legal_logging_wipe():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.check_IA_NA('2001:db8:1::1')
 
-    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
-    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 1,
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
                                'Address: 2001:db8:1::1 has been assigned for 1 hrs 6 mins 40 secs '
                                'to a device with DUID: 00:03:00:01:66:55:44:33:22:11 and '
                                'hardware address: hwtype=1 66:55:44:33:22:11 (from DUID)')
-    file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 1,
+    file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
                                'Address: 2001:db8:1::2 has been assigned for 1 hrs 6 mins 40 secs '
                                'to a device with DUID: 00:03:00:01:11:22:33:44:55:66 and '
                                'hardware address: hwtype=1 11:22:33:44:55:66 (from DUID)')
     # TODO:
-    # file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 1,
+    # file_contains_line_n_times(world.f_cfg.data_join('kea-legal*.txt'), 1,
     #                            'Administrator wiped the lease database.')
 
 
@@ -669,7 +669,7 @@ def test_v6_lease_cmds_legal_logging_wipe():
 @pytest.mark.legal_logging
 def test_v6_lease_cmds_legal_logging_update():
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.data_join('kea-legal*.txt'))
 
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
@@ -716,8 +716,8 @@ def test_v6_lease_cmds_legal_logging_update():
     lease_file_contains(',1,500,0,1234,128,0,0,urania.example.org,1a:1b:1c:1d:1e:1f,0')
     lease_file_contains('2001:db8:1::1,01:02:03:04:05:06:07:08,1000')
 
-    srv_msg.copy_remote(world.f_cfg.log_join('kea-legal*.txt'))
-    file_contains_line(world.f_cfg.log_join('kea-legal*.txt'),
+    srv_msg.copy_remote(world.f_cfg.data_join('kea-legal*.txt'))
+    file_contains_line(world.f_cfg.data_join('kea-legal*.txt'),
                        'Administrator updated information on the lease of address: '
                        '2001:db8:1::1 to a device with DUID: '
                        '01:02:03:04:05:06:07:08, hardware address: '

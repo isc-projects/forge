@@ -105,14 +105,14 @@ def copy_file_from_server(remote_path, local_filename='downloaded_file', dest=wo
     return world.cfg["test_result_dir"] + f'/{local_filename}'
 
 
-def send_file_to_server(local_path, remote_path):
+def send_file_to_server(local_path, remote_path, dest=world.f_cfg.mgmt_address):
     """
     Send file to remote server via ssh. Address/login/password from init_all
     Two paths required.
     Local - relative to lettuce directory
     Remote - absolute
     """
-    fabric_send_file(local_path, remote_path)
+    fabric_send_file(local_path, remote_path, destination_host=dest)
 
 
 def remove_file_from_server(remote_path, dest=world.f_cfg.mgmt_address):
@@ -174,7 +174,7 @@ def user_victory():
 # ------------------------------ FILE INSPECTION ----------------------------- #
 
 
-def compare_file(local_path):
+def compare_file(local_path, dest=world.f_cfg.mgmt_address):
     """
     Compare two files, downloaded and local
     """
@@ -337,15 +337,16 @@ def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination
 
 
 def remove_from_db_table(table_name, db_type, db_name=world.f_cfg.db_name,
-                         db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd):
+                         db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
+                         destination_address=world.f_cfg.mgmt_address):
 
     if db_type in ["mysql", "MySQL"]:
         # that is tmp solution - just clearing not saving.
         command = 'mysql -u {db_user} -p{db_passwd} -e "delete from {table_name}" {db_name}'.format(**locals())
-        fabric_run_command(command)
+        fabric_run_command(command, destination_host=destination_address)
     elif db_type in ["postgresql", "PostgreSQL"]:
         command = 'PGPASSWORD={db_passwd} psql -h localhost -U {db_user} -d {db_name} -c "delete from {table_name}"'.format(**locals())
-        fabric_run_command(command)
+        fabric_run_command(command, destination_host=destination_address)
     else:
         assert False, "db type {db_type} not recognized/not supported".format(**locals())
 

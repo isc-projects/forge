@@ -46,7 +46,8 @@ class StatsState6:
             'subnet[1].assigned-nas': 0,
             'subnet[1].assigned-pds': 0,
             'subnet[1].cumulative-assigned-nas': 0,
-            'subnet[1].cumulative-assigned-pds': 0,c
+            'subnet[1].cumulative-assigned-pds': 0,
+            'subnet[1].declined-addresses': 0,
             'subnet[1].reclaimed-declined-addresses': 0,
             'subnet[1].reclaimed-leases': 0,
             'subnet[1].total-nas': 0,
