@@ -1361,6 +1361,27 @@ def build_config_files(cfg=None):
         _write_cfg2(cfg)
 
 
+def set_ownership_of_a_file(file_path, destination_address=world.f_cfg.mgmt_address):
+    """set_ownership_of_a_file Change ownership of a file.
+
+    Based on what system is used for testing and
+    if packages are used, set ownership of a file.
+
+    :param destination_address: address of remote system where the chown command is run,
+        (Default value = world.f_cfg.mgmt_address)
+    :type destination_address: str
+    :param file_path: path to the file to set ownership of
+    :type file_path: str
+    """
+    if world.f_cfg.install_method == 'native':
+        if world.server_system == 'debian' or world.server_system == 'ubuntu':
+            fabric_sudo_command(f'chown _kea:_kea {file_path}',
+                                destination_host=destination_address)
+        else:
+            fabric_sudo_command(f'chown kea:kea {file_path}',
+                                destination_host=destination_address)
+
+
 def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):
     """
     Generate final config file, save it to test result directory
@@ -1385,18 +1406,24 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
                      world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf'),
                      destination_host=destination_address,
                      mode="0o640")
+    set_ownership_of_a_file(world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf'),
+                           destination_address=destination_address)
 
     if world.ctrl_enable:
         fabric_send_file("kea-ctrl-agent.conf",
                          world.f_cfg.etc_join("kea-ctrl-agent.conf"),
                          destination_host=destination_address,
                          mode="0o640")
+        set_ownership_of_a_file(world.f_cfg.etc_join("kea-ctrl-agent.conf"),
+                               destination_address=destination_address)
 
     if world.ddns_enable:
         fabric_send_file("kea-dhcp-ddns.conf",
                          world.f_cfg.etc_join("kea-dhcp-ddns.conf"),
                          destination_host=destination_address,
                          mode="0o640")
+        set_ownership_of_a_file(world.f_cfg.etc_join("kea-dhcp-ddns.conf"),
+                               destination_address=destination_address)
 
     # store files back to local for debug purposes
     if world.f_cfg.install_method == 'make':
