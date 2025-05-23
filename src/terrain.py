@@ -341,6 +341,7 @@ def test_start():
         result = fabric_run_command(f'ls -al "/etc/{release_file}"', hide_all=True, ignore_errors=True)
         if result.succeeded:
             world.server_system = system_candidate
+            break
     print('server running on %s based system' % world.server_system)
 
     # let's assume x86_64 is the default architecture

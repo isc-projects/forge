@@ -112,7 +112,7 @@ def test_leasefile_path_config_set(dhcp_version):
     for path, exp_result, message in illegal_paths:
         full_path = os.path.join(path, 'leasefile.csv')
         srv_msg.remove_file_from_server(full_path)
-        fabric_sudo_command(f'touch {full_path}')
+        fabric_sudo_command(f'touch {full_path}', ignore_errors=True)
         config_set[f"Dhcp{dhcp_version[1]}"]["lease-database"]['persist'] = True
         config_set[f"Dhcp{dhcp_version[1]}"]["lease-database"]['name'] = full_path
         cmd = {"command": "config-set", "arguments": config_set}
