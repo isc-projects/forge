@@ -425,8 +425,8 @@ def test_ddns6_control_channel_build_report():
     # there is no good way to check specific values, so let's just check that there is there
     assert "Valgrind" in response["text"]
     assert "CXX_VERSION" in response["text"]
-    assert "MYSQL_VERSION" in response["text"]
-    assert "Included Hooks" in response["text"]
+    assert "MySQL" in response["text"]
+    assert "Premium hooks" in response["text"]
 
 
 @pytest.mark.v6
