@@ -2292,7 +2292,7 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
                             ignore_errors=True, destination_host=destination_address, hide_all=value)
 
     else:
-        if world.server_system in ['redhat', 'alpine']:
+        if world.server_system in ['redhat', 'fedora', 'alpine']:
             service_names = 'kea-dhcp4 kea-dhcp6 kea-ctrl-agent kea-dhcp-ddns'
         else:
             service_names = 'isc-kea-dhcp4-server isc-kea-dhcp6-server isc-kea-ctrl-agent isc-kea-dhcp-ddns-server'
@@ -2478,7 +2478,7 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
         fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
         log_path = '/tmp/kealogs/kea.log*'
     else:
-        if world.server_system in ['redhat', 'alpine']:
+        if world.server_system in ['redhat', 'fedora', 'alpine']:
             service_name = f'kea-dhcp{world.proto[1]}'
         else:
             service_name = f'isc-kea-dhcp{world.proto[1]}-server'
@@ -2532,7 +2532,7 @@ def save_ddns_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address)
     if world.f_cfg.install_method == 'make':
         log_path = world.f_cfg.log_join('kea-dhcp-ddns.log')
     else:
-        if world.server_system in ['redhat', 'alpine']:
+        if world.server_system in ['redhat', 'fedora', 'alpine']:
             service_name = 'kea-dhcp-ddns'
         else:
             service_name = 'isc-kea-dhcp-ddns'
@@ -2561,7 +2561,7 @@ def save_ctrl_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address)
     if world.f_cfg.install_method == 'make':
         log_path = world.f_cfg.log_join('kea-ctrl-agent.log')
     else:
-        if world.server_system in ['redhat', 'alpine']:
+        if world.server_system in ['redhat', 'fedora', 'alpine']:
             service_name = 'kea-ctrl-agent'
         else:
             service_name = 'isc-kea-ctrl-agent'
