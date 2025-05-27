@@ -277,12 +277,12 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
     else:
         if log_file is None or log_file == 'kea-dhcp-ddns.log':
             if log_file == 'kea-dhcp-ddns.log':
-                if world.server_system in ['redhat', 'alpine']:
+                if world.server_system in ['redhat', 'fedora', 'alpine']:
                     service_name = 'kea-dhcp-ddns'
                 else:
                     service_name = 'isc-kea-dhcp-ddns-server'
             else:
-                if world.server_system in ['redhat', 'alpine']:
+                if world.server_system in ['redhat', 'fedora', 'alpine']:
                     service_name = f'kea-dhcp{world.proto[1]}'
                 else:
                     service_name = f'isc-kea-dhcp{world.proto[1]}-server'
@@ -1308,7 +1308,7 @@ def restore_db_from_dump(database: str, db_name: str = None,
 
     execute_shell_cmd(f"sed -i 's/!serverinterface!/$(SERVER_IFACE)/g' {file_name}")
     execute_shell_cmd(f"sed -i 's/!db_user!/{db_user}/g' {file_name}")
-    if world.server_system == 'redhat' and database == 'mysql':
+    if world.server_system in ['redhat', 'fedora'] and database == 'mysql':
         execute_shell_cmd(f"sed -i 's/CHARSET=utf8mb4/CHARSET=latin1/g' {file_name}")
 
     if database == 'mysql':

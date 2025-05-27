@@ -646,7 +646,7 @@ def _start_radius(destination: str = world.f_cfg.mgmt_address):
 
     fabric_sudo_command(f'truncate -s 0 {world.radius_log}', destination_host=destination, ignore_errors=True)
     _tweak_radius_config(destination)
-    if world.server_system == 'redhat':
+    if world.server_system in ['redhat', 'fedora']:
         cmd = 'sudo systemctl restart radiusd'
     elif world.server_system == 'alpine':
         fabric_sudo_command('killall radiusd', destination_host=destination, ignore_errors=True)

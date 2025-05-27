@@ -6,6 +6,8 @@
 
 # Author: Wlodzimierz Wencel
 
+"""Functions for configuring and managing BIND9 servers."""
+
 # pylint: disable=consider-using-f-string
 # pylint: disable=line-too-long
 # pylint: disable=possibly-unused-variable
@@ -28,11 +30,31 @@ from src.softwaresupport.multi_server_functions import check_local_path_for_down
 
 
 def make_file(name, content):
+    """
+    Create a file with the given name and content.
+
+    :param name: name of the file to create
+    :type name: str
+    :param content: content of the file to create
+    :type content: str
+    """
     with open(name, 'w') as f:
         f.write(content)
 
 
 def add_defaults(ip_type, address, port, direct):
+    """
+    Add default configuration options to the named.conf file.
+
+    :param ip_type: IP type to use for listening
+    :type ip_type: str
+    :param address: address to listen on
+    :type address: str
+    :param port: port to listen on
+    :type port: int
+    :param direct: directory to store the files
+    :type direct: str
+    """
     world.cfg["named.conf"] = 'options {'
     if ip_type == 'v4':
         listen = 'listen-on'
@@ -50,6 +72,18 @@ def add_defaults(ip_type, address, port, direct):
 
 
 def add_zone(zone, zone_type, file_nem, key):
+    """
+    Add a zone to the named.conf file.
+
+    :param zone: zone to add
+    :type zone: str
+    :param zone_type: type of zone to add
+    :type zone_type: str
+    :param file_nem: file name to use for the zone
+    :type file_nem: str
+    :param key: key to use for the zone
+    :type key: str
+    """
     if "named.conf" not in world.cfg:
         assert False, 'Please start configuring DNS server with step: DNS server is configured on...'
 
@@ -65,6 +99,16 @@ def add_zone(zone, zone_type, file_nem, key):
 
 
 def add_key(key_name, algorithm, key_value):
+    """
+    Add a key to the named.conf file.
+
+    :param key_name: name of the key to add
+    :type key_name: str
+    :param algorithm: algorithm to use for the key
+    :type algorithm: str
+    :param key_value: value of the key
+    :type key_value: str
+    """
     if "named.conf" not in world.cfg:
         assert False, 'Please start configuring DNS server with step: DNS server is configured on...'
 
@@ -75,6 +119,18 @@ def add_key(key_name, algorithm, key_value):
 
 
 def add_rndc(address, port, alg, value):
+    """
+    Add an RNDC key to the named.conf file.
+
+    :param address: address to listen on
+    :type address: str
+    :param port: port to listen on
+    :type port: int
+    :param alg: algorithm to use for the key
+    :type alg: str
+    :param value: value of the key
+    :type value: str
+    """
     if "named.conf" not in world.cfg:
         assert False, 'Please start configuring DNS server with step: DNS server is configured on...'
 
@@ -94,6 +150,14 @@ def add_rndc(address, port, alg, value):
 
 
 def _patch_config(cfg, override_dns=None):
+    """
+    Patch the configuration file with the given override DNS address.
+
+    :param cfg: configuration file to patch
+    :type cfg: str
+    :param override_dns: override DNS address
+    :type override_dns: str
+    """
     tpl = string.Template(cfg)
     if override_dns is not None:
         dns_addr = override_dns
@@ -107,6 +171,14 @@ def _patch_config(cfg, override_dns=None):
 
 
 def use_config_set(number, override_dns=None):
+    """
+    Use the given configuration set.
+
+    :param number: number of the configuration set to use
+    :type number: int
+    :param override_dns: override DNS address
+    :type override_dns: str
+    """
     if number not in config_file_set:
         assert False, "There is no such config file set"
 
@@ -147,6 +219,12 @@ def use_config_set(number, override_dns=None):
 
 
 def upload_dns_keytab(dns_keytab):
+    """
+    Upload the given DNS keytab to the server.
+
+    :param dns_keytab: DNS keytab to upload
+    :type dns_keytab: str
+    """
     content = base64.decodebytes(bytes(dns_keytab, 'ascii'))
     namedb_dir = os.path.join(world.f_cfg.dns_data_path, 'namedb')
     p = os.path.join(namedb_dir, 'dns.keytab')
@@ -155,7 +233,7 @@ def upload_dns_keytab(dns_keytab):
     if world.f_cfg.dns_data_path.startswith('/etc'):
         # when installed from pkg
         fabric_sudo_command('chmod 440 %s' % p)
-        if world.server_system == 'redhat':
+        if world.server_system in ['redhat', 'fedora']:
             fabric_sudo_command('chown root:named %s' % p)
         else:
             fabric_sudo_command('chown root:bind %s' % p)
@@ -166,7 +244,15 @@ def upload_dns_keytab(dns_keytab):
 
 
 def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
-    if world.server_system == 'redhat':
+    """
+    Stop the BIND9 server.
+
+    :param value: whether to stop the server
+    :type value: bool
+    :param destination_address: management address of server
+    :type destination_address: str
+    """
+    if world.server_system in ['redhat', 'fedora']:
         srv_name = 'named'
     else:
         srv_name = 'bind9'
@@ -181,12 +267,26 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
 
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address):
+    """
+    Restart the BIND9 server.
+
+    :param destination_address: management address of server
+    :type destination_address: str
+    """
     stop_srv(destination_address=destination_address)
     start_srv(True, destination_address=destination_address)
 
 
 def start_srv(success, destination_address=world.f_cfg.mgmt_address):
-    if world.server_system == 'redhat':
+    """
+    Start the BIND9 server.
+
+    :param success: whether the server is supposed to start successfully
+    :type success: bool
+    :param destination_address: management address of server
+    :type destination_address: str
+    """
+    if world.server_system in ['redhat', 'fedora']:
         srv_name = 'named'
     else:
         srv_name = 'bind9'
@@ -210,6 +310,12 @@ def start_srv(success, destination_address=world.f_cfg.mgmt_address):
 
 
 def save_leases(destination_address=world.f_cfg.mgmt_address):
+    """
+    Stub.
+
+    :param destination_address: address
+    :type destination_address: str
+    """
     # pointless here, but we don't want import error here.
     pass
 
@@ -218,14 +324,23 @@ def reconfigure_srv(should_succeed: bool = True,
                     destination_address: str = world.f_cfg.mgmt_address):
     """
     Reconfigure the BIND9 server.
+
     :param should_succeed: whether the reconfiguration is supposed to succeed or fail
+    :type should_succeed: bool
     :param destination_address: management address of server
+    :type destination_address: str
     """
     # TODO implement this when needed
     pass
 
 
 def save_logs(destination_address=world.f_cfg.mgmt_address):
+    """
+    Save the logs.
+
+    :param destination_address: management address of server
+    :type destination_address: str
+    """
     fabric_download_file('/tmp/dns.log',
                          check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                'dns/dns_log_file',
@@ -235,6 +350,14 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
 
 
 def clear_all(destination_address=world.f_cfg.mgmt_address, remove_logs=True):
+    """
+    Clear all.
+
+    :param destination_address: management address of server
+    :type destination_address: str
+    :param remove_logs: whether to remove the logs
+    :type remove_logs: bool
+    """
     stop_srv(value=True, destination_address=destination_address)
     if remove_logs:
         fabric_remove_file_command('/tmp/dns.log', destination_host=destination_address)

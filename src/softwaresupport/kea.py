@@ -2130,7 +2130,7 @@ def _restart_kea_with_systemctl(destination_address):
     cmd_tpl += ' grep "server version .* started" 2>/dev/null;'  # if in the logs there is given sequence then ok
     cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
 
-    if world.server_system == 'redhat':
+    if world.server_system in ['redhat', 'fedora']:
         service_name = f'kea-dhcp{world.proto[1]}'
     else:
         service_name = f'isc-kea-dhcp{world.proto[1]}-server'
@@ -2139,7 +2139,7 @@ def _restart_kea_with_systemctl(destination_address):
     fabric_sudo_command(cmd, destination_host=destination_address)
 
     if world.f_cfg.control_agent:
-        if world.server_system == 'redhat':
+        if world.server_system in ['redhat', 'fedora']:
             service_name = 'kea-ctrl-agent'
         else:
             service_name = 'isc-kea-ctrl-agent'
@@ -2147,7 +2147,7 @@ def _restart_kea_with_systemctl(destination_address):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
     if world.ddns_enable:
-        if world.server_system == 'redhat':
+        if world.server_system in ['redhat', 'fedora']:
             service_name = 'kea-dhcp-ddns'
         else:
             service_name = 'isc-kea-dhcp-ddns-server'
@@ -2197,7 +2197,7 @@ def _reload_kea_with_systemctl(destination_address):
     cmd_tpl += ' grep "{sentence}" 2>/dev/null;'  # if in the logs there is given sequence then ok
     cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
 
-    if world.server_system == 'redhat':
+    if world.server_system in ['redhat', 'fedora']:
         service_name = f'kea-dhcp{world.proto[1]}'
     else:
         service_name = f'isc-kea-dhcp{world.proto[1]}-server'
@@ -2206,7 +2206,7 @@ def _reload_kea_with_systemctl(destination_address):
     fabric_sudo_command(cmd, destination_host=destination_address)
 
     if world.f_cfg.control_agent:
-        if world.server_system == 'redhat':
+        if world.server_system in ['redhat', 'fedora']:
             service_name = 'kea-ctrl-agent'
         else:
             service_name = 'isc-kea-ctrl-agent'
@@ -2214,7 +2214,7 @@ def _reload_kea_with_systemctl(destination_address):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
     if world.ddns_enable:
-        if world.server_system == 'redhat':
+        if world.server_system in ['redhat', 'fedora']:
             service_name = 'kea-dhcp-ddns'
         else:
             service_name = 'isc-kea-dhcp-ddns-server'
@@ -2642,7 +2642,7 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
         return
 
     if world.f_cfg.install_method != 'make':
-        if world.server_system == 'redhat':
+        if world.server_system in ['redhat', 'fedora']:
             fabric_run_command("rpm -qa '*kea*'", destination_host=dest)
         elif world.server_system == 'alpine':
             fabric_run_command("apk list '*kea*' | grep 'installed'", destination_host=dest)

@@ -57,7 +57,7 @@ def manage_kerb(procedure='stop', ignore=False):
     :param ignore: decide if possible systemctl error should be ignored
     :type ignore: bool
     """
-    if world.server_system == 'redhat':
+    if world.server_system in ['redhat', 'fedora']:
         fabric_sudo_command(f'systemctl {procedure} krb5kdc kadmin', ignore_errors=ignore)
         if procedure in ["start", "restart"]:
             fabric_sudo_command('systemctl status krb5kdc kadmin', ignore_errors=ignore)
@@ -141,7 +141,7 @@ def install_krb(dns_addr, domain, key_life=2):
     send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
 
     cmd = "sudo test -e /var/lib/krb5kdc/principal || printf '123\\n123' | sudo krb5_newrealm"
-    if world.server_system == 'redhat':
+    if world.server_system in ['redhat', 'fedora']:
         cmd = "sudo test -e /var/kerberos/krb5kdc/principal || printf '123\\n123' | sudo kdb5_util create -s"
     fabric_sudo_command(cmd)
 
@@ -203,7 +203,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
     }}
 """
     krb5_conf = ubuntu_krb5_conf
-    if world.server_system == 'redhat':
+    if world.server_system in ['redhat', 'fedora']:
         krb5_conf = fedora_krb5_conf
 
     send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
@@ -245,7 +245,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
         if world.f_cfg.dns_data_path.startswith('/etc'):
             # when installed from pkg
             fabric_sudo_command('chmod 440 /tmp/dns.keytab')
-            if world.server_system == 'redhat':
+            if world.server_system in ['redhat', 'fedora']:
                 fabric_sudo_command('chown named:named /tmp/dns.keytab')
                 fabric_sudo_command(f'chown root:named {kadm5_path}')
                 fabric_sudo_command('chown root:named /etc/krb5.conf')

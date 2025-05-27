@@ -176,7 +176,7 @@ def test_v6_upgrade_mysql_db():
     # switch interface and username to the one setup is using
     srv_msg.execute_shell_cmd("sed -i 's/!serverinterface!/$(SERVER_IFACE)/g' /tmp/my_db_v6.sql")
     srv_msg.execute_shell_cmd(f"sed -i 's/!db_user!/{tmp_user_name}/g' /tmp/my_db_v6.sql")
-    if world.server_system == 'redhat':
+    if world.server_system in ['redhat', 'fedora']:
         srv_msg.execute_shell_cmd("sed -i 's/CHARSET=utf8mb4/CHARSET=latin1/g' /tmp/my_db_v6.sql")
     # this solves the problem: "Variable 'sql_mode' can't be set to the value of 'NO_AUTO_CREATE_USER'"
     srv_msg.execute_shell_cmd("sed -i 's/NO_AUTO_CREATE_USER,//g' /tmp/my_db_v6.sql")

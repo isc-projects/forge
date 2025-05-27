@@ -225,9 +225,14 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
 
     This test also is running in v4 and v6 mode, to check updates, other tests are focused on key management
     rather than updates so those can be run in v4 only.
+
+    :param dhcp_version: string, version of DHCP to use for testing
+    :type dhcp_version: str
+    :param system_and_domain: tuple, system and domain to use for testing
+    :type system_and_domain: tuple
     """
     dns_system, my_domain = system_and_domain
-    if world.proto == 'v6' and dns_system == 'windows' or world.server_system == 'redhat':
+    if world.proto == 'v6' and dns_system == 'windows' or world.server_system in ['redhat', 'fedora']:
         # TODO figure out why dns pkts with AAAA are dropped by windows
         # TODO we are running tests on fedora but kerberos is failing with this configuration
         pytest.skip("Windows DNS do not respond to AAAA question, manually checked - it worked nice")
@@ -354,8 +359,11 @@ def test_ddns4_gss_tsig_fallback(fallback):
     This test will check just fallback procedure and just on linux, to be sure that we didn't send
     updates we have to check DNS server logs (I've also looked into traffic between kea-ddns
     and bind 9 using tcpdump)
+
+    :param fallback: bool, fallback value to use for testing
+    :type fallback: bool
     """
-    if world.server_system == 'redhat':
+    if world.server_system in ['redhat', 'fedora']:
         # TODO we are running tests on fedora but kerberos is failing with this configuration
         pytest.skip("Work out why kerberos is failing to start on fedora")
     dns_addr = world.cfg["dns4_addr"]
@@ -437,8 +445,11 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     - Manually expiring key and rekey.
     - Basic statistics (although something weird is in update counts, needs more investigation).
     - getting keys by server name, key name, list and all
+
+    :param system_domain: tuple, system and domain to use for testing
+    :type system_domain: tuple
     """
-    if world.server_system == 'redhat':
+    if world.server_system in ['redhat', 'fedora']:
         # TODO we are running tests on fedora but kerberos is failing with this configuration
         pytest.skip("Work out why kerberos is failing to start on fedora")
 
