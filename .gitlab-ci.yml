@@ -1,7 +1,10 @@
-variables:
-  CI_REGISTRY_IMAGE: registry.gitlab.isc.org/isc-projects/forge
-
-image: "${CI_REGISTRY_IMAGE}:latest"
+default:
+  image: "registry.gitlab.isc.org/isc-projects/forge:latest"
+  tags:
+    - linux
+    - aws
+    - runner-manager
+    - amd64
 
 .rules: &rules
   rules:
