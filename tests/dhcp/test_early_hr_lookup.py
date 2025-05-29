@@ -92,6 +92,10 @@ def test_early_hr_lookup_class(backend, dhcp_version):
     """
     Test to check if Kea looks up Global Host Reservations and assigns client class before subnet allocation.
     After assigning client class, the subnet should be allocated according to class.
+    :param backend: Database backend to use
+    :type backend: str
+    :param dhcp_version: DHCP version to use
+    :type dhcp_version: str
     """
     misc.test_setup()
     srv_control.enable_db_backend_reservation(backend)
@@ -208,6 +212,10 @@ def test_early_hr_lookup_class_in_class(backend, dhcp_version):
     """
     Test to check if Kea looks up Global Host Reservations and assigns client class dependent on other classes.
     After assigning client class dependent on first one, the subnet should be allocated according to second class.
+    :param backend: Database backend to use
+    :type backend: str
+    :param dhcp_version: DHCP version to use
+    :type dhcp_version: str
     """
     misc.test_setup()
     srv_control.enable_db_backend_reservation(backend)
@@ -327,6 +335,10 @@ def test_early_hr_lookup_class_in_class(backend, dhcp_version):
 def test_early_hr_lookup_drop(backend, dhcp_version):
     """
     Test to check if Kea looks up Global Host Reservations and assigns DROP class.
+    :param backend: Database backend to use
+    :type backend: str
+    :param dhcp_version: DHCP version to use
+    :type dhcp_version: str
     """
     misc.test_setup()
     srv_control.enable_db_backend_reservation(backend)
@@ -408,3 +420,105 @@ def test_early_hr_lookup_drop(backend, dhcp_version):
     else:
         _get_address_v6('2001:db8:1::1', '00:03:00:01:f6:f5:f4:f3:f2:04')
         _get_address_v6(None, '00:03:00:01:f6:f5:f4:f3:f2:05', drop=True)
+
+
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.host_reservation
+@pytest.mark.parametrize('backend', ['memfile', 'MySQL', 'PostgreSQL'])
+@pytest.mark.parametrize('global_reservations', [True, False])
+def test_early_hr_lookup_invalid(global_reservations, backend, dhcp_version):
+    """
+    Test to check if Kea looks up Global Host Reservations with invalid configuration.
+
+    :param global_reservations: If global reservations should be enabled
+    :type global_reservations: bool
+    :param backend: Database backend to use
+    :type backend: str
+    :param dhcp_version: DHCP version to use
+    :type dhcp_version: str
+    """
+    misc.test_setup()
+    srv_control.enable_db_backend_reservation(backend)
+
+    subnets_v4 = [
+        {
+            'id': 1,
+            'interface': world.f_cfg.server_iface,
+            'pools': [
+                {
+                    'pool': '192.168.50.1-192.168.50.50'
+                }
+            ],
+            'subnet': '192.168.50.0/24',
+        }
+    ]
+    subnets_v6 = [
+        {
+            'id': 1,
+            'interface': world.f_cfg.server_iface,
+            'pools': [
+                {
+                    'pool': '2001:db8:1::1-2001:db8:1::50'
+                }
+            ],
+            'subnet': '2001:db8:1::/64',
+        },
+    ]
+
+    # Define reservation that is IN subnet but OUT of pool.
+    reservations_v4 = [
+        {
+            'ip-address': '192.168.50.100',
+            'hw-address': 'ff:01:02:03:ff:04'
+        }
+    ]
+    reservations_v6 = [
+        {
+            'ip-addresses': ['2001:db8:1::100'],
+            'duid': '00:03:00:01:f6:f5:f4:f3:f2:04'
+        },
+    ]
+
+    # Enable Early Global Host Reservation Lookup but disable global reservations.
+    world.dhcp_cfg['early-global-reservations-lookup'] = True
+    world.dhcp_cfg['reservations-global'] = global_reservations
+
+    # apply definitions to server configuration.
+    if backend != 'memfile':
+        if dhcp_version == 'v4':
+            world.dhcp_cfg.update({'subnet4': subnets_v4})
+            # Define host reservation for database, that should be assigned first class.
+            srv_control.new_db_backend_reservation(backend, 'hw-address', 'ff:01:02:03:ff:04')
+            srv_control.update_db_backend_reservation('ipv4_address', '192.168.50.100', backend, 1)
+            srv_control.update_db_backend_reservation('dhcp4_subnet_id', 0, backend, 1)
+            srv_control.upload_db_reservation(backend)
+        else:
+            world.dhcp_cfg.update({'subnet6': subnets_v6})
+            # Define host reservation for database, that should be assigned first class.
+            srv_control.new_db_backend_reservation(backend, 'duid', '00:03:00:01:f6:f5:f4:f3:f2:04')
+            srv_control.ipv6_address_db_backend_reservation("2001:db8:1::100", "", backend, 1)
+            srv_control.update_db_backend_reservation('dhcp6_subnet_id', 0, backend, 1)
+            srv_control.upload_db_reservation(backend)
+    else:
+        if dhcp_version == 'v4':
+            world.dhcp_cfg.update({'subnet4': subnets_v4})
+            world.dhcp_cfg.update({'reservations': reservations_v4})
+        else:
+            world.dhcp_cfg.update({'subnet6': subnets_v6})
+            world.dhcp_cfg.update({'reservations': reservations_v6})
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Check if global reservations were ignored.
+    if dhcp_version == 'v4':
+        if global_reservations:
+            _get_address_v4('192.168.50.100', 'ff:01:02:03:ff:04')
+        else:
+            _get_address_v4('192.168.50.1', 'ff:01:02:03:ff:04')
+    else:
+        if global_reservations:
+            _get_address_v6('2001:db8:1::100', '00:03:00:01:f6:f5:f4:f3:f2:04')
+        else:
+            _get_address_v6('2001:db8:1::1', '00:03:00:01:f6:f5:f4:f3:f2:04')
