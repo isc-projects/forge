@@ -13,9 +13,19 @@ arch=$(uname -m)
 
 # change this to your needs, but on jenkins we will run with /dev/null
 # logFile="/tmp/incus_$(date +'%Y_%m_%d_%H_%M_%S')_.log"
-# logFile="/dev/stdout"
 logFile="/dev/null"
 
+# Debug level 1
+if test "${1}" = '-d' || test "${1}" = '--debug'; then
+    logFile="/dev/stdout"
+    shift
+fi
+
+# Debug level 2
+if test "${1}" = '-d' || test "${1}" = '--debug'; then
+    set -x
+    shift
+fi
 
 if [[ $(tput colors 2> /dev/null) -ge 8 ]]; then
     RED='\033[0;31m'
