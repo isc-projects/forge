@@ -15,17 +15,34 @@ arch=$(uname -m)
 # logFile="/tmp/incus_$(date +'%Y_%m_%d_%H_%M_%S')_.log"
 logFile="/dev/null"
 
-# Debug level 1
-if test "${1}" = '-d' || test "${1}" = '--debug'; then
-    logFile="/dev/stdout"
-    shift
-fi
+while test "${#}" > 0; do
+    if ! echo "${1}" | grep -E '^--' > /dev/null; then
+        break
+    fi
 
-# Debug level 2
-if test "${1}" = '-d' || test "${1}" = '--debug'; then
-    set -x
+    # Debug level 1
+    if test "${1}" = '--debug' && test "${logFile}" != '/dev/stdout'; then
+        logFile="/dev/stdout"
+
+    # Debug level 2
+    elif test "${1}" = '--debug'; then
+        set -x
+
+    # Delay script start by random time
+    elif test "${1}" = '--delay'; then
+        delay=$(( RANDOM % 701 + 200 ))
+        echo "Delaying script start by $delay seconds..."
+
+        while [ "$delay" -gt 10 ]; do
+            echo "$delay seconds left..."
+            sleep 10
+            delay=$((delay - 10))
+        done
+        echo "$delay seconds left..."
+        sleep "$delay"
+    fi
     shift
-fi
+done
 
 if [[ $(tput colors 2> /dev/null) -ge 8 ]]; then
     RED='\033[0;31m'
@@ -700,6 +717,11 @@ function help() {
     printf "            %s run-pytest -vv tests/dhcp/test_options.py::test_v4_never_send_various_combinations\n" "$0"
     printf "            to reupload forge before executing tests add --upload-pytest option to run-pytest\n"
     printf "            %s run-pytest -vv tests/dhcp/test_options.py::test_v4_never_send_various_combinations --upload-pytest\n" "$0"
+    printf "\n"
+    printf "Use '--debug' or '--debug --debug' as first parameters to setup debug level.\n"
+    printf "       ex. %s --debug run-pytest or %s --debug --debug run-pytest\n" "$0" "$0"
+    printf "Use '--delay <seconds>' to delay script start by random time.\n"
+    printf "       ex. %s --delay initialize-container\n" "$0"
     exit 1
 }
 

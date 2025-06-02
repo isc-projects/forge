@@ -1,0 +1,57 @@
+diff --git a/incus.sh b/incus.sh
+index 031ed66c..73d5586e 100755
+--- a/incus.sh
++++ b/incus.sh
+@@ -17,28 +17,30 @@ logFile="/dev/null"
+ 
+-# Debug level 1
+-if test "${1}" = '-d' || test "${1}" = '--debug'; then
+-    logFile="/dev/stdout"
+-    shift
+-fi
++while test "${#}" > 0; do
++    if ! echo "${1}" | grep -E '^--' > /dev/null; then
++        break
++    fi
+ 
+-# Debug level 2
+-if test "${1}" = '-d' || test "${1}" = '--debug'; then
+-    set -x
+-    shift
+-fi
++    # Debug level 1
++    if test "${1}" = '--debug' && test "${logFile}" != '/dev/stdout'; then
++        logFile="/dev/stdout"
+ 
+-# Delay script start by random time
+-if test "${1}" = '--delay'; then
+-    delay=$(( RANDOM % 701 + 200 ))
+-    shift
+-    echo "Delaying script start by $delay seconds..."
++    # Debug level 2
++    elif test "${1}" = '--debug'; then
++        set -x
+ 
+-    while [ "$delay" -gt 10 ]; do
++    # Delay script start by random time
++    elif test "${1}" = '--delay'; then
++        delay=$(( RANDOM % 701 + 200 ))
++        echo "Delaying script start by $delay seconds..."
++
++        while [ "$delay" -gt 10 ]; do
++            echo "$delay seconds left..."
++            sleep 10
++            delay=$((delay - 10))
++        done
+         echo "$delay seconds left..."
+-        sleep 10
+-        delay=$((delay - 10))
+-    done
+-    echo "$delay seconds left..."
+-    sleep "$delay"
+-fi
++        sleep "$delay"
++    fi
++    shift
++done
+ 
