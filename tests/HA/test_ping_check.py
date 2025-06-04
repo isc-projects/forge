@@ -21,6 +21,9 @@ from .steps import get_status_HA, wait_until_ha_state, send_increased_elapsed_ti
 
 def generate_ip_address_shift():
     """Function searches for IP addresses that can be used for ping check.
+
+    :return: list of IP addresses that can be used for ping check
+    :rtype: list
     """
     # shift_list
     # 1 Empty IP address before CIADDR
@@ -49,6 +52,7 @@ def generate_ip_address_shift():
 # Fixture to configure additional IP address for tests.
 @pytest.fixture()
 def prepare_pingcheck_env():
+    """Fixture to configure additional IP address for tests."""
     ip_address_shift = generate_ip_address_shift()
     ciaddr = ipaddress.ip_address(world.f_cfg.ciaddr)
     # Assign responding IP address to forge interface
@@ -93,6 +97,9 @@ def test_v4_ping_check_basic_ha(ha_state):
     and full DORA exchanges to test proper response.
     CIADDR and IPADDRESSES[3] addresses will respond to ping.
     'partnerdown' parameter tests if feature works with primary server down.
+
+    :param ha_state: state of HA pair
+    :type ha_state: str
     """
     misc.test_setup()
     # Create subnet CIADDR and new ips.
@@ -216,6 +223,9 @@ def test_v4_ping_check_requests_ha(ha_state):
     """
     Test that checks configuration of number of ping requests.
     'partnerdown' parametr tests if feature works with primary server down.
+
+    :param ha_state: state of HA pair
+    :type ha_state: str
     """
     # Create subnet and pool
     ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
@@ -318,6 +328,9 @@ def test_v4_ping_check_timeout_ha(ha_state):
     """
     Test that checks configuration of ping timeout.
     'partnerdown' parametr tests if feature works with primary server down.
+
+    :param ha_state: state of HA pair
+    :type ha_state: str
     """
     # Timeout for ping-check
     timeout = 2000
@@ -437,10 +450,14 @@ def test_v4_ping_check_cltt_ha(ha_state):
     Test that checks configuration of ping cltt.
     'partnerdown' parameter tests if feature works with primary server down before DHCP traffic starts.
     'interrupted' parameter tests if cltt is honored by second server if first shuts down after making ping-check.
+
+    :param ha_state: state of HA pair
+    :type ha_state: str
     """
     probation_period = 2
     # Timeout for ping-check
-    ping_cltt = 2 if ha_state != 'interrupted' else 10
+    ping_cltt = 3 if ha_state != 'interrupted' else 10
+    valid_lifetime = 2
     # Create subnet and pool
     ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
     ip_address_shift = generate_ip_address_shift()
@@ -469,7 +486,7 @@ def test_v4_ping_check_cltt_ha(ha_state):
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server1",
                                           })
-
+    srv_control.set_time('valid-lifetime', valid_lifetime)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -497,7 +514,7 @@ def test_v4_ping_check_cltt_ha(ha_state):
                                           "max-unacked-clients": 4,
                                           "this-server-name": "server2",
                                           })
-
+    srv_control.set_time('valid-lifetime', valid_lifetime)
     world.dhcp_cfg['interfaces-config']['interfaces'] = [world.f_cfg.server2_iface]
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
 

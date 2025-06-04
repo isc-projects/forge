@@ -20,6 +20,9 @@ from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_c
 
 def generate_ip_address_shift():
     """Function searches for IP addresses that can be used for ping check.
+
+    :return: list of IP addresses that can be used for ping check
+    :rtype: list
     """
     # shift_list
     # 1 Empty IP address before CIADDR
@@ -232,13 +235,15 @@ def test_v4_ping_check_cltt():
     world.cfg['wait_interval'] += 1
 
     # Timeout for ping-check
-    ping_cltt = 2
+    ping_cltt = 6
+    valid_lifetime = 2
     srv_control.add_hooks('libdhcp_ping_check.so')
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "enable-ping-check", True)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "min-ping-requests", 1)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "reply-timeout", 100)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-cltt-secs", ping_cltt)
     srv_control.add_parameter_to_hook("libdhcp_ping_check.so", "ping-channel-threads", 0)
+    srv_control.set_time('valid-lifetime', valid_lifetime)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -255,8 +260,17 @@ def test_v4_ping_check_cltt():
     # Verify that no new PINGs were sent.
     log_doesnt_contain(f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address.ip}, id 1, sequence 2')
 
+    # Wait for lease expiration.
+    srv_msg.forge_sleep(valid_lifetime, 'seconds')
+
+    # Send discover after lease expiration.
+    srv_msg.DO(ip_address.ip, chaddr='ff:01:02:03:ff:04')
+
+    # Verify that no new PINGs were sent after lease expiration.
+    log_doesnt_contain(f'PING_CHECK_CHANNEL_ECHO_REQUEST_SENT to address {ip_address.ip}, id 1, sequence 2')
+
     # Wait for ping-cltt to elapse
-    srv_msg.forge_sleep(ping_cltt, 'seconds')
+    srv_msg.forge_sleep(ping_cltt - valid_lifetime, 'seconds')
 
     # Send discover after ping-cltt elapsed.
     srv_msg.DO(ip_address.ip, chaddr='ff:01:02:03:ff:04')
