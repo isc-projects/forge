@@ -501,6 +501,9 @@ def add_defaults4():
         world.dhcp_cfg["rebind-timer"] = world.cfg["server_times"]["rebind-timer"]
     if "valid-lifetime" not in world.dhcp_cfg:
         world.dhcp_cfg["valid-lifetime"] = world.cfg["server_times"]["valid-lifetime"]
+    # Disable lease-cache by default
+    if "cache-threshold" not in world.dhcp_cfg:
+        world.dhcp_cfg["cache-threshold"] = 0.0
 
     iface = world.f_cfg.server_iface
     add_interface(iface, add_to_existing=False)
@@ -516,6 +519,9 @@ def add_defaults6():
         world.dhcp_cfg["preferred-lifetime"] = world.cfg["server_times"]["preferred-lifetime"]
     if "valid-lifetime" not in world.dhcp_cfg:
         world.dhcp_cfg["valid-lifetime"] = world.cfg["server_times"]["valid-lifetime"]
+    # Disable lease-cache by default
+    if "cache-threshold" not in world.dhcp_cfg:
+        world.dhcp_cfg["cache-threshold"] = 0.0
 
     iface = world.f_cfg.server_iface
     add_interface(iface, add_to_existing=False)

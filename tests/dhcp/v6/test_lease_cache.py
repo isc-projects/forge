@@ -134,7 +134,8 @@ def test_lease_cache_disabled(backend, parameter):
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.define_lease_db_backend(backend)
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
-
+    # Disable lease cache
+    world.dhcp_cfg.update({'cache-threshold': 0.0})
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

@@ -44,6 +44,7 @@ SHAREDNETWORK_V6_CONFIG = [
                                    "bra,nch3": {"leaf1": 1,
                                                 "leaf2": ["vein1", "vein2"]}}},
         "allocator": "iterative",
+        'cache-threshold': 0.0,
         "calculate-tee-times": True,
         "interface-id": "interface-abc",
         "max-preferred-lifetime": 3000,
@@ -68,6 +69,7 @@ SHAREDNETWORK_V6_CONFIG = [
     },
     {
         "allocator": "iterative",
+        'cache-threshold': 0.0,
         "calculate-tee-times": True,
         "interface-id": "interface-xyz",
         "max-preferred-lifetime": 3000,
@@ -89,6 +91,7 @@ SHAREDNETWORK_V6_CONFIG = [
             {
                 "user-context": {"version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}]},
                 "allocator": "iterative",
+                'cache-threshold': 0.0,
                 "calculate-tee-times": True,
                 "id": 3,
                 "max-preferred-lifetime": 3000,
@@ -120,6 +123,7 @@ SHAREDNETWORK_V6_CONFIG = [
             {
                 "calculate-tee-times": True,
                 "allocator": "iterative",
+                'cache-threshold': 0.0,
                 "id": 4,
                 "max-preferred-lifetime": 3000,
                 "max-valid-lifetime": 4000,
@@ -160,6 +164,7 @@ SHAREDNETWORK_V4_CONFIG = [
                                    "bra,nch3": {"leaf1": 1,
                                                 "leaf2": ["vein1", "vein2"]}}},
         "allocator": "iterative",
+        'cache-threshold': 0.0,
         "calculate-tee-times": False,
         "interface": world.f_cfg.server_iface,
         "max-valid-lifetime": 4000,
@@ -176,6 +181,7 @@ SHAREDNETWORK_V4_CONFIG = [
             {
                 "user-context": {"version": [{"number": 1, "rev": 2}, {"id": 1, "no": 2}]},
                 "allocator": "iterative",
+                'cache-threshold': 0.0,
                 "4o6-interface": "",
                 "4o6-interface-id": "",
                 "4o6-subnet": "",
@@ -215,6 +221,7 @@ SHAREDNETWORK_V4_CONFIG = [
             },
             {
                 "allocator": "iterative",
+                'cache-threshold': 0.0,
                 "4o6-interface": "",
                 "4o6-interface-id": "",
                 "4o6-subnet": "",
@@ -249,6 +256,7 @@ SHAREDNETWORK_V4_CONFIG = [
     },
     {
         'allocator': 'iterative',
+        'cache-threshold': 0.0,
         "calculate-tee-times": False,
         "max-valid-lifetime": 4000,
         "min-valid-lifetime": 4000,
@@ -265,6 +273,7 @@ SHAREDNETWORK_V4_CONFIG = [
         "subnet4": [
             {
                 'allocator': 'iterative',
+                'cache-threshold': 0.0,
                 "4o6-interface": "",
                 "4o6-interface-id": "",
                 "4o6-subnet": "",
@@ -305,6 +314,7 @@ SHAREDNETWORK_V4_CONFIG = [
             },
             {
                 'allocator': 'iterative',
+                'cache-threshold': 0.0,
                 "4o6-interface": "",
                 "4o6-interface-id": "",
                 "4o6-subnet": "",

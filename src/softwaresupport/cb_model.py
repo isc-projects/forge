@@ -4,6 +4,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+"""Support functions for Config Backend tests."""
+
 # pylint: disable=consider-using-f-string
 # pylint: disable=invalid-name
 # pylint: disable=line-too-long
@@ -28,6 +30,11 @@ world.check_on_reload = True
 
 
 def get_config():
+    """Get the current configuration from the server.
+
+    :return: the current configuration
+    :rtype: dict
+    """
     cmd = {"command": "config-get", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response['result'] == 0
@@ -35,7 +42,11 @@ def get_config():
 
 
 def _reload():
-    # request config reloading
+    """Request config reloading.
+
+    :return: the response from the server
+    :rtype: dict
+    """
     cmd = {"command": "config-backend-pull", "arguments": {}}
     response = srv_msg.send_ctrl_cmd(cmd)
     assert response == {'result': 0, 'text': 'On demand configuration update successful.'}
@@ -43,25 +54,53 @@ def _reload():
 
 
 class ConfigElem(object):
+    """Base class for all configuration elements."""
+
     def __init__(self, parent_cfg):
+        """Initialize the configuration element."""
         self.parent_cfg = parent_cfg
 
     def get_root(self):
+        """Get the root configuration element.
+
+        :return: the root configuration element
+        :rtype: ConfigElem
+        """
         if self.parent_cfg:
             return self.parent_cfg.get_root()
         else:
             return self
 
     def get_parent(self):
+        """Get the parent configuration element.
+
+        :return: the parent configuration element
+        :rtype: ConfigElem
+        """
         return self.parent_cfg
 
 
 class ConfigNetworkModel(ConfigElem):
+    """Network configuration element.
+
+    :param parent_cfg: the parent configuration element
+    :type parent_cfg: ConfigElem
+    :param network_cfg: the network configuration element
+    :type network_cfg: dict
+    :rtype: ConfigNetworkModel
+    """
+
     def __init__(self, parent_cfg, network_cfg):
+        """Initialize the network configuration element."""
         ConfigElem.__init__(self, parent_cfg)
         self.cfg = network_cfg
 
     def get_dict(self):
+        """Get the network configuration element as a dictionary.
+
+        :return: the network configuration element as a dictionary
+        :rtype: dict
+        """
         cfg = copy.deepcopy(self.cfg)
 
         subnets = self.parent_cfg.get_subnets(network=self.cfg['name'])
@@ -75,6 +114,15 @@ class ConfigNetworkModel(ConfigElem):
         return cfg
 
     def update(self, backend=None, **kwargs):
+        """Update the network configuration element.
+
+        :param backend: the backend to use
+        :type backend: str
+        :param kwargs: the parameters to update
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
+        """
         for param, val in kwargs.items():
             param = param.replace('_', '-')
             if val is None:
@@ -94,18 +142,42 @@ class ConfigNetworkModel(ConfigElem):
 
 
 class ConfigSubnetModel(ConfigElem):
+    """Subnet configuration element."""
+
     def __init__(self, parent_cfg, subnet_cfg):
+        """Initialize the subnet configuration element.
+
+        :param parent_cfg: the parent configuration element
+        :type parent_cfg: ConfigElem
+        :param subnet_cfg: the subnet configuration element
+        :type subnet_cfg: dict
+        :rtype: ConfigSubnetModel
+        """
         ConfigElem.__init__(self, parent_cfg)
         self.cfg = subnet_cfg
         if 'shared-network-name' not in self.cfg:
             self.cfg['shared-network-name'] = ''
 
     def get_dict(self):
+        """Get the subnet configuration element as a dictionary.
+
+        :return: the subnet configuration element as a dictionary
+        :rtype: dict
+        """
         cfg = copy.deepcopy(self.cfg)
         del cfg['shared-network-name']
         return cfg
 
     def update(self, backend, **kwargs):
+        """Update the subnet configuration element.
+
+        :param backend: the backend to use
+        :type backend: str
+        :param kwargs: the parameters to update
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
+        """
         # prepare arguments
         if 'pool' in kwargs:
             pool = kwargs.pop('pool')
@@ -129,6 +201,13 @@ class ConfigSubnetModel(ConfigElem):
         return config
 
     def delete(self, backend):
+        """Delete the subnet configuration element.
+
+        :param backend: the backend to use
+        :type backend: str
+        :return: the updated configuration
+        :rtype: dict
+        """
         response = subnet_del_by_prefix(self.cfg['subnet'], db_type=backend)
         assert response["result"] == 0
 
@@ -173,17 +252,40 @@ CONFIG_DEFAULTS['v6'] = {
 
 
 def get_cfg_default(name):
+    """Get the default configuration for a given parameter.
+
+    :param name: the name of the parameter
+    :type name: str
+    :return: the default configuration for the given parameter
+    :rtype: dict
+    """
     return CONFIG_DEFAULTS[world.proto][name]
 
 
 def _to_list(val):
+    """Convert a value to a list.
+
+    :param val: the value to convert
+    :type val: any
+    :return: the value as a list
+    :rtype: list
+    """
     if not isinstance(val, list):
         return [val]
     return val
 
 
 class ConfigModel(ConfigElem):
+    """Configuration model."""
+
     def __init__(self, init_cfg, force_reload=True):
+        """Initialize the configuration model.
+
+        :param init_cfg: the initial configuration
+        :type init_cfg: dict
+        :param force_reload: whether to force a reload of the configuration
+        :type force_reload: bool
+        """
         ConfigElem.__init__(self, None)
         self.cfg = init_cfg
         self.subnets = {}
@@ -200,6 +302,11 @@ class ConfigModel(ConfigElem):
         self.force_reload = force_reload
 
     def get_dict(self):
+        """Get the configuration model as a dictionary.
+
+        :return: the configuration model as a dictionary
+        :rtype: dict
+        """
         proto = world.proto[1]
 
         cfg = copy.deepcopy(self.cfg)
@@ -237,6 +344,7 @@ class ConfigModel(ConfigElem):
         cfg['ddns-generated-prefix'] = 'myhost'
         cfg['ddns-send-updates'] = True
         cfg['ddns-conflict-resolution-mode'] = 'check-with-dhcid'
+        cfg['cache-threshold'] = 0.0
 
         # combining whole config
         dhcp_key = 'Dhcp' + proto
@@ -251,6 +359,11 @@ class ConfigModel(ConfigElem):
         return cfg
 
     def reload_and_check(self):
+        """Reload the configuration and check if it is correct.
+
+        :return: the updated configuration
+        :rtype: dict
+        """
         if not self.force_reload:
             return {}
 
@@ -262,6 +375,11 @@ class ConfigModel(ConfigElem):
             return {}
 
     def compare_local_with_server(self):
+        """Compare the local configuration with the server configuration.
+
+        :return: the updated configuration
+        :rtype: dict
+        """
         proto = world.proto[1]
         dhcp_key = 'Dhcp' + proto
         # get config seen by server and compare it with our configuration
@@ -274,7 +392,13 @@ class ConfigModel(ConfigElem):
         return srv_config
 
     def set_global_parameter(self, **kwargs):
-        # prepare command
+        """Set a global parameter.
+
+        :param kwargs: the parameters to set
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
+        """
         server_tags = None
         backend = None
         parameters = {}
@@ -307,7 +431,13 @@ class ConfigModel(ConfigElem):
         return config
 
     def add_network(self, **kwargs):
-        # prepare command
+        """Add a network.
+
+        :param kwargs: the parameters to set
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
+        """
         server_tags = None
         backend = None
         network = {
@@ -349,7 +479,15 @@ class ConfigModel(ConfigElem):
         return network_cfg, config
 
     def update_network(self, backend=None, **kwargs):
-        # find network
+        """Update a network.
+
+        :param backend: the backend to use
+        :type backend: str
+        :param kwargs: the parameters to update
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
+        """
         if 'network' not in kwargs:
             assert len(self.shared_networks) == 1
             network = list(self.shared_networks.values())[0]
@@ -365,14 +503,26 @@ class ConfigModel(ConfigElem):
         return config
 
     def gen_subnet_id(self):
+        """Generate a subnet ID.
+
+        :return: the subnet ID
+        :rtype: int
+        """
         self.subnet_id += 1
         return self.subnet_id
 
     def add_option(self, *args, **kwargs):
         """Add option using config backend command and update local configuration.
+
         Function accepts option parameters as arguments or as a list of dictionares.
+
+        :param args: the arguments to add
+        :type args: list
+        :param kwargs: the parameters to add
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
         """
-        # check if we have list of dictionaries or arguments
         options = [list(item.items()) for item in args] if args else [list(kwargs.items())]
 
         self.cfg["option-data"] = []
@@ -411,7 +561,15 @@ class ConfigModel(ConfigElem):
 
     def add_option_def(self, *args, **kwargs):
         """Add option definition using config backend command and update local configuration.
+
         Function accepts option parameters as arguments or as a list of dictionares.
+
+        :param args: the arguments to add
+        :type args: list
+        :param kwargs: the parameters to add
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
         """
         # check if we have list of dictionaries or arguments
         options = [list(item.items()) for item in args] if args else [list(kwargs.items())]
@@ -447,6 +605,13 @@ class ConfigModel(ConfigElem):
         return config
 
     def del_option(self, **kwargs):
+        """Delete an option.
+
+        :param kwargs: the parameters to delete
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
+        """
         server_tags = None
         backend = None
         option = {"code": 0}
@@ -478,7 +643,13 @@ class ConfigModel(ConfigElem):
         return config
 
     def add_subnet(self, **kwargs):
-        # prepare command
+        """Add a subnet.
+
+        :param kwargs: the parameters to add
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
+        """
         server_tags = None
         backend = None
         default_pool_range = "192.168.50.1-192.168.50.100" if world.proto == 'v4' else '2001:db8:1::1-2001:db8:1::100'
@@ -529,7 +700,15 @@ class ConfigModel(ConfigElem):
         return subnet_cfg, config
 
     def update_subnet(self, backend=None, **kwargs):
-        # find subnet
+        """Update a subnet.
+
+        :param backend: the backend to use
+        :type backend: str
+        :param kwargs: the parameters to update
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
+        """
         if 'subnet' not in kwargs:
             assert len(self.subnets) == 1
             subnet = list(self.subnets.values())[0]
@@ -545,7 +724,15 @@ class ConfigModel(ConfigElem):
         return config
 
     def del_subnet(self, backend=None, **kwargs):
-        # find subnet
+        """Delete a subnet.
+
+        :param backend: the backend to use
+        :type backend: str
+        :param kwargs: the parameters to delete
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
+        """
         if 'subnet' not in kwargs:
             assert len(self.subnets) == 1
             subnet = list(self.subnets.values())[0]
@@ -563,6 +750,13 @@ class ConfigModel(ConfigElem):
         return config
 
     def get_subnets(self, network=None):
+        """Get subnets.
+
+        :param network: the network to get subnets for
+        :type network: str
+        :return: the subnets
+        :rtype: list
+        """
         subnets = []
         for sn in self.subnets.values():
             if (network is not None and sn.cfg['shared-network-name'] == network) or network is None:
@@ -570,6 +764,13 @@ class ConfigModel(ConfigElem):
         return subnets
 
     def add_class(self, **kwargs):
+        """Add a class.
+
+        :param kwargs: the parameters to add
+        :type kwargs: dict
+        :return: the updated configuration
+        :rtype: dict
+        """
         if "client-classes" not in self.cfg:
             self.cfg["client-classes"] = []
         server_tags = None
@@ -613,7 +814,15 @@ class ConfigModel(ConfigElem):
         return client_class, config
 
     def del_class(self, class_name=None, backend=None):
-        # find subnet
+        """Delete a class.
+
+        :param class_name: the name of the class to delete
+        :type class_name: str
+        :param backend: the backend to use
+        :type backend: str
+        :return: the updated configuration
+        :rtype: dict
+        """
         my_class = None
         idx = None
         print(self.client_classes)
@@ -636,6 +845,17 @@ class ConfigModel(ConfigElem):
 
 
 def _merge_configs(a, b, path=None):
+    """Merge two configurations.
+
+    :param a: the first configuration
+    :type a: dict
+    :param b: the second configuration
+    :type b: dict
+    :param path: the path to the configuration
+    :type path: list
+    :return: the merged configuration
+    :rtype: dict
+    """
     if path is None:
         path = []
     for k in b:
@@ -655,6 +875,13 @@ def _merge_configs(a, b, path=None):
 
 
 def _compare(recv_any, exp_any):
+    """Compare two configurations.
+
+    :param recv_any: the received configuration
+    :type recv_any: any
+    :param exp_any: the expected configuration
+    :type exp_any: any
+    """
     if isinstance(exp_any, dict):
         _compare_dicts(recv_any, exp_any)
     elif isinstance(recv_any, list):
@@ -664,6 +891,13 @@ def _compare(recv_any, exp_any):
 
 
 def _compare_dicts(rcvd_dict, exp_dict):
+    """Compare two dictionaries.
+
+    :param rcvd_dict: the received configuration
+    :type rcvd_dict: dict
+    :param exp_dict: the expected configuration
+    :type exp_dict: dict
+    """
     all_keys = set(rcvd_dict.keys()).union(set(exp_dict.keys()))
     for k in all_keys:
         if k in ['id', 'config-control', 'lease-database', 'server-tag', 'server-tags',
@@ -698,12 +932,26 @@ def _compare_dicts(rcvd_dict, exp_dict):
 
 
 def _compare_lists(rcvd_list, exp_list):
+    """Compare two lists.
+
+    :param rcvd_list: the received configuration
+    :type rcvd_list: list
+    :param exp_list: the expected configuration
+    :type exp_list: list
+    """
     assert len(rcvd_list) == len(exp_list)
     for r_v, e_v in zip(rcvd_list, exp_list):
         _compare(r_v, e_v)
 
 
 def _normalize_keys(kwargs):
+    """Normalize keys.
+
+    :param kwargs: the parameters to normalize
+    :type kwargs: dict
+    :return: the normalized parameters
+    :rtype: dict
+    """
     kwargs2 = {}
     for k, v in kwargs.items():
         nk = k.replace('_', '-')
@@ -718,12 +966,15 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
     Create a basic configuration and send it to the Kea server.
 
     :param destination: address of server that is being set up
+    :type destination: str
     :param interface: the client-facing interface on the server
+    :type interface: str
     :param kwargs: dynamic set of arguments
+    :type kwargs: dict
     :return: the configuration that was sent to Kea and sometimes as a second
         variable: the configuration retrieved through "config-get"
+    :rtype: tuple
     """
-
     misc.test_setup()
 
     srv_control.config_srv_subnet('$(EMPTY)', '$(EMPTY)')
@@ -766,6 +1017,14 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
 
 
 def setup_server_for_config_backend_cmds(**kwargs):
+    """Prepare a config for config backend commands tests and send it to Kea server.
+
+    :param kwargs: dynamic set of arguments
+    :type kwargs: dict
+    :return: the configuration that was sent to Kea and sometimes as a second
+        variable: the configuration retrieved through "config-get"
+    :rtype: tuple
+    """
     default_cfg = {"hooks-libraries": [{"library": "libdhcp_cb_cmds.so"}],
                    "server-tag": "abc",
                    "parked-packet-limit": 256}
@@ -814,11 +1073,14 @@ def setup_server_with_radius(destination: str = world.f_cfg.mgmt_address,
     Create a RADIUS configuration and send it to the Kea server.
 
     :param destination: address of server that is being set up
+    :type destination: str
     :param interface: the client-facing interface on the server
+    :type interface: str
     :param kwargs: dynamic set of arguments
+    :type kwargs: dict
     :return: the configuration that was sent to Kea
+    :rtype: tuple
     """
-
     if world.proto == 'v4':
         expression = "hexstring(pkt4.mac, ':')"
     else:
