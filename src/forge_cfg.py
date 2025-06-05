@@ -343,16 +343,32 @@ class ForgeConfiguration:
         :return: path to lib/kea/hooks directory
         :rtype: str
         """
-        if world.server_system == 'debian':
-            midpath = f'lib/{world.server_architecture}-linux-gnu/kea/hooks'
-        elif world.server_system in ['fedora', 'redhat', 'ubuntu']:
-            midpath = 'lib64/kea/hooks'
-        else:  # alpine
-            midpath = 'lib/kea/hooks'
+        # paths contain name of os, tarball hook path and package hook path
+        paths = {
+            'debian': [f'lib/{world.server_architecture}-linux-gnu/kea/hooks',
+                       f'/usr/lib/{world.server_architecture}-linux-gnu/kea/hooks'],
+            'fedora': ['lib64/kea/hooks',
+                       '/usr/lib64/kea/hooks'],
+            'redhat': ['lib64/kea/hooks',
+                       '/usr/lib64/kea/hooks'],
+            'ubuntu': ['lib64/kea/hooks',
+                       f'lib/{world.server_architecture}-linux-gnu/kea/hooks'],
+            'alpine': ['lib/kea/hooks',
+                       '/usr/lib/kea/hooks'],
+            'unknown': ['lib/kea/hooks',
+                        '/usr/lib/kea/hooks']
+        }
+
+        if world.server_system in paths:
+            if self.install_method == 'make':
+                return os.path.join(self.software_install_path, paths[world.server_system][0], sub_path)
+            else:
+                return os.path.join(paths[world.server_system][1], sub_path)
+        # default to unknown
         if self.install_method == 'make':
-            return os.path.join(self.software_install_path, midpath, sub_path)
+            return os.path.join(self.software_install_path, paths['unknown'][0], sub_path)
         else:
-            return os.path.join('/usr', midpath, sub_path)
+            return os.path.join(paths['unknown'][1], sub_path)
 
     def run_join(self, sub_path):
         """run_join Get path to run/kea directory.
