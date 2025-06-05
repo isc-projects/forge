@@ -741,8 +741,13 @@ def test_config_commands_config_write_path(dhcp_version: str):
         ['~/config-write.json', 1, 'not allowed to write config into'],
         ['/var/config-write.json', 1, 'not allowed to write config into'],
         ['/srv/config-write.json', 1, 'not allowed to write config into'],
-        ['/etc/kea/config-write.json', 1, 'not allowed to write config into'],
+        ['/etc/config-write.json', 1, 'not allowed to write config into']
     ]
+    if world.f_cfg.install_method == 'make':
+        illegal_paths.append(['/etc/kea/config-write.json', 1, 'not allowed to write config into'])
+    else:
+        illegal_paths.append(['/usr/local/etc/kea/config-write.json', 1, 'not allowed to write config into'])
+
     for path, exp_result, exp_text in illegal_paths:
         srv_msg.remove_file_from_server(path)
         cmd = {"command": "config-write", "arguments": {"filename": path}}
