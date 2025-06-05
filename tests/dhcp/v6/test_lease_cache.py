@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-""" testing lease caching for all backends """
+""" Testing lease caching for all backends. """
 
 # pylint: disable=unused-argument
 
@@ -18,16 +18,38 @@ from src.forge_cfg import world
 
 
 def _get_config(exp_result=0):
+    """Get the current configuration.
+    :param exp_result: expected result code
+    :type exp_result: int
+    :return: configuration
+    :rtype: dict
+    """
     cmd = dict(command="config-get")
     return srv_msg.send_ctrl_cmd(cmd, exp_result=exp_result, channel='socket')
 
 
 def _get_cltt_from_lease(address, subnet_id=1):
+    """Get the CLTT from the lease.
+    :param address: IP address
+    :type address: str
+    :param subnet_id: subnet ID
+    :type subnet_id: int
+    :return: CLTT
+    :rtype: int
+    """
     cmd = dict(command="lease6-get", arguments={"ip-address": address, "subnet-id": subnet_id})
     return srv_msg.send_ctrl_cmd(cmd, channel='socket')["arguments"]["cltt"]
 
 
 def _assign_lease(duid, address, fqdn=None):
+    """Assign a lease to a client.
+    :param duid: DUID
+    :type duid: str
+    :param address: IP address
+    :type address: str
+    :param fqdn: FQDN
+    :type fqdn: str
+    """
     world.savedmsg = {}
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', duid)
@@ -58,6 +80,14 @@ def _assign_lease(duid, address, fqdn=None):
 
 
 def _renew_address(duid, address, fqdn=None):
+    """Renew an address to a client.
+    :param duid: DUID
+    :type duid: str
+    :param address: IP address
+    :type address: str
+    :param fqdn: FQDN
+    :type fqdn: str
+    """
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
     srv_msg.client_copy_option('IA_NA')
@@ -79,6 +109,14 @@ def _renew_address(duid, address, fqdn=None):
 
 
 def _rebind_address(duid, address, fqdn=None):
+    """Rebind an address to a client.
+    :param duid: DUID
+    :type duid: str
+    :param address: IP address
+    :type address: str
+    :param fqdn: FQDN
+    :type fqdn: str
+    """
     misc.test_procedure()
     srv_msg.client_copy_option('IA_NA')
     srv_msg.client_sets_value('Client', 'DUID', duid)
@@ -103,6 +141,14 @@ def _rebind_address(duid, address, fqdn=None):
 @pytest.mark.parametrize("parameter", ["cache-threshold", "cache-max-age"])
 @pytest.mark.parametrize("value", ["abc", True])
 def test_lease_cache_incorrect_values(dhcp_version, parameter, value):
+    """Test lease cache with incorrect values.
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
+    :param parameter: parameter
+    :type parameter: str
+    :param value: value
+    :type value: str
+    """
     # both for v4 and v6, we don't need to repeat this tests in v4 set
     ver = int(world.proto[1])
     misc.test_setup()
@@ -122,6 +168,12 @@ def test_lease_cache_incorrect_values(dhcp_version, parameter, value):
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 @pytest.mark.parametrize("parameter", [{}, {"cache-max-age": 0}])  # , {"cache-threshold": .0} temporary removed
 def test_lease_cache_disabled(backend, parameter):
+    """Test lease cache disabled.
+    :param backend: backend
+    :type backend: str
+    :param parameter: parameter
+    :type parameter: dict
+    """
     # let's test is as disabled in configurations:
     # - not configured
     # - "cache-threshold": 0 which means disabled according to docs, but kea fail to start gitlab #1796
@@ -159,12 +211,20 @@ def test_lease_cache_disabled(backend, parameter):
 @pytest.mark.parametrize("parameter", [{"cache-threshold": 0.5}, {"cache-max-age": 5}])
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_lease_cache_enabled(backend, parameter):
+    """Test lease cache enabled.
+    :param backend: backend
+    :type backend: str
+    :param parameter: parameter
+    :type parameter: dict
+    """
     misc.test_setup()
     srv_control.add_unix_socket()
     srv_control.define_lease_db_backend(backend)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::1')
     address = "2001:db8:a::1"
+    # set cache threshold to 99% to avoid capping of cache time, test parameter can override this
+    world.dhcp_cfg.update({"cache-threshold": 0.99})
     world.dhcp_cfg.update(parameter)
     # for a sake of testing we will set all timers to one value, both cache threshold
     # are set to the same value, 50% (which is 5s in this case) and 5 seconds
@@ -230,6 +290,10 @@ def test_lease_cache_enabled(backend, parameter):
 @pytest.mark.v6
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_lease_cache_different_levels(backend):
+    """Test lease cache different levels.
+    :param backend: backend
+    :type backend: str
+    """
     # everywhere we have the same validlifetime, but different cache values on each level
     # on global, shared network and subnet, with 3 subnets based on classification
     misc.test_setup()
@@ -250,7 +314,8 @@ def test_lease_cache_different_levels(backend):
     srv_control.shared_subnet('2001:db8:b::/64', 0)
     srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
     srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
-
+    # set cache threshold to 99% to avoid capping of cache time
+    world.dhcp_cfg.update({"cache-threshold": 0.99})
     world.dhcp_cfg.update({"cache-max-age": 10})  # global setting
     world.dhcp_cfg["subnet6"][0].update({"client-classes": ["Client_Class_1"]})
     world.dhcp_cfg["shared-networks"][0]["subnet6"][0].update({"client-classes": ["Client_Class_2"],
@@ -345,6 +410,12 @@ def test_lease_cache_different_levels(backend):
 @pytest.mark.parametrize("parameter", [{"cache-threshold": 0.7}])
 @pytest.mark.parametrize("backend", ['memfile', 'mysql', 'postgresql'])
 def test_lease_cache_ddns(parameter, backend):
+    """Test lease cache with DDNS.
+    :param parameter: parameter
+    :type parameter: dict
+    :param backend: backend
+    :type backend: str
+    """
     misc.test_setup()
     srv_control.add_unix_socket()
     srv_control.add_hooks('libdhcp_lease_cmds.so')
