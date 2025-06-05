@@ -66,7 +66,7 @@ def test_rbac_cert_subject(dhcp_version):
         True
     )
     hook = [{
-        "library": "libca_rbac.so",
+        "library": world.f_cfg.hooks_join("libca_rbac.so"),
         "parameters": {
             "assign-role-method": "cert-subject",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -172,7 +172,7 @@ def test_rbac_cert_issuer(dhcp_version):
         True
     )
     hook = [{
-        "library": "libca_rbac.so",
+        "library": world.f_cfg.hooks_join("libca_rbac.so"),
         "parameters": {
             "assign-role-method": "cert-issuer",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -268,7 +268,7 @@ def test_rbac_remote_address(dhcp_version, tls):
             True
         )
     hook = [{
-        "library": "libca_rbac.so",
+        "library": world.f_cfg.hooks_join("libca_rbac.so"),
         "parameters": {
             "assign-role-method": "remote-address",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
