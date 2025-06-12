@@ -64,7 +64,7 @@ def test_leasefile_path_configfile(dhcp_version):
             assert verify_file_permissions(os.path.join(path, 'leasefile.csv'))  # also confirm that file is created
 
             # Check if LFC is assiginig proper permissions to the file.
-            wait_for_message_in_log("DHCPSRV_MEMFILE_LFC_EXECUTE")
+            wait_for_message_in_log("DHCPSRV_MEMFILE_LFC_EXECUTE", timeout=6)
             srv_msg.forge_sleep(1, 'seconds')
             assert verify_file_permissions(os.path.join(path, 'leasefile.csv'))
             assert verify_file_permissions(os.path.join(path, 'leasefile.csv.2'))

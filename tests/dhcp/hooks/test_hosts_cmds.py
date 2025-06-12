@@ -4618,6 +4618,7 @@ def test_save_reservation_to_the_config_file(dhcp_version):
     else:
         srv_msg.DORA(chaddr="f6:f5:f4:03:02:01", address='192.168.50.200')
 
+    srv_msg.forge_sleep(2, "seconds")  # Avoid restart in the same second as previous start.
     srv_control.start_srv('DHCP', 'restarted')
     # we shouldn't get any reservation back
     _reservation_get("reservation-get", res_get, target='memory', exp_result=3)
@@ -4641,6 +4642,7 @@ def test_save_reservation_to_the_config_file(dhcp_version):
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
     verify_file_permissions(response['arguments']['filename'])
 
+    srv_msg.forge_sleep(2, "seconds")  # Avoid restart in the same second as previous start.
     srv_control.start_srv('DHCP', 'restarted')
 
     # and now we should have assign reserved leases:
