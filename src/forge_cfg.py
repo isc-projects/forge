@@ -352,7 +352,7 @@ class ForgeConfiguration:
             'redhat': ['lib64/kea/hooks',
                        '/usr/lib64/kea/hooks'],
             'ubuntu': ['lib64/kea/hooks',
-                       f'lib/{world.server_architecture}-linux-gnu/kea/hooks'],
+                       f'/usr/lib/{world.server_architecture}-linux-gnu/kea/hooks'],
             'alpine': ['lib/kea/hooks',
                        '/usr/lib/kea/hooks'],
             'unknown': ['lib/kea/hooks',
