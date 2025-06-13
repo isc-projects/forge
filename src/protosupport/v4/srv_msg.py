@@ -6,9 +6,12 @@
 
 # Author: Wlodzimierz Wencel
 
+"""Server communication functions."""
+
 # pylint: disable=consider-iterating-dictionary
 # pylint: disable=consider-using-dict-items
 # pylint: disable=consider-using-f-string
+# pylint: disable=consider-using-get
 # pylint: disable=invalid-name
 # pylint: disable=line-too-long
 # pylint: disable=logging-not-lazy
@@ -56,10 +59,13 @@ OPTIONS = {
 
 
 def get_option_code(opt_code) -> int:
-    '''
-    Return an integer representation of the option code or name {opt_code}.
+    """Return an integer representation of the option code or name {opt_code}.
+
     :param opt_code: integer or string representing the option's code or name
-    '''
+    :type opt_code: int or str
+    :return: integer representing the option's code
+    :rtype: int
+    """
     if isinstance(opt_code, str):
         if opt_code.isdigit():
             # It was an integer in string format.
@@ -71,6 +77,11 @@ def get_option_code(opt_code) -> int:
 
 
 def client_requests_option(opt_type):
+    """Request an option from the server.
+
+    :param opt_type: integer or string representing the option's code or name
+    :type opt_type: int or str
+    """
     # Ensure the option code is an integer.
     opt_type = get_option_code(opt_type)
 
@@ -80,6 +91,13 @@ def client_requests_option(opt_type):
 
 
 def build_raw(msg, append):
+    """Build a raw message.
+
+    :param msg: message to build
+    :type msg: str
+    :param append: append to the message
+    :type append: str
+    """
     if msg == "":
         world.climsg.append(build_msg(opts="") / Raw(load=append))
     else:
@@ -88,12 +106,14 @@ def build_raw(msg, append):
 
 
 def client_send_msg(msgname, iface=None, addr=None):
-    """Sends specified message with defined options.
+    """Send specified message with defined options.
 
-    Parameters:
-    msgname: name of the message
-    iface: interface to send onto (default: None, meaning configured interface)
-    addr: address to send to (default: None)
+    :param msgname: name of the message
+    :type msgname: str
+    :param iface: interface to send onto (default: None, meaning configured interface)
+    :type iface: str or None
+    :param addr: address to send to (default: None)
+    :type addr: str or None
     """
     # set different ethernet interface than default one.
     if addr is not None:
@@ -163,6 +183,13 @@ def client_send_msg(msgname, iface=None, addr=None):
 
 
 def client_sets_value(value_name, new_value):
+    """Set a value in message.
+
+    :param value_name: name of the value
+    :type value_name: str
+    :param new_value: new value
+    :type new_value: str or int
+    """
     if value_name in world.cfg["values"]:
         if isinstance(world.cfg["values"][value_name], str):
             world.cfg["values"][value_name] = str(new_value)
@@ -175,6 +202,11 @@ def client_sets_value(value_name, new_value):
 
 
 def convert_flags_fqdn():
+    """Convert flags to a number.
+
+    :return: number of flags
+    :rtype: int
+    """
     flag_filed = 0
     if 'N' in world.cfg["values"]["FQDN_flags"]:
         flag_filed += 8
@@ -194,6 +226,15 @@ options_formatted_by_forge = [
 
 
 def client_does_include(sender_type, opt_type, value):
+    """Include an option in the message.
+
+    :param sender_type: type of the sender
+    :type sender_type: str
+    :param opt_type: type of the option
+    :type opt_type: str
+    :param value: value of the option
+    :type value: str
+    """
     if opt_type == 'client_id':
         # code - 61
         world.cliopts += [(opt_type, convert_to_hex(value))]
@@ -232,7 +273,17 @@ def client_does_include(sender_type, opt_type, value):
 
 
 def response_check_content(expect, data_type, expected):
+    """Check the content of the response.
 
+    :param expect: expected content
+    :type expect: bool
+    :param data_type: type of the data
+    :type data_type: str
+    :param expected: expected value
+    :type expected: str
+    :return: received value
+    :rtype: str
+    """
     if data_type in ['yiaddr', 'ciaddr', 'siaddr', 'giaddr']:
         received = getattr(world.srvmsg[0], data_type)
     elif data_type == 'src_address':
@@ -262,6 +313,13 @@ def response_check_content(expect, data_type, expected):
 
 
 def client_save_option(opt_name, count=0):
+    """Save an option.
+
+    :param opt_name: name of the option
+    :type opt_name: str
+    :param count: count of the option
+    :type count: int
+    """
     opt_code = world.kea_options4.get(opt_name)
 
     assert opt_name in world.kea_options4, "Unsupported option name " + opt_name
@@ -273,6 +331,13 @@ def client_save_option(opt_name, count=0):
 
 
 def client_copy_option(opt_name, copy_all=False):
+    """Copy an option.
+
+    :param opt_name: name of the option
+    :type opt_name: str
+    :param copy_all: copy all options
+    :type copy_all: bool
+    """
     assert not copy_all, 'copy_all not implemented'
     opt_code = world.kea_options4.get(opt_name)
 
@@ -283,10 +348,26 @@ def client_copy_option(opt_name, copy_all=False):
 
 
 def convert_to_hex(mac):
+    """Convert a MAC address to a hex string.
+
+    :param mac: MAC address
+    :type mac: str
+    :return: hex string
+    :rtype: str
+    """
     return codecs.decode(mac.replace(":", ""), 'hex')
 
 
 def build_msg(opts, iface=None):
+    """Build a message.
+
+    :param opts: options
+    :type opts: list
+    :param iface: interface
+    :type iface: str or None
+    :return: message
+    :rtype: scapy.layers.ethernet.Ether
+    """
     conf.checkIPaddr = False
     if iface is None:
         fam, hw = get_if_raw_hwaddr(str(world.cfg["iface"]))
@@ -343,7 +424,13 @@ def build_msg(opts, iface=None):
 
 
 def get_msg_type(msg):
+    """Get the type of the message.
 
+    :param msg: message
+    :type msg: str
+    :return: type of the message
+    :rtype: str
+    """
     msg_types = {1: "DISCOVER",
                  2: "OFFER",
                  3: "REQUEST",
@@ -375,11 +462,14 @@ def get_msg_type(msg):
 
 
 def read_dhcp4_msgs(d: bytes, msg: list):
-    """
-    Recursively parse bytes received via TCP channel
+    """Recursively parse bytes received via TCP channel.
+
     :param d: bytes
+    :type d: bytes
     :param msg: list of DHCP4 messages
+    :type msg: list
     :return: list of DHCP4 messages
+    :rtype: list
     """
     if len(d) == 0:
         return msg
@@ -394,16 +484,24 @@ def read_dhcp4_msgs(d: bytes, msg: list):
 
 def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: int = 3, parse: bool = True,
                   number_of_connections: int = 1, print_all: bool = True):
-    """
-    Send message over TCP channel and listen for response
+    """Send message over TCP channel and listen for response.
+
     :param msg: bytes representing DHCP4 message
+    :type msg: bytes
     :param address: address to which message will be sent
+    :type address: str or None
     :param port: port number on which receiving end is listening
+    :type port: int or None
     :param timeout: how long kea will wait from last received message
+    :type timeout: int
     :param parse: should received bytes be parsed into DHCP4 messages
+    :type parse: bool
     :param number_of_connections: how many connections should forge open
+    :type number_of_connections: int
     :param print_all: print all to stdout (use false for massive messages)
+    :type print_all: bool
     :return: list of parsed DHCP4 messages
+    :rtype: list
     """
     if address is None:
         address = world.f_cfg.dns4_addr
@@ -456,9 +554,10 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
 
 
 def tcp_messages_include(**kwargs):
-    """
-    Checks how many messages of each type are in received over tcp list
+    """Check how many messages of each type are in received over tcp list.
+
     :param kwargs: types of messages e.g. leasequery_reply=1, leasequery_data=199, leasequery_done=1
+    :type kwargs: dict
     """
     expected_msg_count = sum(list(kwargs.values()))
     assert expected_msg_count == len(world.tcpmsg), \
@@ -475,14 +574,17 @@ def tcp_messages_include(**kwargs):
 
 
 def tcp_get_message(**kwargs):
-    """
-    Find one message in the list of all received via TCP channel. Messages can be retrieved via its index in the list
+    """Find one message in the list of all received via TCP channel.
+
+    Messages can be retrieved via its index in the list
     or using address/prefix to find one specific message e.g.
     * tcp_get_message(address=lease["address"])
     * tcp_get_message(prefix=lease["address"])
     * tcp_get_message(order=3)
     :param kwargs: define which type of search should be performed and with what value
+    :type kwargs: dict
     :return: DHCP4 message
+    :rtype: scapy.layers.dhcp.DHCP
     """
     # we can look for address or prefix, address in scapy is represented by addr and prefix is represented by prefix
 
@@ -503,6 +605,27 @@ def tcp_get_message(**kwargs):
 def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
                           protocol: str = 'UDP', address: str = None, port: int = None, iface=None,
                           ignore_response: bool = False):
+    """Send a message and wait for a response.
+
+    :param requirement_level: requirement level
+    :type requirement_level: str
+    :param presence: presence
+    :type presence: bool
+    :param exp_message: expected message
+    :type exp_message: str
+    :param protocol: protocol
+    :type protocol: str
+    :param address: address
+    :type address: str or None
+    :param port: port
+    :type port: int or None
+    :param iface: interface
+    :type iface: str or None
+    :param ignore_response: ignore response
+    :type ignore_response: bool
+    :return: message
+    :rtype: scapy.layers.ethernet.Ether
+    """
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # We need to use srp() here (send and receive on layer 2)
     factor = 1
@@ -565,13 +688,15 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
 
 
 def get_option(msg, opt_code):
-    """
-    Retrieve from scapy message {msg}, the DHCPv4 option having IANA code {opt_code}.
-    :param msg: scapy message to retrieve the option from
-    :param opt_code: option code or name
-    :return: scapy message representing the option or None if the option doesn't exist
-    """
+    """Retrieve from scapy message {msg}, the DHCPv4 option having IANA code {opt_code}.
 
+    :param msg: scapy message to retrieve the option from
+    :type msg: scapy.layers.dhcp.DHCP
+    :param opt_code: option code or name
+    :type opt_code: int or str
+    :return: scapy message representing the option or None if the option doesn't exist
+    :rtype: scapy.layers.dhcp.DHCP
+    """
     # Ensure the option code is an integer.
     opt_code = get_option_code(opt_code)
 
@@ -604,18 +729,28 @@ def get_option(msg, opt_code):
 
 
 def byte_to_hex(byte_str):
+    """Convert a byte string to a hex string.
+
+    :param byte_str: byte string
+    :type byte_str: str
+    :return: hex string
+    :rtype: str
+    """
     return ''.join(["%02X " % ord(x) for x in byte_str]).replace(" ", "")
 
 
 def test_option(opt_code, received, expected):
-    """
-    Make some adjustments to {received} and check if it is equal to {expected}.
-    :param opt_code: option code
-    :param received: option value received on the wire
-    :param expected: option value expected in the test
-    :return: tuple(boolean on whether the values are equal, the adjusted {received})
-    """
+    """Make some adjustments to {received} and check if it is equal to {expected}.
 
+    :param opt_code: option code
+    :type opt_code: int or str
+    :param received: option value received on the wire
+    :type received: str
+    :param expected: option value expected in the test
+    :type expected: str
+    :return: tuple(boolean on whether the values are equal, the adjusted {received})
+    :rtype: tuple
+    """
     if isinstance(received, str):
         if received == str(expected):
             return True, received
@@ -640,12 +775,13 @@ def test_option(opt_code, received, expected):
 
 
 def _get_opt_descr(opt_code):
-    '''
-    Get a textual description as provided by scapy, of option code or name {opt_code}.
-    :param opt_code: the option code or name that is being described
-    :return: the description
-    '''
+    """Get a textual description as provided by scapy, of option code or name {opt_code}.
 
+    :param opt_code: the option code or name that is being described
+    :type opt_code: int or str
+    :return: the description
+    :rtype: str
+    """
     # Ensure the option code is an integer.
     opt_code = get_option_code(opt_code)
 
@@ -658,6 +794,15 @@ def _get_opt_descr(opt_code):
 
 
 def response_check_include_option(expected, opt_code):
+    """Check if an option is present in the message.
+
+    :param expected: expected option
+    :type expected: bool
+    :param opt_code: option code
+    :type opt_code: int or str
+    :return: message
+    :rtype: scapy.layers.ethernet.Ether
+    """
     assert len(world.srvmsg) != 0, "No response received."
 
     opt = get_option(world.srvmsg[0], opt_code)
@@ -674,6 +819,17 @@ def response_check_include_option(expected, opt_code):
 
 
 def response_check_option_content(opt_code, expect, data_type, expected):
+    """Check the content of an option.
+
+    :param opt_code: option code
+    :type opt_code: int or str
+    :param expect: expected content
+    :type expect: bool
+    :param data_type: type of the data
+    :type data_type: str
+    :param expected: expected value
+    :type expected: str
+    """
     # expect == None when we want that content and NOT when we dont want! that's messy correct that!
     assert len(world.srvmsg) != 0, "No response received."
 
@@ -711,8 +867,16 @@ def response_check_option_content(opt_code, expect, data_type, expected):
 
 
 def response_check_option_content_more(opt_code, data_type, expected):
-    opt_descr = _get_opt_descr(opt_code)
+    """Check the content of an option.
 
+    :param opt_code: option code
+    :type opt_code: int or str
+    :param data_type: type of the data
+    :type data_type: str
+    :param expected: expected value
+    :type expected: str
+    """
+    opt_descr = _get_opt_descr(opt_code)
     assert len(world.opts), f"Not even the initial option {opt_descr} is there. " + \
                             "This is most likely a test issue. Have you called " + \
                             "response_check_option_content() first?" + \
@@ -735,6 +899,13 @@ def response_check_option_content_more(opt_code, data_type, expected):
 
 
 def get_all_leases(decode_duid=True):
+    """Get all leases.
+
+    :param decode_duid: decode DUID
+    :type decode_duid: bool
+    :return: lease
+    :rtype: dict
+    """
     assert world.srvmsg
     mac = ""
     tmp = struct.unpack('16B', world.srvmsg[0].chaddr)
@@ -757,7 +928,8 @@ def get_all_leases(decode_duid=True):
 
 
 def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
-    """
+    """DO Exchange.
+
     Sends a discover and expects an offer. Inserts options in the client
     packets based on given parameters and ensures that the right options are
     found in the server packets. A single option missing or having incorrect
@@ -765,11 +937,16 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
 
     :param address: the expected address as value of the requested_addr option.
         If None, no DHCPOFFER is expected.
+    :type address: str or None
     :param options: any additional options to be inserted in the client packets in
         dictionary form with option names as keys and option values as values.
         (default: {})
+    :type options: dict
     :param chaddr: the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
+    :type chaddr: str
+    :param iface: the interface to send and receive packets on
+    :type iface: str or None
     """
     iface = world.cfg["iface"] if iface is None else iface
     # Send a discover.
@@ -791,7 +968,8 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
 
 def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
        init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
-    """
+    """RA Exchange.
+
     Sends a request and expects an advertise. Inserts options in the client
     packets based on given parameters and ensures that the right options are
     found in the server packets. A single option missing or having incorrect
@@ -799,15 +977,26 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
 
     :param address: the address used in the requested_addr option in the DHCP request.
         If None, the yiaddr in the last message, supposedly a DHCPOFFER, is expected.
+    :type address: str or None
     :param options: any additional options to be inserted in the client packets in
         dictionary form with option names as keys and option values as values.
         (default: {})
+    :type options: dict
     :param response_type: the type of response to be expected in the server packet.
         Can have values 'ACK', 'NAK' or None. None means no response.
         (default: 'ACK')
+    :type response_type: str
     :param chaddr: the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
+    :type chaddr: str
+    :param init_reboot: initialize reboot
+    :type init_reboot: bool
     :param subnet_mask: the value for option 1 subnet mask expected in a DHCPACK
+    :type subnet_mask: str
+    :param fqdn: the FQDN to be used in the client packets
+    :type fqdn: str or None
+    :param iface: the interface to send and receive packets on
+    :type iface: str or None
     """
     iface = world.cfg["iface"] if iface is None else iface
     client_sets_value('chaddr', chaddr)
@@ -847,8 +1036,9 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
 
 def DORA(address=None, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04',
          init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
-    """
-    Sends and ensures receival of 6 packets part of a regular DHCPv4 exchange
+    """DORA Exchange.
+
+    Send and ensures receival of 6 packets part of a regular DHCPv4 exchange
     in the correct sequence: discover, offer, request,
     acknowledgement/negative-acknowledgement plus an additional
     request-reply for the renew scenario.
@@ -858,19 +1048,30 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
 
     :param address: the expected address in the yiaddr field and then used in the
         requested_addr option in the DHCP request. If None, no packet is expected.
+    :type address: str or None
     :param options: any additional options to be inserted in the client packets in
         dictionary form with option names as keys and option values as values.
         (default: {})
+    :type options: dict
     :param exchange: can have values 'dora-only' for 4 way DORA exhange, 'full' meaning
         DORA plus an additional request-reply for the re-new scenario or "renew-only".
         It is a string instead of a boolean for clearer test names because this value often
         comes from pytest parametrization. (default: 'full')
+    :type exchange: str
     :param response_type: the type of response to be expected in the server packet.
         Can have values 'ACK' or 'NAK'. (default: 'ACK')
+    :type response_type: str
     :param chaddr: the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
+    :type chaddr: str
+    :param init_reboot: initialize reboot
+    :type init_reboot: bool
     :param subnet_mask: the value for option 1 subnet mask expected in a DHCPACK
+    :type subnet_mask: str
+    :param fqdn: the FQDN to be used in the client packets
+    :type fqdn: str or None
     :param iface: the interface to send and receive packets on
+    :type iface: str or None
     """
     misc.test_procedure()
     client_sets_value('chaddr', chaddr)
@@ -896,10 +1097,12 @@ def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
     Send a BOOTP request and expect a BOOTP reply.
 
     :param address: the address expected in the reply. If None, address is not checked.
+    :type address: str or None
     :param chaddr: the value of the chaddr field in the BOOTP request packet
+    :type chaddr: str
     :param client_id: the value of option 61 client identifier in the BOOTP request packet
+    :type client_id: str or None
     """
-
     # Send request.
     misc.test_procedure()
     client_sets_value('chaddr', chaddr)
