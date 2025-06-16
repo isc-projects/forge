@@ -396,6 +396,26 @@ class ForgeConfiguration:
         else:
             return '/usr/share/kea'
 
+    def share_join(self, sub_path):
+        """share_join Get path to share/kea directory.
+
+        :param sub_path: subpath to join
+        :type sub_path: str
+        :return: path to share directory
+        :rtype: str
+        """
+        return os.path.join(self.get_share_path(), sub_path)
+
+    def scripts_join(self, sub_path):
+        """scripts_join Get path to scripts directory.
+
+        :param sub_path: subpath to join
+        :type sub_path: str
+        :return: path to scripts directory
+        :rtype: str
+        """
+        return os.path.join(self.get_share_path(), 'scripts', sub_path)
+
     @staticmethod
     def tmp_join(sub_path):
         """tmp_join Get path to temporary directory.

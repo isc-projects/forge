@@ -1679,8 +1679,8 @@ def test_legal_log_rotate_actions(dhcp_version):
     """
     misc.test_procedure()
     srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'))
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('script*.sh'))
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('actions*.txt'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script*.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('actions*.txt'))
 
     # Prepare action scripts executed by kea to log rotation filenames
     script_pre = f'#!/bin/bash \n' \
@@ -1689,9 +1689,9 @@ def test_legal_log_rotate_actions(dhcp_version):
                   f'echo $1 >> {world.f_cfg.log_join("actions_post.txt")}'
 
     # transfer scripts to server and make them executable
-    fabric_sudo_command(f"echo '{script_pre}' > {world.f_cfg.log_join('script_pre.sh')}")
-    fabric_sudo_command(f"echo '{script_post}' > {world.f_cfg.log_join('script_post.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.log_join('script*.sh')}")
+    fabric_sudo_command(f"echo '{script_pre}' > {world.f_cfg.scripts_join('script_pre.sh')}")
+    fabric_sudo_command(f"echo '{script_post}' > {world.f_cfg.scripts_join('script_post.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script*.sh')}")
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -1709,8 +1709,8 @@ def test_legal_log_rotate_actions(dhcp_version):
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'count', 20 if dhcp_version == 'v4' else 15)
 
     # Configure log rotation actions
-    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'prerotate', world.f_cfg.log_join('script_pre.sh'))
-    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'postrotate', world.f_cfg.log_join('script_post.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'prerotate', world.f_cfg.scripts_join('script_pre.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'postrotate', world.f_cfg.scripts_join('script_post.sh'))
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')

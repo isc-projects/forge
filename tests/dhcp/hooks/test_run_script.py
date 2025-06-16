@@ -137,7 +137,7 @@ def test_run_script_leases4_committed():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -197,12 +197,12 @@ def test_run_script_leases4_committed():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
@@ -222,7 +222,7 @@ def test_run_script_leases4_committed():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join("script.sh"), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -236,7 +236,7 @@ def test_run_script_lease4_renew():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -293,12 +293,12 @@ def test_run_script_lease4_renew():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
@@ -333,7 +333,7 @@ def test_run_script_lease4_renew():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join("script.sh"), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -347,7 +347,7 @@ def test_run_script_lease4_expire():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -373,12 +373,12 @@ def test_run_script_lease4_expire():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
@@ -417,7 +417,7 @@ def test_run_script_lease4_expire():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join("script.sh"), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -431,7 +431,7 @@ def test_run_script_lease4_release():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -481,12 +481,12 @@ def test_run_script_lease4_release():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
@@ -526,7 +526,7 @@ def test_run_script_lease4_release():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join("script.sh"), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -540,7 +540,7 @@ def test_run_script_lease4_decline():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -590,12 +590,12 @@ def test_run_script_lease4_decline():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
@@ -636,7 +636,7 @@ def test_run_script_lease4_decline():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join('script.sh'), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -650,7 +650,7 @@ def test_run_script_lease4_recover():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -675,12 +675,12 @@ def test_run_script_lease4_recover():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # Configure decline time
@@ -731,7 +731,7 @@ def test_run_script_lease4_recover():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join('script.sh'), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -745,7 +745,7 @@ def test_run_script_leases6_committed():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -800,12 +800,12 @@ def test_run_script_leases6_committed():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
@@ -826,7 +826,7 @@ def test_run_script_leases6_committed():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join('script.sh'), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -840,7 +840,7 @@ def test_run_script_lease6_renew():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -885,12 +885,12 @@ def test_run_script_lease6_renew():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
@@ -914,7 +914,7 @@ def test_run_script_lease6_renew():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join('script.sh'), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -928,7 +928,7 @@ def test_run_script_lease6_expire():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -958,12 +958,12 @@ def test_run_script_lease6_expire():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
@@ -1004,7 +1004,7 @@ def test_run_script_lease6_expire():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join('script.sh'), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -1018,7 +1018,7 @@ def test_run_script_lease6_release():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -1059,12 +1059,12 @@ def test_run_script_lease6_release():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
@@ -1098,7 +1098,7 @@ def test_run_script_lease6_release():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join('script.sh'), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -1112,7 +1112,7 @@ def test_run_script_lease6_decline():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -1153,12 +1153,12 @@ def test_run_script_lease6_decline():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
@@ -1192,7 +1192,7 @@ def test_run_script_lease6_decline():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join('script.sh'), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -1206,7 +1206,7 @@ def test_run_script_lease6_recover():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -1235,12 +1235,12 @@ def test_run_script_lease6_recover():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # Configure decline time
@@ -1284,7 +1284,7 @@ def test_run_script_lease6_recover():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join('script.sh'), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
 
 
@@ -1298,7 +1298,7 @@ def test_run_script_lease6_rebind():
     Output file is checked for correct parameters and artifacts are copied to test results.
     """
     misc.test_procedure()
-    srv_msg.remove_file_from_server(world.f_cfg.data_join('script.sh'))
+    srv_msg.remove_file_from_server(world.f_cfg.scripts_join('script.sh'))
     srv_msg.remove_file_from_server(world.f_cfg.data_join('output.txt'))
 
     # Returned parameter names with expected value.
@@ -1343,12 +1343,12 @@ def test_run_script_lease6_rebind():
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'
 
     # transfer script to server and make it executable
-    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.data_join('script.sh')}")
-    fabric_sudo_command(f"chmod +x {world.f_cfg.data_join('script.sh')}")
+    fabric_sudo_command(f"echo '{script_content}' > {world.f_cfg.scripts_join('script.sh')}")
+    fabric_sudo_command(f"chmod +x {world.f_cfg.scripts_join('script.sh')}")
 
     # Configure hook
     srv_control.add_hooks('libdhcp_run_script.so')
-    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.data_join('script.sh'))
+    srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'name', world.f_cfg.scripts_join('script.sh'))
     srv_control.add_parameter_to_hook("libdhcp_run_script.so", 'sync', False)
 
     # configure and start Kea
@@ -1381,5 +1381,5 @@ def test_run_script_lease6_rebind():
                                f'{name} {value}')
 
     # Copy output files to forge results folder
-    srv_msg.copy_remote(world.f_cfg.data_join("script.sh"), local_filename="script.sh")
+    srv_msg.copy_remote(world.f_cfg.scripts_join('script.sh'), local_filename="script.sh")
     srv_msg.copy_remote(world.f_cfg.data_join("output.txt"), local_filename="output.txt")
