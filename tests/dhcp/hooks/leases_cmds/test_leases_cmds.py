@@ -550,7 +550,7 @@ def test_v4_lease_cmds_wipe(backend):
     :param backend: 1 type of leases backend kea support; wipeLeases4 is not implemented in MySQL and PostgreSQL
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2')
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2', id=1)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.define_lease_db_backend(backend)
@@ -587,7 +587,7 @@ def test_v4_lease_cmds_wipe(backend):
     # wipe those assigned leases
     cmd = {"command": "lease4-wipe", "arguments": {"subnet-id": 1}}
     resp = srv_msg.send_ctrl_cmd(cmd)
-    assert resp["text"] == "Deleted 2 IPv4 lease(s) from subnet(s) 1 WARNING: lease4-wipe is deprecated!"
+    assert resp["text"] == "Deleted 2 IPv4 lease(s) from subnet(s) 1"
 
     # we shouldn't get leases back after wipe.
     cmd = {"command": "lease4-get", "arguments": {"ip-address": "192.168.50.1"}}
