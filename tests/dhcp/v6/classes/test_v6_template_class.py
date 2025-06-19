@@ -58,9 +58,6 @@ def _get_lease(duid: str = "00:03:00:01:01:02:0c:03:0a:00", vendor: int = False,
 @pytest.mark.v6
 @pytest.mark.classification
 def test_v6_spawn_class():
-    """
-    :return:
-    """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
 
