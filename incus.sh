@@ -64,14 +64,17 @@ function log_error() {
 }
 
 function install_base_pkgs() {
-    # pkgs names may differ between systems like rhel and fedora
+    # pkgs names may differ between systems like rockylinux and fedora
     # let's check it when we gonna need it
     case "$usedSystem" in
         "ubuntu"|"debian")
             install_pkgs "$1" bind9 ccache curl freeradius git gnupg net-tools openssh-server python3 python3-venv socat tcpdump vim
             ;;
-        "fedora"|"rhel")
+        "fedora")
             install_pkgs "$1" bind ccache freeradius git net-tools openssh-server socat tcpdump vim python3
+            ;;
+        "rockylinux")
+            install_pkgs "$1" bind freeradius git net-tools openssh-server socat tcpdump vim python3
             ;;
         "alpine")
             install_pkgs "$1" bash bind ccache curl freeradius git gnupg net-tools openssl openssh python3 socat sudo tcpdump vim
@@ -173,7 +176,7 @@ function install_pkgs() {
         "ubuntu"|"debian")
             incus exec "$node" --env DEBIAN_FRONTEND=noninteractive -- apt install "$@" -y > "$logFile" 2>&1
             ;;
-        "rhel"|"fedora")
+        "rockylinux"|"fedora")
             incus exec "$node" -- dnf install -y "$@" > "$logFile" 2>&1
             ;;
         "alpine")
@@ -193,7 +196,7 @@ function update() {
             incus exec "$1" -- apt update  > "$logFile" 2>&1
             incus exec "$1" -- DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y  > "$logFile" 2>&1
             ;;
-        "rhel"|"fedora")
+        "rockylinux"|"fedora")
             incus exec "$1" -- dnf update -y  > "$logFile" 2>&1
             ;;
         "alpine")
@@ -212,7 +215,7 @@ function install_kerberos() {
         "ubuntu"|"debian")
             install_pkgs "$1" krb5-kdc krb5-admin-server libkrb5-dev dnsutils
             ;;
-        "rhel"|"fedora")
+        "rockylinux"|"fedora")
             install_pkgs "$1" krb5-server krb5-workstation krb5-libs
             ;;
         *)
@@ -230,7 +233,7 @@ function remove_pkg() {
         "ubuntu"|"debian")
             incus exec "$node" -- apt remove "$@" -y  > "$logFile" 2>&1
             ;;
-        "rhel"|"fedora")
+        "rockylinux"|"fedora")
             incus exec "$node" -- dnf remove "$@" -y  > "$logFile" 2>&1
             ;;
         "alpine")
@@ -293,12 +296,12 @@ function enable_ssh() {
     else
         case "$usedSystem" in
             "ubuntu"|"debian")
-                log "Enabling SSH on $1 - ubuntu"
+                log "Enabling SSH on $1 - $usedSystem"
                 incus exec "$1" -- systemctl enable ssh
                 incus exec "$1" -- systemctl start ssh
                 ;;
-            "rhel"|"fedora")
-                log "Enabling SSH on $1 - fedora"
+            "rockylinux"|"fedora")
+                log "Enabling SSH on $1 - $usedSystem"
                 incus exec "$1" -- systemctl enable sshd
                 incus exec "$1" -- systemctl start sshd
                 ;;
@@ -323,7 +326,7 @@ function create_user() {
     fi
     log "Creating user forge in $1 - $system"
     if ! incus exec "$1" -- id forge > /dev/null; then
-        if [[ "$system" == "fedora" ]]; then
+        if [[ "$system" == "fedora" || "$system" == "rockylinux" ]]; then
             incus exec "$1" -- useradd -m -s /bin/bash forge
             (printf "test0test1") | incus exec "$1" -- passwd --stdin forge
         else
@@ -410,11 +413,15 @@ function install_nexus_repo() {
                 incus exec kea-"$node" -- apt-key add key
                 update kea-"$node"
                 ;;
-            "rhel"|"fedora")
+            "rockylinux"|"fedora")
+                local repo_name="${usedSystem}"
+                if [[ "$usedSystem" == "rockylinux" ]]; then
+                    repo_name="rhel"
+                fi
 cat << EOF > kea.repo
 [nexus]
 name=ISC Repo
-baseurl=https://packages.aws.isc.org/repository/kea-${usedSystem}-${osVersion}/
+baseurl=https://packages.aws.isc.org/repository/kea-${repo_name}-${osVersion}/
 enabled=1
 gpgcheck=0
 EOF
@@ -476,9 +483,9 @@ function install_kea_pkgs() {
                 # so we need to build exact list of packages to install
                 incus exec kea-"$node" -- apt install "${pkgs[@]/%/=$pkg_version}" -y
                 ;;
-            "rhel"|"fedora")
+            "rockylinux"|"fedora")
                 local suffix="fc${osVersion}"
-                if [[ "$usedSystem" == "rhel" ]]; then
+                if [[ "$usedSystem" == "rockylinux" ]]; then
                     suffix="el${osVersion}"
                 fi
                 incus exec kea-"$node" -- dnf install isc-kea-*-"$pkg_version"."$suffix" -y
