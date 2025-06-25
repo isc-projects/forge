@@ -541,13 +541,13 @@ def test_v4_lease_cmds_del(backend):
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
-@pytest.mark.parametrize('backend', ['memfile'])
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v4_lease_cmds_wipe(backend):
     """
     Check lease4-wipe command while multiple leases saved
 
     :type backend: str
-    :param backend: 1 type of leases backend kea support; wipeLeases4 is not implemented in MySQL and PostgreSQL
+    :param backend: 1 type of leases backend kea support;
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2', id=1)
@@ -1423,10 +1423,18 @@ def test_v6_lease_cmds_get_using_duid(backend):
 @pytest.mark.controlchannel
 @pytest.mark.hook
 @pytest.mark.lease_cmds
-def test_v6_lease_cmds_wipe():
+@pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
+def test_v6_lease_cmds_wipe(backend):
+    """
+    Test lease6-wipe command.
+
+    :type backend: str
+    :param backend: 3 types of leases backend kea support
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
     srv_control.add_unix_socket()
+    srv_control.define_lease_db_backend(backend)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.build_and_send_config_files()
 
