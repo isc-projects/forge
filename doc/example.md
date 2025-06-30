@@ -1,28 +1,33 @@
   Working example
  -----------------
-We present you step-by-step instructions to set up example testing environment and run some Forge tests on Kea server.
-In this example we will use Ubuntu server 22.04.1 installed from ISO on two Virtual Machines.
+We present you step-by-step instructions to manualy set up example testing environment and run some Forge tests on Kea server.
+In this example we will use Ubuntu server 24.04.2 installed from ISO on two Virtual Machines.
 
-We used this image: https://releases.ubuntu.com/22.04.1/ubuntu-22.04.1-live-server-amd64.iso
+We used this image: https://releases.ubuntu.com/24.04.2/ubuntu-24.04.2-live-server-amd64.iso
 
 Other software used:
 * Virtual Box installed on HOST machine
 
-This guide was last tested on 10th November 2022.
+This guide was last tested on 30th June 2025.
 
   Setting up DUT (Device Under Test)
  ------------------------------------
 ### 1. Make VM for Kea Server
 Kea will need at least 20 GB of disk space for build process.
 (We recommend 80 GB to account for rebuilding without cleanup.)
+
+Assign at least 2 cores for Kea Machine.
+
 We make new VM with network settings as follows:
 * Adapter 1: NAT
 * Adapter 2: Host-Only Adapter _(in our case it automatically made vboxnet0)_
 * Adapter 3: Internal Network, write name you want to use for internal network
 
+Set promiscuous mode on Adaper 2 and 3 to Allow All.
+
 **(following instructions are meant to be executed on VM you choose to be Device Under Test)**
 
-### 2. Install Ubuntu Server 22.04.1
+### 2. Install Ubuntu Server 24.04.2
 Install Ubuntu from ISO using default settings and not installing additional services other than OpenSSH.
 
 After installation check IP address acquired on Adapter 2 _(in our case interface: enp0s8 ip: 192.168.58.6)._
@@ -34,14 +39,14 @@ You can use this ip to connect by SSH from HOST machine for easier management.
 ### 3. Setup network interface for testing
 Adapter 1 and 2 should get addresses from Virtual Box._(our machine got 10.0.2.15 for NAT and 192.168.58.6 for Host-Only)_
 
-We use netplan on Ubuntu 22.04.1 to set static ip for Adapter 3.
+We use netplan on Ubuntu 24.04.2 to set static ip for Adapter 3.
 
 Enter netplan directory and list files.
 ```shell
 cd /etc/netplan
 ls
 ```
-If you didn't modify anything after install, you should see one file. _(00-installer-config.yaml in our case)_
+If you didn't modify anything after install, you should see one file. _(50-cloud-init.yaml in our case)_
 
 Edit this file.
 
@@ -86,6 +91,11 @@ add line to the end replacing `<user_name>` with username you will use to gain s
 now you won't be asked for password when using sudo
 
 ### 5. Clone Kea DHCP Server from Git Repository
+Return to home directory
+```shell
+cd ~
+```
+
 You can use git clone to download Kea from repository.
 
 ```shell
@@ -99,39 +109,40 @@ enter Kea directory
 cd kea
 ```
 
+We need to install python venv (Some Ubuntu configuration may have it installed.)
+
+```shell
+sudo apt install python3.12-venv
+```
+
 run hammer.py script which will prepare all requirements for build process.
-We use some predefined settings for basic server.
+We use some predefined settings for basic server. This can take a while depending on machine speed and internet connection. (5-20 minutes)
 
 ```shell
-./hammer.py prepare-system -p local -s ubuntu -r 22.04 -w mysql pgsql radius gssapi netconf shell ccache
-```
-
-We need to make autoreconf of source.
-```shell
-autoreconf -if
-```
-
-Now we need to configure the building process, we included some preferred options for first install.
-
-```shell
-./configure --with-mysql --with-pgsql --with-gssapi --enable-shell
+./hammer.py prepare-system -p local -s ubuntu -r 24.04 -w all
 ```
 
 ### 7. Building and installing Kea.
-Next step is to build Kea from source. This step can take a while depending on speed of the machine. (it took about 20 minutes on our i5-4690K, 24GB RAM)
+Next step is to build Kea from source. This step can take a while depending on speed of the machine. (It should take about about 6 minutes on our 8 cores with 16GB RAM)
 
-(If you have multicore machine you can use multiple threads. eg. for 4 threads use `make -j4` )
+Prepare meson build
 
 ```shell
-make
+meson setup build
+```
+
+Compile the source code
+
+```shell
+meson compile -C build
 ```
 
 After you make, you need to install
 
-This step uses sudo and **CAN NOT** be run with -j parameter.
+This step uses sudo.
 
 ```shell
-sudo make install
+sudo meson install -C build
 ```
 And after install run:
 
@@ -153,8 +164,10 @@ We make new VM with network settings as follows:
 * Adapter 2: Host-Only Adapter, choose the same as in DUT
 * Adapter 3: Internal Network, write **exactly the same** name as in DUT
 
+Set promiscuous mode on Adaper 2 and 3 to Allow All.
+
 **(following instructions are meant to be executed on VM you choose to be Forge Machine)**
-### 2. Install Ubuntu Server 22.04.1
+### 2. Install Ubuntu Server 24.04.2
 Install Ubuntu from ISO on VM using default settings and not installing additional services other than OpenSSH.
 
 After installation check IP address acquired on Adapter 2 _(in our case interface: enp0s8 ip: 192.168.58.5)._
@@ -166,14 +179,14 @@ You can use this ip to connect by SSH from HOST machine for easier management.
 ### 3. Setup network interface for testing
 Adapter 1 and 2 should get addresses from Virtual Box. _(our machine got 10.0.2.15 for NAT and 192.168.58.5 for Host-Only)_
 
-We use netplan on Ubuntu 22.04.01 to set static ip for Adapter 3.
+We use netplan on Ubuntu 24.04.01 to set static ip for Adapter 3.
 
 Enter netplan directory and list files.
 ```shell
 cd /etc/netplan
 ls
 ```
-If you didn't modify anything after install, you should see one file. _(00-installer-config.yaml in our case)_
+If you didn't modify anything after install, you should see one file. _(50-cloud-init.yaml in our case)_
 
 Edit this file.
 
@@ -206,6 +219,11 @@ sudo netplan apply
 ```
 
 ### 4. Clone Forge from Git Repository
+Return to home directory
+```shell
+cd ~
+```
+
 You can use git clone to download Forge from repository.
 
 ```shell
@@ -215,8 +233,8 @@ git clone https://gitlab.isc.org/isc-projects/forge.git
 ### 5. Install python enviroment
 Install Python virtual environment module, dev tools and build-essential (it should install also python pip)
 ```shell
-sudo apt install python3.10-venv
-sudo apt install python3.10-dev
+sudo apt install python3.12-venv
+sudo apt install python3.12-dev
 sudo apt install build-essential
 ```
 
@@ -227,6 +245,7 @@ cd forge
 python3 -m venv venv
 source ./venv/bin/activate
 ./venv/bin/pip install -r requirements.txt
+deactivate
 ```
 
 ### 7. Preparing config file
@@ -243,33 +262,20 @@ nano ./init_all.py
 
 Parameters that need to be set or uncommented, some of them will be empty:
 
-`SOFTWARE_UNDER_TEST = ('kea6_server'),` (note the comma on the end)
-
 `SRV4_ADDR = '192.168.50.252'` - this is the IP we set at Server
-
-`CIADDR = '192.168.50.3'` - this is the IP we set at Forge Machine
-
-`GIADDR4 = '192.168.50.3'` - this is the IP we set at Forge Machine
-
-`IFACE = 'enp0s9'` - name of interface on Forge Machine which is connected to DUT for testing
 
 `SERVER_IFACE = 'enp0s9'` - name of the interface on Server Machine which will be DHCP server
 
-`SERVER2_IFACE = ''`
+`CIADDR = '192.168.50.3'` - this is the IP we set at Forge Machine
 
-`MGMT_ADDRESS = '192.168.58.6'` - Server IP address on Host-Only network, so Forge can connect by SSH to manage Server
+`IFACE = 'enp0s9'` - name of interface on Forge Machine which is connected to DUT for testing
+
+`MGMT_ADDRESS = '192.168.58.6'` - Kea Server IP address set on Host-Only network, so Forge can connect by SSH to manage Server
 
 `MGMT_USERNAME = 'username'` - input your username on Server machine with sudo privileges
 
 `MGMT_PASSWORD = 'password'` - input password to above username
 
-`MGMT_ADDRESS_2 = ''`
-
-`DNS_IFACE = ''`
-
-`DNS4_ADDR = ''`
-
-`DNS6_ADDR = ''`
 
 **Your Forge Machine is ready for running tests**
 
@@ -281,7 +287,7 @@ Following command performs a few known good test that should pass on this setup.
 ```shell
 cd forge
 source ./venv/bin/activate
-sudo ./venv/bin/pytest -m 'v4 and v6' -k 'test_status_get'
+sudo ./venv/bin/pytest tests/dhcp/protocol/test_v6_basic.py
 ```
 **OR** You can run directly from normal command line by entering forge directory and using oneliner:
 
@@ -292,7 +298,7 @@ cd forge
 and then:
 
 ```shell
-sudo ./venv/bin/python ./venv/bin/pytest -m 'v4 and v6' -k 'test_status_get'
+sudo ./venv/bin/python ./venv/bin/pytest tests/dhcp/protocol/test_v6_basic.py
 ```
 
  Known problems
