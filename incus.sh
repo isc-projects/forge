@@ -685,7 +685,7 @@ FORGE_VERBOSE = False
 DISABLE_DB_SETUP = False
 EOF
 
-if [[ "$usedSystem" == "fedora" ]]; then
+if [[ "$usedSystem" == "fedora" || "$usedSystem" == "rockylinux" ]]; then
     printf "DNS_DATA_PATH = \"/etc/\"" >> init_all.py
 else
     printf "DNS_DATA_PATH = \"/etc/bind/\"" >> init_all.py
