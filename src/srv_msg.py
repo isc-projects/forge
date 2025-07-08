@@ -502,17 +502,15 @@ def dns_question_record(addr, qtype, qclass):
 
 
 @step(r'Client sends DNS query.')
-def client_send_dns_query(dns_addr=None, dns_port=None, iface=world.f_cfg.dns_iface):
+def client_send_dns_query(dns_addr=None, dns_port=None):
     """client_send_dns_query.
 
     :param dns_addr: (Default value = None)
     :type dns_addr:
     :param dns_port: (Default value = None)
     :type dns_port:
-    :param iface: (Default value = world.cfg["dns_iface"])
-    :type iface:
     """
-    dns.prepare_query(dns_addr=dns_addr, dns_port=dns_port, iface=iface)
+    dns.prepare_query(dns_addr=dns_addr, dns_port=dns_port)
 
 
 # checking DNS respond
