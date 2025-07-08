@@ -136,12 +136,9 @@ class ForgeConfiguration:
         if self.install_method == 'native':
             self.software_install_path = '/usr'
 
-        # fields for restoring that can be overwritten by tests (TODO: WTF?)
-        self.db_type_bk = self.db_type
-        self.db_host_bk = self.db_host
-        self.db_name_bk = self.db_name
-        self.db_passwd_bk = self.db_passwd
-        self.db_user_bk = self.db_user
+        # basic authentication
+        self.auth_passwd = "difficultPassword"
+        self.auth_user = "superAdmin"
 
         # backward compatibility
         self.gia4_addr = self.giaddr4

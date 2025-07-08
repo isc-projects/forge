@@ -1034,7 +1034,8 @@ def add_unix_socket(socket_name=None):
 
 
 @step(r'Server has control agent configured on HTTP connection with address (\S+):(\S+) and socket (\S+) path: (\S+).')
-def add_http_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, socket_name='control_socket', auth=None):
+def add_http_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, socket_name='control_socket',
+                             auth=None):
     """Add HTTP control channel.
 
     :param host_address: (Default value = '$(MGMT_ADDRESS)')

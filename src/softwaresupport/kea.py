@@ -1555,6 +1555,17 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
     :param auth: Authentication settings for the control channel
     :type auth: dict, optional
     """
+    if auth is None:
+        auth = {"authentication": {
+                    "type": "basic",
+                    "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds"),
+                    "clients": [
+                        {
+                            "password-file": "hiddens"
+                        }
+                    ]
+                }}
+
     if world.f_cfg.control_agent:
         if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
             logging_file = 'kea-ctrl-agent.log'
@@ -1578,13 +1589,13 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
             if socket["socket-type"] == "http":
                 socket["socket-address"] = host_address
                 socket["socket-port"] = int(host_port)
+                socket["authentication"] = auth
                 break
         else:
             conf = {"socket-type": "http",
                     "socket-address": host_address,
                     "socket-port": int(host_port)}
-            if auth:
-                conf.update(auth)
+            conf.update(auth)
             world.dhcp_cfg["control-sockets"].append(conf)
 
 
@@ -1973,6 +1984,10 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
         copy_configuration_file("kea-dhcp-ddns.conf", "kea-dhcp-ddns.conf", destination_host=destination_address)
         remove_local_file("kea-dhcp-ddns.conf")
 
+    fabric_run_command(f'mkdir -p {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
+                       destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+    fabric_run_command(f'echo "{world.f_cfg.auth_user}:{world.f_cfg.auth_passwd}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds", "hiddens")}',
+                        destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
 
 def clear_logs(destination_address=world.f_cfg.mgmt_address):
     """clear_logs.

@@ -46,6 +46,7 @@ import ipaddress
 import copy
 import requests
 
+from base64 import b64encode
 from src.forge_cfg import world
 from src.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file, \
         fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name, \
@@ -934,7 +935,7 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
 
 
 def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=False, https=False, verify=None, cert=None,
-                           headers=None):
+                           headers=None, auth=None):
     """Send command to Control Agent using http or https.
 
     :param command: dict, command
@@ -955,6 +956,8 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
     :type cert:
     :param headers: dict, dictionary that should be added to message headers
     :type headers:
+    :param auth: (Default value = None) user and password for basic authentication, format: "user:password", or "missing" if no authentication is required
+    :type auth: str
     :return: json struct response from Control Agent (Default value = None)
     :rtype: dict
     """
@@ -967,6 +970,13 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
     d_headers = {"Content-Type": "application/json"}
     if headers is not None:
         d_headers.update(headers)
+
+    # add authorisation only if not already present
+    if auth is None and auth != "missing" and "Authorization" not in d_headers:
+        user_passwd = f"{world.f_cfg.auth_user}:{world.f_cfg.auth_passwd}"
+        d_headers.update({'Authorization': f'Basic {b64encode(user_passwd.encode("utf-8")).decode("ascii")}'})
+    elif auth is not None and auth != "missing":
+        d_headers.update({'Authorization': f'Basic {b64encode(auth.encode("utf-8")).decode("ascii")}'})
 
     addr = "http://" + address + ":" + locale.str(port)
     addr = addr.replace('http', 'https') if https else addr

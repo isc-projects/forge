@@ -15,6 +15,7 @@
 
 import copy
 import logging
+import os
 
 from src import srv_control, srv_msg, misc
 from src.forge_cfg import world
@@ -988,7 +989,14 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
     if not world.f_cfg.control_agent:
         init_cfg["control-sockets"].append({"socket-type": "http",
                                             "socket-address": world.f_cfg.mgmt_address,
-                                            "socket-port": 8000})
+                                            "socket-port": 8000,
+                                            "authentication": {
+                                                "type": "basic",
+                                                "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds"),
+                                                "clients": [
+                                                    {"password-file": "hiddens"}
+                                                ]
+                                            }})
 
     for param, val in kwargs.items():
         if val is None or param == 'check-config':

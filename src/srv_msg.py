@@ -502,15 +502,17 @@ def dns_question_record(addr, qtype, qclass):
 
 
 @step(r'Client sends DNS query.')
-def client_send_dns_query(dns_addr=None, dns_port=None):
+def client_send_dns_query(dns_addr=None, dns_port=None, iface=world.f_cfg.dns_iface):
     """client_send_dns_query.
 
     :param dns_addr: (Default value = None)
     :type dns_addr:
     :param dns_port: (Default value = None)
     :type dns_port:
+    :param iface: (Default value = world.cfg["dns_iface"])
+    :type iface:
     """
-    dns.prepare_query(dns_addr=dns_addr, dns_port=dns_port)
+    dns.prepare_query(dns_addr=dns_addr, dns_port=dns_port, iface=iface)
 
 
 # checking DNS respond
@@ -978,7 +980,7 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
 
 @step(r'Send ctrl cmd (.+) using HTTP (\S+):(\S+) connection.')
 def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_result=0, exp_failed=False, https=False, verify=None, cert=None,
-                           headers=None):
+                           headers=None, auth=None):
     """Send control command via HTTP.
 
     :param command:
@@ -999,6 +1001,8 @@ def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_re
     :type cert:
     :param headers: (Default value = None)
     :type headers:
+    :param auth: (Default value = None) user and password for basic authentication, format: "user:password"
+    :type auth: str
     :return:
     :rtype:
     """
@@ -1007,11 +1011,11 @@ def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_re
         address, port = test_define_value(address, port)
     else:
         address, port, command = test_define_value(address, port, command)
-    return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result, exp_failed, https, verify, cert, headers)
+    return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result, exp_failed, https, verify, cert, headers, auth)
 
 
 def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=False, address=world.f_cfg.mgmt_address, verify=None, cert=None,
-                  headers=None, port=8000):
+                  headers=None, port=8000, auth=None):
     """Send request to DHCP Kea server over Unix socket or over HTTP via CA.
 
     :param cmd:
@@ -1034,6 +1038,8 @@ def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=Fa
     :type headers:
     :param port: (Default value = 8000)
     :type port:
+    :param auth: (Default value = None) user and password for basic authentication, format: "user:password"
+    :type auth: str
     :return:
     :rtype:
     """
@@ -1044,15 +1050,16 @@ def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=Fa
             else:
                 cmd["service"] = ['dhcp6']
 
+    # if auth is None or auth != "missing":
     if channel == 'http':
-        response = send_ctrl_cmd_via_http(cmd, address, port, exp_result=exp_result, exp_failed=exp_failed, headers=headers)
+        response = send_ctrl_cmd_via_http(cmd, address, port, exp_result=exp_result, exp_failed=exp_failed, headers=headers, auth=auth)
         if isinstance(response, dict):
             response = response
         else:
             response = response[0] if response else response
     elif channel == 'https':
         response = send_ctrl_cmd_via_http(cmd, address, port, exp_result=exp_result, exp_failed=exp_failed, https=True,
-                                          verify=verify, cert=cert, headers=headers)
+                                          verify=verify, cert=cert, headers=headers, auth=auth)
         # in https connection to control agent results is returned via dict not list as everywhere else,
         # so there is small trick for temp testing
         if isinstance(response, dict):
