@@ -10,8 +10,8 @@
 # pylint: disable=line-too-long
 
 import json
-import pytest
 import os
+import pytest
 
 from src import srv_msg
 from src import srv_control

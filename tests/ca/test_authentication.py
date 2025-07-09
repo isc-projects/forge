@@ -21,9 +21,10 @@ from src.protosupport.multi_protocol_functions import fabric_sudo_command
 
 
 def create_user_and_passowrd_file(user, password):
-    """create_user_and_passowrd_file Create a user and password file for the RBAC tests that are using basic authentication.
-    Usulally basic authentication uses one file with username and password. Let's use separate files for each user
-    in those tests.
+    """create_user_and_passowrd_file Create a user and password file
+    for the RBAC tests that are using basic authentication.
+    Usulally basic authentication uses one file with username
+    and password. Let's use separate files for each user in those tests.
 
     :param user: The user to create in the file
     :type user: str
@@ -32,7 +33,8 @@ def create_user_and_passowrd_file(user, password):
     """
     fabric_sudo_command(f'echo "{user}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp", user)}',
                         hide_all=not world.f_cfg.forge_verbose)
-    fabric_sudo_command(f'echo "{password}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp", f"{user}_password")}',
+    fabric_sudo_command(f'echo "{password}" > {os.path.join(world.f_cfg.get_share_path(),
+                        "kea-creds-tmp", f"{user}_password")}',
                         hide_all=not world.f_cfg.forge_verbose)
 
     if world.f_cfg.install_method != 'make':
@@ -74,12 +76,12 @@ def test_ca_basic_authentication(dhcp_version):
         "authentication": {
             "type": "basic",
             "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp"),
-                "clients": [
-                    {
-                        "user-file": "admin",
-                        "password-file": "admin_password"
-                    }
-                ]
+            "clients": [
+                {
+                    "user-file": "admin",
+                    "password-file": "admin_password"
+                }
+            ]
         }}
     if world.f_cfg.control_agent:
         srv_control.add_http_control_channel()

@@ -25,9 +25,10 @@ from src.protosupport.multi_protocol_functions import fabric_sudo_command
 
 
 def create_user_and_passowrd_file(user, password):
-    """create_user_and_passowrd_file Create a user and password file for the RBAC tests that are using basic authentication.
-    Usulally basic authentication uses one file with username and password. Let's use separate files for each user
-    in those tests.
+    """create_user_and_passowrd_file Create a user and
+    password file for the RBAC tests that are using basic authentication.
+    Usulally basic authentication uses one file with username
+    and password. Let's use separate files for each user in those tests.
 
     :param user: The user to create in the file
     :type user: str
@@ -36,7 +37,8 @@ def create_user_and_passowrd_file(user, password):
     """
     fabric_sudo_command(f'echo "{user}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp", user)}',
                         hide_all=not world.f_cfg.forge_verbose)
-    fabric_sudo_command(f'echo "{password}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp", f"{user}_password")}',
+    fabric_sudo_command(f'echo "{password}" > {os.path.join(world.f_cfg.get_share_path(),
+                        "kea-creds-tmp", f"{user}_password")}',
                         hide_all=not world.f_cfg.forge_verbose)
 
     if world.f_cfg.install_method != 'make':
@@ -1023,6 +1025,7 @@ def test_rbac_access_by_hook_name(dhcp_version):
     _send_cmd({"command": "remote-option4-pool-set", "arguments": {}}, user='admin2', result=403)
 
 
+@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
