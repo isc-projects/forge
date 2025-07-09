@@ -44,9 +44,9 @@ import logging
 import codecs
 import ipaddress
 import copy
+from base64 import b64encode
 import requests
 
-from base64 import b64encode
 from src.forge_cfg import world
 from src.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file, \
         fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name, \
