@@ -8,16 +8,57 @@
 
 from base64 import b64encode
 
+import os
 import pytest
 
 from src import misc
 from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
+from src.protosupport.multi_protocol_functions import fabric_sudo_command
 
 # pylint: disable=unused-argument
 
 
+def create_user_and_passowrd_file(user, password):
+    """create_user_and_passowrd_file Create a user and password file for the RBAC tests that are using basic authentication.
+    Usulally basic authentication uses one file with username and password. Let's use separate files for each user
+    in those tests.
+
+    :param user: The user to create in the file
+    :type user: str
+    :param password: The password to use
+    :type password: str
+    """
+    fabric_sudo_command(f'echo "{user}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp", user)}',
+                        hide_all=not world.f_cfg.forge_verbose)
+    fabric_sudo_command(f'echo "{password}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp", f"{user}_password")}',
+                        hide_all=not world.f_cfg.forge_verbose)
+
+    if world.f_cfg.install_method != 'make':
+        if world.server_system in ['alpine', 'redhat', 'fedora']:
+            fabric_sudo_command(f'chown -R kea:kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
+                                hide_all=not world.f_cfg.forge_verbose)
+        else:
+            fabric_sudo_command(f'chown -R _kea:_kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
+                                hide_all=not world.f_cfg.forge_verbose)
+
+
+# fixture to remove authentication files after the test
+@pytest.fixture()
+def remove_authentication_files():
+    """remove_authentication_files Remove authentication files after the test.
+    This fixture is used to create authentiaction directory and files before the test.
+    It is used to avoid conflicts with other tests.
+    """
+    fabric_sudo_command(f'mkdir -m 750 -p {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
+                        hide_all=not world.f_cfg.forge_verbose)
+    yield
+    fabric_sudo_command(f'rm -rf {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
+                        hide_all=not world.f_cfg.forge_verbose)
+
+
+@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v6
 @pytest.mark.v4
 def test_ca_basic_authentication(dhcp_version):
@@ -28,17 +69,17 @@ def test_ca_basic_authentication(dhcp_version):
     """
     misc.test_setup()
     srv_control.add_unix_socket()
+    create_user_and_passowrd_file("admin", "p@ssw0rd")
     auth = {
         "authentication": {
             "type": "basic",
-            "clients":
-            [
-                {
-                    "comment": "admin is authorized",
-                    "user": "admin",
-                    "password": "p@ssw0rd"
-                }
-            ]
+            "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp"),
+                "clients": [
+                    {
+                        "user-file": "admin",
+                        "password-file": "admin_password"
+                    }
+                ]
         }}
     if world.f_cfg.control_agent:
         srv_control.add_http_control_channel()

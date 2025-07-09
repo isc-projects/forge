@@ -923,6 +923,8 @@ def execute_kea_shell(args, exp_result=0, exp_failed=False):
     """
     args = test_define_value(args)[0]
     path = world.f_cfg.sbin_join('kea-shell')
+    if "--auth-user" not in args and "--auth-password" not in args:
+        args = f" --auth-user {world.f_cfg.auth_user} --auth-password {world.f_cfg.auth_passwd} {args}"
     result = multi_protocol_functions.execute_shell_cmd(path + ' ' + args, exp_failed=exp_failed)
     result = json.loads(result)
     assert result[0]['result'] == exp_result, result
