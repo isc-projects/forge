@@ -1495,3 +1495,31 @@ def enable_https(trust_anchor, cert_file, key_file, cert_required):
     :type cert_required:
     """
     dhcp.enable_https(trust_anchor, cert_file, key_file, cert_required)
+
+
+def run_test_config(config_path: str = None, strict_security: bool = True, should_fail: bool = False, syntax_only: bool = False):
+    """Run Kea test config function.
+
+    :param config_path: Path to the config file to test.
+    :type config_path: str
+    :param strict_security: Whether to run the test with strict security.
+    :type strict_security: bool
+    :param should_fail: Whether to expect the test to fail.
+    :type should_fail: bool
+    :param syntax_only: Whether to run the test with syntax only or hooks.
+    :type syntax_only: bool
+    :return: The result of the test config command.
+    :rtype: fabric.Result
+    """
+    return dhcp.run_test_config(config_path=config_path, strict_security=strict_security, should_fail=should_fail, syntax_only=syntax_only)
+
+
+def get_kea_version(short: bool = False):
+    """Get Kea version.
+
+    :param short: Whether to get the short version.
+    :type short: bool
+    :return: The result of the test config command.
+    :rtype: fabric.Result
+    """
+    return dhcp.get_kea_version(short=short)

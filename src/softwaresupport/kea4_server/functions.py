@@ -28,5 +28,5 @@ from src.softwaresupport.kea import host_reservation, host_reservation_extension
 from src.softwaresupport.kea import update_ha_hook_parameter, db_setup, generate_certificate
 from src.softwaresupport.kea import disable_lease_affinity, update_expired_leases_processing, configure_multi_threading
 from src.softwaresupport.kea import config_pool_client_classification, add_database_hook, enable_https
-from src.softwaresupport.kea import define_host_db_backend, define_lease_db_backend
+from src.softwaresupport.kea import define_host_db_backend, define_lease_db_backend, run_test_config, get_kea_version
 # TODO remove this file :) but this is another set of reworks so for another time

@@ -2760,3 +2760,43 @@ def insert_message_in_server_logs(message: str):
         for file in [world.cfg["kea_log_file"], world.cfg["kea_ca_log_file"]]:
             result = fabric_sudo_command(f'echo {message} >> {file}', destination_host=host)
             assert result.succeeded
+
+
+def run_test_config(config_path: str = None, strict_security: bool = True, should_fail: bool = False, syntax_only: bool = False):
+    """Run Kea test config function.
+
+    :param config_path: Path to the config file to test.
+    :type config_path: str
+    :param strict_security: Whether to run the test with strict security.
+    :type strict_security: bool
+    :param should_fail: Whether to expect the test to fail.
+    :type should_fail: bool
+    :param syntax_only: Whether to run the test with syntax only or hooks.
+    :type syntax_only: bool
+    :return: The result of the test config command.
+    :rtype: fabric.Result
+    """
+    if config_path is None:
+        config_path = world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf')
+    switches = (' ' if strict_security else ' -X ') + (' -t ' if syntax_only else ' -T ')
+    result = fabric_sudo_command(os.path.join(world.f_cfg.software_install_path,  f'sbin/kea-dhcp{world.proto[1]}') + switches + config_path,
+                                 ignore_errors=True)
+    if should_fail:
+        assert not result.succeeded, 'No Error in config file but we expected one'
+        assert 'ERROR' in result.stdout, 'No Error in config file but we expected one'
+    else:
+        assert result.succeeded, 'Error in config file but we expected none'
+        assert 'ERROR' not in result.stdout, 'Error in config file but we expected none'
+    return result
+
+
+def get_kea_version(short: bool = False):
+    """Get Kea version.
+
+    :param short: Whether to get the short version.
+    :type short: bool
+    :return: The result of the test config command.
+    :rtype:
+    """
+    result = fabric_sudo_command(os.path.join(world.f_cfg.software_install_path,  f'sbin/kea-dhcp{world.proto[1]}') + (' -v' if short else ' -V'), hide_all=True)
+    return result.stdout
