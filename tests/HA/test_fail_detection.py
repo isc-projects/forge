@@ -67,6 +67,7 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
     srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+    srv_control.create_password_files(dest=world.f_cfg.mgmt_address_2)
 
     if dhcp_version == 'v6':
         srv_control.config_srv_subnet('2001:db8:1::/64',
@@ -179,6 +180,7 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
     srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+    srv_control.create_password_files(dest=world.f_cfg.mgmt_address_2)
 
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24',
@@ -301,6 +303,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+    srv_control.create_password_files(dest=world.f_cfg.mgmt_address_2)
 
     if dhcp_version == "v6":
         srv_control.config_srv_subnet('2001:db8:1::/64',
@@ -372,6 +375,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
 
     # clear data on server2 and start it
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+    srv_control.create_password_files(dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
 
     # wait for both of them will be in synced and ready to work
@@ -426,6 +430,7 @@ def test_HA_load_balancing_fail_detected_in_primary(dhcp_version, backend):
     srv_control.define_lease_db_backend(backend)
     # we have to clear data on second system, before test forge does not know that we have multiple systems
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+    srv_control.create_password_files(dest=world.f_cfg.mgmt_address_2)
 
     if dhcp_version == "v6":
         srv_control.config_srv_subnet('2001:db8:1::/64',

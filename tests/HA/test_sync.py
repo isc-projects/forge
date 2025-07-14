@@ -65,6 +65,7 @@ def _clear_leases_from_server(dhcp_version, backend, server):
         fabric_sudo_command(f'> {world.f_cfg.get_leases_path()}', server)
     else:
         srv_control.clear_some_data('leases', dest=server)
+        srv_control.create_password_files(dest=server)
 
 
 @pytest.mark.v6
@@ -275,6 +276,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
         srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
         # dump leases and logs of server2
         srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+        srv_control.create_password_files(dest=world.f_cfg.mgmt_address_2)
         wait_until_ha_state('partner-down', dhcp_version=dhcp_version)
         # start clean server2
         srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
@@ -319,6 +321,7 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
         srv_control.start_srv('DHCP', 'stopped')
         # dump leases and logs from server1
         srv_control.clear_some_data('all')
+        srv_control.create_password_files()
         # let's wait until secondary system switch status, we don't need elapsed time increased
         # due to server settings
         wait_until_ha_state('partner-down', dest=world.f_cfg.mgmt_address_2, dhcp_version=dhcp_version)
@@ -577,6 +580,7 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
     # dump leases and logs of server2
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
+    srv_control.create_password_files(dest=world.f_cfg.mgmt_address_2)
     # start clean server2
     wait_until_ha_state('partner-down', dhcp_version=dhcp_version)
     srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
@@ -589,6 +593,7 @@ def test_HA_load_balancing_sync(dhcp_version: str, backend: str, hook_order: str
     srv_control.start_srv('DHCP', 'stopped')
     # dump leases and logs of server2
     srv_control.clear_some_data('all')
+    srv_control.create_password_files()
     # start clean server1
     wait_until_ha_state('partner-down', dhcp_version=dhcp_version, dest=world.f_cfg.mgmt_address_2)
     srv_control.start_srv('DHCP', 'started')

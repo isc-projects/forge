@@ -1926,6 +1926,31 @@ def set_ownership_of_a_file(file_path, destination_address=world.f_cfg.mgmt_addr
                                 destination_host=destination_address)
 
 
+def create_password_files(user=world.f_cfg.auth_user, passwd=world.f_cfg.auth_passwd,
+                          destination_address=world.f_cfg.mgmt_address):
+    """create_password_files Create password files.
+
+    :param user: user name, (Default value = world.f_cfg.auth_user)
+    :type user: str
+    :param passwd: password, (Default value = world.f_cfg.auth_passwd)
+    :type passwd: str
+    :param destination_address: address of remote system where the password files are created,
+        (Default value = world.f_cfg.mgmt_address)
+    :type destination_address: str
+    """
+    fabric_sudo_command(f'mkdir -m 750 -p {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
+                        destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+    fabric_sudo_command(f'echo "{user}:{passwd}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds", "hiddens")}',
+                        destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+    if world.f_cfg.install_method != 'make':
+        if world.server_system in ['alpine', 'redhat', 'fedora']:
+            fabric_sudo_command(f'chown -R kea:kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
+                                destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+        else:
+            fabric_sudo_command(f'chown -R _kea:_kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
+                                destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+
+
 def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):
     """Generate final config file, save it to test result directory and send it to remote system.
 
@@ -1984,17 +2009,7 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
         copy_configuration_file("kea-dhcp-ddns.conf", "kea-dhcp-ddns.conf", destination_host=destination_address)
         remove_local_file("kea-dhcp-ddns.conf")
 
-    fabric_sudo_command(f'mkdir -m 750 -p {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
-                        destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
-    fabric_sudo_command(f'echo "{world.f_cfg.auth_user}:{world.f_cfg.auth_passwd}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds", "hiddens")}',
-                        destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
-    if world.f_cfg.install_method != 'make':
-        if world.server_system in ['alpine', 'redhat', 'fedora']:
-            fabric_sudo_command(f'chown -R kea:kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
-                                destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
-        else:
-            fabric_sudo_command(f'chown -R _kea:_kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
-                                destination_host=destination_address, hide_all=not world.f_cfg.forge_verbose)
+    create_password_files(destination_address=destination_address)
 
 
 def clear_logs(destination_address=world.f_cfg.mgmt_address):

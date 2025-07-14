@@ -1306,6 +1306,21 @@ def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address,
         dns.clear_all(remove_logs=False, destination_address=dest)
 
 
+def create_password_files(user=world.f_cfg.auth_user, passwd=world.f_cfg.auth_passwd,
+                          dest=world.f_cfg.mgmt_address):
+    """create_password_files Create file with username and password for kea control channel.
+
+    :param user: user name, (Default value = world.f_cfg.auth_user)
+    :type user: str
+    :param passwd: password, (Default value = world.f_cfg.auth_passwd)
+    :type passwd: str
+    :param dest: address of remote system where the password files are created,
+        (Default value = world.f_cfg.mgmt_address)
+    :type dest: str
+    """
+    dhcp.create_password_files(user=user, passwd=passwd, destination_address=dest)
+
+
 # DDNS server
 @step(r'DDNS server has control channel (\S+).')
 def ddns_add_unix_socket(socket_name=None):
