@@ -30,5 +30,6 @@ from src.softwaresupport.kea import disable_lease_affinity, update_expired_lease
 from src.softwaresupport.kea import add_prefix_to_subnet, config_pool_client_classification
 from src.softwaresupport.kea import add_database_hook, enable_https
 from src.softwaresupport.kea import define_host_db_backend, define_lease_db_backend, run_test_config, get_kea_version
+from src.softwaresupport.kea import create_password_files
 
 # TODO remove this file :) but this is another set of reworks so for another time
