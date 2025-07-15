@@ -1589,7 +1589,7 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
             if socket["socket-type"] == "http":
                 socket["socket-address"] = host_address
                 socket["socket-port"] = int(host_port)
-                socket["authentication"] = auth
+                socket["authentication"] = auth["authentication"]
                 break
         else:
             conf = {"socket-type": "http",
