@@ -59,9 +59,9 @@ def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,
                 fabric.state.output.warnings = False
             if hide_all:
                 with hide('running', 'stdout', 'stderr'):
-                    result = run(cmd, pty=False)
+                    result = run(cmd, pty=world.f_cfg.fabric_pty)
             else:
-                result = run(cmd, pty=False)
+                result = run(cmd, pty=world.f_cfg.fabric_pty)
     fabric.state.output.warnings = True
     return result
 
