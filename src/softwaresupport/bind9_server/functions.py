@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -346,7 +346,7 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
                                                                'dns/dns_log_file',
                                                                destination_address),
                          destination_host=destination_address, ignore_errors=True,
-                         hide_all=not world.f_cfg.forge_verbose)
+                         hide_all=world.f_cfg.forge_verbose == 0)
 
 
 def clear_all(destination_address=world.f_cfg.mgmt_address, remove_logs=True):

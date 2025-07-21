@@ -96,7 +96,7 @@ SETTINGS = {
     'DISABLE_DB_SETUP': False,
     'WIN_DNS_ADDR_2016': '',
     'WIN_DNS_ADDR_2019': '',
-    'FORGE_VERBOSE': True
+    'FORGE_VERBOSE': 1,
 }
 
 

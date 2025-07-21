@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -649,7 +649,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
                          iface=iface,
                          timeout=factor * world.cfg['wait_interval'],
                          multi=False,
-                         verbose=int(world.f_cfg.forge_verbose))
+                         verbose=world.f_cfg.forge_verbose)
         if world.f_cfg.forge_verbose == 0:
             print(".", end='')
 

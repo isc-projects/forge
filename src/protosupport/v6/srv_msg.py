@@ -891,7 +891,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
                         # iface=iface, deprecated
                         timeout=factor * world.cfg['wait_interval'],
                         nofilter=1,
-                        verbose=int(world.f_cfg.forge_verbose))
+                        verbose=world.f_cfg.forge_verbose)
         if world.f_cfg.forge_verbose == 0:
             print(".", end='')
 

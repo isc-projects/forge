@@ -205,16 +205,16 @@ def add_keys(secret, name, algorithm):
         "digest-bits": 0  # default value
     })
     fabric_sudo_command(f'mkdir -m 750 -p {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
-                        hide_all=not world.f_cfg.forge_verbose)
+                        hide_all=world.f_cfg.forge_verbose == 0)
     fabric_sudo_command(f'echo "{secret}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds", name)}',
-                        hide_all=not world.f_cfg.forge_verbose)
+                        hide_all=world.f_cfg.forge_verbose == 0)
     if world.f_cfg.install_method != 'make':
         if world.server_system in ['alpine', 'redhat', 'fedora']:
             fabric_sudo_command(f'chown -R kea:kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
-                                hide_all=not world.f_cfg.forge_verbose)
+                                hide_all=world.f_cfg.forge_verbose == 0)
         else:
             fabric_sudo_command(f'chown -R _kea:_kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
-                                hide_all=not world.f_cfg.forge_verbose)
+                                hide_all=world.f_cfg.forge_verbose == 0)
 
 
 def ddns_open_control_channel_socket(socket_name=None):

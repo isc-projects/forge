@@ -32,18 +32,18 @@ def create_user_and_passowrd_file(user, password):
     :type password: str
     """
     fabric_sudo_command(f'echo "{user}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp", user)}',
-                        hide_all=not world.f_cfg.forge_verbose)
+                        hide_all=world.f_cfg.forge_verbose == 0)
     fabric_sudo_command(f'echo "{password}" > {os.path.join(world.f_cfg.get_share_path(),
                         "kea-creds-tmp", f"{user}_password")}',
-                        hide_all=not world.f_cfg.forge_verbose)
+                        hide_all=world.f_cfg.forge_verbose == 0)
 
     if world.f_cfg.install_method != 'make':
         if world.server_system in ['alpine', 'redhat', 'fedora']:
             fabric_sudo_command(f'chown -R kea:kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
-                                hide_all=not world.f_cfg.forge_verbose)
+                                hide_all=world.f_cfg.forge_verbose == 0)
         else:
             fabric_sudo_command(f'chown -R _kea:_kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
-                                hide_all=not world.f_cfg.forge_verbose)
+                                hide_all=world.f_cfg.forge_verbose == 0)
 
 
 # fixture to remove authentication files after the test
@@ -54,10 +54,10 @@ def remove_authentication_files():
     It is used to avoid conflicts with other tests.
     """
     fabric_sudo_command(f'mkdir -m 750 -p {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
-                        hide_all=not world.f_cfg.forge_verbose)
+                        hide_all=world.f_cfg.forge_verbose == 0)
     yield
     fabric_sudo_command(f'rm -rf {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
-                        hide_all=not world.f_cfg.forge_verbose)
+                        hide_all=world.f_cfg.forge_verbose == 0)
 
 
 @pytest.mark.usefixtures('remove_authentication_files')

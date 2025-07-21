@@ -15,7 +15,10 @@
 
 # FABRIC_PTY = False
 
-# FORGE_VERBOSE = True
+# Forge verbose level
+# 0: Some output
+# 1: Show shell commands, commands send to DUT, responses received from DUT.
+# FORGE_VERBOSE = 1
 
 # This defines the logging level for the common logger used by this framework
 # Possible values are CRITICAL, ERROR, WARNING, INFO and DEBUG and they are
