@@ -201,6 +201,17 @@ class ForgeConfiguration:
         # basic validation of configuration
         self.basic_validation()
 
+        if self.forge_verbose >= 2:
+            def trace_calls(frame, event, _):
+                if event == 'call':
+                    code = frame.f_code
+                    func_name = code.co_name
+                    filename = code.co_filename
+                    lineno = frame.f_lineno
+                    if 'src/' in filename or 'tests/' in filename:
+                        print(f"Call to {func_name} at {filename}:{lineno}")
+            sys.settrace(trace_calls)
+
     def _determine_mgmt_password(self):
         """_determine_mgmt_password Determine mgmt password."""
         if not hasattr(self, "mgmt_password_cmd") or self.mgmt_password_cmd is None or len(self.mgmt_password_cmd) == 0:

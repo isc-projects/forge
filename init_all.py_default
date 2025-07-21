@@ -18,6 +18,7 @@
 # Forge verbose level
 # 0: Some output
 # 1: Show shell commands, commands send to DUT, responses received from DUT.
+# 2: Show all called functions.
 # FORGE_VERBOSE = 1
 
 # This defines the logging level for the common logger used by this framework
