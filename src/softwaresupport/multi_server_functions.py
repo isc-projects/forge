@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -167,11 +167,11 @@ def fabric_download_file(remote_path, local_path,
     if '*' in remote_path:  # fabric get needs o+rx permissions on parent directory to properly list files when using *
         try:
             permissions = int(fabric_sudo_command(f'stat -c %a {remote_path.rsplit("/", 1)[0]}',
-                                                  ignore_errors=True, hide_all=True))
+                                                  ignore_errors=True, hide_all=world.f_cfg.forge_verbose == 0))
         except ValueError:
             permissions = -1
         else:
-            fabric_sudo_command(f'chmod o+rx {remote_path.rsplit("/", 1)[0]}', hide_all=True)
+            fabric_sudo_command(f'chmod o+rx {remote_path.rsplit("/", 1)[0]}', hide_all=world.f_cfg.forge_verbose == 0)
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         with settings(host_string=destination_host, user=user_loc, password=password_loc, warn_only=ignore_errors):
@@ -185,7 +185,9 @@ def fabric_download_file(remote_path, local_path,
             fabric.state.output.warnings = True
     if '*' in remote_path:  # return permisions to original state
         if int(permissions) >= 0:
-            fabric_sudo_command(f'chmod {permissions} {remote_path.rsplit("/", 1)[0]}', hide_all=True)
+            fabric_sudo_command(
+                f'chmod {permissions} {remote_path.rsplit("/", 1)[0]}', hide_all=world.f_cfg.forge_verbose == 0
+            )
     return result
 
 
@@ -205,7 +207,7 @@ def fabric_remove_file_command(remote_path,
                                destination_host=world.f_cfg.mgmt_address,
                                user_loc=world.f_cfg.mgmt_username,
                                password_loc=world.f_cfg.mgmt_password,
-                               hide_all=True):
+                               hide_all=world.f_cfg.forge_verbose == 0):
     """Remove a file from a remote node.
 
     :param remote_path: remote file path

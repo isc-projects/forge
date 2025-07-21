@@ -2813,5 +2813,5 @@ def get_kea_version(short: bool = False):
     :return: The result of the test config command.
     :rtype:
     """
-    result = fabric_sudo_command(os.path.join(world.f_cfg.software_install_path,  f'sbin/kea-dhcp{world.proto[1]}') + (' -v' if short else ' -V'), hide_all=True)
+    result = fabric_sudo_command(os.path.join(world.f_cfg.software_install_path,  f'sbin/kea-dhcp{world.proto[1]}') + (' -v' if short else ' -V'), hide_all=world.f_cfg.forge_verbose == 0)
     return result.stdout

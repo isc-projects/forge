@@ -371,7 +371,7 @@ def _tweak_radius_config(destination: str = world.f_cfg.mgmt_address):
         os.remove(local_radius_conf)
 
     # Download config.
-    fabric_download_file(world.radius_config, local_radius_conf, destination_host=destination, hide_all=True)
+    fabric_download_file(world.radius_config, local_radius_conf, destination_host=destination, hide_all=world.f_cfg.forge_verbose == 0)
 
     # Read config.
     with open(local_radius_conf, 'r', encoding='utf-8') as file:

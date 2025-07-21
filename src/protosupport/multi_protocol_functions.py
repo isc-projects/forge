@@ -919,7 +919,7 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
 
     attempts = 0
     while attempts < 3:
-        response = fabric_sudo_command(cmd, hide_all=True, destination_host=destination_address, ignore_errors=exp_failed)
+        response = fabric_sudo_command(cmd, hide_all=world.f_cfg.forge_verbose == 0, destination_host=destination_address, ignore_errors=exp_failed)
         if exp_failed:
             assert response.failed
         else:

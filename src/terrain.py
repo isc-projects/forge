@@ -338,7 +338,7 @@ def test_start():
         ('fedora', 'fedora-release'),
         ('redhat', 'redhat-release'),
     ]:
-        result = fabric_run_command(f'ls -al "/etc/{release_file}"', hide_all=True, ignore_errors=True)
+        result = fabric_run_command(f'ls -al "/etc/{release_file}"', hide_all=world.f_cfg.forge_verbose == 0, ignore_errors=True)
         if result.succeeded:
             world.server_system = system_candidate
             break
@@ -347,7 +347,7 @@ def test_start():
     # let's assume x86_64 is the default architecture
     world.server_architecture = 'x86_64'
     # chech what architecture system is returning
-    result = fabric_run_command('uname -m', hide_all=True, ignore_errors=True)
+    result = fabric_run_command('uname -m', hide_all=world.f_cfg.forge_verbose == 0, ignore_errors=True)
     if result.succeeded:
         world.server_architecture = result.stdout.rstrip()
         print(f'server running on {world.server_architecture} architecture')
