@@ -90,6 +90,7 @@ OPTIONS = {"client-id": 1,
            "subscriber-id": 38,
            "fqdn": 39,
            "lq-client-data": 45,
+           "OPTION_NTP_SERVER": 56,
            "client-arch-type": 61,
            "erp-local-domain-name": 65,
            "client-link-layer-addr": 79,
@@ -1360,7 +1361,6 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
     # and world.subopts for suboptions for e.g. IA Address or StatusCodes
     x = get_option(world.srvmsg[0], opt_code)
     received = []
-
     opt_descr = _get_opt_descr(opt_code)
 
     assert x, "Expected option {opt_descr}, but it is not present in the message.".format(**locals())

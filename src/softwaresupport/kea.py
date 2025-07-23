@@ -85,6 +85,7 @@ world.kea_options6 = {
     "new-posix-timezone": 41,
     "new-tzdb-timezone": 42,
     "lq-client-link": 48,
+    "ntp-servers": 56,
     "bootfile-url": 59,
     "bootfile-param": 60,
     "erp-local-domain-name": 65,
