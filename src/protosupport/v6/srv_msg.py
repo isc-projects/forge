@@ -90,7 +90,7 @@ OPTIONS = {"client-id": 1,
            "subscriber-id": 38,
            "fqdn": 39,
            "lq-client-data": 45,
-           "OPTION_NTP_SERVER": 56,
+           "ntp-servers": 56,
            "client-arch-type": 61,
            "erp-local-domain-name": 65,
            "client-link-layer-addr": 79,
@@ -1062,7 +1062,8 @@ def get_option(msg, opt_code, get_all=False):
                         "userclassdata",
                         "queryopts",
                         "vcdata",
-                        "vso"]
+                        "vso",
+                        "ntpserver"]
 
     while tmp_msg:
         if tmp_msg.optcode == opt_code:
@@ -1149,6 +1150,28 @@ def response_check_include_option(must_include, opt_code):
     else:
         assert len(opt) == 0, "Unexpected option {opt_descr} found in the message.".format(**locals()) + \
                             "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+
+    return opt
+# Returns text representation of the option, interpreted as specified by data_type
+
+
+def response_check_count_option(opt_code, count):
+    """Count presence of expected option.
+
+    :param opt_code:
+    :type opt_code:
+    :param count:
+    :type count:
+    :return:
+    :rtype:
+    """
+    assert len(world.srvmsg) != 0, "No response received."
+
+    opt = get_option(world.srvmsg[0], opt_code, get_all=True)
+    opt_descr = _get_opt_descr(opt_code)
+    message_count = len(opt)
+    assert message_count == count, "Expected option {opt_descr}, to be present {count} times but it is {message_count} times.".format(**locals()) + \
+                    "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
     return opt
 # Returns text representation of the option, interpreted as specified by data_type
@@ -1361,6 +1384,7 @@ def response_check_option_content(opt_code, expect, data_type, expected_value):
     # and world.subopts for suboptions for e.g. IA Address or StatusCodes
     x = get_option(world.srvmsg[0], opt_code)
     received = []
+
     opt_descr = _get_opt_descr(opt_code)
 
     assert x, "Expected option {opt_descr}, but it is not present in the message.".format(**locals())

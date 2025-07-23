@@ -401,6 +401,19 @@ def response_check_include_option(opt_code, expect_include=True):
     return dhcpmsg.response_check_include_option(expect_include, opt_code)
 
 
+def response_check_count_option(opt_code, count):
+    """Use this step for parsing respond. For more details please read manual section "Parsing respond".
+
+    :param opt_code:
+    :type opt_code:
+    :param count:
+    :type count:
+    :return:
+    :rtype:
+    """
+    return dhcpmsg.response_check_count_option(opt_code, count)
+
+
 @step(r'(Response|Relayed Message) MUST (NOT )?contain (\S+) (\S+).')
 def response_check_content(data_type, value, expected=True):
     """response_check_content.

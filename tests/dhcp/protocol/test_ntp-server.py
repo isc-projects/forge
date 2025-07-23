@@ -58,9 +58,10 @@ def test_v6_ntp():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    srv_msg.response_check_include_option(56)
-    srv_msg.response_check_option_content(56, 'optlen', "21")
-    srv_msg.response_check_suboption_content(3, 56, 'fqdn', 'ntp.example.com')
+    srv_msg.response_check_count_option(56, 3)
+    srv_msg.response_check_suboption_content(1, 56, 'addr', '2001:db8:abcd::123')
+    srv_msg.response_check_suboption_content(2, 56, 'addr', '2001:db8:abcd::456')
+    srv_msg.response_check_suboption_content(3, 56, 'fqdn', 'ntp.example.com.')
 
     misc.test_procedure()
     srv_msg.client_copy_option('server-id')
@@ -71,4 +72,7 @@ def test_v6_ntp():
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
-    srv_msg.response_check_include_option(56)
+    srv_msg.response_check_count_option(56, 3)
+    srv_msg.response_check_suboption_content(1, 56, 'addr', '2001:db8:abcd::123')
+    srv_msg.response_check_suboption_content(2, 56, 'addr', '2001:db8:abcd::456')
+    srv_msg.response_check_suboption_content(3, 56, 'fqdn', 'ntp.example.com.')

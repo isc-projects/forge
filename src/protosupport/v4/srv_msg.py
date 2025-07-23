@@ -828,6 +828,27 @@ def response_check_include_option(expected, opt_code):
     return opt
 
 
+def response_check_count_option(opt_code, count):
+    """Count presence of expected option.
+
+    :param opt_code:
+    :type opt_code:
+    :param count:
+    :type count:
+    :return:
+    :rtype:
+    """
+    assert len(world.srvmsg) != 0, "No response received."
+
+    opt = get_option(world.srvmsg[0], opt_code, get_all=True)
+    opt_descr = _get_opt_descr(opt_code)
+    message_count = len(opt)
+    assert message_count == count, "Expected option {opt_descr}, to be present {count} times but it is {message_count} times.".format(**locals()) + \
+                    "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+
+    return opt
+
+
 def response_check_option_content(opt_code, expect, data_type, expected):
     """Check the content of an option.
 
