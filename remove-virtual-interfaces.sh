@@ -1,9 +1,14 @@
 #!/bin/bash
 
+set -eu
+
 # Ensure that the script is run as root.
 (( EUID != 0 )) && exec sudo -- "${0}" "${@}"
 
 interface_count=${1}
+
+# Default parameters
+test -z "${show_only+x}" && show_only=false
 
 # Show only?
 if ${show_only}; then

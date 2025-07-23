@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # Ensure that the script is run as root.
 (( EUID != 0 )) && exec sudo -- "${0}" "${@}"
 
