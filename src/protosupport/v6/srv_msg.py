@@ -1171,7 +1171,7 @@ def response_check_count_option(opt_code, count):
     opt_descr = _get_opt_descr(opt_code)
     message_count = len(opt)
     assert message_count == count, "Expected option {opt_descr}, to be present {count} times but it is {message_count} times.".format(**locals()) + \
-                    "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+        "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
     return opt
 # Returns text representation of the option, interpreted as specified by data_type

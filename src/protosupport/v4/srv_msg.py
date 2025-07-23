@@ -687,13 +687,15 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     return world.srvmsg
 
 
-def get_option(msg, opt_code):
+def get_option(msg, opt_code, get_all=None):
     """Retrieve from scapy message {msg}, the DHCPv4 option having IANA code {opt_code}.
 
     :param msg: scapy message to retrieve the option from
     :type msg: scapy.layers.dhcp.DHCP
     :param opt_code: option code or name
     :type opt_code: int or str
+    :param get_all: for compatibility with function dispatcher, not used in v4
+    :type get_all: bool or None
     :return: scapy message representing the option or None if the option doesn't exist
     :rtype: scapy.layers.dhcp.DHCP
     """
@@ -844,7 +846,7 @@ def response_check_count_option(opt_code, count):
     opt_descr = _get_opt_descr(opt_code)
     message_count = len(opt)
     assert message_count == count, "Expected option {opt_descr}, to be present {count} times but it is {message_count} times.".format(**locals()) + \
-                    "\nPacket:" + str(world.srvmsg[0].show(dump=True))
+        "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
     return opt
 
