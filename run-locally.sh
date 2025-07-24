@@ -37,7 +37,7 @@ get_address_from_interface() {
 root_path=$(cd "$(dirname "${0}")" && pwd)
 cd "${root_path}"
 
-./initialize-virtual-interfaces.sh 3
+./scripts/initialize-virtual-interfaces.sh 3
 
 client_interface='vethclient'
 init_all_py='init_all.py'
