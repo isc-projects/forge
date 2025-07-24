@@ -814,6 +814,11 @@ def test_v4_classification_vendor_different_levels(level):
 @pytest.mark.parametrize('level', ['subnet', 'pool'])
 def test_v4_network_selection_with_class_reservations(backend, level):
     """Check if client class in global reservation is working correctly after subnet/pool selection.
+
+    :param backend: configfile, MySQL or PostgreSQL
+    :type backend: string
+    :param level: subnet or pool
+    :type level: string
     """
     misc.test_setup()
     # configure subnet(s) and pool(s)
@@ -948,3 +953,279 @@ def test_v4_network_selection_with_class_reservations(backend, level):
     srv_msg.response_check_content('sname', 'Johny5')
     srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
     srv_msg.response_check_option_content(61, 'value', '00030405060708')
+
+
+@pytest.mark.v4
+@pytest.mark.classification
+def test_v4_classification_tagging_gating():
+    """ Verifies that (non-vendor) requested options can be gated by option class tagging.
+    Duplicate of Unittest.
+    """
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.100', id=1)
+
+    # Define "right" class
+    srv_control.create_new_class('right')
+    srv_control.add_test_to_class(1, "test", "substring(option[61].hex,0,3) == '111'")
+
+    # Add options for different classes
+    srv_control.config_srv_custom_opt('no_classes', '249', 'string', 'oompa')
+    srv_control.config_srv_custom_opt('wrong_class', '250', 'string', 'loompa', client_classes=["wrong"])
+    srv_control.config_srv_custom_opt('right_class', '251', 'string', 'doompadee', client_classes=["right"])
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Send discover message with options for different classes
+    # Client should receive option for no-class
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040506')
+    srv_msg.client_requests_option(249)
+    srv_msg.client_requests_option(250)
+    srv_msg.client_requests_option(251)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(249)
+    srv_msg.response_check_include_option(250, expect_include=False)
+    srv_msg.response_check_include_option(251, expect_include=False)
+    srv_msg.response_check_option_content(249, 'value', 'oompa')
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+    srv_msg.response_check_option_content(61, 'value', '00010203040506')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040506')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+    srv_msg.response_check_option_content(61, 'value', '00010203040506')
+
+    # Client should receive option for "right" class
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '313131')
+    srv_msg.client_requests_option(249)
+    srv_msg.client_requests_option(250)
+    srv_msg.client_requests_option(251)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(249)
+    srv_msg.response_check_include_option(250, expect_include=False)
+    srv_msg.response_check_include_option(251)
+    srv_msg.response_check_option_content(249, 'value', 'oompa')
+    srv_msg.response_check_option_content(251, 'value', 'doompadee')
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+    srv_msg.response_check_option_content(61, 'value', '313131')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '313131')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+    srv_msg.response_check_option_content(61, 'value', '313131')
+
+
+@pytest.mark.v4
+@pytest.mark.classification
+def test_v4_classification_tagging_gating_vivso():
+    """ Verifies that VIVSO suboption can be gated by option class tagging.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.100', id=1)
+
+    # Define class data
+    srv_control.create_new_class('melon')
+    srv_control.add_test_to_class(1, "test", "substring(option[61].hex,0,3) == '111'")
+
+    # Add options for different classes
+    srv_control.config_srv_opt('vivso-suboptions', "1234", client_classes=["melon"])
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Client should receive option vendor
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '313131')
+    srv_msg.client_requests_option('vivso-suboptions')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.client_does_include_with_value('vendor_specific_information', '1234')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '313131')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option('vivso-suboptions')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+    srv_msg.response_check_option_content(61, 'value', '313131')
+    srv_msg.client_does_include_with_value('vendor_specific_information', '1234')
+
+    # Client should not recive option.
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040506')
+    srv_msg.client_requests_option('vivso-suboptions')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_include_option(43, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040506')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option('vivso-suboptions')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+    srv_msg.response_check_option_content(61, 'value', '00010203040506')
+    srv_msg.response_check_include_option(43, expect_include=False)
+
+
+@pytest.mark.v4
+@pytest.mark.classification
+def test_v4_classification_tagging_gating_standart():
+    """ Verifies that standart suboption can be gated by option class tagging.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.100', id=1)
+
+    # Define "right" class
+    srv_control.create_new_class('melon')
+    srv_control.add_test_to_class(1, "test", "substring(option[61].hex,0,3) == '111'")
+
+    # Add options for different classes
+    srv_control.config_srv_opt("routers", "192.0.2.1", client_classes=["melon"])
+    srv_control.config_srv_opt("domain-name", "example.com", client_classes=["melon"])
+    srv_control.config_srv_opt("domain-name-servers", "192.0.2.3", client_classes=["melon"])
+    srv_control.config_srv_opt("dhcp-server-identifier", "192.0.2.0", client_classes=["melon"])
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Client should receive option for no-class
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '313131')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'value', '192.0.2.1')
+    srv_msg.response_check_include_option(15)
+    srv_msg.response_check_option_content(15, 'value', 'example.com')
+    srv_msg.response_check_include_option(6)
+    srv_msg.response_check_option_content(6, 'value', '192.0.2.3')
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_option_content(54, 'value', '192.0.2.0')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '313131')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option('vivso-suboptions')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_option_content(61, 'value', '313131')
+    srv_msg.response_check_option_content(54, 'value', '192.0.2.0')
+
+    # Client should receive option for "right" class
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040506')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_include_option(3, expect_include=False)
+    srv_msg.response_check_include_option(15, expect_include=False)
+    srv_msg.response_check_include_option(6, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
+    srv_msg.client_does_include_with_value('client_id', '00010203040506')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.2')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.2')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(54)
+    srv_msg.response_check_include_option(61)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_option_content(54, 'value', '$(SRV4_ADDR)')
+    srv_msg.response_check_option_content(61, 'value', '00010203040506')
+    srv_msg.response_check_include_option(3, expect_include=False)
+    srv_msg.response_check_include_option(15, expect_include=False)
+    srv_msg.response_check_include_option(6, expect_include=False)

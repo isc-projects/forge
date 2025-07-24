@@ -703,8 +703,12 @@ def get_option(msg, opt_code):
     # Returns option of specified type
     # We need to iterate over all options and see
     # if there's one we're looking for
+    # If option is not found, use the option code as the option name
     world.opts = []
-    opt_name = DHCPOptions[opt_code]
+    if opt_code in DHCPOptions:
+        opt_name = DHCPOptions[opt_code]
+    else:
+        opt_name = opt_code
     # dhcpv4 implementation in Scapy is a mess. The options array contains mix of
     # strings, IPField, ByteEnumField and who knows what else. In each case the
     # values are accessed differently
@@ -785,7 +789,13 @@ def _get_opt_descr(opt_code):
     # Ensure the option code is an integer.
     opt_code = get_option_code(opt_code)
 
-    opt = DHCPOptions[opt_code]
+    # If the option code is in the DHCPOptions dictionary, use the corresponding name
+    if opt_code in DHCPOptions:
+        opt = DHCPOptions[opt_code]
+    else:
+        # Otherwise, use the option code as the option name
+        opt = str(opt_code)
+
     if isinstance(opt, str):
         opt_descr = "%s[%s]" % (opt, opt_code)
     else:

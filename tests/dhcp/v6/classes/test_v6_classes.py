@@ -976,6 +976,10 @@ def test_v6_classification_vendor_different_levels(level):
 @pytest.mark.parametrize('level', ['subnet', 'pool'])
 def test_v6_network_selection_with_class_reservations(backend, level):
     """Check if client class in global reservation is working correctly after subnet/pool selection.
+    :param backend: backend to use
+    :type backend: string
+    :param level: subnet or pool
+    :type level: string
     """
     misc.test_setup()
     # configure subnet(s) and pool(s)
@@ -1104,3 +1108,97 @@ def test_v6_network_selection_with_class_reservations(backend, level):
     srv_msg.response_check_suboption_content(5, 3, "addr", "2001:db8:a::1")
     srv_msg.response_check_include_option(23)
     srv_msg.response_check_option_content(23, 'addresses', '2001:db8::888')
+
+
+@pytest.mark.v6
+@pytest.mark.classification
+def test_v6_classification_tagging_gating():
+    """ Verifies that (non-vendor) requested options can be gated by option class tagging.
+    Duplicate of Unittest.
+    """
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:a::/64', '2001:db8:a::1-2001:db8:a::10', id=1)
+
+    # Define "right" class
+    srv_control.create_new_class('right')
+    srv_control.add_test_to_class(1, "test", "substring(option[1].hex,7,3) == '111'")
+
+    # Add options for different classes
+    srv_control.config_srv_custom_opt('no_classes', '1249', 'string', 'oompa')
+    srv_control.config_srv_custom_opt('wrong_class', '1250', 'string', 'loompa', client_classes=["wrong"])
+    srv_control.config_srv_custom_opt('right_class', '1251', 'string', 'doompadee', client_classes=["right"])
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Send discover message with options for different classes
+    # Client should receive option for no-class
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "DUID", "00:03:00:01:66:55:44:11:11:11")
+    srv_msg.client_does_include("Client", "client-id")
+    srv_msg.client_does_include("Client", "IA-NA")
+    srv_msg.client_requests_option(1249)
+    srv_msg.client_requests_option(1250)
+    srv_msg.client_requests_option(1251)
+    srv_msg.client_send_msg("SOLICIT")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "ADVERTISE")
+    srv_msg.response_check_include_option(1249)
+    srv_msg.response_check_include_option(1250, expect_include=False)
+    srv_msg.response_check_include_option(1251, expect_include=False)
+    srv_msg.response_check_option_content(1249, 'value', 'oompa'.encode().hex())
+
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "DUID", "00:03:00:01:66:55:44:11:11:11")
+    srv_msg.client_copy_option("IA_NA")
+    srv_msg.client_copy_option("server-id")
+    srv_msg.client_does_include("Client", "client-id")
+    srv_msg.client_requests_option(1249)
+    srv_msg.client_requests_option(1250)
+    srv_msg.client_requests_option(1251)
+    srv_msg.client_send_msg("REQUEST")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "REPLY")
+    srv_msg.response_check_include_option(1249)
+    srv_msg.response_check_include_option(1250, expect_include=False)
+    srv_msg.response_check_include_option(1251, expect_include=False)
+    srv_msg.response_check_option_content(1249, 'value', 'oompa'.encode().hex())
+
+    # Client should receive option for "right" class
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "DUID", "00:03:00:01:66:55:44:31:31:31")
+    srv_msg.client_does_include("Client", "client-id")
+    srv_msg.client_does_include("Client", "IA-NA")
+    srv_msg.client_requests_option(1249)
+    srv_msg.client_requests_option(1250)
+    srv_msg.client_requests_option(1251)
+    srv_msg.client_send_msg("SOLICIT")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "ADVERTISE")
+    srv_msg.response_check_include_option(1249)
+    srv_msg.response_check_include_option(1250, expect_include=False)
+    srv_msg.response_check_include_option(1251)
+    srv_msg.response_check_option_content(1249, 'value', 'oompa'.encode().hex())
+    srv_msg.response_check_option_content(1251, 'value', 'doompadee'.encode().hex())
+
+    misc.test_procedure()
+    srv_msg.client_sets_value("Client", "DUID", "00:03:00:01:66:55:44:31:31:31")
+    srv_msg.client_copy_option("IA_NA")
+    srv_msg.client_copy_option("server-id")
+    srv_msg.client_does_include("Client", "client-id")
+    srv_msg.client_requests_option(1249)
+    srv_msg.client_requests_option(1250)
+    srv_msg.client_requests_option(1251)
+    srv_msg.client_send_msg("REQUEST")
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message("MUST", "REPLY")
+    srv_msg.response_check_include_option(1249)
+    srv_msg.response_check_include_option(1250, expect_include=False)
+    srv_msg.response_check_include_option(1251)
+    srv_msg.response_check_option_content(1249, 'value', 'oompa'.encode().hex())
+    srv_msg.response_check_option_content(1251, 'value', 'doompadee'.encode().hex())
