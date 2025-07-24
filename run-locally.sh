@@ -63,60 +63,48 @@ if ! test -d ./venv; then
 fi
 
 # init_all.py
-if test -f "${init_all_py}"; then
-  init_all_py_was_there=true
-else
+if test ! -f "${init_all_py}"; then
   cp "${init_all_py}_default" "${init_all_py}"
   sed -i'' 's/^\([a-zA-Z]\)/# \1/g' "${init_all_py}"
-  init_all_py_was_there=false
-fi
+  configure 'CIADDR' "'${client_address}'"
+  configure 'CLI_LINK_LOCAL' "'${cli_link_local}'"
+  configure 'CLIENT_IPV6_ADDR_GLOBAL' "'${client_v6_address}'"
+  configure 'DNS_IFACE' "'${client_interface}'"
+  configure 'DNS4_ADDR' "'${server_address}'"
+  configure 'DNS6_ADDR' "'${server_v6_address}'"
+  configure 'GIADDR4' "'${client_address}'"
+  configure 'IFACE' "'${client_interface}'"
+  configure 'MGMT_ADDRESS' "'${server_management_address}'"
+  configure 'MGMT_ADDRESS_2' "'${server_management_address}'"
+  configure 'MGMT_ADDRESS_3' "'${server_management_address}'"
+  configure 'MGMT_USERNAME' "'${USER}'"
+  configure 'MGMT_USERNAME_2' "'${USER}'"
+  configure 'MGMT_USERNAME_3' "'${USER}'"
+  configure 'MGMT_PASSWORD' "''"
+  configure 'SERVER_IFACE' "'${server_interface}'"
+  configure 'SERVER2_IFACE' "'${server2_interface}'"
+  configure 'SERVER3_IFACE' "'${server3_interface}'"
+  configure 'SERVER_IFACE2' "'${server2_interface}'"
+  configure 'SERVER_IFACE3' "'${server3_interface}'"
+  configure 'SRV_IPV6_ADDR_GLOBAL' "'${server_v6_address}'"
+  configure 'SRV_IPV6_ADDR_LINK_LOCAL' "'${server_v6_address_link_local}'"
+  configure 'SRV4_ADDR' "'${server_address}'"
+  configure 'SRV4_ADDR_2' "'${server2_address}'"
+  configure 'SRV4_ADDR_3' "'${server3_address}'"
+  configure 'SOFTWARE_INSTALL_PATH' "'/usr/local/'"
 
-configure 'CIADDR' "'${client_address}'"
-configure 'CLI_LINK_LOCAL' "'${cli_link_local}'"
-configure 'CLIENT_IPV6_ADDR_GLOBAL' "'${client_v6_address}'"
-configure 'DNS_IFACE' "'${client_interface}'"
-configure 'DNS4_ADDR' "'${server_address}'"
-configure 'DNS6_ADDR' "'${server_v6_address}'"
-configure 'GIADDR4' "'${client_address}'"
-configure 'IFACE' "'${client_interface}'"
-configure 'MGMT_ADDRESS' "'${server_management_address}'"
-configure 'MGMT_ADDRESS_2' "'${server_management_address}'"
-configure 'MGMT_ADDRESS_3' "'${server_management_address}'"
-configure 'MGMT_USERNAME' "'${USER}'"
-configure 'MGMT_USERNAME_2' "'${USER}'"
-configure 'MGMT_USERNAME_3' "'${USER}'"
-configure 'SERVER_IFACE' "'${server_interface}'"
-configure 'SERVER2_IFACE' "'${server2_interface}'"
-configure 'SERVER3_IFACE' "'${server3_interface}'"
-configure 'SERVER_IFACE2' "'${server2_interface}'"
-configure 'SERVER_IFACE3' "'${server3_interface}'"
-configure 'SHOW_PACKETS_FROM' "'server'"
-if printf '%s' "${v-}" | grep -F 'isc_dhcp'; then
-  configure 'SOFTWARE_UNDER_TEST' "('bind9_server', '${v}'),"
-elif test "${v-}" = '4'; then
-  configure 'SOFTWARE_UNDER_TEST' "('bind9_server', 'kea${v}_server'),"
-elif test "${v-}" = '6'; then
-  configure 'SOFTWARE_UNDER_TEST' "('bind9_server', 'kea${v}_server'),"
-fi
-configure 'SRV_IPV6_ADDR_GLOBAL' "'${server_v6_address}'"
-configure 'SRV_IPV6_ADDR_LINK_LOCAL' "'${server_v6_address_link_local}'"
-configure 'SRV4_ADDR' "'${server_address}'"
-configure 'SRV4_ADDR_2' "'${server2_address}'"
-configure 'SRV4_ADDR_3' "'${server3_address}'"
+  # Remove comments.
+  grep -Ev '^\s*//|^\s*#|^\s*/\*.*\*/' "${init_all_py}" | sed '/\/\*/,/\*\//d;s#[^ ]+//.*$##g;s/#.*$//g' > "${init_all_py}.tmp"
+  mv "${init_all_py}.tmp" "${init_all_py}"
 
-# Remove comments.
-grep -Ev '^\s*//|^\s*#|^\s*/\*.*\*/' "${init_all_py}" | sed '/\/\*/,/\*\//d;s#[^ ]+//.*$##g;s/#.*$//g' > "${init_all_py}.tmp"
-mv "${init_all_py}.tmp" "${init_all_py}"
+  # Sort entries.
+  cat "${init_all_py}" | sort -uV > "${init_all_py}.tmp"
+  mv "${init_all_py}.tmp" "${init_all_py}"
 
-# Sort entries.
-cat "${init_all_py}" | sort -uV > "${init_all_py}.tmp"
-mv "${init_all_py}.tmp" "${init_all_py}"
+  # Remove empty entries.
+  sed -i'' '/^$/d' "${init_all_py}"
 
-# Remove empty entries.
-sed -i'' '/^$/d' "${init_all_py}"
-
-if ! "${init_all_py_was_there}"; then
-  confirm 'Remember to configure MGMT_PASSWORD and SOFTWARE_INSTALL_PATH. Continue? [y/N]'
+  confirm 'Remember to configure MGMT_USERNAME< MGMT_PASSWORD and SOFTWARE_INSTALL_PATH. Continue? [y/N]'
 fi
 
 # Create copy in src. Required on some setups?

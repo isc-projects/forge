@@ -314,6 +314,6 @@ sudo pkill -f dnsmasq
 
 You can use the `run-locally.sh` script to run Forge and DUTs locally. It leverages veth virtual interfaces.
 
-It will set up `init_all.py` for you with most required settings. If there was no `init_all.py` created prior to running it, you will be met with an interactive question to remind you of the particular settings that you might need to edit yourself similar to `Remember to configure MGMT_PASSWORD and SOFTWARE_INSTALL_PATH. Continue?`.
+It will set up `init_all.py` for you with most required settings. If there was no `init_all.py` created prior to running it, you will be met with an interactive question to remind you of the particular settings that you might need to edit yourself similar to `Remember to configure MGMT_USERNAME, MGMT_PASSWORD and SOFTWARE_INSTALL_PATH. Continue?`.
 
 You can pass flags to `run-locally.sh` that will be passed to pytest directly.
