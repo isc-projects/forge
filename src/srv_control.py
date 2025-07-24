@@ -1273,7 +1273,7 @@ def add_remote_server(remote_address):
 @step(r'Clear (\S+).')
 def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address,
                     software_install_path=world.f_cfg.software_install_path, db_user=world.f_cfg.db_user,
-                    db_passwd=world.f_cfg.db_passwd, db_name=world.f_cfg.db_name):
+                    db_passwd=world.f_cfg.db_passwd, db_name=world.f_cfg.db_name, force_syslog=False):
     """Clear some data.
 
     :param data_type:
@@ -1290,6 +1290,8 @@ def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address,
     :type db_passwd:
     :param db_name: (Default value = world.f_cfg.db_name)
     :type db_name:
+    :param force_syslog: force clearing logs in journald
+    :type force_syslog:
     """
     dest, db_name, db_user, db_passwd, install_path = test_define_value(dest, db_name, db_user,
                                                                         db_passwd, software_install_path)
@@ -1298,7 +1300,7 @@ def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address,
         if data_type == "leases":
             dhcp.clear_leases(destination_address=dest, db_name=db_name, db_user=db_user, db_passwd=db_passwd)
         elif data_type == "logs":
-            dhcp.clear_logs(destination_address=dest)
+            dhcp.clear_logs(destination_address=dest, force_syslog=force_syslog)
         elif data_type == "all":
             dhcp.clear_all(destination_address=dest, db_name=db_name, db_user=db_user, db_passwd=db_passwd)
     elif service.lower() == 'dns':

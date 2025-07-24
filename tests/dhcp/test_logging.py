@@ -17,6 +17,7 @@ from src import misc
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
 from src.softwaresupport.multi_server_functions import verify_file_permissions
+from src.softwaresupport.multi_server_functions import fabric_sudo_command, fabric_download_file
 
 
 def _verify_log_permissions():
@@ -30,9 +31,25 @@ def _verify_log_permissions():
         verify_file_permissions(logging_file_path)
 
 
+def _get_journal_logs(syslog):
+    """Get journal logs for a given log file.
+
+    :param syslog: syslog facility
+    :type syslog: str
+    """
+    facility = int(syslog[-1]) + 16
+    cmd = f'journalctl SYSLOG_FACILITY={facility} > /tmp/kea_syslog.log'
+    fabric_sudo_command(cmd, ignore_errors=True)
+    fabric_download_file('/tmp/kea_syslog.log', world.cfg["test_result_dir"], ignore_errors=True,
+                         hide_all=world.f_cfg.forge_verbose == 0)
+
+
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_options_debug():
+    """
+    Test logging of options.
+    """
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -88,6 +105,9 @@ def test_v4_loggers_options_debug():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_options_info():
+    """
+    Test logging of options at INFO level.
+    """
 
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
@@ -143,6 +163,9 @@ def test_v4_loggers_options_info():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_bad_packets_debug():
+    """
+    Test logging of bad packets at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', 99)
@@ -186,6 +209,9 @@ def test_v4_loggers_bad_packets_debug():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_bad_packets_info():
+    """
+    Test logging of bad packets at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.configure_loggers('kea-dhcp4.bad-packets', 'INFO', 'None')
@@ -229,6 +255,9 @@ def test_v4_loggers_bad_packets_info():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_dhcp4():
+    """
+    Test logging of DHCP4 at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.dhcp4', 'DEBUG', 99)
@@ -283,6 +312,9 @@ def test_v4_loggers_dhcp4():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_dhcp4_info():
+    """
+    Test logging of DHCP4 at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.dhcp4', 'INFO', 'None')
@@ -337,6 +369,9 @@ def test_v4_loggers_dhcp4_info():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_alloc_engine():
+    """
+    Test logging of alloc engine at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', 99)
@@ -390,6 +425,9 @@ def test_v4_loggers_alloc_engine():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_dhcpsrv_debug():
+    """
+    Test logging of dhcpsrv at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'DEBUG', 99)
@@ -445,6 +483,9 @@ def test_v4_loggers_dhcpsrv_debug():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_dhcpsrv_info():
+    """
+    Test logging of dhcpsrv at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None')
@@ -500,6 +541,9 @@ def test_v4_loggers_dhcpsrv_info():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_leases_debug():
+    """
+    Test logging of leases at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.leases', 'DEBUG', 99)
@@ -549,6 +593,9 @@ def test_v4_loggers_leases_debug():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_leases_info():
+    """
+    Test logging of leases at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.leases', 'INFO', 'None')
@@ -602,6 +649,9 @@ def test_v4_loggers_leases_info():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_packets_debug():
+    """
+    Test logging of packets at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.packets', 'DEBUG', 99)
@@ -655,6 +705,9 @@ def test_v4_loggers_packets_debug():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_packets_info():
+    """
+    Test logging of packets at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.packets', 'INFO', 'None')
@@ -708,6 +761,9 @@ def test_v4_loggers_packets_info():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_hosts_debug():
+    """
+    Test logging of hosts at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.hosts', 'DEBUG', 99)
@@ -761,6 +817,9 @@ def test_v4_loggers_hosts_debug():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_hosts_info():
+    """
+    Test logging of hosts at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4.hosts', 'INFO', 'None')
@@ -814,6 +873,9 @@ def test_v4_loggers_hosts_info():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_all():
+    """
+    Test logging of all loggers at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.configure_loggers('kea-dhcp4', 'DEBUG', 99)
@@ -917,7 +979,132 @@ def test_v4_loggers_all():
 
 @pytest.mark.v4
 @pytest.mark.logging
+@pytest.mark.parametrize('facility', ['syslog', 'syslog:local1', 'syslog:local2'])
+def test_v4_syslog(facility: str):
+    """
+    Test logging of all loggers at DEBUG level with different syslog facilities.
+    The test is parametrized to test with different syslog facilities.
+    :param facility: syslog facility to test with
+    :type facility: str
+    """
+    if world.server_system == 'alpine':
+        pytest.skip("Alpine do not support syslog:local* facilities out of the box")
+
+    misc.test_setup()
+    srv_control.clear_some_data('logs', force_syslog=True)
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.configure_loggers('kea-dhcp4', 'DEBUG', 99, facility)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(2)
+    srv_msg.client_requests_option(7)
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:31')
+    srv_msg.client_save_option_count(1, 'server_id')
+    srv_msg.client_add_saved_option_count(1)
+    srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.1')
+    srv_msg.client_send_msg('RELEASE')
+
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:33')
+    srv_msg.client_add_saved_option_count(1)
+    srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.1')
+    srv_msg.client_send_msg('RELEASE')
+
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_requests_option(2)
+    srv_msg.client_requests_option(7)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.1')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.1')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.1')
+    srv_msg.client_send_msg('RELEASE')
+
+    misc.pass_criteria()
+    srv_msg.send_dont_wait_for_message()
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_does_include_with_value('client_id', '00010203040111')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+
+    facility = 'syslog:local0' if facility == 'syslog' else facility  # kea defaults 'syslog' to 'syslog:local0'
+    wrong_facility = facility.replace(facility[-1], str(int(facility[-1])+1))
+    log_contains(r'DEBUG \[kea-dhcp4\.packets', facility)
+    log_contains(r'DEBUG \[kea-dhcp4\.dhcpsrv', facility)
+    log_contains(r'DEBUG \[kea-dhcp4\.alloc-engine', facility)
+    log_contains(r'DEBUG \[kea-dhcp4\.options', facility)
+    log_contains(r'INFO  \[kea-dhcp4\.leases', facility)
+
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4\.packets', wrong_facility)
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4\.dhcpsrv', wrong_facility)
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4\.alloc-engine', wrong_facility)
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4\.options', wrong_facility)
+    log_doesnt_contain(r'DEBUG \[kea-dhcp4\.leases', wrong_facility)
+
+    # Forge does not archive journal logs by default, so we need to get them manually
+    _get_journal_logs(facility)
+
+
+@pytest.mark.v4
+@pytest.mark.logging
 def test_v4_loggers_all_different_levels_same_file():
+    """
+    Test logging of all loggers at different levels in the same file.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.configure_loggers('kea-dhcp4.dhcp4', 'INFO', 'None')
@@ -1017,6 +1204,9 @@ def test_v4_loggers_all_different_levels_same_file():
 @pytest.mark.disabled
 @pytest.mark.awaiting_fix
 def test_v4_loggers_all_different_levels_different_file():
+    """
+    Test logging of all loggers at different levels in different files.
+    """
     # https://gitlab.isc.org/isc-projects/kea/issues/592
     # bug: #592
     misc.test_setup()
@@ -1119,6 +1309,9 @@ def test_v4_loggers_all_different_levels_different_file():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_v4_loggers_path():
+    """
+    Test logging of all loggers at INFO level with a custom path.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     srv_control.configure_loggers('kea-dhcp4.dhcp4', 'INFO', 'None', 'kea.log1')
@@ -1134,7 +1327,9 @@ def test_v4_loggers_path():
 @pytest.mark.v4
 @pytest.mark.logging
 def test_ddns4_logging_all_types_debug():
-
+    """
+    Test logging of all loggers at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.10')
     srv_control.add_ddns_server('127.0.0.1', '53001')
@@ -1196,6 +1391,9 @@ def test_ddns4_logging_all_types_debug():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_options_debug():
+    """
+    Test logging of options at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.options', 'DEBUG', 99)
@@ -1239,6 +1437,9 @@ def test_v6_loggers_options_debug():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_options_info():
+    """
+    Test logging of options at INFO level.
+    """
     misc.test_setup()
     # TODO negative testing
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
@@ -1283,6 +1484,9 @@ def test_v6_loggers_options_info():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_bad_packets_debug():
+    """
+    Test logging of bad packets at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.bad-packets', 'DEBUG', 99)
@@ -1301,6 +1505,9 @@ def test_v6_loggers_bad_packets_debug():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_bad_packets_info():
+    """
+    Test logging of bad packets at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.bad-packets', 'INFO', 'None')
@@ -1321,6 +1528,9 @@ def test_v6_loggers_bad_packets_info():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_dhcp6():
+    """
+    Test logging of DHCP6 at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcp6', 'DEBUG', 99)
@@ -1366,6 +1576,9 @@ def test_v6_loggers_dhcp6():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_dhcp6_info():
+    """
+    Test logging of DHCP6 at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcp6', 'INFO', 'None')
@@ -1413,6 +1626,9 @@ def test_v6_loggers_dhcp6_info():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_alloc_engine():
+    """
+    Test logging of alloc engine at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.alloc-engine', 'DEBUG', 99)
@@ -1456,6 +1672,9 @@ def test_v6_loggers_alloc_engine():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_dhcpsrv_debug():
+    """
+    Test logging of dhcpsrv at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'DEBUG', 99)
@@ -1499,6 +1718,9 @@ def test_v6_loggers_dhcpsrv_debug():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_dhcpsrv_info():
+    """
+    Test logging of dhcpsrv at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcpsrv', 'INFO', 'None')
@@ -1543,6 +1765,9 @@ def test_v6_loggers_dhcpsrv_info():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_leases_debug():
+    """
+    Test logging of leases at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.leases', 'DEBUG', 99)
@@ -1586,6 +1811,9 @@ def test_v6_loggers_leases_debug():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_leases_info():
+    """
+    Test logging of leases at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.leases', 'INFO', 'None')
@@ -1629,6 +1857,9 @@ def test_v6_loggers_leases_info():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_packets_debug():
+    """
+    Test logging of packets at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.packets', 'DEBUG', 99)
@@ -1672,6 +1903,9 @@ def test_v6_loggers_packets_debug():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_packets_info():
+    """
+    Test logging of packets at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.packets', 'INFO', 'None')
@@ -1715,6 +1949,9 @@ def test_v6_loggers_packets_info():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_hosts_debug():
+    """
+    Test logging of hosts at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.hosts', 'DEBUG', 99)
@@ -1758,6 +1995,9 @@ def test_v6_loggers_hosts_debug():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_hosts_info():
+    """
+    Test logging of hosts at INFO level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.hosts', 'INFO', 'None')
@@ -1801,6 +2041,9 @@ def test_v6_loggers_hosts_info():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_all():
+    """
+    Test logging of all loggers at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99)
@@ -1848,7 +2091,80 @@ def test_v6_loggers_all():
 
 @pytest.mark.v6
 @pytest.mark.logging
+@pytest.mark.parametrize('facility', ['syslog', 'syslog:local1', 'syslog:local2'])
+def test_v6_syslog(facility: str):
+    """
+    Test logging of all loggers at DEBUG level with different syslog facilities.
+    The test is parametrized to test with different syslog facilities.
+    :param facility: syslog facility to test with
+    :type facility: str
+    """
+    if world.server_system == 'alpine':
+        pytest.skip("Alpine do not support syslog:local* facilities out of the box")
+
+    misc.test_setup()
+    srv_control.clear_some_data('logs', force_syslog=True)
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.configure_loggers('kea-dhcp6', 'DEBUG', 99, facility)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_include_option(2)
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('RELEASE')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+
+    facility = 'syslog:local0' if facility == 'syslog' else facility  # kea defaults 'syslog' to 'syslog:local0'
+    wrong_facility = facility.replace(facility[-1], str(int(facility[-1])+1))
+    log_contains(r'DEBUG \[kea-dhcp6.packets', facility)
+    log_contains(r'DEBUG \[kea-dhcp6.leases', facility)
+    log_contains(r'DEBUG \[kea-dhcp6.dhcpsrv', facility)
+    log_contains(r'DEBUG \[kea-dhcp6.alloc-engine', facility)
+    log_contains(r'DEBUG \[kea-dhcp6.dhcp6', facility)
+    log_contains(r'DEBUG \[kea-dhcp6.options', facility)
+
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.packets', wrong_facility)
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.leases', wrong_facility)
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcpsrv', wrong_facility)
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.alloc-engine', wrong_facility)
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcp6', wrong_facility)
+    log_doesnt_contain(r'DEBUG \[kea-dhcp6.options', wrong_facility)
+
+    # Forge does not archive journal logs by default, so we need to get them manually
+    _get_journal_logs(facility)
+
+
+@pytest.mark.v6
+@pytest.mark.logging
 def test_v6_loggers_all_different_levels_same_file():
+    """
+    Test logging of all loggers at different levels in the same file.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcp6', 'INFO', 'None')
@@ -1915,6 +2231,9 @@ def test_v6_loggers_all_different_levels_same_file():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_v6_loggers_all_different_levels_different_file():
+    """
+    Test logging of all loggers at different levels in different files.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
     srv_control.configure_loggers('kea-dhcp6.dhcp6', 'INFO', 'None', 'kea.log1')
@@ -1983,7 +2302,9 @@ def test_v6_loggers_all_different_levels_different_file():
 @pytest.mark.v6
 @pytest.mark.logging
 def test_ddns6_logging_all_types_debug():
-
+    """
+    Test logging of all loggers at DEBUG level.
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
     srv_control.add_ddns_server('127.0.0.1', '53001')

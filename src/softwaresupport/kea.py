@@ -541,7 +541,9 @@ def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_n
     :param merge_by_name: whether to merge into other existing loggers if the name is matched.
     :type merge_by_name: True by default. If False, the logger is simply added without any checks.
     """
-    if world.f_cfg.install_method == 'make':
+    if logging_file is not None and 'syslog' in logging_file:
+        logging_file_path = logging_file
+    elif world.f_cfg.install_method == 'make':
         if logging_file is None:
             logging_file = 'kea.log'
         logging_file_path = world.f_cfg.log_join(logging_file)
@@ -2012,11 +2014,13 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     create_password_files(destination_address=destination_address)
 
 
-def clear_logs(destination_address=world.f_cfg.mgmt_address):
+def clear_logs(destination_address=world.f_cfg.mgmt_address, force_syslog=False):
     """clear_logs.
 
     :param destination_address:
     :type destination_address:
+    :param force_syslog: whether to force clearing logs. Usually used for syslog tests
+    :type force_syslog: bool
     """
     fabric_remove_file_command(world.f_cfg.log_join('kea*'),
                                destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
@@ -2025,7 +2029,7 @@ def clear_logs(destination_address=world.f_cfg.mgmt_address):
             "/tmp/keactrl.log", destination_address, hide_all=world.f_cfg.forge_verbose
         )
     # clear kea logs in journald (actually all logs)
-    if world.f_cfg.install_method != 'make':
+    if world.f_cfg.install_method != 'make' or force_syslog:
         if world.server_system == 'alpine':
             cmd = 'truncate /var/log/messages -s0'
             fabric_sudo_command(cmd, destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)

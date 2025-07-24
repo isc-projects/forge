@@ -270,7 +270,26 @@ def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_addr
     :return:
     :rtype:
     """
-    if world.f_cfg.install_method == 'make':
+    if log_file is not None and 'syslog' in log_file:
+        if log_file == 'syslog':
+            cmd = 'journalctl -u syslog |'
+            cmd += ' grep "$(cat <<EOF\n'
+            cmd += f'{line}\n'
+            cmd += 'EOF\n'
+            cmd += ')" | wc -l'
+            result = fabric_sudo_command(cmd, destination_host=destination, ignore_errors=True)
+        else:
+            assert 'syslog:local' in log_file, f'Invalid syslog facility: {log_file}, forge supports only syslog:local0-local7'
+            assert log_file[-1].isdigit(), f'Invalid syslog facility: {log_file}, forge supports only syslog:local0-local7'
+            facility = int(log_file[-1]) + 16
+            assert 16 <= facility <= 23, f'Invalid syslog facility: {log_file}, forge supports only syslog:local0-local7'
+            cmd = f'journalctl SYSLOG_FACILITY={facility} |'
+            cmd += ' grep "$(cat <<EOF\n'
+            cmd += f'{line}\n'
+            cmd += 'EOF\n'
+            cmd += ')" | wc -l'
+            result = fabric_sudo_command(cmd, destination_host=destination, ignore_errors=True)
+    elif world.f_cfg.install_method == 'make':
         if log_file is None:
             log_file = 'kea.log'
         log_file = world.f_cfg.log_join(log_file)
