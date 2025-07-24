@@ -37,9 +37,8 @@ def create_user_and_passowrd_file(user, password):
     """
     fabric_sudo_command(f'echo "{user}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp", user)}',
                         hide_all=world.f_cfg.forge_verbose == 0)
-    fabric_sudo_command(f'echo "{password}" > {os.path.join(world.f_cfg.get_share_path(),
-                        "kea-creds-tmp", f"{user}_password")}',
-                        hide_all=world.f_cfg.forge_verbose == 0)
+    user_password_file = os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp", f"{user}_password")
+    fabric_sudo_command(f'echo "{password}" > {user_password_file}', hide_all=world.f_cfg.forge_verbose == 0)
 
     if world.f_cfg.install_method != 'make':
         if world.server_system in ['alpine', 'redhat', 'fedora']:
