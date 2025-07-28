@@ -6,6 +6,8 @@
 
 # Author: Wlodzimierz Wencel
 
+"""MySQL reservation script."""
+
 # pylint: disable=consider-using-f-string
 # pylint: disable=consider-using-with
 # pylint: disable=line-too-long
@@ -30,6 +32,8 @@ list_of_all_reservations = []
 
 
 class MySQLReservation:
+    """Kea reservation."""
+
     hosts_v6_hex = """
 INSERT INTO hosts (dhcp_identifier,dhcp_identifier_type,dhcp6_subnet_id,hostname,dhcp6_client_classes)
 VALUES (UNHEX(REPLACE(@identifier_value, ':', '')),(SELECT type FROM host_identifier_type WHERE name=@identifier_type),
@@ -59,6 +63,7 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
     hosts_v4 = ""
 
     def __init__(self):
+        """Initialize reservation."""
         self.reservation_id = len(list_of_all_reservations) + 1
         list_of_all_reservations.append(self)
         self.hostname = ""
@@ -85,47 +90,64 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
         self.configuration_script = "START TRANSACTION; \n SET @disable_audit=1;"
 
     def add_reserved_option(self, single_option):
+        """Add reserved option.
+
+        :param single_option: A dictionary containing the option details.
+        :type single_option: dict
+        """
         self.options += single_option
 
     # Build config file
     def set_ipv4_address(self):
+        """Set IPv4 address."""
         self.configuration_script += "\nSET @ipv4_address = '" + self.ipv4_address + "';"
 
     def set_dhcp4_client_classes(self):
+        """Set DHCP4 client classes."""
         self.configuration_script += "\nSET @dhcp4_client_classes = '" + self.dhcp4_client_classes + "';"
 
     def set_dhcp6_client_classes(self):
+        """Set DHCP6 client classes."""
         self.configuration_script += "\nSET @dhcp6_client_classes = '" + self.dhcp6_client_classes + "';"
 
     def set_hostname(self):
+        """Set hostname."""
         self.configuration_script += "\nSET @hostname = '" + self.hostname + "';"
 
     def set_identifier_type(self):
+        """Set identifier type."""
         self.configuration_script += "\nSET @identifier_type = '" + self.identifier_type + "';"
 
     def set_identifier_value(self):
+        """Set identifier value."""
         self.configuration_script += "\nSET @identifier_value = '" + self.identifier_value + "';"
 
     def set_dhcp4_subnet_id(self):
+        """Set DHCP4 subnet ID."""
         if self.dhcp4_subnet_id != "":
             self.dhcp4_subnet_id = str(self.dhcp4_subnet_id)
         self.configuration_script += "\nSET @dhcp4_subnet_id = '" + self.dhcp4_subnet_id + "';"
 
     def set_dhcp6_subnet_id(self):
+        """Set DHCP6 subnet ID."""
         if self.dhcp6_subnet_id != "":
             self.dhcp6_subnet_id = str(self.dhcp6_subnet_id)
         self.configuration_script += "\nSET @dhcp6_subnet_id = '" + self.dhcp6_subnet_id + "';"
 
     def set_next_server(self):
+        """Set next server."""
         self.configuration_script += "\nSET @next_server = '" + self.next_server + "';"
 
     def set_server_hostname(self):
+        """Set server hostname."""
         self.configuration_script += "\nSET @server_hostname = '" + self.server_hostname + "';"
 
     def set_boot_file_name(self):
+        """Set boot file name."""
         self.configuration_script += "\nSET @boot_file_name = '" + self.boot_file_name + "';"
 
     def set_ipv6_reservations(self):
+        """Set IPv6 reservations."""
         for each in self.ipv6_reservations:
             if len(each) == 1:
                 self.configuration_script += "\nINSERT INTO ipv6_reservations(address, type, host_id)"
@@ -143,6 +165,7 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
                 pass
 
     def set_ipv6_options(self):
+        """Set IPv6 options."""
         for each in self.options:
             if len(each) > 0:
                 self.configuration_script += "\nINSERT INTO dhcp6_options (code, formatted_value," \
@@ -152,6 +175,7 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
                                              "WHERE scope_name = '{scope}'), '[  ]');".format(**each)
 
     def set_ipv4_options(self):
+        """Set IPv4 options."""
         for each in self.options:
             if len(each) > 0:
                 self.configuration_script += "\nINSERT INTO dhcp4_options (code, formatted_value," \
@@ -161,6 +185,7 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
                                              "WHERE scope_name = '{scope}'), '[  ]');".format(**each)
 
     def build_v6_script(self):
+        """Build IPv6 script."""
         if self.identifier_type == "flex-id":
             MySQLReservation.hosts_v6 = MySQLReservation.hosts_v6_flex
         else:
@@ -178,6 +203,7 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
         self.configuration_script += "\n\nCOMMIT;"
 
     def build_v4_script(self):
+        """Build IPv4 script."""
         if self.identifier_type == "flex-id":
             MySQLReservation.hosts_v4 = MySQLReservation.hosts_v4_flex
         else:
@@ -198,20 +224,30 @@ SET @inserted_host_id = (SELECT LAST_INSERT_ID());"""
         self.configuration_script += "\nCOMMIT;"
 
     def build_script(self):
+        """Build script."""
         if world.proto == "v4":
             self.build_v4_script()
         elif world.proto == "v6":
             self.build_v6_script()
 
     def print_config(self):
+        """Print config."""
         log.info(self.configuration_script)
 
 
 def enable_db_backend_reservation():
+    """Enable DB backend reservation."""
     world.reservation_backend = "mysql"
 
 
 def new_db_backend_reservation(reservation_identifier, reservation_identifier_value):
+    """Add new DB backend reservation.
+
+    :param reservation_identifier: The identifier type.
+    :type reservation_identifier: str
+    :param reservation_identifier_value: The identifier value.
+    :type reservation_identifier_value: str
+    """
     enable_db_backend_reservation()
     reservation_record = MySQLReservation()
     reservation_record.identifier_type = reservation_identifier
@@ -219,12 +255,32 @@ def new_db_backend_reservation(reservation_identifier, reservation_identifier_va
 
 
 def update_db_backend_reservation(field_name, field_value, reservation_record_id):
+    """Update DB backend reservation.
+
+    :param field_name: The field name.
+    :type field_name: str
+    :param field_value: The field value.
+    :type field_value: str
+    :param reservation_record_id: The reservation record ID.
+    :type reservation_record_id: int
+    """
     for each_record in list_of_all_reservations:
         if each_record.reservation_id == reservation_record_id:
             each_record.__dict__[field_name] = field_value
 
 
 def ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, reserved_iaid, reservation_record_id):
+    """IPv6 prefix DB backend reservation.
+
+    :param reserved_prefix: The reserved prefix.
+    :type reserved_prefix: str
+    :param reserved_prefix_len: The reserved prefix length.
+    :type reserved_prefix_len: int
+    :param reserved_iaid: The reserved IAI.
+    :type reserved_iaid: str
+    :param reservation_record_id: The reservation record ID.
+    :type reservation_record_id: int
+    """
     for each_record in list_of_all_reservations:
         if each_record.reservation_id == reservation_record_id:
             each_record.ipv6_reservations.append({"ipv6_prefix_reservation": reserved_prefix,
@@ -232,6 +288,15 @@ def ipv6_prefix_db_backend_reservation(reserved_prefix, reserved_prefix_len, res
 
 
 def ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, reservation_record_id):
+    """IPv6 address DB backend reservation.
+
+    :param reserved_address: The reserved address.
+    :type reserved_address: str
+    :param reserved_iaid: The reserved IAI.
+    :type reserved_iaid: str
+    :param reservation_record_id: The reservation record ID.
+    :type reservation_record_id: int
+    """
     for each_record in list_of_all_reservations:
         if each_record.reservation_id == reservation_record_id:
             each_record.ipv6_reservations.append({"ipv6_address_reservation": reserved_address})  # TODO iaid
@@ -240,6 +305,25 @@ def ipv6_address_db_backend_reservation(reserved_address, reserved_iaid, reserva
 def option_db_record_reservation(reserved_option_code, reserved_option_value, reserved_option_space,
                                  reserved_option_persistent, reserved_option_client_class, reserved_subnet_id, reserved_option_scope,
                                  reservation_record_id):
+    """Option DB record reservation.
+
+    :param reserved_option_code: The reserved option code.
+    :type reserved_option_code: int
+    :param reserved_option_value: The reserved option value.
+    :type reserved_option_value: str
+    :param reserved_option_space: The reserved option space.
+    :type reserved_option_space: str
+    :param reserved_option_persistent: The reserved option persistent.
+    :type reserved_option_persistent: int
+    :param reserved_option_client_class: The reserved option client class.
+    :type reserved_option_client_class: str
+    :param reserved_subnet_id: The reserved subnet ID.
+    :type reserved_subnet_id: int
+    :param reserved_option_scope: The reserved option scope.
+    :type reserved_option_scope: str
+    :param reservation_record_id: The reservation record ID.
+    :type reservation_record_id: int
+    """
     for each_record in list_of_all_reservations:
         if each_record.reservation_id == reservation_record_id:
             each_record.options.append({"code": reserved_option_code, "option_value": reserved_option_value,
@@ -248,6 +332,11 @@ def option_db_record_reservation(reserved_option_code, reserved_option_value, re
 
 
 def upload_db_reservation(exp_failed=False):
+    """Upload DB reservation.
+
+    :param exp_failed: Whether to expect failure.
+    :type exp_failed: bool
+    """
     db_name = world.f_cfg.db_name
     db_user = world.f_cfg.db_user
     db_passwd = world.f_cfg.db_passwd
@@ -274,6 +363,7 @@ def upload_db_reservation(exp_failed=False):
 
 
 def clear_all_reservations():
+    """Clear all reservations."""
     db_name = world.f_cfg.db_name
     db_user = world.f_cfg.db_user
     db_passwd = world.f_cfg.db_passwd
@@ -284,8 +374,9 @@ def clear_all_reservations():
 
 
 def remove_db_reservation():
-    # TODO
-    pass
+    """Remove DB reservation."""
+    # TODO: Implement this function.
+    pass  # pylint: disable=unnecessary-pass
 
 
 if __name__ == '__main__':
