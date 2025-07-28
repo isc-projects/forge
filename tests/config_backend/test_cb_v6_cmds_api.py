@@ -2096,7 +2096,7 @@ def test_remote_global_option6_global_del_missing_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-del", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
-                                                               "options": [{"ab": 7}]})
+                                                               "options": [{}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
@@ -2126,7 +2126,7 @@ def test_remote_global_option6_global_get_missing_code(backend):
     _set_server(backend)
     cmd = dict(command="remote-option6-global-get", arguments={"remote": {"type": backend},
                                                                "server-tags": ["abc"],
-                                                               "options": [{"ab": 6}]})
+                                                               "options": [{}]})
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert response == {"result": 1, "text": "missing 'code' parameter"}
 
