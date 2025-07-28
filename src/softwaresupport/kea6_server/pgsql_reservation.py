@@ -138,20 +138,20 @@ SELECT LASTVAL() INTO lastval;"""
             if len(each) > 0:
                 each['persistent'] = (True if each['persistent'] == 1 else False)
                 self.configuration_script += "\nINSERT INTO dhcp6_options (code, formatted_value," \
-                                             " space, host_id, scope_id)"
+                                             " space, host_id, scope_id, client_classes)"
                 self.configuration_script += "\nVALUES ({code}, '{option_value}', '{space}', " \
                                              " (SELECT lastval FROM lastval),(SELECT scope_id FROM dhcp_option_scope " \
-                                             "WHERE scope_name= '{scope}'));".format(**each)
+                                             "WHERE scope_name= '{scope}'), '[  ]');".format(**each)
 
     def set_ipv4_options(self):
         for each in self.options:
             if len(each) > 0:
                 each['persistent'] = (True if each['persistent'] == 1 else False)
                 self.configuration_script += "\nINSERT INTO dhcp4_options (code, formatted_value," \
-                                             " space, persistent, host_id, scope_id)"
+                                             " space, persistent, host_id, scope_id, client_classes)"
                 self.configuration_script += "\nVALUES ({code}, '{option_value}', '{space}', {persistent}," \
                                              " (SELECT lastval FROM lastval),(SELECT scope_id FROM dhcp_option_scope " \
-                                             "WHERE scope_name= '{scope}'));".format(**each)
+                                             "WHERE scope_name= '{scope}'), '[  ]');".format(**each)
 
     def build_v6_script(self):
         if self.identifier_type == "flex-id":
