@@ -376,7 +376,6 @@ def clear_all_reservations():
 def remove_db_reservation():
     """Remove DB reservation."""
     # TODO: Implement this function.
-    pass  # pylint: disable=unnecessary-pass
 
 
 if __name__ == '__main__':
