@@ -1136,7 +1136,7 @@ def response_check_include_option(must_include, opt_code):
     :type must_include:
     :param opt_code:
     :type opt_code:
-    :return:
+    :return: Returns text representation of the option, interpreted as specified by data_type
     :rtype:
     """
     assert len(world.srvmsg) != 0, "No response received."
@@ -1152,7 +1152,6 @@ def response_check_include_option(must_include, opt_code):
                             "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
     return opt
-# Returns text representation of the option, interpreted as specified by data_type
 
 
 def response_check_count_option(opt_code, count):
@@ -1162,7 +1161,7 @@ def response_check_count_option(opt_code, count):
     :type opt_code:
     :param count:
     :type count:
-    :return:
+    :return: Returns text representation of the option, interpreted as specified by data_type
     :rtype:
     """
     assert len(world.srvmsg) != 0, "No response received."
@@ -1174,7 +1173,6 @@ def response_check_count_option(opt_code, count):
         "\nPacket:" + str(world.srvmsg[0].show(dump=True))
 
     return opt
-# Returns text representation of the option, interpreted as specified by data_type
 
 
 def get_subopt_from_option(exp_opt_code, exp_subopt_code):
