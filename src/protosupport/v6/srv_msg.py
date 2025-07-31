@@ -1093,7 +1093,7 @@ def get_option(msg, opt_code, get_all=False):
 
 
 def unknown_option_to_str(data_type, opt):
-    """unknown_option_to_str.
+    """Return text representation of the option, interpreted as specified by data_type.
 
     :param data_type:
     :type data_type:
@@ -1136,7 +1136,7 @@ def response_check_include_option(must_include, opt_code):
     :type must_include:
     :param opt_code:
     :type opt_code:
-    :return: Returns text representation of the option, interpreted as specified by data_type
+    :return:
     :rtype:
     """
     assert len(world.srvmsg) != 0, "No response received."
@@ -1161,7 +1161,7 @@ def response_check_count_option(opt_code, count):
     :type opt_code:
     :param count:
     :type count:
-    :return: Returns text representation of the option, interpreted as specified by data_type
+    :return:
     :rtype:
     """
     assert len(world.srvmsg) != 0, "No response received."
