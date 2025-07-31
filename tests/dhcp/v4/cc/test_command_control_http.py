@@ -558,7 +558,6 @@ def test_control_channel_multiple_http_get_config():
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.add_unix_socket()
 
-
     # Generate ip addresses for http sockets
     srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
     srv_ip_addresses = [world.f_cfg.srv4_addr]
