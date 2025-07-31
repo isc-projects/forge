@@ -1035,7 +1035,7 @@ def add_unix_socket(socket_name=None):
 
 @step(r'Server has control agent configured on HTTP connection with address (\S+):(\S+) and socket (\S+) path: (\S+).')
 def add_http_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, socket_name='control_socket',
-                             auth=None):
+                             auth=None, append=False):
     """Add HTTP control channel.
 
     :param host_address: (Default value = '$(MGMT_ADDRESS)')
@@ -1046,9 +1046,11 @@ def add_http_control_channel(host_address='$(MGMT_ADDRESS)', host_port=8000, soc
     :type socket_name:
     :param auth: optional authorisation configuration
     :type auth: dict
+    :param append: If True, socket will be added to the existing control-sockets list.
+    :type append: bool, optional
     """
     host_address, host_port = test_define_value(host_address, host_port)
-    dhcp.add_http_control_channel(host_address, host_port, socket_name, auth)
+    dhcp.add_http_control_channel(host_address, host_port, socket_name, auth, append)
 
 
 def disable_leases_affinity():

@@ -8,12 +8,14 @@
 
 # pylint: disable=line-too-long
 
+import ipaddress
 import pytest
 
 from src import misc
 from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
+from src.softwaresupport.multi_server_functions import fabric_sudo_command
 
 
 @pytest.mark.v4
@@ -504,3 +506,72 @@ def test_control_channel_http_reload_config():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_content('yiaddr', '192.168.51.1')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+
+def _generate_ip_address_shift():
+    """Function searches for IP addresses that can be used for additional sockets.
+
+    :return: list of IP address shifts that can be used for additional sockets
+    :rtype: list
+    """
+    ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
+    srv4_addr = ipaddress.IPv4Interface(f'{world.f_cfg.srv4_addr}/24')
+    # chceck if srv4_addr is bigger than ciaddr and 4 more addresses will fit in the same subnet
+    if srv4_addr.ip > ciaddr.ip and (srv4_addr + 4).network.subnet_of(srv4_addr.network):
+        return [1, 2, 3]
+    # if not, check if srv4_addr is bigger than ciaddr + 4 and 4 more addresses will fit between them.
+    if srv4_addr.ip > (ciaddr + 4).ip:
+        return [-1, -2, -3]
+    # if not, select addresses before ciaddr
+    return [-5, -6, -7]
+
+
+# Fixture to configure additional IP address for tests.
+@pytest.fixture()
+def _prepare_multiple_http_env():
+    """Prepare environment for multiple http control channels.
+
+    This fixture will add additional IP addresses to the server interface and remove them after the test
+    """
+    ip_address_shift = _generate_ip_address_shift()
+    srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
+    # Assign additional IP addressess to server interface
+    for ip_shift in ip_address_shift:
+        new_ip = srv4_addr + ip_shift
+        fabric_sudo_command(f'ip address replace {new_ip}/24 dev {world.f_cfg.server_iface}')
+    yield
+    for ip_shift in ip_address_shift:
+        new_ip = srv4_addr + ip_shift
+        fabric_sudo_command(f'ip address del {new_ip}/24 dev {world.f_cfg.server_iface}')
+
+
+@pytest.mark.usefixtures('_prepare_multiple_http_env')
+@pytest.mark.v4
+@pytest.mark.controlchannel
+def test_control_channel_multiple_http_get_config():
+    """Test multiple http control channels.
+
+    This test will add additional IP addresses to the server interface and add http control channels for them.
+    It will then send config-get command to all addresses and check if the response is the same.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.add_unix_socket()
+
+
+    # Generate ip addresses for http sockets
+    srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
+    srv_ip_addresses = [world.f_cfg.srv4_addr]
+    ip_address_shift = _generate_ip_address_shift()
+    for ip_shift in ip_address_shift:
+        srv_ip_addresses.append(srv4_addr + ip_shift)
+
+    # Add http sockets for all addresses
+    for ip in srv_ip_addresses:
+        srv_control.add_http_control_channel(ip, append=True)
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    for ip in srv_ip_addresses:
+        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', ip)

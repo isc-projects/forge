@@ -1542,7 +1542,8 @@ def enable_https(trust_anchor: str, cert_file: str, key_file: str, cert_required
 
 
 # Start kea-ctrl-agent if it's enabled
-def add_http_control_channel(host_address: str, host_port: int, socket_name: str = 'control_socket', auth: dict = None) -> None:
+def add_http_control_channel(host_address: str, host_port: int, socket_name: str = 'control_socket',
+                             auth: dict = None, append: bool = False) -> None:
     """add_http_control_channel Add http control channel to the configuration.
 
     If forge is configured to use Control Agent daemon, it will be configured here with all the parameters (addresses, sockets, logging).
@@ -1557,6 +1558,8 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
     :type socket_name: str, optional
     :param auth: Authentication settings for the control channel
     :type auth: dict, optional
+    :param append: If True, socket will be added to the existing control-sockets list.
+    :type append: bool, optional
     """
     if auth is None:
         auth = {"authentication": {
@@ -1589,7 +1592,7 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
         if "control-sockets" not in world.dhcp_cfg:
             world.dhcp_cfg["control-sockets"] = []
         for socket in world.dhcp_cfg["control-sockets"]:
-            if socket["socket-type"] == "http":
+            if socket["socket-type"] == "http" and not append:
                 socket["socket-address"] = host_address
                 socket["socket-port"] = int(host_port)
                 socket["authentication"] = auth["authentication"]
