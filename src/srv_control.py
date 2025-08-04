@@ -1323,6 +1323,21 @@ def create_password_files(user=world.f_cfg.auth_user, passwd=world.f_cfg.auth_pa
     dhcp.create_password_files(user=user, passwd=passwd, destination_address=dest)
 
 
+def create_user_and_password_file(user=world.f_cfg.auth_user, password=world.f_cfg.auth_passwd,
+                                  dest=world.f_cfg.mgmt_address):
+    """create_user_and_password_file Create file with username and password for kea control channel.
+
+    :param user: user name, (Default value = world.f_cfg.auth_user)
+    :type user: str
+    :param password: password, (Default value = world.f_cfg.auth_passwd)
+    :type password: str
+    :param dest: address of remote system where the password files are created,
+        (Default value = world.f_cfg.mgmt_address)
+    :type dest: str
+    """
+    dhcp.create_user_and_password_file(user=user, password=password, destination_address=dest)
+
+
 # DDNS server
 @step(r'DDNS server has control channel (\S+).')
 def ddns_add_unix_socket(socket_name=None):

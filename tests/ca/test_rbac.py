@@ -18,49 +18,9 @@ from src import misc
 from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
-from src.protosupport.multi_protocol_functions import fabric_sudo_command
 
 # note: a lot of reconfigures in all those tests could be done by config-set, this would make tests cleaner
 # but due to discovered bug https://gitlab.isc.org/isc-projects/kea/-/issues/2475 I choose to go with reconfigure
-
-
-def create_user_and_passowrd_file(user, password):
-    """create_user_and_passowrd_file Create a user and
-    password file for the RBAC tests that are using basic authentication.
-    Usulally basic authentication uses one file with username
-    and password. Let's use separate files for each user in those tests.
-
-    :param user: The user to create in the file
-    :type user: str
-    :param password: The password to use
-    :type password: str
-    """
-    fabric_sudo_command(f'echo "{user}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp", user)}',
-                        hide_all=world.f_cfg.forge_verbose == 0)
-    user_password_file = os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp", f"{user}_password")
-    fabric_sudo_command(f'echo "{password}" > {user_password_file}', hide_all=world.f_cfg.forge_verbose == 0)
-
-    if world.f_cfg.install_method != 'make':
-        if world.server_system in ['alpine', 'redhat', 'fedora']:
-            fabric_sudo_command(f'chown -R kea:kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
-                                hide_all=world.f_cfg.forge_verbose == 0)
-        else:
-            fabric_sudo_command(f'chown -R _kea:_kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
-                                hide_all=world.f_cfg.forge_verbose == 0)
-
-
-# fixture to remove authentication files after the test
-@pytest.fixture()
-def remove_authentication_files():
-    """remove_authentication_files Remove authentication files after the test.
-    This fixture is used to create authentiaction directory and files before the test.
-    It is used to avoid conflicts with other tests.
-    """
-    fabric_sudo_command(f'mkdir -m 750 -p {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
-                        hide_all=world.f_cfg.forge_verbose == 0)
-    yield
-    fabric_sudo_command(f'rm -rf {os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp")}',
-                        hide_all=world.f_cfg.forge_verbose == 0)
 
 
 @pytest.mark.v4
@@ -399,7 +359,6 @@ def test_rbac_remote_address(dhcp_version, tls):
         assert resp['text'] == 'Forbidden', f"text message from response should be 'Forbidden' it is {resp} instead."
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -424,12 +383,12 @@ def test_rbac_basic_authentication(dhcp_version, tls):
     misc.test_setup()
     srv_control.add_unix_socket()
 
-    create_user_and_passowrd_file("admin", "p@ssw0rd")
-    create_user_and_passowrd_file("admin2", "p@ssw0rd")
+    srv_control.create_user_and_password_file("admin", "p@ssw0rd")
+    srv_control.create_user_and_password_file("admin2", "p@ssw0rd")
 
     auth = {"authentication": {
             "type": "basic",
-            "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp"),
+            "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds"),
             "clients":
                 [
                     {
@@ -569,13 +528,13 @@ def _preconfigure_test():
     misc.test_setup()
     srv_control.add_unix_socket()
 
-    create_user_and_passowrd_file("admin", "p@ssw0rd")
-    create_user_and_passowrd_file("admin2", "p@ssw0rd")
-    create_user_and_passowrd_file("admin3", "p@ssw0rd")
+    srv_control.create_user_and_password_file("admin", "p@ssw0rd")
+    srv_control.create_user_and_password_file("admin2", "p@ssw0rd")
+    srv_control.create_user_and_password_file("admin3", "p@ssw0rd")
     auth = {
         "authentication": {
             "type": "basic",
-            "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp"),
+            "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds"),
             "clients":
                 [
                     {
@@ -636,7 +595,6 @@ def make_sure_file_is_correct():
     srv_msg.execute_shell_cmd(f"cp ~/dhcp-disable.json.bk {f}")  # restore backup after the test
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.ca
 @pytest.mark.v6
@@ -706,7 +664,6 @@ def test_rbac_access_by_read_write(dhcp_version, make_sure_file_is_correct):
     _send_cmd({"command": "dhcp-disable", "arguments": {}}, result=403)
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -759,7 +716,6 @@ def test_rbac_access_by_name_removed_file(dhcp_version, make_sure_file_is_correc
     srv_control.start_srv('CA' if world.f_cfg.control_agent else 'DHCP', 'started', should_succeed=False)
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -845,7 +801,6 @@ def test_rbac_access_by_name_removed_file_2(dhcp_version, make_sure_file_is_corr
     _send_cmd({"command": "dhcp-disable", "arguments": {}}, user='admin3')
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -969,7 +924,6 @@ def test_rbac_access_by_all_none(dhcp_version):
         _send_cmd({"command": i, "arguments": {}}, result=403)
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -1024,7 +978,6 @@ def test_rbac_access_by_hook_name(dhcp_version):
     _send_cmd({"command": "remote-option4-pool-set", "arguments": {}}, user='admin2', result=403)
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -1093,7 +1046,6 @@ def test_rbac_access_by_commands_with_other_list(dhcp_version):
     _send_cmd({"command": "lease4-get", "arguments": {}}, result=2)
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -1159,7 +1111,6 @@ def test_rbac_filter_responses(dhcp_version):
         "We should get smaller number of commands back in second response"
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -1192,7 +1143,6 @@ def test_default_role(dhcp_version):
         _send_cmd({"command": i, "arguments": {}}, result=403)
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -1243,7 +1193,6 @@ def test_unknown_role(dhcp_version):
         _send_cmd({"command": i, "arguments": {}}, result=403)
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -1255,12 +1204,12 @@ def test_creating_access_list_for_multiple_use_cases(dhcp_version):
     """
     misc.test_setup()
     srv_control.add_unix_socket()
-    create_user_and_passowrd_file("admin", "p@ssw0rd")
-    create_user_and_passowrd_file("admin2", "p@ssw0rd")
-    create_user_and_passowrd_file("admin3", "p@ssw0rd")
+    srv_control.create_user_and_password_file("admin", "p@ssw0rd")
+    srv_control.create_user_and_password_file("admin2", "p@ssw0rd")
+    srv_control.create_user_and_password_file("admin3", "p@ssw0rd")
     auth = {"authentication": {
         "type": "basic",
-        "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp"),
+        "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds"),
         "clients":
             [
                 {
@@ -1355,7 +1304,6 @@ def test_creating_access_list_for_multiple_use_cases(dhcp_version):
         _send_cmd({"command": i, "arguments": {}}, user='admin3', result=403)
 
 
-@pytest.mark.usefixtures('remove_authentication_files')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.ca
@@ -1367,10 +1315,10 @@ def test_mixed_roles(dhcp_version):
     """
     misc.test_setup()
     srv_control.add_unix_socket()
-    create_user_and_passowrd_file("admin", "p@ssw0rd")
+    srv_control.create_user_and_password_file("admin", "p@ssw0rd")
     auth = {"authentication": {
         "type": "basic",
-        "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds-tmp"),
+        "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds"),
         "clients":
             [
                 {

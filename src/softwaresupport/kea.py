@@ -1954,6 +1954,38 @@ def create_password_files(user=world.f_cfg.auth_user, passwd=world.f_cfg.auth_pa
                                 destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
 
 
+def create_user_and_password_file(user=world.f_cfg.auth_user, password=world.f_cfg.auth_passwd,
+                                  destination_address=world.f_cfg.mgmt_address):
+    """create_user_and_password_file Create a user and password file.
+
+    For the RBAC tests that are using basic authentication.
+    Usulally basic authentication uses one file with username
+    and password. Let's use separate files for each user in those tests.
+
+    :param user: The user to create in the file
+    :type user: str
+    :param password: The password to use
+    :type password: str
+    :param destination_address: address of remote system where the file is created,
+        (Default value = world.f_cfg.mgmt_address)
+    :type destination_address: str
+    """
+    fabric_sudo_command(f'mkdir -m 750 -p {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
+                        destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
+    fabric_sudo_command(f'echo "{user}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds", user)}',
+                        hide_all=world.f_cfg.forge_verbose == 0)
+    user_password_file = os.path.join(world.f_cfg.get_share_path(), "kea-creds", f"{user}_password")
+    fabric_sudo_command(f'echo "{password}" > {user_password_file}', hide_all=world.f_cfg.forge_verbose == 0)
+
+    if world.f_cfg.install_method != 'make':
+        if world.server_system in ['alpine', 'redhat', 'fedora']:
+            fabric_sudo_command(f'chown -R kea:kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
+                                hide_all=world.f_cfg.forge_verbose == 0)
+        else:
+            fabric_sudo_command(f'chown -R _kea:_kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
+                                hide_all=world.f_cfg.forge_verbose == 0)
+
+
 def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):
     """Generate final config file, save it to test result directory and send it to remote system.
 
