@@ -548,7 +548,7 @@ def _prepare_multiple_http_env():
 @pytest.mark.usefixtures('_prepare_multiple_http_env')
 @pytest.mark.v4
 @pytest.mark.controlchannel
-def test_control_channel_multiple_http_get_config():
+def test_control_channel_multiple_http_basic():
     """Test multiple http control channels.
 
     This test will add additional IP addresses to the server interface and add http control channels for them.
@@ -572,5 +572,113 @@ def test_control_channel_multiple_http_get_config():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
+    for ip in srv_ip_addresses:
+        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', ip)
+
+
+@pytest.mark.usefixtures('_prepare_multiple_http_env')
+@pytest.mark.v4
+@pytest.mark.controlchannel
+def test_control_channel_multiple_http_one_address():
+    """Test multiple http control channels.
+
+    This test will add additional IP addresses to the server interface and add http control channels one of them.
+    It will then send config-get command to all addresses and check if the response is correct.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.add_unix_socket()
+
+    # Generate ip addresses for http sockets
+    srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
+    srv_ip_addresses = [world.f_cfg.srv4_addr]
+    ip_address_shift = _generate_ip_address_shift()
+    for ip_shift in ip_address_shift:
+        srv_ip_addresses.append(srv4_addr + ip_shift)
+
+    # Add http sockets for one address
+    srv_control.add_http_control_channel(srv_ip_addresses[0])
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Send config-get command to the first address
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', srv_ip_addresses[0])
+
+    # Send config-get command to the other addresses, it should fail
+    for ip in srv_ip_addresses[1:]:
+        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', ip, exp_failed=True)
+
+    # Send config-get command to the first address again to make sure server still works
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', srv_ip_addresses[0])
+
+
+@pytest.mark.usefixtures('_prepare_multiple_http_env')
+@pytest.mark.v4
+@pytest.mark.controlchannel
+def test_control_channel_multiple_http_127_0_0_1():
+    """Test local http control channel.
+
+    This test will add additional IP addresses to the server interface and add http control channel to 127.0.0.1.
+    It will then send config-get command to all addresses and check if the response is correct.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.add_unix_socket()
+
+    # Generate ip addresses for http sockets
+    srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
+    srv_ip_addresses = [world.f_cfg.srv4_addr]
+    ip_address_shift = _generate_ip_address_shift()
+    for ip_shift in ip_address_shift:
+        srv_ip_addresses.append(srv4_addr + ip_shift)
+
+    # Add http sockets for one address
+    srv_control.add_http_control_channel('127.0.0.1')
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Send config-get command to all specified addresses, it should fail
+    for ip in srv_ip_addresses:
+        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', ip, exp_failed=True)
+
+    # Send DORA to make sure server still works
+    srv_msg.DORA('192.168.50.1')
+
+    # Send config-get command to 127.0.0.1 from within the server.
+    http_command = '\'{"command": "config-get","service":["dhcp4"],"arguments": {} }\''
+    cmd = f'curl -X POST -H "Content-Type: application/json" -d {http_command} -u "{world.f_cfg.auth_user}:{world.f_cfg.auth_passwd}" http://127.0.0.1:8000'
+    result = fabric_sudo_command(cmd)
+    assert '"result": 0' in result
+
+
+@pytest.mark.usefixtures('_prepare_multiple_http_env')
+@pytest.mark.v4
+@pytest.mark.controlchannel
+def test_control_channel_multiple_http_0_0_0_0():
+    """Test local http control channel.
+
+    This test will add additional IP addresses to the server interface and add http control channel to 0.0.0.0.
+    It will then send config-get command to all addresses and check if the response is correct.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.add_unix_socket()
+
+    # Generate ip addresses for http sockets
+    srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
+    srv_ip_addresses = [world.f_cfg.srv4_addr]
+    ip_address_shift = _generate_ip_address_shift()
+    for ip_shift in ip_address_shift:
+        srv_ip_addresses.append(srv4_addr + ip_shift)
+
+    # Add http sockets for one address
+    srv_control.add_http_control_channel('0.0.0.0')
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Send config-get command to all specified addresses, it should fail
     for ip in srv_ip_addresses:
         srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', ip)
