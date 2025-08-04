@@ -1007,21 +1007,21 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
     if isinstance(command, dict):
         command = json.dumps(command)
 
+    exception = None
     try:
         response = requests.post(addr, headers=d_headers, data=command, verify=verify, cert=cert, timeout=300)
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.ConnectionError as e:
         # this is weird, if post fail it should have 400 or 500 but it's not created instead
         response = None
+        exception = e
 
     if exp_failed:
-        if response is not None:
-            assert False, "Connection successful, we expected failure"
+        assert response is None, "Connection successful, we expected failure"
     else:
-        if response is None:
-            assert False, "Connection failed, but we expected success"
-        elif 200 <= response.status_code < 300:
+        assert response is not None, f"Connection failed, but we expected success. Exception: {exception}"
+        if 200 <= response.status_code < 300:
             return _process_ctrl_response(response.text, exp_result)
-        elif response.status_code in [401, 403]:
+        if response.status_code in [401, 403]:
             return _process_ctrl_response(response._content, exp_result)
 
 
