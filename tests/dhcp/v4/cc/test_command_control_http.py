@@ -682,3 +682,113 @@ def test_control_channel_multiple_http_0_0_0_0():
     # Send config-get command to all specified addresses, it should fail
     for ip in srv_ip_addresses:
         srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', ip)
+
+
+@pytest.mark.usefixtures('_prepare_multiple_http_env')
+@pytest.mark.v4
+@pytest.mark.controlchannel
+def test_control_channel_multiple_http_reload_config():
+    """Test if sockets close properly after config reload.
+
+    This test will add additional IP addresses to the server interface and add http control channels for them.
+    It will then send config-reload command and check if the sockets are closed.
+    """
+
+    # Generate ip addresses for http sockets
+    srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
+    srv_ip_addresses = [world.f_cfg.srv4_addr]
+    ip_address_shift = _generate_ip_address_shift()
+    for ip_shift in ip_address_shift:
+        srv_ip_addresses.append(srv4_addr + ip_shift)
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.add_unix_socket()
+    # Add http sockets for all addresses
+    for ip in srv_ip_addresses:
+        srv_control.add_http_control_channel(ip, append=True)
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Send config-get command to all addresses
+    for ip in srv_ip_addresses:
+        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', ip)
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.add_unix_socket()
+    # Configure only one address
+    srv_control.add_http_control_channel(srv_ip_addresses[0])
+    srv_control.build_and_send_config_files()
+
+    srv_msg.send_ctrl_cmd_via_http('{"command":"config-reload","service":["dhcp4"],"arguments":{}}',
+                                   '$(SRV4_ADDR)')
+
+    # Send config-get command to the first address
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', srv_ip_addresses[0])
+
+    # Send config-get command to the other addresses, it should fail
+    for ip in srv_ip_addresses[1:]:
+        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', ip, exp_failed=True)
+
+    # Send config-get command to the first address again to make sure server still works
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', srv_ip_addresses[0])
+
+
+@pytest.mark.usefixtures('_prepare_multiple_http_env')
+@pytest.mark.v4
+@pytest.mark.controlchannel
+def test_control_channel_multiple_http_config_set():
+    """Test if sockets close properly after config set.
+
+    This test will add additional IP addresses to the server interface and add http control channels for them.
+    It will then send config-set command and check if the sockets are closed.
+    """
+
+    # Generate ip addresses for http sockets
+    srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
+    srv_ip_addresses = [world.f_cfg.srv4_addr]
+    ip_address_shift = _generate_ip_address_shift()
+    for ip_shift in ip_address_shift:
+        srv_ip_addresses.append(srv4_addr + ip_shift)
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.add_unix_socket()
+    # Add http sockets for all addresses
+    for ip in srv_ip_addresses:
+        srv_control.add_http_control_channel(ip, append=True)
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Send config-get command to all addresses
+    for ip in srv_ip_addresses:
+        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', ip)
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.add_unix_socket()
+    # Add http socket for the first address
+    srv_control.add_http_control_channel(srv_ip_addresses[0])
+
+    # Build config and send config-set command.
+    srv_control.build_and_send_config_files()
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp4"], "arguments":  $(DHCP_CONFIG) }',
+                                   '$(SRV4_ADDR)')
+    srv_msg.send_ctrl_cmd_via_http('{"command": "list-commands", "service": ["dhcp4"],"arguments":  $(DHCP_CONFIG) }',
+                                   '$(SRV4_ADDR)')
+
+    # Wait for config to be applied
+    srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
+
+    # Send config-get command to the first address
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', srv_ip_addresses[0])
+
+    # Send config-get command to the other addresses, it should fail
+    for ip in srv_ip_addresses[1:]:
+        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', ip, exp_failed=True)
+
+    # Send config-get command to the first address again to make sure server still works
+    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp4"],"arguments": {} }', srv_ip_addresses[0])
