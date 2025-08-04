@@ -514,6 +514,8 @@ def cleanup(scenario):
                     # it's not bullet proof it won't download anything from second HA system
                     download_tcpdump_capture(location=remote_server, file_name='remote.pcap')
 
+    _clear_remainings()
+
 
 # @after.all
 def say_goodbye():

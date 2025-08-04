@@ -2107,7 +2107,7 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
     :type db_name:
     """
     # clean up credentail files if they exist
-    fabric_sudo_command(f'rm -rf {os.path.join(world.f_cfg.get_share_path(), "kea-creds", "*")}',
+    fabric_sudo_command(f'rm -rf {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
                         destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
     clear_logs(destination_address)
 
