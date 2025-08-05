@@ -17,6 +17,7 @@ from src import srv_control
 from src.forge_cfg import world
 from src.softwaresupport.multi_server_functions import fabric_sudo_command
 
+
 @pytest.mark.v6
 @pytest.mark.controlchannel
 def test_control_channel_http_dhcp_disable_timer():
