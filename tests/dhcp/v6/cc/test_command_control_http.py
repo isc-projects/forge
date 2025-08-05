@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -44,7 +44,7 @@ def test_control_channel_http_dhcp_disable_timer():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "dhcp-disable","service": ["dhcp6"], "arguments": {"max-period": 5}}',
+    srv_msg.send_ctrl_cmd_via_http({"command": "dhcp-disable","service": ["dhcp6"], "arguments": {"max-period": 5}},
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
@@ -100,7 +100,7 @@ def test_control_channel_http_dhcp_disable():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "dhcp-disable","service": ["dhcp6"]}',
+    srv_msg.send_ctrl_cmd_via_http({"command": "dhcp-disable","service": ["dhcp6"]},
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
@@ -140,7 +140,7 @@ def test_control_channel_http_dhcp_disable_and_enable():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::1')
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "dhcp-disable","service": ["dhcp6"]}',
+    srv_msg.send_ctrl_cmd_via_http({"command": "dhcp-disable","service": ["dhcp6"]},
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
@@ -153,7 +153,7 @@ def test_control_channel_http_dhcp_disable_and_enable():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "dhcp-enable","service": ["dhcp6"]}',
+    srv_msg.send_ctrl_cmd_via_http({"command": "dhcp-enable","service": ["dhcp6"]},
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
@@ -182,9 +182,9 @@ def test_control_channel_http_config_set_basic():
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "list-commands", "service": ["dhcp6"],"arguments": {} }',
+    srv_msg.send_ctrl_cmd_via_http({"command": "list-commands", "service": ["dhcp6"],"arguments": {} },
                                    '$(SRV4_ADDR)')
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-write", "service": ["dhcp6"],"arguments": {"filename": "config-modified-2017-03-15.json"}}', '$(SRV4_ADDR)')
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-write", "service": ["dhcp6"],"arguments": {"filename": "config-modified-2017-03-15.json"}}, '$(SRV4_ADDR)')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -206,7 +206,7 @@ def test_control_channel_http_config_set_basic():
 
     # Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: control_socket.
     srv_control.build_config_files()
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"], "arguments":  $(DHCP_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-set", "service": ["dhcp6"], "arguments":  world.dhcp_cfg },
                                    '$(SRV4_ADDR)')
 
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
@@ -238,7 +238,7 @@ def test_control_channel_http_change_socket_during_reconfigure():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    result = srv_msg.send_ctrl_cmd_via_http('{"command":"config-get", "service": ["dhcp6"], "arguments": {} }',
+    result = srv_msg.send_ctrl_cmd_via_http({"command":"config-get", "service": ["dhcp6"], "arguments": {} },
                                             '$(SRV4_ADDR)')
     assert result[0]['result'] == 0
 
@@ -264,11 +264,11 @@ def test_control_channel_http_change_socket_during_reconfigure():
 
     # reconfigure dhcp6 (new subnet, new socket)
     srv_control.build_config_files()
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(DHCP_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-set", "service": ["dhcp6"],"arguments":  world.dhcp_cfg },
                                    '$(SRV4_ADDR)')
     # reconfigure control-agent to switch to new dhcp4 socket
     if world.f_cfg.control_agent:
-        srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "arguments":  $(AGENT_CONFIG) }',
+        srv_msg.send_ctrl_cmd_via_http({"command": "config-set", "arguments":  world.ca_cfg },
                                        '$(SRV4_ADDR)')
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
@@ -286,7 +286,7 @@ def test_control_channel_http_change_socket_during_reconfigure():
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_suboption_content(5, 3, 'addr', '2001:db8:1::1')
-    result = srv_msg.send_ctrl_cmd_via_http('{"command":"config-get", "service": ["dhcp6"], "arguments": {} }',
+    result = srv_msg.send_ctrl_cmd_via_http({"command":"config-get", "service": ["dhcp6"], "arguments": {} },
                                             '$(SRV4_ADDR)')
     assert result[0]['result'] == 0
 
@@ -322,7 +322,7 @@ def test_control_channel_http_after_restart_load_config_file():
     srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(DHCP_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-set", "service": ["dhcp6"],"arguments":  world.dhcp_cfg },
                                    '$(SRV4_ADDR)')
 
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
@@ -370,7 +370,7 @@ def test_control_channel_http_get_config():
 
     srv_control.start_srv('DHCP', 'started')
 
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }',
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} },
                                    '$(SRV4_ADDR)')
 
 
@@ -414,8 +414,8 @@ def test_control_channel_http_test_config():
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
 
     srv_control.build_config_files()
-    response = srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp6"],'
-                                              ' "arguments":  $(DHCP_CONFIG) }', '$(SRV4_ADDR)', exp_result=1)
+    response = srv_msg.send_ctrl_cmd_via_http({"command": "config-test","service": ["dhcp6"],
+                                              "arguments":  world.dhcp_cfg }, '$(SRV4_ADDR)', exp_result=1)
 
     assert "specified reservation \'3000::1\' is not within the IPv6 subnet \'2001:db8:a::/64\'" in response[0]['text']
     misc.test_procedure()
@@ -448,7 +448,7 @@ def test_control_channel_http_test_config():
                                            '00:03:00:01:f6:f5:f4:f3:f2:01')
 
     srv_control.build_config_files()
-    response = srv_msg.send_ctrl_cmd_via_http('{"command": "config-test","service": ["dhcp6"], "arguments":  $(DHCP_CONFIG) }',
+    response = srv_msg.send_ctrl_cmd_via_http({"command": "config-test","service": ["dhcp6"], "arguments":  world.dhcp_cfg },
                                               '$(SRV4_ADDR)',
                                               exp_result=1)
     assert "invalid prefix '192.168.0.5' for new IPv6 reservation" in response[0]['text']
@@ -501,7 +501,7 @@ def test_control_channel_http_config_write():
     srv_control.add_http_control_channel('$(SRV4_ADDR)')
 
     srv_control.build_config_files()
-    srv_msg.send_ctrl_cmd_via_socket('{"command": "config-set", "service": ["dhcp6"],"arguments":  $(DHCP_CONFIG) }')
+    srv_msg.send_ctrl_cmd_via_socket({"command": "config-set", "service": ["dhcp6"],"arguments":  world.dhcp_cfg })
 
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
@@ -573,7 +573,7 @@ def test_control_channel_http_reload_config():
     srv_control.add_http_control_channel('$(SRV4_ADDR)')
     srv_control.build_and_send_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command":"config-reload","service":["dhcp6"],"arguments":{}}',
+    srv_msg.send_ctrl_cmd_via_http({"command":"config-reload","service":["dhcp6"],"arguments":{}},
                                    '$(SRV4_ADDR)')
 
     misc.test_procedure()
@@ -651,9 +651,12 @@ def _prepare_multiple_http_env():
 def test_control_channel_multiple_http_basic():
     """Test multiple http control channels.
 
-    This test will add additional IP addresses to the server interface and add http control channels for them.
+    This test will add additional IP addresses to the server interface and open http control channels on them.
     It will then send config-get command to all addresses and check if the response is the same.
     """
+    if world.f_cfg.control_agent:
+        pytest.skip('This test requires CA to be disabled. Making tests not viable because of CA deprecation.')
+
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.add_unix_socket()
@@ -673,7 +676,7 @@ def test_control_channel_multiple_http_basic():
     srv_control.start_srv('DHCP', 'started')
 
     for ip in srv_ip_addresses:
-        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', ip)
+        srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, ip)
 
 
 @pytest.mark.usefixtures('_prepare_multiple_http_env')
@@ -682,9 +685,12 @@ def test_control_channel_multiple_http_basic():
 def test_control_channel_multiple_http_one_address():
     """Test multiple http control channels.
 
-    This test will add additional IP addresses to the server interface and add http control channels one of them.
+    This test will add additional IP addresses to the server interface open http control channels on them.
     It will then send config-get command to all addresses and check if the response is correct.
     """
+    if world.f_cfg.control_agent:
+        pytest.skip('This test requires CA to be disabled. Making tests not viable because of CA deprecation.')
+
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.add_unix_socket()
@@ -703,25 +709,28 @@ def test_control_channel_multiple_http_one_address():
     srv_control.start_srv('DHCP', 'started')
 
     # Send config-get command to the first address
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', srv_ip_addresses[0])
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, srv_ip_addresses[0])
 
     # Send config-get command to the other addresses, it should fail
     for ip in srv_ip_addresses[1:]:
-        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', ip, exp_failed=True)
+        srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, ip, exp_failed=True)
 
     # Send config-get command to the first address again to make sure server still works
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', srv_ip_addresses[0])
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, srv_ip_addresses[0])
 
 
 @pytest.mark.usefixtures('_prepare_multiple_http_env')
 @pytest.mark.v6
 @pytest.mark.controlchannel
-def test_control_channel_multiple_http_127_0_0_1():
+def test_control_channel_http_127_0_0_1():
     """Test local http control channel.
 
     This test will add additional IP addresses to the server interface and add http control channel to 127.0.0.1.
     It will then send config-get command to all addresses and check if the response is correct.
     """
+    if world.f_cfg.control_agent:
+        pytest.skip('This test requires CA to be disabled. Making tests not viable because of CA deprecation.')
+
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.add_unix_socket()
@@ -741,7 +750,7 @@ def test_control_channel_multiple_http_127_0_0_1():
 
     # Send config-get command to all specified addresses, it should fail
     for ip in srv_ip_addresses:
-        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', ip, exp_failed=True)
+        srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, ip, exp_failed=True)
 
     # Send SARR to make sure server still works
     srv_msg.SARR('3000::1')
@@ -756,12 +765,15 @@ def test_control_channel_multiple_http_127_0_0_1():
 @pytest.mark.usefixtures('_prepare_multiple_http_env')
 @pytest.mark.v6
 @pytest.mark.controlchannel
-def test_control_channel_multiple_http_0_0_0_0():
+def test_control_channel_http_0_0_0_0():
     """Test local http control channel.
 
     This test will add additional IP addresses to the server interface and add http control channel to 0.0.0.0.
     It will then send config-get command to all addresses and check if the response is correct.
     """
+    if world.f_cfg.control_agent:
+        pytest.skip('This test requires CA to be disabled. Making tests not viable because of CA deprecation.')
+
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
     srv_control.add_unix_socket()
@@ -779,9 +791,9 @@ def test_control_channel_multiple_http_0_0_0_0():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    # Send config-get command to all specified addresses, it should fail
+    # Send config-get command to all specified addresses.
     for ip in srv_ip_addresses:
-        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', ip)
+        srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, ip)
 
 
 @pytest.mark.usefixtures('_prepare_multiple_http_env')
@@ -790,9 +802,11 @@ def test_control_channel_multiple_http_0_0_0_0():
 def test_control_channel_multiple_http_reload_config():
     """Test if sockets close properly after config reload.
 
-    This test will add additional IP addresses to the server interface and add http control channels for them.
+    This test will add additional IP addresses to the server interface and open http control channels on them.
     It will then send config-reload command and check if the sockets are closed.
     """
+    if world.f_cfg.control_agent:
+        pytest.skip('This test requires CA to be disabled. Making tests not viable because of CA deprecation.')
 
     # Generate ip addresses for http sockets
     srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
@@ -813,7 +827,7 @@ def test_control_channel_multiple_http_reload_config():
 
     # Send config-get command to all addresses
     for ip in srv_ip_addresses:
-        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', ip)
+        srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, ip)
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
@@ -822,18 +836,18 @@ def test_control_channel_multiple_http_reload_config():
     srv_control.add_http_control_channel(srv_ip_addresses[0])
     srv_control.build_and_send_config_files()
 
-    srv_msg.send_ctrl_cmd_via_http('{"command":"config-reload","service":["dhcp6"],"arguments":{}}',
+    srv_msg.send_ctrl_cmd_via_http({"command":"config-reload","service":["dhcp6"],"arguments":{}},
                                    '$(SRV4_ADDR)')
 
     # Send config-get command to the first address
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', srv_ip_addresses[0])
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, srv_ip_addresses[0])
 
     # Send config-get command to the other addresses, it should fail
     for ip in srv_ip_addresses[1:]:
-        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp64"],"arguments": {} }', ip, exp_failed=True)
+        srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp64"],"arguments": {} }, ip, exp_failed=True)
 
     # Send config-get command to the first address again to make sure server still works
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', srv_ip_addresses[0])
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, srv_ip_addresses[0])
 
 
 @pytest.mark.usefixtures('_prepare_multiple_http_env')
@@ -842,9 +856,11 @@ def test_control_channel_multiple_http_reload_config():
 def test_control_channel_multiple_http_config_set():
     """Test if sockets close properly after config set.
 
-    This test will add additional IP addresses to the server interface and add http control channels for them.
+    This test will add additional IP addresses to the server interface and open http control channels on them.
     It will then send config-set command and check if the sockets are closed.
     """
+    if world.f_cfg.control_agent:
+        pytest.skip('This test requires CA to be disabled. Making tests not viable because of CA deprecation.')
 
     # Generate ip addresses for http sockets
     srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
@@ -865,7 +881,7 @@ def test_control_channel_multiple_http_config_set():
 
     # Send config-get command to all addresses
     for ip in srv_ip_addresses:
-        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', ip)
+        srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, ip)
 
     misc.test_setup()
     srv_control.config_srv_subnet('3000::/64', '3000::1-3000::f')
@@ -875,20 +891,20 @@ def test_control_channel_multiple_http_config_set():
 
     # Build config and send config-set command.
     srv_control.build_and_send_config_files()
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-set", "service": ["dhcp6"], "arguments":  $(DHCP_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-set", "service": ["dhcp6"], "arguments":  world.dhcp_cfg },
                                    '$(SRV4_ADDR)')
-    srv_msg.send_ctrl_cmd_via_http('{"command": "list-commands", "service": ["dhcp6"],"arguments":  $(DHCP_CONFIG) }',
+    srv_msg.send_ctrl_cmd_via_http({"command": "list-commands", "service": ["dhcp6"],"arguments":  world.dhcp_cfg },
                                    '$(SRV4_ADDR)')
 
     # Wait for config to be applied
     srv_msg.forge_sleep('$(SLEEP_TIME_2)', 'seconds')
 
     # Send config-get command to the first address
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', srv_ip_addresses[0])
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, srv_ip_addresses[0])
 
     # Send config-get command to the other addresses, it should fail
     for ip in srv_ip_addresses[1:]:
-        srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', ip, exp_failed=True)
+        srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, ip, exp_failed=True)
 
     # Send config-get command to the first address again to make sure server still works
-    srv_msg.send_ctrl_cmd_via_http('{"command": "config-get","service":["dhcp6"],"arguments": {} }', srv_ip_addresses[0])
+    srv_msg.send_ctrl_cmd_via_http({"command": "config-get","service":["dhcp6"],"arguments": {} }, srv_ip_addresses[0])
