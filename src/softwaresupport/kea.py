@@ -1573,6 +1573,7 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
                 }}
 
     if world.f_cfg.control_agent:
+        assert not append, 'append does not make sense for CA'
         if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
             logging_file = 'kea-ctrl-agent.log'
             logging_file_path = world.f_cfg.log_join(logging_file)
