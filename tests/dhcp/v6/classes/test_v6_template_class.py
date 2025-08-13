@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2023-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,6 +16,7 @@ from src import srv_msg
 
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import get_line_count_in_log
+from src.protosupport.dhcp4_scen import get_address
 
 
 def _get_lease(duid: str = "00:03:00:01:01:02:0c:03:0a:00", vendor: int = False, drop: bool = False):
@@ -210,3 +211,77 @@ def test_v6_template_class_as_subnet_guard():
     srv_msg.check_if_address_belongs_to_subnet('2001:db8:1::/64')
     _get_lease('00:01:00:01:52:7b:a8:f0:08:00:27:58:f1:e8', vendor=1234)
     srv_msg.check_if_address_belongs_to_subnet('2001:db8:1::/64')
+
+
+@pytest.mark.v6
+@pytest.mark.classification
+def test_v6_spawned_class_inherits_from_template_class():
+    """kea#3576 a.k.a. https://kb.isc.org/docs/facilitating-classification-with-template-classes#use-case-5-twolevel-hierarchy-of-assigned-resources"""
+    misc.test_setup()
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::10')
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64', '2001:db8:2::1-2001:db8:2::10')
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:3::/64', '2001:db8:3::1-2001:db8:3::10')
+
+    world.dhcp_cfg["client-classes"] = [
+      {
+        "name": "oui-vendor",
+        "template-test": "hexstring(substring(option[1].hex, 4, 3), ':')",
+        "option-data": [
+          {
+            "code": 23,
+            "name": "dns-servers",
+            "data": "2001:db8::5, 2001:db8::6"
+          }
+        ]
+      },
+      {
+        "name": "SPAWN_oui-vendor_01:02:03",
+        "valid-lifetime": 7200
+      },
+      {
+        "name": "SPAWN_oui-vendor_aa:bb:cc",
+        "option-data": [
+          {
+            "code": 23,
+            "name": "dns-servers",
+            "data": "2001:db8::7, 2001:db8::8"
+          }
+        ]
+      }
+    ]
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    def duid(oui: str):
+        """Generate DUID from given OUI.
+
+        :param oui: three octets e.g. "12:34:56"
+        :type oui: str
+        :return: DUID
+        :rtype: str
+        """
+        return f'00:01:00:01:{oui}:f0:f6:f5:f4:f3:f2:f1'
+
+    expected_leases = []
+
+    # srv_msg.SARR('2001:db8:1::1', duid=duid('00:00:00'), request_options=['dns-servers'])
+    get_address(exp_ia_na_iaaddr_addr='2001:db8:1::1', duid=duid('00:00:00'), req_opts=['dns-servers'])
+    srv_msg.response_check_include_option('dns-servers')
+    srv_msg.response_check_option_content('dns-servers', 'addresses', '2001:db8::5,2001:db8::6')
+    expected_leases.append({'duid': duid('00:00:00'), 'address': '2001:db8:1::1', 'valid_lifetime': 4000})
+    srv_msg.check_leases(expected_leases)
+
+    # srv_msg.SARR('2001:db8:1::2', duid=duid('01:02:03'), request_options=['dns-servers'])
+    get_address(exp_ia_na_iaaddr_addr='2001:db8:1::2', duid=duid('01:02:03'), req_opts=['dns-servers'])
+    srv_msg.response_check_include_option('dns-servers')
+    srv_msg.response_check_option_content('dns-servers', 'addresses', '2001:db8::5,2001:db8::6')
+    expected_leases.append({'duid': duid('01:02:03'), 'address': '2001:db8:1::2', 'valid_lifetime': 7200})
+    srv_msg.check_leases(expected_leases)
+
+    # srv_msg.SARR('2001:db8:1::3', duid=duid('aa:bb:cc'), request_options=['dns-servers'])
+    get_address(exp_ia_na_iaaddr_addr='2001:db8:1::3', duid=duid('aa:bb:cc'), req_opts=['dns-servers'])
+    srv_msg.response_check_include_option('dns-servers')
+    srv_msg.response_check_option_content('dns-servers', 'addresses', '2001:db8::7,2001:db8::8')
+    expected_leases.append({'duid': duid('aa:bb:cc'), 'address': '2001:db8:1::3', 'valid_lifetime': 4000})
+    srv_msg.check_leases(expected_leases)
