@@ -1247,13 +1247,15 @@ def get_subopt_from_option(exp_opt_code, exp_subopt_code):
     return dhcpmsg.get_subopt_from_option(exp_opt_code, exp_subopt_code)
 
 
-def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
+def DO(address=None, options=None, request_options=None, chaddr='ff:01:02:03:ff:04', iface=None):
     """Do discover-offer.
 
     :param address: (Default value = None)
     :type address:
     :param options: (Default value = None)
     :type options:
+    :param request_options: what options to request in the client message
+    :type request_options: list[str]
     :param chaddr: (Default value = 'ff:01:02:03:ff:04')
     :type chaddr:
     :param iface: (Default value = None)
@@ -1261,17 +1263,28 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
     :return:
     :rtype:
     """
-    return dhcpmsg.DO(address, options, chaddr, iface=iface)
+    return dhcpmsg.DO(address, options, request_options, chaddr, iface=iface)
 
 
-def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
-       init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
+def RA(
+    address,
+    options=None,
+    request_options=None,
+    response_type='ACK',
+    chaddr='ff:01:02:03:ff:04',
+    init_reboot=False,
+    subnet_mask='255.255.255.0',
+    fqdn=None,
+    iface=None,
+):
     """Do request-acknowledgement.
 
     :param address:
     :type address:
     :param options: (Default value = None)
     :type options:
+    :param request_options: what options to request in the client message
+    :type request_options: list[str]
     :param response_type: (Default value = 'ACK')
     :type response_type:
     :param chaddr: (Default value = 'ff:01:02:03:ff:04')
@@ -1287,17 +1300,29 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
     :return:
     :rtype:
     """
-    return dhcpmsg.RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
+    return dhcpmsg.RA(address, options, request_options, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
 
 
-def DORA(address=None, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04',
-         init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
+def DORA(
+    address=None,
+    options=None,
+    request_options=None,
+    exchange='full',
+    response_type='ACK',
+    chaddr='ff:01:02:03:ff:04',
+    init_reboot=False,
+    subnet_mask='255.255.255.0',
+    fqdn=None,
+    iface=None,
+):
     """Do DORA.
 
     :param address: (Default value = None)
     :type address:
     :param options: (Default value = None)
     :type options:
+    :param request_options: what options to request in the client message
+    :type request_options: list[str]
     :param exchange: (Default value = 'full')
     :type exchange:
     :param response_type: (Default value = 'ACK')
@@ -1315,7 +1340,7 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
     :return:
     :rtype:
     """
-    return dhcpmsg.DORA(address, options, exchange, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
+    return dhcpmsg.DORA(address, options, request_options, exchange, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
 
 
 def check_IA_NA(address, status_code=None, expect=True):
@@ -1352,7 +1377,7 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
        status_code_IA_NA=None, status_code_IA_PD=None,
        duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
        linkaddr='2001:db8:1::1000', ifaceid='port1234',
-       vendor=None):
+       options=None, request_options=None, vendor=None):
     """Do solicit-advertisement.
 
     :param address: (Default value = None)
@@ -1373,6 +1398,10 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     :type linkaddr:
     :param ifaceid: (Default value = 'port1234')
     :type ifaceid:
+    :param options: key-value pairs representing options and their values to add to the client message
+    :type options: dict[str, str]
+    :param request_options: what options to request in the client message
+    :type request_options: list[str]
     :param vendor: (Default value = None)
     :type vendor:
     :return:
@@ -1381,14 +1410,14 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     return dhcpmsg.SA(address, delegated_prefix, relay_information,
                       status_code_IA_NA, status_code_IA_PD,
                       duid, iaid,
-                      linkaddr, ifaceid, vendor)
+                      linkaddr, ifaceid, options, request_options, vendor)
 
 
 def SARR(address=None, delegated_prefix=None, relay_information=False,
          status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
          linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None,
-         vendor=None):
+         options=None, request_options=None, vendor=None):
     """Do SARR.
 
     :param address: (Default value = None)
@@ -1413,14 +1442,31 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
     :type ifaceid:
     :param iface: (Default value = None)
     :type iface:
+    :param options: key-value pairs representing options and their values to add to the client message
+    :type options: dict[str, str]
+    :param request_options: what options to request in the client message
+    :type request_options: list[str]
     :param vendor: (Default value = None)
     :type vendor:
     :return:
     :rtype:
     """
-    return dhcpmsg.SARR(address, delegated_prefix, relay_information,
-                        status_code_IA_NA, status_code_IA_PD, exchange,
-                        duid, iaid, linkaddr, ifaceid, iface, vendor)
+    return dhcpmsg.SARR(
+        address,
+        delegated_prefix,
+        relay_information,
+        status_code_IA_NA,
+        status_code_IA_PD,
+        exchange,
+        duid,
+        iaid,
+        linkaddr,
+        ifaceid,
+        iface,
+        options,
+        request_options,
+        vendor,
+    )
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,

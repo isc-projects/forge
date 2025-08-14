@@ -59,42 +59,44 @@ log = logging.getLogger('forge')
 
 
 # option codes for options and sub-options for dhcp v6
-OPTIONS = {"client-id": 1,
-           "server-id": 2,
-           "IA_NA": 3,
-           "IN_TA": 4,
-           "IA_address": 5,
-           "preference": 7,
-           "elapsedtime": 8,
-           "relay-msg": 9,
-           "unicast": 12,
-           "status-code": 13,
-           "rapid_commit": 14,
-           "vendor-class": 16,
-           "vendor-specific-info": 17,
-           "interface-id": 18,
-           "sip-server-dns": 21,
-           "sip-server-addr": 22,
-           "dns-servers": 23,
-           "domain-search": 24,
-           "IA_PD": 25,
-           "IA-Prefix": 26,
-           "nis-servers": 27,
-           "nisp-servers": 28,
-           "nis-domain-name": 29,
-           "nisp-domain-name": 30,
-           "sntp-servers": 31,
-           "information-refresh-time": 32,
-           "bcmcs-server-dns": 33,
-           "remote-id": 37,
-           "subscriber-id": 38,
-           "fqdn": 39,
-           "lq-client-data": 45,
-           "ntp-servers": 56,
-           "client-arch-type": 61,
-           "erp-local-domain-name": 65,
-           "client-link-layer-addr": 79,
-           "OPTION_V6_DNR": 144}
+OPTIONS = {
+    'client-id': 1,
+    'server-id': 2,
+    'IA_NA': 3,
+    'IN_TA': 4,
+    'IA_address': 5,
+    'preference': 7,
+    'elapsedtime': 8,
+    'relay-msg': 9,
+    'unicast': 12,
+    'status-code': 13,
+    'rapid_commit': 14,
+    'vendor-class': 16,
+    'vendor-specific-info': 17,
+    'interface-id': 18,
+    'sip-server-dns': 21,
+    'sip-server-addr': 22,
+    'dns-servers': 23,
+    'domain-search': 24,
+    'IA_PD': 25,
+    'IA-Prefix': 26,
+    'nis-servers': 27,
+    'nisp-servers': 28,
+    'nis-domain-name': 29,
+    'nisp-domain-name': 30,
+    'sntp-servers': 31,
+    'information-refresh-time': 32,
+    'bcmcs-server-dns': 33,
+    'remote-id': 37,
+    'subscriber-id': 38,
+    'fqdn': 39,
+    'lq-client-data': 45,
+    'ntp-servers': 56,
+    'client-arch-type': 61,
+    'erp-local-domain-name': 65,
+    'client-link-layer-addr': 79,
+    'OPTION_V6_DNR': 144,
+}
 
 
 def get_option_code(opt_code) -> int:
@@ -1851,7 +1853,7 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
          status_code_IA_NA=None, status_code_IA_PD=None, exchange='full',
          duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
          linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None,
-         vendor=None):
+         options=None, request_options=None, vendor=None):
     """Send and ensure receival of 6 packets part of a regular DHCPv6 exchange.
 
     Sequence: solicit, advertise, request, reply, renew, reply.
@@ -1889,6 +1891,10 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
     :type ifaceid:
     :param iface: sets interface for the client (Default value = None)
     :type iface:
+    :param options: key-value pairs representing options and their values to add to the client message
+    :type options: dict[str, str]
+    :param request_options: what options to request in the client message
+    :type request_options: list[str]
     :param vendor: (Default value = None)
     :type vendor:
     """
@@ -1909,6 +1915,12 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         client_copy_option('server-id')
         client_sets_value('DUID', duid)
         client_does_include('Client', 'client-id')
+        if options is not None:
+            for k, v in options.items():
+                client_does_include(None, k, v)
+        if request_options is not None:
+            for o in request_options:
+                client_requests_option(o)
         if vendor is not None:
             client_sets_value('vendor_class_data', vendor)
             client_does_include('Client', 'vendor-class')
@@ -1917,10 +1929,6 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
             # Expect a reply.
             misc.pass_criteria()
             send_wait_for_message('MUST', True, 'REPLY', iface=iface)
-            if address != 'ANY':
-                check_IA_NA(address, status_code=status_code_IA_NA)
-            if delegated_prefix != 'ANY':
-                check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
         else:
             # Encapsulate the solicit in a relay forward message.
             client_sets_value('linkaddr', linkaddr)
@@ -1935,10 +1943,18 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
             response_check_option_content('relay-msg', True, 'Relayed', 'Message')
             response_check_include_option(True, 'client-id')
             response_check_include_option(True, 'server-id')
-            if address != 'ANY':
-                check_IA_NA(address, status_code=status_code_IA_NA)
-            if delegated_prefix != 'ANY':
-                check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
+
+        if address != 'ANY':
+            check_IA_NA(address, status_code=status_code_IA_NA)
+        if delegated_prefix != 'ANY':
+            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
+
+        check_IA_NA(address, status_code=status_code_IA_NA)
+        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
+
+        if request_options is not None:
+            for o in request_options:
+                response_check_include_option(True, o)
 
     # TODO: forge doesn't receive a reply on renews if the initial solicit was
     # encapsulated in a relay forward message. After an investigation is done,
@@ -1962,6 +1978,12 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         client_copy_option('server-id')
         client_does_include('Client', 'client-id', None)
         client_add_saved_option(False)
+        if options is not None:
+            for k, v in options.items():
+                client_does_include(None, k, v)
+        if request_options is not None:
+            for o in request_options:
+                client_requests_option(o)
         if vendor is not None:
             client_sets_value('vendor_class_data', vendor)
             client_does_include('Client', 'vendor-class')
@@ -1972,12 +1994,16 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         check_IA_NA(address, status_code=status_code_IA_NA)
         check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
 
+        if request_options is not None:
+            for o in request_options:
+                response_check_include_option(True, o)
+
 
 def SA(address=None, delegated_prefix=None, relay_information=False,
        status_code_IA_NA=None, status_code_IA_PD=None,
        duid='00:03:00:01:f6:f5:f4:f3:f2:01', iaid=None,
        linkaddr='2001:db8:1::1000', ifaceid='port1234', iface=None,
-       vendor=None):
+       options=None, request_options=None, vendor=None):
     """Send and ensure receival of 2 packets part of a regular DHCPv6 exchange.
 
     Sequence: solicit, advertise.
@@ -2012,6 +2038,10 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     :type ifaceid:
     :param iface: Default value = None)
     :type iface:
+    :param options: key-value pairs representing options and their values to add to the client message
+    :type options: dict[str, str]
+    :param request_options: what options to request in the client message
+    :type request_options: list[str]
     :param vendor: (Default value = None)
     :type vendor:
     """
@@ -2036,6 +2066,12 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
     client_does_include('Client', 'IA-NA')
     client_does_include('Client', 'IA_Prefix')
     client_does_include('Client', 'IA-PD')
+    if options is not None:
+        for k, v in options.items():
+            client_does_include(None, k, v)
+    if request_options is not None:
+        for o in request_options:
+            client_requests_option(o)
     if vendor is not None:
         client_sets_value('vendor_class_data', vendor)
         client_does_include('Client', 'vendor-class')
@@ -2054,19 +2090,18 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
         response_check_include_option(True, 'interface-id')
         response_check_include_option(True, 'relay-msg')
         response_check_option_content('relay-msg', True, 'Relayed', 'Message')
-        response_check_include_option(True, 'client-id')
-        response_check_include_option(True, 'server-id')
-        if address != 'ANY':
-            check_IA_NA(address, status_code=status_code_IA_NA)
-        if delegated_prefix != 'ANY':
-            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
     else:
         # Expect an advertise.
         misc.pass_criteria()
         send_wait_for_message('MUST', True, 'ADVERTISE', iface=iface)
-        response_check_include_option(True, 'client-id')
-        response_check_include_option(True, 'server-id')
-        if address != 'ANY':
-            check_IA_NA(address, status_code=status_code_IA_NA)
-        if delegated_prefix != 'ANY':
-            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
+
+    response_check_include_option(True, 'client-id')
+    response_check_include_option(True, 'server-id')
+    if address != 'ANY':
+        check_IA_NA(address, status_code=status_code_IA_NA)
+    if delegated_prefix != 'ANY':
+        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
+
+    if request_options is not None:
+        for o in request_options:
+            response_check_include_option(True, o)

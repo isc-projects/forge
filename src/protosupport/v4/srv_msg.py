@@ -43,7 +43,7 @@ from scapy.packet import Raw
 from scapy.layers.inet import IP, UDP
 
 from src.forge_cfg import world
-from src.protosupport.v6.srv_msg import apply_message_fields_changes, close_sockets, client_add_saved_option
+from src.protosupport.v6.srv_msg import apply_message_fields_changes, close_sockets
 
 from src import misc
 
@@ -55,6 +55,7 @@ OPTIONS = {
     'domain-name-servers': 6,
     'server-id': 54,
     'vendor-class-identifier': 60,
+    'vendor_class_id': 60,
     'vivso-suboptions': 125,
 }
 
@@ -961,7 +962,7 @@ def get_all_leases(decode_duid=True):
     return lease
 
 
-def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
+def DO(address=None, options=None, request_options=None, chaddr='ff:01:02:03:ff:04', iface=None):
     """DO Exchange.
 
     Sends a discover and expects an offer. Inserts options in the client
@@ -976,6 +977,8 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
         dictionary form with option names as keys and option values as values.
         (default: {})
     :type options: dict
+    :param request_options: what options to request in the client message
+    :type request_options: list[str]
     :param chaddr: the client hardware address to be used in client packets
         (default: 'ff:01:02:03:ff:04' - a value commonly used in tests)
     :type chaddr: str
@@ -985,7 +988,7 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
     iface = world.cfg["iface"] if iface is None else iface
     # Send a discover.
     client_sets_value('chaddr', chaddr)
-    if options:
+    if options is not None:
         for k, v in options.items():
             client_does_include(None, k, v)
     client_send_msg('DISCOVER', iface)
@@ -1002,9 +1005,22 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
         response_check_content(True, 'yiaddr', address)
         client_sets_value('chaddr', chaddr)
 
+        if request_options is not None:
+            for o in request_options:
+                response_check_include_option(True, o)
 
-def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
-       init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
+
+def RA(
+    address,
+    options=None,
+    request_options=None,
+    response_type='ACK',
+    chaddr='ff:01:02:03:ff:04',
+    init_reboot=False,
+    subnet_mask='255.255.255.0',
+    fqdn=None,
+    iface=None,
+):
     """RA Exchange.
 
     Sends a request and expects an advertise. Inserts options in the client
@@ -1019,6 +1035,8 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
         dictionary form with option names as keys and option values as values.
         (default: {})
     :type options: dict
+    :param request_options: what options to request in the client message
+    :type request_options: list[str]
     :param response_type: the type of response to be expected in the server packet.
         Can have values 'ACK', 'NAK' or None. None means no response.
         (default: 'ACK')
@@ -1048,7 +1066,7 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
                 client_does_include(None, 'requested_addr', world.srvmsg[0].yiaddr)
         else:
             client_does_include(None, 'requested_addr', address)
-    if options:
+    if options is not None:
         for k, v in options.items():
             client_does_include(None, k, v)
     if fqdn is not None:
@@ -1068,12 +1086,25 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
         if fqdn is not None:
             response_check_include_option(True, 81)
             response_check_option_content(81, True, 'fqdn', fqdn)
+        if request_options is not None:
+            for o in request_options:
+                response_check_include_option(True, o)
     elif response_type == 'NAK':
         send_wait_for_message('MUST', True, 'NAK', iface=iface)
 
 
-def DORA(address=None, options=None, exchange='full', response_type='ACK', chaddr='ff:01:02:03:ff:04',
-         init_reboot=False, subnet_mask='255.255.255.0', fqdn=None, iface=None):
+def DORA(
+    address=None,
+    options=None,
+    request_options=None,
+    exchange='full',
+    response_type='ACK',
+    chaddr='ff:01:02:03:ff:04',
+    init_reboot=False,
+    subnet_mask='255.255.255.0',
+    fqdn=None,
+    iface=None,
+):
     """DORA Exchange.
 
     Send and ensures receival of 6 packets part of a regular DHCPv4 exchange
@@ -1091,6 +1122,8 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
         dictionary form with option names as keys and option values as values.
         (default: {})
     :type options: dict
+    :param request_options: what options to request in the client message
+    :type request_options: list[str]
     :param exchange: can have values 'dora-only' for 4 way DORA exhange, 'full' meaning
         DORA plus an additional request-reply for the re-new scenario or "renew-only".
         It is a string instead of a boolean for clearer test names because this value often
@@ -1115,17 +1148,17 @@ def DORA(address=None, options=None, exchange='full', response_type='ACK', chadd
     client_sets_value('chaddr', chaddr)
     if exchange == 'full':
         # Send a discover and expect an offer.
-        DO(address, options, chaddr, iface=iface)
+        DO(address, options, request_options, chaddr, iface=iface)
 
         # Send a request and expect an acknowledgement.
-        RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
+        RA(address, options, request_options, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
     if exchange == 'dora-only':
         # Send a discover and expect an offer.
-        DO(address, options, chaddr, iface=iface)
+        DO(address, options, request_options, chaddr, iface=iface)
 
     # Send a request and expect an acknowledgement.
     # This is supposed to be the renew scenario after DORA.
-    RA(address, options, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
+    RA(address, options, request_options, response_type, chaddr, init_reboot, subnet_mask, fqdn, iface=iface)
 
 
 def BOOTP_REQUEST_and_BOOTP_REPLY(address: str,
