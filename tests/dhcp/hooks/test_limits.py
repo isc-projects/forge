@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1862,8 +1862,8 @@ def test_lease_limits_extended_info(dhcp_version, backend, extended_info):
                     'relay_agent_information': '020672656C617931',
                 })
                 success += 1
-            except AssertionError:
-                pass
+            except AssertionError as e:
+                print(e)
 
         for i in range(1, success + 1):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease4-del", "arguments": {"ip-address": f'192.168.1.{i}'}}
@@ -1877,8 +1877,8 @@ def test_lease_limits_extended_info(dhcp_version, backend, extended_info):
                 srv_msg.SARR(f'2001:db8:1::{hex(i)[2:]}', duid=f'00:03:00:01:f6:f5:f4:f3:f2:{hex(i)[2:]}',
                              vendor='eRouter2.0', relay_information=True)
                 success += 1
-            except AssertionError:
-                pass
+            except AssertionError as e:
+                print(e)
 
         for i in range(1, success + 1):  # Delete all acquired leases to reset limit.
             cmd = {"command": "lease6-del", "arguments": {"ip-address": f'2001:db8:1::{hex(i)[2:]}'}}
