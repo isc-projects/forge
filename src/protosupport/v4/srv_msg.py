@@ -52,6 +52,7 @@ log = logging.getLogger('forge')
 # DHCPv4 option codes indexed by name
 OPTIONS = {
     'subnet-mask': 1,
+    'domain-name-servers': 6,
     'server-id': 54,
     'vendor-class-identifier': 60,
     'vivso-suboptions': 125,

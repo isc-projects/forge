@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2023-2025 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,6 +16,7 @@ from src import srv_msg
 
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import get_line_count_in_log, log_doesnt_contain
+from src.protosupport.dhcp4_scen import get_address
 
 
 def _get_lease(mac: str, cli_id: str = None, addr: str = None, vendor: str = False, drop: bool = False):
@@ -244,3 +245,80 @@ def test_v4_template_class_as_subnet_guard():
     # at the end let's assign some addresses from subnet 1 (vendor 1234 required)
     _get_lease('a1:a2:a3:ff:22:11', vendor='00000320', addr='192.168.50.10')
     _get_lease('11:aa:33:ff:ff:11', vendor='00000320', addr='192.168.50.11')
+
+
+@pytest.mark.v4
+@pytest.mark.classification
+def test_v4_spawned_class_inherits_from_template_class():
+    """kea#3576 a.k.a. v4 equivalent of https://kb.isc.org/docs/facilitating-classification-with-template-classes#use-case-5-twolevel-hierarchy-of-assigned-resources"""
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.15')
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24', '192.168.51.10-192.168.51.15')
+    srv_control.config_srv_another_subnet_no_interface('192.168.52.0/24', '192.168.52.10-192.168.52.15')
+
+    world.dhcp_cfg["client-classes"] = [
+      {
+        "name": "oui-vendor",
+        "template-test": "hexstring(substring(pkt4.mac, 0, 3), ':')",
+        "option-data": [
+          {
+            "code": 6,
+            "name": "domain-name-servers",
+            "data": "192.0.3.5, 192.0.3.6"
+          }
+        ]
+      },
+      {
+        "name": "SPAWN_oui-vendor_01:02:03",
+        "valid-lifetime": 7200
+      },
+      {
+        "name": "SPAWN_oui-vendor_aa:bb:cc",
+        "option-data": [
+          {
+            "code": 6,
+            "name": "domain-name-servers",
+            "data": "192.0.3.7, 192.0.3.8"
+          }
+        ]
+      }
+    ]
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    def mac(oui: str):
+        """Generate MAC from given OUI.
+
+        :param oui: three octets e.g. "12:34:56"
+        :type oui: str
+        :return: DUID
+        :rtype: str
+        """
+        return f'{oui}:f3:f2:f1'
+
+    expected_leases = []
+
+    # srv_msg.DORA('192.168.50.1', chaddr=mac('00:00:00'), request_options=['domain-name-servers'])
+    get_address(exp_yiaddr='192.168.50.10', chaddr=mac('00:00:00'), req_opts=['domain-name-servers'])
+    srv_msg.response_check_include_option('domain-name-servers')
+    srv_msg.response_check_option_content('domain-name-servers', 'addresses', '192.0.3.5')
+    srv_msg.response_check_option_content('domain-name-servers', 'addresses', '192.0.3.6')
+    expected_leases.append({'hwaddr': mac('00:00:00'), 'address': '192.168.50.10', 'valid_lifetime': 4000})
+    srv_msg.check_leases(expected_leases)
+
+    # srv_msg.DORA('192.168.50.2', chaddr=mac('01:02:03'), request_options=['domain-name-servers'])
+    get_address(exp_yiaddr='192.168.50.11', chaddr=mac('01:02:03'), req_opts=['domain-name-servers'])
+    srv_msg.response_check_include_option('domain-name-servers')
+    srv_msg.response_check_option_content('domain-name-servers', 'addresses', '192.0.3.5')
+    srv_msg.response_check_option_content('domain-name-servers', 'addresses', '192.0.3.6')
+    expected_leases.append({'hwaddr': mac('01:02:03'), 'address': '192.168.50.11', 'valid_lifetime': 7200})
+    srv_msg.check_leases(expected_leases)
+
+    # srv_msg.DORA('192.168.50.3', chaddr=mac('aa:bb:cc'), request_options=['domain-name-servers'])
+    get_address(exp_yiaddr='192.168.50.12', chaddr=mac('aa:bb:cc'), req_opts=['domain-name-servers'])
+    srv_msg.response_check_include_option('domain-name-servers')
+    srv_msg.response_check_option_content('domain-name-servers', 'addresses', '192.0.3.7')
+    srv_msg.response_check_option_content('domain-name-servers', 'addresses', '192.0.3.8')
+    expected_leases.append({'hwaddr': mac('aa:bb:cc'), 'address': '192.168.50.12', 'valid_lifetime': 4000})
+    srv_msg.check_leases(expected_leases)
