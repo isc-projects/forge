@@ -25,6 +25,7 @@
 # pylint: disable=unspecified-encoding
 # pylint: disable=unused-argument
 # pylint: disable=unused-variable
+# pylint: disable=too-many-arguments
 
 """Functions that can be used for testing all protocols."""
 
@@ -954,7 +955,7 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
 
 
 def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=False, https=False, verify=None, cert=None,
-                           headers=None, auth=None):
+                           headers=None, auth=None, return_headers=False):
     """Send command to Control Agent using http or https.
 
     :param command: dict, command
@@ -977,6 +978,8 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
     :type headers:
     :param auth: (Default value = None) user and password for basic authentication, format: "user:password", or "missing" if no authentication is required
     :type auth: str
+    :param return_headers: return headers from response instead of content(Default value = False)
+    :type return_headers: boolean
     :return: json struct response from Control Agent (Default value = None)
     :rtype: dict
     """
@@ -997,6 +1000,7 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
     elif auth is not None and auth != "missing":
         d_headers.update({'Authorization': f'Basic {b64encode(auth.encode("utf-8")).decode("ascii")}'})
 
+    address = address if '.' in address else f'[{address}]'
     addr = "http://" + address + ":" + locale.str(port)
     addr = addr.replace('http', 'https') if https else addr
 
@@ -1019,6 +1023,10 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
         assert response is None, "Connection successful, we expected failure"
     else:
         assert response is not None, f"Connection failed, but we expected success. Exception: {exception}"
+        if return_headers:
+            if world.f_cfg.forge_verbose > 0:
+                log.info(response.headers)
+            return response.headers
         if 200 <= response.status_code < 300:
             return _process_ctrl_response(response.text, exp_result)
         if response.status_code in [401, 403]:

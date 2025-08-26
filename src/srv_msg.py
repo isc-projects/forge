@@ -993,7 +993,7 @@ def send_ctrl_cmd_via_socket(command, socket_name=None, destination_address=worl
 
 @step(r'Send ctrl cmd (.+) using HTTP (\S+):(\S+) connection.')
 def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_result=0, exp_failed=False, https=False, verify=None, cert=None,
-                           headers=None, auth=None):
+                           headers=None, auth=None, return_headers=False):
     """Send control command via HTTP.
 
     :param command:
@@ -1016,6 +1016,8 @@ def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_re
     :type headers:
     :param auth: (Default value = None) user and password for basic authentication, format: "user:password"
     :type auth: str
+    :param return_headers: return headers from response instead of content(Default value = False)
+    :type return_headers: boolean
     :return:
     :rtype:
     """
@@ -1024,7 +1026,7 @@ def send_ctrl_cmd_via_http(command, address='$(MGMT_ADDRESS)', port=8000, exp_re
         address, port = test_define_value(address, port)
     else:
         address, port, command = test_define_value(address, port, command)
-    return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result, exp_failed, https, verify, cert, headers, auth)
+    return multi_protocol_functions.send_ctrl_cmd_via_http(command, address, int(port), exp_result, exp_failed, https, verify, cert, headers, auth, return_headers)
 
 
 def send_ctrl_cmd(cmd, channel='http', service=None, exp_result=0, exp_failed=False, address=world.f_cfg.mgmt_address, verify=None, cert=None,
