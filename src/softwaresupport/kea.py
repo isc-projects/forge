@@ -2061,6 +2061,11 @@ def clear_logs(destination_address=world.f_cfg.mgmt_address, force_syslog=False)
     """
     fabric_remove_file_command(world.f_cfg.log_join('kea*'),
                                destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
+    fabric_remove_file_command(
+        os.path.join(world.f_cfg.software_install_path, "var/log/kea.log"),
+        destination_host=destination_address,
+        hide_all=world.f_cfg.forge_verbose == 0,
+    )
     if fabric_is_file("/tmp/keactrl.log", destination_address):
         fabric_remove_file_command(
             "/tmp/keactrl.log", destination_address, hide_all=world.f_cfg.forge_verbose
@@ -2433,7 +2438,7 @@ def _start_kea_with_keactrl(destination_host, specific_process=""):
         specific_process = f" -s {specific_process} "
     start_cmd = 'nohup ' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl')
     start_cmd += f" start {specific_process}< /dev/null > /tmp/keactrl.log 2>&1; SECONDS=0; while (( SECONDS < 4 ));"
-    start_cmd += " do tail %s/var/kea/kea.log 2>/dev/null | grep 'server version .* started' 2>/dev/null;" % world.f_cfg.software_install_path
+    start_cmd += " do tail %s/var/log/kea/kea.log 2>/dev/null | grep 'server version .* started' 2>/dev/null;" % world.f_cfg.software_install_path
     start_cmd += " if [ $? -eq 0 ]; then break; fi done;"
     start_cmd += " sync; cat /tmp/keactrl.log"
     return fabric_sudo_command(start_cmd, destination_host=destination_host)
@@ -2607,6 +2612,12 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
             destination_host=destination_address,
             hide_all=world.f_cfg.forge_verbose == 0,
         )
+    fabric_download_file(
+        os.path.join(world.f_cfg.software_install_path, "var/log/kea.log"),
+        os.path.join(local_dest_dir, "kea-initial.log"),
+        destination_host=destination_address,
+        hide_all=world.f_cfg.forge_verbose == 0,
+    )
 
 
 def save_ddns_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address):
