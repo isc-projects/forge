@@ -42,13 +42,21 @@ def test_control_channel_http_headers_basic(dhcp_version, socket_protocol):
 
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(server_address)
-    world.dhcp_cfg["control-sockets"][1]["http-headers"] = [
-                    {
-                        "user-context": {"comment": "HSTS header"},
-                        "name": "Strict-Transport-Security",
-                        "value": "max-age=31536000"
-                    }
-                ]
+
+    headers_config = [
+        {
+            "user-context": {"comment": "HSTS header"},
+            "name": "Strict-Transport-Security",
+            "value": "max-age=31536000"
+        }
+    ]
+
+    # Use diferent configuration file for Control agent or direct Kea testing.
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["http-headers"] = headers_config
+    else:
+        world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
+
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -87,7 +95,7 @@ def test_control_channel_http_headers_multiple(dhcp_version, socket_protocol):
 
     long_string = '1234567890' * 5000
 
-    world.dhcp_cfg["control-sockets"][1]["http-headers"] = [
+    headers_config = [
         {
             "user-context": {"comment": "HSTS header"},
             "name": "Strict-Transport-Security",
@@ -102,6 +110,13 @@ def test_control_channel_http_headers_multiple(dhcp_version, socket_protocol):
             "value": long_string
         }
     ]
+
+    # Use diferent configuration file for Control agent or direct Kea testing.
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["http-headers"] = headers_config
+    else:
+        world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
+
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started')
@@ -140,12 +155,20 @@ def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
         server_address = '$(SRV_IPV6_ADDR_GLOBAL)'
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(server_address)
-    world.dhcp_cfg["control-sockets"][1]["http-headers"] = [
-                {
-                    "name": "TooLongCat",
+
+    headers_config = [
+        {
+            "name": "TooLongCat",
                     "value": '1234567890' * 10000
-                }
-            ]
+        }
+    ]
+
+    # Use diferent configuration file for Control agent or direct Kea testing.
+    if world.f_cfg.control_agent:
+        world.ca_cfg["Control-agent"]["http-headers"] = headers_config
+    else:
+        world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
+
     srv_control.build_and_send_config_files()
 
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
@@ -198,7 +221,12 @@ def test_control_channel_http_headers_illegal(dhcp_version, socket_protocol):
         srv_control.add_unix_socket()
         srv_control.add_http_control_channel(server_address)
 
-        world.dhcp_cfg["control-sockets"][1]["http-headers"] = [test_case["header"]]
+        # Use diferent configuration file for Control agent or direct Kea testing.
+        if world.f_cfg.control_agent:
+            world.ca_cfg["Control-agent"]["http-headers"] = [test_case["header"]]
+        else:
+            world.dhcp_cfg["control-sockets"][1]["http-headers"] = [test_case["header"]]
+
         srv_control.build_and_send_config_files()
 
         srv_control.start_srv('DHCP', 'started', should_succeed=False)
@@ -257,7 +285,12 @@ def test_control_channel_http_headers_negative(dhcp_version, socket_protocol):
         srv_control.add_unix_socket()
         srv_control.add_http_control_channel(server_address)
 
-        world.dhcp_cfg["control-sockets"][1]["http-headers"] = [test_case["header"]]
+        # Use diferent configuration file for Control agent or direct Kea testing.
+        if world.f_cfg.control_agent:
+            world.ca_cfg["Control-agent"]["http-headers"] = [test_case["header"]]
+        else:
+            world.dhcp_cfg["control-sockets"][1]["http-headers"] = [test_case["header"]]
+
         srv_control.build_and_send_config_files()
 
         srv_control.start_srv('DHCP', 'started', should_succeed=False)
