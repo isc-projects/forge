@@ -378,8 +378,23 @@ def test_v6_lease_get_by_positive(backend):
                                                   "ip-address": "2001:db8:1::1",
                                                   "duid": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": 1234,
-                                                  "hostname": "four.hostname.com"}}
+                                                  "hostname": "four.hostname.com",
+                                                  "hw-address": "08:08:08:08:08:08"}}
     srv_msg.send_ctrl_cmd(cmd)
+
+    lease_params = {"duid": "00:03:00:01:66:55:44:33:22:11",
+                    "fqdn-fwd": False,
+                    "fqdn-rev": False,
+                    "hostname": "four.hostname.com",
+                    "iaid": 1234,
+                    "ip-address": "2001:db8:1::1",
+                    "hw-address": "08:08:08:08:08:08",
+                    # "pool-id": 0, if id is 0 it's no longer returned
+                    "preferred-lft": 4000,
+                    "state": 0,
+                    "subnet-id": 1,
+                    "type": "IA_NA",
+                    "valid-lft": 4000}
 
     # check for the lease by duid
     cmd = {"command": "lease6-get-by-duid",
@@ -387,18 +402,7 @@ def test_v6_lease_get_by_positive(backend):
     resp = srv_msg.send_ctrl_cmd(cmd)
 
     del resp["arguments"]["leases"][0]["cltt"]  # this value is dynamic so we delete it
-    assert resp["arguments"]["leases"][0] == {"duid": "00:03:00:01:66:55:44:33:22:11",
-                                              "fqdn-fwd": False,
-                                              "fqdn-rev": False,
-                                              "hostname": "four.hostname.com",
-                                              "iaid": 1234,
-                                              "ip-address": "2001:db8:1::1",
-                                              # "pool-id": 0, if id is 0 it's no longer returned
-                                              "preferred-lft": 4000,
-                                              "state": 0,
-                                              "subnet-id": 1,
-                                              "type": "IA_NA",
-                                              "valid-lft": 4000}
+    assert resp["arguments"]["leases"][0] == lease_params
 
     # check for the lease by hostname
     cmd = {"command": "lease6-get-by-hostname",
@@ -406,23 +410,21 @@ def test_v6_lease_get_by_positive(backend):
     resp = srv_msg.send_ctrl_cmd(cmd)
 
     del resp["arguments"]["leases"][0]["cltt"]  # this value is dynamic so we delete it
-    assert resp["arguments"]["leases"][0] == {"duid": "00:03:00:01:66:55:44:33:22:11",
-                                              "fqdn-fwd": False,
-                                              "fqdn-rev": False,
-                                              "hostname": "four.hostname.com",
-                                              "iaid": 1234,
-                                              "ip-address": "2001:db8:1::1",
-                                              # "pool-id": 0, if id is 0 it's no longer returned
-                                              "preferred-lft": 4000,
-                                              "state": 0,
-                                              "subnet-id": 1,
-                                              "type": "IA_NA",
-                                              "valid-lft": 4000}
+    assert resp["arguments"]["leases"][0] == lease_params
+
+    # check for the lease by hw-address
+    cmd = {"command": "lease6-get-by-hw-address",
+           "arguments": {"hw-address": "08:08:08:08:08:08"}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+
+    del resp["arguments"]["leases"][0]["cltt"]  # this value is dynamic so we delete it
+    assert resp["arguments"]["leases"][0] == lease_params
 
     srv_msg.check_leases({"duid": "00:03:00:01:66:55:44:33:22:11",
                           "address": "2001:db8:1::1",
                           "iaid": 1234,
-                          "hostname": "four.hostname.com"},
+                          "hostname": "four.hostname.com",
+                          "hw-address": "08:08:08:08:08:08"},
                          backend=backend)
 
 
@@ -542,3 +544,53 @@ def test_v6_lease_get_by_negative():
            "arguments": {"hostname": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'hostname' parameter must be a string"
+
+    # Testing lease6-get-by-hw-address
+    cmd = {"command": "lease6-get-by-hw-address"}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "Command arguments missing or a not a map."
+
+    cmd = {"command": "lease6-get-by-hw-address",
+           "arguments": {}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'hw-address' parameter not specified"
+
+    cmd = {"command": "lease6-get-by-hw-address",
+           "arguments": {"hw-address": ""}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'hw-address' parameter must not be empty"
+
+    cmd = {"command": "lease6-get-by-hw-address",
+           "arguments": {"hw-address": "0011"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "invalid format of the decoded string '0011'"
+
+    cmd = {
+        "command": "lease6-get-by-hw-address",
+        "arguments": {
+            "hw-address": ''.join(secrets.choice(string.hexdigits) + secrets.choice(string.hexdigits) +
+                                  ":" for _ in range(260)).lower()[:-1]
+        }
+    }
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "address vector size exceeds MAX_HWADDR_LEN"
+
+    cmd = {"command": "lease6-get-by-hw-address",
+           "arguments": {"hw-address": " "}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "' ' is not a valid hexadecimal digit in decoded string ' '"
+
+    cmd = {"command": "lease6-get-by-hw-address",
+           "arguments": {"hw-address": "xxx"}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "invalid format of the decoded string 'xxx'"
+
+    cmd = {"command": "lease6-get-by-hw-address",
+           "arguments": {"hw-address": 2}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'hw-address' parameter must be a string"
+
+    cmd = {"command": "lease6-get-by-hw-address",
+           "arguments": {"hw-address": True}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'hw-address' parameter must be a string"
