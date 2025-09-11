@@ -2612,12 +2612,13 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
             destination_host=destination_address,
             hide_all=world.f_cfg.forge_verbose == 0,
         )
-    fabric_download_file(
-        os.path.join(world.f_cfg.software_install_path, "var/log/kea.log"),
-        os.path.join(local_dest_dir, "kea-initial.log"),
-        destination_host=destination_address,
-        hide_all=world.f_cfg.forge_verbose == 0,
-    )
+    if fabric_is_file(os.path.join(world.f_cfg.software_install_path, "var/log/kea.log"), destination_address):
+        fabric_download_file(
+            os.path.join(world.f_cfg.software_install_path, "var/log/kea.log"),
+            os.path.join(local_dest_dir, "kea-initial.log"),
+            destination_host=destination_address,
+            hide_all=world.f_cfg.forge_verbose == 0,
+        )
 
 
 def save_ddns_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address):
