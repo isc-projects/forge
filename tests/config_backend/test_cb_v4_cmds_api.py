@@ -1797,7 +1797,7 @@ def test_remote_option_def4_del_incorrect_code(backend):
                                                             "option-defs": [{"name": 22}]})
 
     response = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert response == {"result": 1, "text": "missing 'code' parameter"}
+    assert response == {"result": 1, "text": "spurious 'name' parameter"}
 
     cmd = dict(command="remote-option-def4-del", arguments={"remote": {"type": backend}, "server-tags": ["abc"],
                                                             "option-defs": [{}]})

@@ -61,6 +61,7 @@ class StatsState4:
             'v4-allocation-fail-subnet': 0,
             'v4-lease-reuses': 0,
             'v4-reservation-conflicts': 0,
+            'assigned-addresses': 0,
         }
 
     def compare(self):
@@ -79,7 +80,7 @@ class StatsState4:
                 statistics_not_found.append(key)
         assert len(statistics_not_found) == 0, f'The following statistics were received, but not expected: {statistics_not_found}'
 
-        assert len(statistics_from_kea) == 41, 'Number of all statistics is incorrect.'
+        assert len(statistics_from_kea) == 42, 'Number of all statistics is incorrect.'
 
         for key, expected in self.s.items():
             received = statistics_from_kea[key][0][0]
@@ -121,6 +122,7 @@ def test_stats_basic():
     result = srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands","arguments": {}}')
     stat_cmds = ['statistic-get',
                  'statistic-get-all',
+                 'statistic-global-get-all',
                  'statistic-remove',
                  'statistic-remove-all',
                  'statistic-reset',
@@ -173,6 +175,7 @@ def test_stats_basic():
     stats.s['subnet[1].cumulative-assigned-addresses'] += 1
     stats.s['subnet[1].pool[0].assigned-addresses'] += 1
     stats.s['subnet[1].pool[0].cumulative-assigned-addresses'] += 1
+    stats.s['assigned-addresses'] += 1
     stats.compare()
 
     misc.test_procedure()
@@ -187,6 +190,7 @@ def test_stats_basic():
     stats.s['pkt4-received'] += 1
     stats.s['subnet[1].assigned-addresses'] -= 1
     stats.s['subnet[1].pool[0].assigned-addresses'] -= 1
+    stats.s['assigned-addresses'] -= 1
     stats.compare()
 
     misc.test_procedure()
@@ -225,6 +229,7 @@ def test_stats_basic():
     stats.s['subnet[1].cumulative-assigned-addresses'] += 1
     stats.s['subnet[1].pool[0].assigned-addresses'] += 1
     stats.s['subnet[1].pool[0].cumulative-assigned-addresses'] += 1
+    stats.s['assigned-addresses'] += 1
     stats.compare()
 
     misc.test_procedure()
@@ -239,6 +244,7 @@ def test_stats_basic():
     stats.s['pkt4-received'] += 1
     stats.s['subnet[1].assigned-addresses'] -= 1
     stats.s['subnet[1].pool[0].assigned-addresses'] -= 1
+    stats.s['assigned-addresses'] -= 1
     stats.compare()
 
     misc.test_procedure()
@@ -272,6 +278,7 @@ def test_stats_basic():
     stats.s['subnet[1].cumulative-assigned-addresses'] += 1
     stats.s['subnet[1].pool[0].assigned-addresses'] += 1
     stats.s['subnet[1].pool[0].cumulative-assigned-addresses'] += 1
+    stats.s['assigned-addresses'] += 1
     stats.compare()
 
     new_hr = {
@@ -321,6 +328,7 @@ def test_stats_basic():
     stats.s['subnet[1].cumulative-assigned-addresses'] += 1
     stats.s['subnet[1].pool[0].assigned-addresses'] += 1
     stats.s['subnet[1].pool[0].cumulative-assigned-addresses'] += 1
+    stats.s['assigned-addresses'] += 1
     stats.compare()
 
     # stats.s['pkt4-offer-sent'] += 1
