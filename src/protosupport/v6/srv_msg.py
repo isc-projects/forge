@@ -1917,8 +1917,10 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
             # Expect a reply.
             misc.pass_criteria()
             send_wait_for_message('MUST', True, 'REPLY', iface=iface)
-            check_IA_NA(address, status_code=status_code_IA_NA)
-            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
+            if address != 'ANY':
+                check_IA_NA(address, status_code=status_code_IA_NA)
+            if delegated_prefix != 'ANY':
+                check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
         else:
             # Encapsulate the solicit in a relay forward message.
             client_sets_value('linkaddr', linkaddr)
@@ -1933,8 +1935,10 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
             response_check_option_content('relay-msg', True, 'Relayed', 'Message')
             response_check_include_option(True, 'client-id')
             response_check_include_option(True, 'server-id')
-            check_IA_NA(address, status_code=status_code_IA_NA)
-            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
+            if address != 'ANY':
+                check_IA_NA(address, status_code=status_code_IA_NA)
+            if delegated_prefix != 'ANY':
+                check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
 
     # TODO: forge doesn't receive a reply on renews if the initial solicit was
     # encapsulated in a relay forward message. After an investigation is done,
@@ -1983,9 +1987,11 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
 
     :param address: the expected address as value of the IA_Address suboption.
         For multiple addresses, use additional check_IA_NA() calls. (Default value = None)
+        'ANY' Allows any address to be received.
     :type address:
     :param delegated_prefix: the expected prefix in format '<prefix>/<length>'.
         For multiple prefixes, use additional check_IA_PD() calls. (Default value = None)
+        'ANY' Allows any prefix to be received.
     :type delegated_prefix:
     :param relay_information: whether client packets should be encapsulated in relay
         forward messages, and by extension whether server packets should be
@@ -2050,13 +2056,17 @@ def SA(address=None, delegated_prefix=None, relay_information=False,
         response_check_option_content('relay-msg', True, 'Relayed', 'Message')
         response_check_include_option(True, 'client-id')
         response_check_include_option(True, 'server-id')
-        check_IA_NA(address, status_code=status_code_IA_NA)
-        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
+        if address != 'ANY':
+            check_IA_NA(address, status_code=status_code_IA_NA)
+        if delegated_prefix != 'ANY':
+            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
     else:
         # Expect an advertise.
         misc.pass_criteria()
         send_wait_for_message('MUST', True, 'ADVERTISE', iface=iface)
         response_check_include_option(True, 'client-id')
         response_check_include_option(True, 'server-id')
-        check_IA_NA(address, status_code=status_code_IA_NA)
-        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
+        if address != 'ANY':
+            check_IA_NA(address, status_code=status_code_IA_NA)
+        if delegated_prefix != 'ANY':
+            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)

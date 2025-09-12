@@ -1134,7 +1134,8 @@ def get_all_leases():
     return dhcpmsg.get_all_leases()
 
 
-def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address, should_succeed=True):
+def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address, should_succeed=True,
+                 lease_count=None):
     """Check leases.
 
     :param leases_list:
@@ -1145,9 +1146,12 @@ def check_leases(leases_list, backend='memfile', dest=world.f_cfg.mgmt_address, 
     :type dest:
     :param should_succeed: (Default value = True)
     :type should_succeed:
+    :param lease_count: check for specific number of leases (Default value = None)
+    :type lease_count:
     """
     dest = test_define_value(dest)[0]
-    multi_protocol_functions.check_leases(leases_list, backend=backend, destination=dest, should_succeed=should_succeed)
+    multi_protocol_functions.check_leases(leases_list, backend=backend, destination=dest, should_succeed=should_succeed,
+                                          lease_count=lease_count)
 
 
 def lease_dump(backend, db_name=world.f_cfg.db_name, db_user=world.f_cfg.db_user,

@@ -203,6 +203,93 @@ def test_v4_allocator_exhausted_pool(backend, allocator):
     srv_msg.send_wait_for_message('MUST', None, expect_response=False)
 
 
+@pytest.mark.v4
+@pytest.mark.allocators
+@pytest.mark.parametrize('backend', ['memfile', 'postgresql', 'mysql'])
+@pytest.mark.parametrize('scope', ['global', 'subnets', 'shared-networks'])
+def test_v4_adaptive_lease_time_threshold(backend, scope):
+    """Test adaptive lease time threshold option.
+    Multiple DORA messages are sent to the server.
+    First part of leases should have valid lifetime of 4000, rest of leases should have valid lifetime of 1000.
+
+    :param backend: database backend
+    :type backend: str
+    :param scope: scope of the test
+    :type scope: str
+    """
+    misc.test_setup()
+    # adaptive lease time threshold is set to 0.5, so 50% of leases should have valid lifetime of 4000,
+    # leases are rounded and Kea will assign 1 less lease with valid lifetime of 4000
+    adaptive_lease_time_threshold = 0.5
+    amount_of_max = 9
+    amount_of_min = 11
+    pool_size = amount_of_max + amount_of_min  # Pool size can not exceed 49 in this test
+    if scope == 'subnets':
+        srv_control.config_srv_subnet('192.168.50.0/24',
+                                      f'192.168.50.1-192.168.50.{pool_size}',
+                                      allocator='flq',
+                                      id=1,
+                                      valid_lifetime=4000,
+                                      max_valid_lifetime=4000,
+                                      min_valid_lifetime=1000,
+                                      adaptive_lease_time_threshold=adaptive_lease_time_threshold)
+    else:
+        srv_control.config_srv_subnet('192.168.50.0/24',
+                                      f'192.168.50.1-192.168.50.{pool_size}', allocator='flq', id=1)
+    srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
+                                                       f'192.168.51.1-192.168.51.{pool_size}', allocator='flq', id=2)
+
+    srv_control.shared_subnet('192.168.50.0/24', 0)
+    srv_control.shared_subnet('192.168.51.0/24', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
+    if scope == 'shared-networks':
+        srv_control.set_conf_parameter_shared_subnet('valid-lifetime', 4000, 0)
+        srv_control.set_conf_parameter_shared_subnet('max-valid-lifetime', 4000, 0)
+        srv_control.set_conf_parameter_shared_subnet('min-valid-lifetime', 1000, 0)
+        srv_control.set_conf_parameter_shared_subnet('adaptive-lease-time-threshold', adaptive_lease_time_threshold, 0)
+
+    if scope == 'global':
+        srv_control.set_conf_parameter_global('valid-lifetime', 4000)
+        srv_control.set_conf_parameter_global('max-valid-lifetime', 4000)
+        srv_control.set_conf_parameter_global('min-valid-lifetime', 1000)
+        srv_control.set_conf_parameter_global('adaptive-lease-time-threshold', adaptive_lease_time_threshold)
+
+    srv_control.define_lease_db_backend(backend)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # send DORA messages to get 20 leases
+    for i in range(1, pool_size*2+1):
+        srv_msg.DORA('ANY', chaddr=f'ff:01:02:03:ff:{i:02}', exchange='dora-only')
+
+    # check if first amount_of_max leases have valid lifetime of 4000
+    for i in range(1, amount_of_max+1):
+        srv_msg.check_leases({"hwaddr": f'ff:01:02:03:ff:{i:02}', "valid_lifetime": 4000},
+                             backend=backend)
+
+    # check if next amount_of_min leases have valid lifetime of 1000
+    for i in range(amount_of_max+1, pool_size+1):
+        srv_msg.check_leases({"hwaddr": f'ff:01:02:03:ff:{i:02}', "valid_lifetime": 1000},
+                             backend=backend)
+
+    if scope == 'subnets':
+        # check if the rest of leases have valid lifetime of 4000
+        for i in range(pool_size+1, pool_size*2+1):
+            srv_msg.check_leases({"hwaddr": f'ff:01:02:03:ff:{i:02}', "valid_lifetime": 4000},
+                                 backend=backend)
+    else:
+        # check if first amount_of_max leases in second subnet have valid lifetime of 4000
+        for i in range(1+pool_size, amount_of_max+1+pool_size):
+            srv_msg.check_leases({"hwaddr": f'ff:01:02:03:ff:{i:02}', "valid_lifetime": 4000},
+                                 backend=backend)
+
+        # check if next amount_of_min leases in second subnet have valid lifetime of 1000
+        for i in range(amount_of_max+1+pool_size, amount_of_max+amount_of_min+1+pool_size):
+            srv_msg.check_leases({"hwaddr": f'ff:01:02:03:ff:{i:02}', "valid_lifetime": 1000},
+                                 backend=backend)
+
+
 def _check_multiple_v6_addresses(all_leases: list, offset: int = 1) -> str:
     """Check if list of addresses is iterative or randomly allocated
     :param all_leases: list of ip addresses as strings
@@ -564,3 +651,101 @@ def test_v6_allocators_exhausted_prefix(backend):
         srv_msg.response_check_option_content(25, 'sub-option', 26)
         leases += srv_msg.get_all_leases()
     srv_msg.check_leases(leases, backend=backend)
+
+
+@pytest.mark.v6
+@pytest.mark.allocators
+@pytest.mark.parametrize('backend', ['memfile', 'postgresql', 'mysql'])
+@pytest.mark.parametrize('scope', ['global', 'subnets', 'shared-networks'])
+def test_v6_adaptive_lease_time_threshold(backend, scope):
+    """Test adaptive lease time threshold option.
+    Multiple SARR messages are sent to the server.
+    First part of leases should have valid lifetime of 4000, rest of leases should have valid lifetime of 1000.
+    Adaptive-lease-time-threshold works only with iapd leases.
+
+    :param backend: database backend
+    :type backend: str
+    :param scope: scope of the test
+    :type scope: str
+    """
+    misc.test_setup()
+    # adaptive lease time threshold is set to 0.5, so 50% of pd leases should have valid lifetime of 4000,
+    # leases are rounded and Kea will assign 1 less lease with valid lifetime of 4000
+    adaptive_lease_time_threshold = 0.5
+    amount_of_max = 7
+    amount_of_min = 9
+    pool_size = amount_of_max + amount_of_min  # Pool size is connected to prefix length
+    if scope == 'subnets':
+        srv_control.config_srv_subnet('2001:db8:1::/64',
+                                      f'2001:db8:1::1-2001:db8:1::{pool_size}',
+                                      pd_allocator='flq',
+                                      id=1,
+                                      valid_lifetime=4000,
+                                      max_valid_lifetime=4000,
+                                      min_valid_lifetime=1000,
+                                      adaptive_lease_time_threshold=adaptive_lease_time_threshold)
+
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64',
+                                      f'2001:db8:1::1-2001:db8:1::{pool_size}', pd_allocator='flq', id=1)
+    srv_control.config_srv_prefix('2001:db6:1::', 0, 124, 128)
+    srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
+                                                       f'2001:db8:2::1-2001:db8:2::{pool_size}',
+                                                       pd_allocator='flq',
+                                                       id=2)
+    srv_control.config_srv_prefix('2001:db7:1::', 1, 124, 128)
+
+    srv_control.shared_subnet('2001:db8:1::/64', 0)
+    srv_control.shared_subnet('2001:db8:2::/64', 0)
+    srv_control.set_conf_parameter_shared_subnet('name', '"name-abc"', 0)
+    srv_control.set_conf_parameter_shared_subnet('interface', '"$(SERVER_IFACE)"', 0)
+    if scope == 'shared-networks':
+        srv_control.set_conf_parameter_shared_subnet('valid-lifetime', 4000, 0)
+        srv_control.set_conf_parameter_shared_subnet('max-valid-lifetime', 4000, 0)
+        srv_control.set_conf_parameter_shared_subnet('min-valid-lifetime', 1000, 0)
+        srv_control.set_conf_parameter_shared_subnet('adaptive-lease-time-threshold', adaptive_lease_time_threshold, 0)
+
+    if scope == 'global':
+        srv_control.set_conf_parameter_global('valid-lifetime', 4000)
+        srv_control.set_conf_parameter_global('max-valid-lifetime', 4000)
+        srv_control.set_conf_parameter_global('min-valid-lifetime', 1000)
+        srv_control.set_conf_parameter_global('adaptive-lease-time-threshold', adaptive_lease_time_threshold)
+
+    srv_control.define_lease_db_backend(backend)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # send DORA messages to get 20 leases
+    for i in range(1, pool_size*2+1):
+        srv_msg.SARR(address='ANY',
+                     delegated_prefix='ANY',
+                     duid=f'00:03:00:01:f6:f5:f4:f3:f2:{i:02}',
+                     exchange='sarr-only')
+
+    # check if first amount_of_max leases have valid lifetime of 4000.
+    # We count 2 leases per duid because of iana and iapd.
+    for i in range(1, amount_of_max+1):
+        srv_msg.check_leases({"duid": f'00:03:00:01:f6:f5:f4:f3:f2:{i:02}',
+                             "valid_lifetime": 4000, "lease_type": 2}, backend=backend, lease_count=2)
+
+    # check if next amount_of_min leases have valid lifetime of 1000
+    # We count 1 lease per duid because of iana is not affected by adaptive lease time threshold.
+    for i in range(amount_of_max+1, pool_size+1):
+        srv_msg.check_leases({"duid": f'00:03:00:01:f6:f5:f4:f3:f2:{i:02}',
+                             "valid_lifetime": 1000, "lease_type": 2}, backend=backend, lease_count=1)
+
+    if scope == 'subnets':
+        # check if the rest of leases have valid lifetime of 4000
+        for i in range(pool_size+1, pool_size*2+1):
+            srv_msg.check_leases({"duid": f'00:03:00:01:f6:f5:f4:f3:f2:{i:02}',
+                                 "valid_lifetime": 4000, "lease_type": 2}, backend=backend, lease_count=2)
+    else:
+        # check if first amount_of_max leases in second subnet have valid lifetime of 4000
+        for i in range(1+pool_size, amount_of_max+1+pool_size):
+            srv_msg.check_leases({"duid": f'00:03:00:01:f6:f5:f4:f3:f2:{i:02}',
+                                 "valid_lifetime": 4000, "lease_type": 2}, backend=backend, lease_count=2)
+
+        # check if next amount_of_min leases in second subnet have valid lifetime of 1000
+        for i in range(amount_of_max+1+pool_size, amount_of_max+amount_of_min+1+pool_size):
+            srv_msg.check_leases({"duid": f'00:03:00:01:f6:f5:f4:f3:f2:{i:02}',
+                                 "valid_lifetime": 1000, "lease_type": 2}, backend=backend, lease_count=1)

@@ -483,6 +483,8 @@ def _check_value(value):
     if isinstance(value, str):
         if value.isdigit():
             return int(value)
+        if value.replace('.', '', 1).isdigit():
+            return float(value)
         if value.lower() == "true":
             return True
         if value.lower() == "false":

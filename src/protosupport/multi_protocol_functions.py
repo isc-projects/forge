@@ -1146,7 +1146,8 @@ def set_value(env_name, env_value):
     world.f_cfg.set_env_val(env_name, env_value)
 
 
-def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_address, should_succeed=True):
+def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_address, should_succeed=True,
+                 lease_count=None):
     """Check leases.
 
     :param leases_list:
@@ -1157,6 +1158,8 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
     :type destination:
     :param should_succeed: Default value = True)
     :type should_succeed:
+    :param lease_count: check for specific number of leases (Default value = None)
+    :type lease_count:
     """
     if not isinstance(leases_list, list):
         leases_list = [leases_list]
@@ -1181,6 +1184,9 @@ def check_leases(leases_list, backend='memfile', destination=world.f_cfg.mgmt_ad
         result = fabric_sudo_command(cmd, ignore_errors=True, destination_host=destination)
         if should_succeed:
             assert result.succeeded, "Expected lease, but it does not exist: %s" % json.dumps(lease)
+            if lease_count is not None:
+                assert int(result.stdout) == lease_count, \
+                    "Expected %s leases, but got %s" % (lease_count, result.stdout)
         else:
             assert result.failed, "Expected lease to not exist, but it does: %s" % json.dumps(lease)
         # TODO write check if there is more than one entry of the same type

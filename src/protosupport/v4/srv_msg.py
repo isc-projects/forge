@@ -994,6 +994,9 @@ def DO(address=None, options=None, chaddr='ff:01:02:03:ff:04', iface=None):
     # no message back.
     if address is None:
         send_wait_for_message('MUST', False, None, iface=iface)
+    elif address == 'ANY':
+        send_wait_for_message('MUST', True, 'OFFER', iface=iface)
+        client_sets_value('chaddr', chaddr)
     else:
         send_wait_for_message('MUST', True, 'OFFER', iface=iface)
         response_check_content(True, 'yiaddr', address)
@@ -1039,7 +1042,7 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
     if not init_reboot and len(world.srvmsg) > 0:
         client_copy_option('server_id')
     if options is None or 'requested_addr' not in options:
-        if address is None:
+        if address is None or address == 'ANY':
             # Only request an address if there was a server response in the past.
             if len(world.srvmsg) > 0:
                 client_does_include(None, 'requested_addr', world.srvmsg[0].yiaddr)
@@ -1058,7 +1061,8 @@ def RA(address, options=None, response_type='ACK', chaddr='ff:01:02:03:ff:04',
         send_wait_for_message('MUST', False, None, iface=iface)
     elif response_type == 'ACK':
         send_wait_for_message('MUST', True, 'ACK', iface=iface)
-        response_check_content(True, 'yiaddr', address)
+        if address != 'ANY':
+            response_check_content(True, 'yiaddr', address)
         response_check_include_option(True, 'subnet-mask')
         response_check_option_content('subnet-mask', True, 'value', subnet_mask)
         if fqdn is not None:
