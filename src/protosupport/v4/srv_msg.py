@@ -46,6 +46,7 @@ from src.forge_cfg import world
 from src.protosupport.v6.srv_msg import apply_message_fields_changes, close_sockets
 
 from src import misc
+from src import protosupport
 
 log = logging.getLogger('forge')
 
@@ -58,6 +59,17 @@ OPTIONS = {
     'vendor_class_id': 60,
     'vivso-suboptions': 125,
 }
+
+
+def client_add_saved_option(erase, count="all"):
+    """Delegate to the v6 implementation.
+
+    :param erase:
+    :type erase:
+    :param count: (Default value = "all")
+    :type count:
+    """
+    protosupport.v6.srv_msg.client_add_saved_option(erase, count)
 
 
 def get_option_code(opt_code) -> int:
