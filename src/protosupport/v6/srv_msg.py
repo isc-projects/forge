@@ -1949,9 +1949,6 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
         if delegated_prefix != 'ANY':
             check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
 
-        check_IA_NA(address, status_code=status_code_IA_NA)
-        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
-
         if request_options is not None:
             for o in request_options:
                 response_check_include_option(True, o)
@@ -1991,9 +1988,10 @@ def SARR(address=None, delegated_prefix=None, relay_information=False,
 
         # Expect a reply.
         send_wait_for_message('MUST', True, 'REPLY', iface=iface)
-        check_IA_NA(address, status_code=status_code_IA_NA)
-        check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
-
+        if address != 'ANY':
+            check_IA_NA(address, status_code=status_code_IA_NA)
+        if delegated_prefix != 'ANY':
+            check_IA_PD(delegated_prefix, status_code=status_code_IA_PD)
         if request_options is not None:
             for o in request_options:
                 response_check_include_option(True, o)
