@@ -136,8 +136,8 @@ def test_prefix_delegation_exclude_prefix():
     srv_msg.response_check_option_content(3, 'sub-option', 5)
     srv_msg.response_check_include_option(25)
     srv_msg.response_check_option_content(25, 'sub-option', 26)
-    # Response option 26 MUST contain sub-option 67.
-    # Test works, but forge lacks support for extracting sub-options of sub-options
+    srv_msg.response_check_suboption_content(26, 25, 'iaprefopts',
+                                             bytes(bytearray([0, 67, 0, 2, 91, 128])))
     references.references_check('RFC')
 
 

@@ -505,3 +505,103 @@ def test_v6_host_reservation_example_access_control():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(23)
     srv_msg.response_check_option_content(23, 'value', '2001:db8::1')
+
+
+@pytest.mark.v6
+@pytest.mark.host_reservation
+def test_v6_host_reservation_excluded_prefixes():
+    """
+    Test if excluded prefixes are working correctly.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'reserved-hostname',
+                                           0,
+                                           'duid',
+                                           '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '3000::100')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'prefixes', '2001:db8:3::/64')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'excluded-prefixes', '2001:db8:3::/120')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Verify that excluded prefixes are not included in the ADVERTISE and REPLY messages when not asking for them
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::100')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:3::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
+    srv_msg.response_check_suboption_content(26, 25, 'iaprefopts', None, expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::100')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:3::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
+    srv_msg.response_check_suboption_content(26, 25, 'iaprefopts', None, expect_include=False)
+
+    # Verify that excluded prefixes are included in the ADVERTISE and REPLY messages when asking for them
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'IA-PD')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_requests_option(67)
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::100')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:3::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
+    srv_msg.response_check_suboption_content(26, 25, 'iaprefopts',
+                                             bytes(bytearray([0, 67, 0, 8, 120, 0, 0, 0, 0, 0, 0, 0])))
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_copy_option('IA_PD')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_requests_option(67)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'sub-option', 5)
+    srv_msg.response_check_suboption_content(5, 3, 'addr', '3000::100')
+    srv_msg.response_check_include_option(25)
+    srv_msg.response_check_option_content(25, 'sub-option', 26)
+    srv_msg.response_check_suboption_content(26, 25, 'prefix', '2001:db8:3::')
+    srv_msg.response_check_suboption_content(26, 25, 'plen', 64)
+    srv_msg.response_check_suboption_content(26, 25, 'iaprefopts',
+                                             bytes(bytearray([0, 67, 0, 8, 120, 0, 0, 0, 0, 0, 0, 0])))

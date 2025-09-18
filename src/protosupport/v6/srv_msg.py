@@ -1327,8 +1327,12 @@ def response_check_suboption_content(subopt_code, opt_code, expect, data_type, e
             if opt_code not in [17]:
                 data_type = values_equivalent.get(opt_code)
             tmp_field = opt.fields.get(data_type)
-        if type(tmp_field) is list:
-            received.append(",".join(tmp_field))
+        if type(tmp_field) is list and tmp_field:  # empty list is not a valid option
+            # Raw is a special case, it is a bytes object, so we need to convert it to a string
+            if isinstance(tmp_field[0], scapy.packet.Raw):
+                received.append(str(bytes(tmp_field[0])))
+            else:
+                received.append(",".join(tmp_field))
         if data_type == 'duid':
             txt_duid = extract_duid(tmp_field)
             received.append(":".join([txt_duid[i:i+2] for i in range(0, len(txt_duid), 2)]))

@@ -1222,7 +1222,7 @@ def host_reservation_extension(reservation_number, subnet, reservation_type, res
     """
     sub = f'subnet{world.proto[1]}'
     if world.proto[1] == '6':
-        if reservation_type in ["ip-address", "prefix", "prefixes"]:
+        if reservation_type in ["ip-address", "prefix", "prefixes", "excluded-prefixes"]:
             # Make sure it ends in "es".
             if reservation_type[-2:] != "es":
                 reservation_type += "es"
