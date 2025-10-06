@@ -400,40 +400,31 @@ def test_v4_host_reservation_empty(backend):
 @pytest.mark.host_reservation
 def test_v4_host_reservation_example_access_control():
     """
-    Test check example from ARM 8.3.13 "Host Reservations as Basic Access Control"
-    with added Dropping of Unknown class
+    Test example from ARM "Host Reservations as Basic Access Control".
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200')
-    srv_control.config_srv("routers", 0, "192.168.50.250")
-    # TODO require-client-classes is not working correctly - Kea #2863
-    world.dhcp_cfg["subnet4"][0]["require-client-classes"] = ["blocked"]
-    world.dhcp_cfg.update({
-        "client-classes": [
-            {
-                "name": "blocked",
-                "option-data": [
-                    {
-                        "name": "routers",
-                        "data": "192.168.50.251"
-                    }
-                ]
-            },
-            {
-                "name": "DROP",
-                "test": "member('UNKNOWN')"
-            }
-        ]})
+    srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.1-192.168.50.200", id=1)
+    world.dhcp_cfg.update(
+        {
+            "client-classes": [
+                {
+                    "name": "KNOWN",
+                    "option-data": [{"name": "routers", "data": "192.0.2.250"}],
+                }
+            ]
+        }
+    )
 
-    world.dhcp_cfg.update({
-        "reservations": [
-            {"hw-address": "aa:bb:cc:dd:ee:fe",
-             "client-classes": ["blocked"]},
-            {"hw-address": "11:22:33:44:55:66"}
-        ],
-        "reservations-global": True,
-        "reservations-in-subnet": False
-    })
+    world.dhcp_cfg.update(
+        {
+            "reservations": [
+                # Clients on this list will be added to the KNOWN class.
+                {"hw-address": "aa:bb:cc:dd:ee:fe"},
+                {"hw-address": "11:22:33:44:55:66"},
+            ],
+            "reservations-global": True,
+        }
+    )
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -444,9 +435,10 @@ def test_v4_host_reservation_example_access_control():
     srv_msg.client_send_msg('DISCOVER')
 
     misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'OFFER', expect_response=False)
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(3, expect_include=False)
 
-    # Check blocked MAC
+    # Check first known MAC
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', 'aa:bb:cc:dd:ee:fe')
     srv_msg.client_send_msg('DISCOVER')
@@ -454,7 +446,7 @@ def test_v4_host_reservation_example_access_control():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_include_option(3)
-    srv_msg.response_check_option_content(3, 'value', '192.168.50.251')
+    srv_msg.response_check_option_content(3, 'value', '192.0.2.250')
 
     # Check other known MAC
     misc.test_procedure()
@@ -464,4 +456,80 @@ def test_v4_host_reservation_example_access_control():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'OFFER')
     srv_msg.response_check_include_option(3)
-    srv_msg.response_check_option_content(3, 'value', '192.168.50.250')
+    srv_msg.response_check_option_content(3, 'value', '192.0.2.250')
+
+
+@pytest.mark.v4
+@pytest.mark.host_reservation
+def test_v4_host_reservation_example_access_control_tagging():
+    """
+    Test extended example from ARM "Host Reservations as Basic Access Control".
+    """
+    misc.test_setup()
+    option_data = [
+        {
+            # Router for blocked customers.
+            "client-classes": ["blocked"],
+            "name": "routers",
+            "data": "192.0.2.251",
+        },
+        {
+            # Router for customers in good standing.
+            "name": "routers",
+            "data": "192.0.2.250",
+        },
+    ]
+
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.200', id=1,
+                                  option_data=option_data)
+    world.dhcp_cfg.update(
+        {
+            "client-classes": [
+                {
+                    "name": "blocked",
+                }
+            ]
+        }
+    )
+
+    world.dhcp_cfg.update(
+        {
+            "reservations": [
+                {"hw-address": "aa:bb:cc:dd:ee:fe", "client-classes": ["blocked"]},
+                {"hw-address": "11:22:33:44:55:66"},
+            ],
+            "reservations-global": True,
+        }
+    )
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Check unblocked MAC
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'dd:ee:ff:11:22:33')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'value', '192.0.2.250')
+
+    # Check blocked MAC
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'aa:bb:cc:dd:ee:fe')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'value', '192.0.2.251')
+
+    # Check other known MAC
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '11:22:33:44:55:66')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(3)
+    srv_msg.response_check_option_content(3, 'value', '192.0.2.250')

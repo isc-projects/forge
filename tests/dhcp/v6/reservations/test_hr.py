@@ -427,41 +427,35 @@ def test_v6_host_reservation_empty(backend):
 @pytest.mark.host_reservation
 def test_v6_host_reservation_example_access_control():
     """
-    Test check example from ARM 9.3.12 "Host Reservations as Basic Access Control"
-    with added Dropping of Unknown class
+    Test example from ARM 9.3.12 "Host Reservations as Basic Access Control"
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
-    srv_control.config_srv("dns-servers", 0, "2001:db8::1")
-    # TODO require-client-classes is not working correctly - Kea #2863
-    world.dhcp_cfg["subnet6"][0]["require-client-classes"] = ["blocked"]
+    srv_control.config_srv_subnet("2001:db8:1::/64", "2001:db8:1::1-2001:db8:1::1")
 
-    world.dhcp_cfg.update({
-        "client-classes": [
-            {
-                "name": "blocked",
-                "option-data": [
-                    {
-                        "name": "dns-servers",
-                        "data": "2001:db8::2"
-                    }
-                ]
-            },
-            {
-                "name": "DROP",
-                "test": "member('UNKNOWN')"
-            }
-        ]})
+    world.dhcp_cfg.update(
+        {
+            "client-classes": [
+                {
+                    "name": "blocked",
+                    "option-data": [{"name": "dns-servers", "data": "2001:db8::2"}],
+                },
+                {"name": "DROP", "test": "member('UNKNOWN')"},
+            ]
+        }
+    )
 
-    world.dhcp_cfg.update({
-        "reservations": [
-            {"duid": "00:03:00:01:f6:f5:f4:f3:f2:11",
-             "client-classes": ["blocked"]},
-            {"duid": "00:03:00:01:f6:f5:f4:f3:f2:22"}
-        ],
-        "reservations-global": True,
-        "reservations-in-subnet": False
-    })
+    world.dhcp_cfg.update(
+        {
+            "reservations": [
+                {
+                    "duid": "00:03:00:01:f6:f5:f4:f3:f2:11",
+                    "client-classes": ["blocked"],
+                },
+                {"duid": "00:03:00:01:f6:f5:f4:f3:f2:22"},
+            ],
+            "reservations-global": True,
+        }
+    )
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -491,20 +485,6 @@ def test_v6_host_reservation_example_access_control():
     srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
     srv_msg.response_check_include_option(23)
     srv_msg.response_check_option_content(23, 'value', '2001:db8::2')
-
-    # Check other known MAC
-    misc.test_procedure()
-    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:22')
-    srv_msg.client_does_include('Client', 'client-id')
-    srv_msg.client_does_include('Client', 'IA-NA')
-    srv_msg.client_requests_option(7)
-    srv_msg.client_requests_option(23)
-    srv_msg.client_send_msg('SOLICIT')
-
-    misc.pass_criteria()
-    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
-    srv_msg.response_check_include_option(23)
-    srv_msg.response_check_option_content(23, 'value', '2001:db8::1')
 
 
 @pytest.mark.v6
