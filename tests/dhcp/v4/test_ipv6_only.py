@@ -18,6 +18,17 @@ from src.forge_cfg import world
 def _check_ipv6_only_response(ip_address, client, send108, expect_include, send_rapid_commit=False):
     """
     Function makes DORA exchange with IPv6-only-preferred request and checks server response.
+
+    :param ip_address: IP address of the client
+    :type ip_address: str
+    :param client: client identifier
+    :type client: str
+    :param send108: whether to send IPv6-only-preferred option
+    :type send108: bool
+    :param expect_include: whether to expect IPv6-only-preferred option in the response
+    :type expect_include: bool
+    :param send_rapid_commit: whether to send rapid-commit option
+    :type send_rapid_commit: bool
     """
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', f'00:00:00:00:00:{client}')
@@ -64,6 +75,9 @@ def test_ipv6_only_preferred(level):
     According to selected level, DORA exchanges are performed to verify that IPv6-only-preferred is
     sent by server only when necessary.
     If rapid-commit AND IPv6-only-preferred are included Kea should ignore rapid-commit.
+
+    :param level: level of configuration to test
+    :type level: str
     """
     misc.test_setup()
     # Define option for tests
@@ -237,3 +251,52 @@ def test_ipv6_only_preferred(level):
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=True)
         _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=True, send_rapid_commit=True)
         _check_ipv6_only_response('192.168.50.1', '05', send108=False, expect_include=False)
+
+
+@pytest.mark.v4
+@pytest.mark.options
+@pytest.mark.parametrize("v6_only_preferred_enabled", [True, False])
+def test_ipv6_only_preferred_packet_drop(v6_only_preferred_enabled):
+    """
+    Tests to verify that packets with ipv6-only-preferred option are dropped properly
+
+    :param v6_only_preferred_enabled: whether to enable v6-only-preferred option
+    :type v6_only_preferred_enabled: bool
+    """
+    misc.test_setup()
+
+    # Create first subnet guarded by "50" class
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.2',
+                                  client_classes=['50'], id=1, authoritative=False)
+
+    # Create class and host reservation for subnet selection
+    srv_control.create_new_class('50')
+    reservations = [{"hw-address": "00:00:00:00:00:05",
+                     "client-classes": ["50"]}]
+    world.dhcp_cfg.update({'reservations': reservations})
+    # Enable Early Global Host Reservation Lookup.
+    world.dhcp_cfg['early-global-reservations-lookup'] = True
+    # Required to apply reservation options
+    world.dhcp_cfg['reservations-global'] = True
+
+    # Add v6-only-preferred on global level
+    if v6_only_preferred_enabled:
+        # Define option for tests
+        option = {"name": "v6-only-preferred", "data": "1800"}
+        world.dhcp_cfg["option-data"].append(option)
+
+    # Start server
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Set DISCOVER destination to server IP address
+    world.cfg["destination_IP"] = world.f_cfg.srv4_addr
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:01')
+    srv_msg.client_requests_option(108)
+    srv_msg.client_send_msg('DISCOVER')
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER', expect_response=False)
+
+    _check_ipv6_only_response('192.168.50.1', '05', send108=True, expect_include=v6_only_preferred_enabled)
