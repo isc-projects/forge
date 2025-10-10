@@ -176,7 +176,8 @@ def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
     if world.f_cfg.install_method == 'make':
         log_contains("Some error message in logs", '/tmp/keactrl.log')  # TODO: add more specific error message
     else:
-        log_contains("Some error message in logs")  # TODO: add more specific error message
+        if not world.f_cfg.control_agent:  # 'log_contains' does not support CA installed with packages
+            log_contains("Some error message in logs")  # TODO: add more specific error message
 
 
 @pytest.mark.v4
@@ -237,7 +238,8 @@ def test_control_channel_http_headers_illegal(dhcp_version, socket_protocol):
         if world.f_cfg.install_method == 'make':
             log_contains(test_case["error_message"], '/tmp/keactrl.log')
         else:
-            log_contains(test_case["error_message"])
+            if not world.f_cfg.control_agent:  # 'log_contains' does not support CA installed with packages
+                log_contains(test_case["error_message"])
 
 
 @pytest.mark.v4
@@ -304,4 +306,5 @@ def test_control_channel_http_headers_negative(dhcp_version, socket_protocol):
         if world.f_cfg.install_method == 'make':
             log_contains(test_case["error_message"], '/tmp/keactrl.log')
         else:
-            log_contains(test_case["error_message"])
+            if not world.f_cfg.control_agent:  # 'log_contains' does not support CA installed with packages
+                log_contains(test_case["error_message"])
