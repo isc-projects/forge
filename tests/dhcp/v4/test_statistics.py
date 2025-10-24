@@ -62,6 +62,7 @@ class StatsState4:
             'v4-lease-reuses': 0,
             'v4-reservation-conflicts': 0,
             'assigned-addresses': 0,
+            'pkt4-service-disabled': 0
         }
 
     def compare(self):
@@ -80,7 +81,7 @@ class StatsState4:
                 statistics_not_found.append(key)
         assert len(statistics_not_found) == 0, f'The following statistics were received, but not expected: {statistics_not_found}'
 
-        assert len(statistics_from_kea) == 42, 'Number of all statistics is incorrect.'
+        assert len(statistics_from_kea) == len(self.s), 'Number of all statistics is incorrect.'
 
         for key, expected in self.s.items():
             received = statistics_from_kea[key][0][0]

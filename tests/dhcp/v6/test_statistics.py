@@ -76,6 +76,7 @@ class StatsState6:
             'v6-ia-pd-lease-reuses': 0,
             'assigned-nas': 0,
             'assigned-pds': 0,
+            'pkt6-service-disabled': 0
         }
 
     def compare(self):
@@ -94,7 +95,7 @@ class StatsState6:
                 statistics_not_found.append(key)
         assert len(statistics_not_found) == 0, f'The following statistics were received, but not expected: {statistics_not_found}'
 
-        assert len(statistics_from_kea) == 56, 'Number of all statistics is incorrect.'
+        assert len(statistics_from_kea) == len(self.s), 'Number of all statistics is incorrect.'
 
         for key, expected in self.s.items():
             received = statistics_from_kea[key][0][0]
