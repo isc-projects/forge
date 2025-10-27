@@ -2563,14 +2563,14 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
     :type destination_address:
     """
     if world.f_cfg.install_method == 'make':
-        log_path = world.f_cfg.log_join('kea.log*')
+        log_paths = glob.glob(world.f_cfg.log_join('kea.log*'))
         # Logs are copied to temp directory because fabric has prolems with listing non world readable folders.
         cmd = 'rm -rf /tmp/kealogs/'
         fabric_sudo_command(cmd, destination_host=destination_address)
         cmd = 'mkdir -m 777 -p /tmp/kealogs/'
         fabric_sudo_command(cmd, destination_host=destination_address)
-        cmd = f'for file in {log_path}; do cp "$file" "/tmp/kealogs/.";done'
-        fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
+        for file in log_paths:
+            fabric_sudo_command(f'cp "{file}" "/tmp/kealogs/"', destination_host=destination_address)
         log_path = '/tmp/kealogs/kea.log*'
     else:
         if world.server_system in ['redhat', 'fedora', 'alpine']:
