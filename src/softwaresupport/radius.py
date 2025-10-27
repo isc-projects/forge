@@ -6,6 +6,7 @@
 
 # pylint: disable=global-statement
 # pylint: disable=global-variable-not-assigned
+# pylint: disable=invalid-name  # for AUTHORIZE_CONTENT
 # pylint: disable=line-too-long
 
 """Functions that help with testing RADIUS functionality in Kea."""
@@ -363,10 +364,22 @@ def _tweak_radius_config(destination: str = world.f_cfg.mgmt_address):
             world.radius_config = file
             break
 
-    local_radius_conf = '/tmp/radiusd.conf'
+    # If config file was not found, let us create one.
+    if world.radius_config is None:
+        if fabric_is_file('/etc/raddb.default/radiusd.conf', destination):
+            fabric_sudo_command('sudo cp /etc/raddb.default/radiusd.conf /etc/raddb/radiusd.conf', destination)
+            fabric_sudo_command('sudo mkdir -p /etc/raddb/mods-config', destination)
+            fabric_sudo_command('sudo mkdir -p /etc/raddb/mods-enabled', destination)
+            fabric_sudo_command('sudo mkdir -p /etc/raddb/policy.d', destination)
+            fabric_sudo_command('sudo mkdir -p /etc/raddb/sites-enabled', destination)
+            fabric_sudo_command('sudo touch /etc/raddb/clients.conf', destination)
+            fabric_sudo_command('sudo touch /etc/raddb/proxy.conf', destination)
+            world.radius_config = '/etc/raddb/radiusd.conf'
+
     assert world.radius_config is not None, "radius config file not found"
 
     # remove local file if exists
+    local_radius_conf = '/tmp/radiusd.conf'
     if os.path.exists(local_radius_conf):
         os.remove(local_radius_conf)
 
@@ -385,6 +398,20 @@ def _tweak_radius_config(destination: str = world.f_cfg.mgmt_address):
     content = content.replace('auth = no', 'auth = yes')
     content = content.replace('auth_badpass = no', 'auth_badpass = yes')
     content = content.replace('auth_goodpass = no', 'auth_goodpass = yes')
+
+    if 'listen {' not in content:
+        content += '''
+listen {
+    type = auth
+    ipaddr = *
+    port = 1812
+}
+listen {
+    type = acct
+    ipaddr = *
+    port = 1813
+}
+'''
 
     # Write config back.
     with open(local_radius_conf, 'w', encoding='utf-8') as file:
