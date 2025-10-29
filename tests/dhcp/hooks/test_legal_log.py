@@ -15,8 +15,10 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 from src.forge_cfg import world
-from src.protosupport.multi_protocol_functions import file_contains_line_n_times, file_doesnt_contain_line, log_contains
-from src.softwaresupport.multi_server_functions import fabric_sudo_command, verify_file_permissions
+from src.protosupport.multi_protocol_functions import file_contains_line_n_times, file_doesnt_contain_line
+from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain, log_contains_n_times
+from src.softwaresupport.multi_server_functions import fabric_sudo_command, fabric_download_file
+from src.softwaresupport.multi_server_functions import verify_file_permissions
 
 
 # number of messages that the client will send in each test
@@ -366,6 +368,19 @@ def _add_guarded_subnet_with_logging_off6(class_test=False):
     world.dhcp_cfg.update({'reservations': reservations})
     world.dhcp_cfg['early-global-reservations-lookup'] = True
     world.dhcp_cfg['reservations-global'] = True
+
+
+def _get_journal_logs(syslog):
+    """Get journal logs for a given log file.
+
+    :param syslog: syslog facility
+    :type syslog: str
+    """
+    facility = int(syslog[-1]) + 16
+    cmd = f'journalctl SYSLOG_FACILITY={facility} > /tmp/kea_syslog.log'
+    fabric_sudo_command(cmd, ignore_errors=True)
+    fabric_download_file('/tmp/kea_syslog.log', world.cfg["test_result_dir"], ignore_errors=True,
+                         hide_all=world.f_cfg.forge_verbose == 0)
 
 
 @pytest.mark.v6
@@ -1754,3 +1769,61 @@ def test_legal_log_rotate_actions(dhcp_version):
     # (first was open on server start, and not on rotation)
     file_contains_line_n_times(world.f_cfg.log_join('actions_post.txt'), 1, world.f_cfg.log_join(log_files[1]))
     file_contains_line_n_times(world.f_cfg.log_join('actions_post.txt'), 1, world.f_cfg.log_join(log_files[2]))
+
+
+# v4 disabled for time saving:
+# @pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.legal_logging
+@pytest.mark.parametrize('facility', ['undefined', 'local0', 'local1', 'local2'])
+def test_legal_log_syslog(dhcp_version, facility):
+    """
+    Test legal log using diferent syslog facilities.
+    The test is parametrized to test with different syslog facilities.
+    :param dhcp_version: The DHCP version to use.
+    :type dhcp_version: str
+    :param facility: The syslog facility to use.
+    :type facility: str
+    """
+    misc.test_procedure()
+    srv_control.clear_some_data('logs', force_syslog=True)
+
+    misc.test_setup()
+    srv_control.set_time('renew-timer', 100)
+    srv_control.set_time('rebind-timer', 200)
+    srv_control.set_time('valid-lifetime', 600)
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.50')
+    else:
+        srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::5-2001:db8:1::50')
+        srv_control.config_srv_prefix('2001:db8:2::', 0, 90, 94)
+
+    srv_control.add_hooks('libdhcp_legal_log.so')
+    srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', 'syslog')
+    if facility != 'undefined':
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'facility', facility)
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    if dhcp_version == 'v4':
+        _send_client_requests4(3)
+    else:
+        _send_client_requests(3)
+
+    if dhcp_version == 'v4':
+        log_message = 'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs ' \
+                      'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, ' \
+                      'client-id: 00:01:02:03:04:05:06'
+    else:
+        log_message = 'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs ' \
+                      'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 ' \
+                      'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)'
+
+    facility = 'syslog:' + facility if facility != 'undefined' else 'syslog:local0'
+    wrong_facility = facility.replace(facility[-1], str(int(facility[-1])+1))
+    log_contains_n_times(log_message, 3, facility)
+
+    log_doesnt_contain(log_message, wrong_facility)
+
+    # Forge does not archive journal logs by default, so we need to get them manually
+    _get_journal_logs(facility)
