@@ -20,7 +20,9 @@ default:
     for i in $(git diff --name-only $(git merge-base origin/master HEAD)); do
       if echo ${i} | grep -E '.py$' > /dev/null 2>&1; then
         if ! echo ${PYTHON_EXCLUDE} | grep -F "${i}" > /dev/null 2>&1; then
-          MODIFIED_PYTHON_SCRIPTS+=" ${i}"
+          if test -f "${i}"; then
+            MODIFIED_PYTHON_SCRIPTS+=" ${i}"
+          fi
         fi
       fi
     done
