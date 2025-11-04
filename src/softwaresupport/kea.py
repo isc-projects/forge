@@ -89,7 +89,8 @@ world.kea_options6 = {
     "bootfile-url": 59,
     "bootfile-param": 60,
     "erp-local-domain-name": 65,
-    "v6-dnr": 144
+    "v6-dnr": 144,
+    "addr-reg-enable": 148
 }
 
 world.kea_options4 = {
@@ -1040,9 +1041,10 @@ def prepare_cfg_add_option(option_name, option_value, space,
 
     my_opt = {"code": int(option_code),
               "csv-format": csv_format,
-              "data": option_value,
               "name": option_name,
               "space": space}
+    if option_value is not None:
+        my_opt["data"] = option_value
 
     for x, y in kwargs.items():
         if y is not None:

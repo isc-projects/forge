@@ -119,7 +119,7 @@ def build_raw(msg, append):
         world.climsg[0] = world.climsg[0] / Raw(load=append)
 
 
-def client_send_msg(msgname, iface=None, addr=None):
+def client_send_msg(msgname, iface=None, addr=None, src=None):
     """Send specified message with defined options.
 
     :param msgname: name of the message
@@ -128,6 +128,8 @@ def client_send_msg(msgname, iface=None, addr=None):
     :type iface: str or None
     :param addr: address to send to (default: None)
     :type addr: str or None
+    :param src: source address (default: None)
+    :type src: str or None
     """
     # set different ethernet interface than default one.
     if addr is not None:

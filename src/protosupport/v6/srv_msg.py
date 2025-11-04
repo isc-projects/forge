@@ -96,6 +96,7 @@ OPTIONS = {
     'erp-local-domain-name': 65,
     'client-link-layer-addr': 79,
     'OPTION_V6_DNR': 144,
+    'addr-reg-enable': 148
 }
 
 
@@ -133,7 +134,7 @@ def client_requests_option(opt_type):
     world.oro.append(opt_type)
 
 
-def client_send_msg(msgname, iface=None, addr=None):
+def client_send_msg(msgname, iface=None, addr=None, src=None):
     """Send specified message with defined options.
 
     :param msgname:
@@ -142,6 +143,8 @@ def client_send_msg(msgname, iface=None, addr=None):
     :type iface:
     :param addr: Default value = None)
     :type addr:
+    :param src: source address (default: None)
+    :type src: str or None
     """
     # Remove previous message waiting to be sent, just in case this is a
     # REQUEST after we received ADVERTISE. We don't want to send SOLICIT
@@ -150,31 +153,34 @@ def client_send_msg(msgname, iface=None, addr=None):
     world.climsg = []
 
     if msgname == "SOLICIT":
-        msg = build_msg(dhcp6.DHCP6_Solicit(), iface)
+        msg = build_msg(dhcp6.DHCP6_Solicit(), iface, src=src)
 
     elif msgname == "REQUEST":
-        msg = build_msg(dhcp6.DHCP6_Request(), iface)
+        msg = build_msg(dhcp6.DHCP6_Request(), iface, src=src)
 
     elif msgname == "CONFIRM":
-        msg = build_msg(dhcp6.DHCP6_Confirm(), iface)
+        msg = build_msg(dhcp6.DHCP6_Confirm(), iface, src=src)
 
     elif msgname == "RENEW":
-        msg = build_msg(dhcp6.DHCP6_Renew(), iface)
+        msg = build_msg(dhcp6.DHCP6_Renew(), iface, src=src)
 
     elif msgname == "REBIND":
-        msg = build_msg(dhcp6.DHCP6_Rebind(), iface)
+        msg = build_msg(dhcp6.DHCP6_Rebind(), iface, src=src)
 
     elif msgname == "DECLINE":
-        msg = build_msg(dhcp6.DHCP6_Decline(), iface)
+        msg = build_msg(dhcp6.DHCP6_Decline(), iface, src=src)
 
     elif msgname == "RELEASE":
-        msg = build_msg(dhcp6.DHCP6_Release(), iface)
+        msg = build_msg(dhcp6.DHCP6_Release(), iface, src=src)
 
     elif msgname == "INFOREQUEST":
-        msg = build_msg(dhcp6.DHCP6_InfoRequest(), iface)
+        msg = build_msg(dhcp6.DHCP6_InfoRequest(), iface, src=src)
 
     elif msgname == "LEASEQUERY":
-        msg = build_msg(dhcp6.DHCP6_Leasequery(), iface)
+        msg = build_msg(dhcp6.DHCP6_Leasequery(), iface, src=src)
+
+    elif msgname == "ADDR-REG-INFORM":
+        msg = build_msg(dhcp6.DHCP6_AddrRegInform(), iface, src=src)
 
     else:
         assert False, "Invalid message type: %s" % msgname
@@ -326,6 +332,11 @@ def client_does_include(sender_type, opt_type, value=None):
                                                  validlft=world.cfg["values"]["validlft"],
                                                  plen=world.cfg["values"]["plen"],
                                                  prefix=world.cfg["values"]["prefix"]))
+
+    elif opt_type == "IA_Address_top_level":
+        add_client_option(dhcp6.DHCP6OptIAAddress(addr=world.cfg["values"]["IA_Address"],
+                                                  preflft=world.cfg["values"]["preflft"],
+                                                  validlft=world.cfg["values"]["validlft"]))
 
     elif opt_type == "IA_Address":
         world.iaad.append(dhcp6.DHCP6OptIAAddress(addr=world.cfg["values"]["IA_Address"],
@@ -638,20 +649,23 @@ def build_raw(msg, append):
         world.climsg[0] = world.climsg[0] / Raw(load=append)
 
 
-def build_msg(msg_dhcp, iface=None):
+def build_msg(msg_dhcp, iface=None, src=None):
     """Build message.
 
     :param msg_dhcp:
     :type msg_dhcp:
     :param iface: (Default value = None)
     :type iface:
+    :param src: source address (Default value = None)
+    :type src:
     :return:
     :rtype:
     """
-    if iface == world.cfg["iface2"]:
-        src = world.cfg["cli_link_local2"]
-    else:
-        src = world.cfg["cli_link_local"]
+    if src is None:
+        if iface == world.cfg["iface2"]:
+            src = world.cfg["cli_link_local2"]
+        else:
+            src = world.cfg["cli_link_local"]
 
     dst = world.cfg["address_v6"] if iface is None else f"{world.cfg['address_v6']}%{iface}"
     msg = IPv6(dst=dst, src=src)
@@ -961,7 +975,8 @@ def get_msg_type(msg):
                  13: "RELAYREPLY",
                  15: "LEASEQUERY-REPLY",
                  17: "LEASEQUERY-DATA",
-                 16: "LEASEQUERY-DONE"}
+                 16: "LEASEQUERY-DONE",
+                 37: "ADDR-REG-REPLY"}
 
     if msg.msgtype in msg_types:
         return msg_types[msg.msgtype]

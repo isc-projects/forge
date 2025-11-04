@@ -140,7 +140,7 @@ def client_send_msg_via_interface(iface, addr, msgname):
 
 
 @step(r'Client sends (\w+) message.')
-def client_send_msg(msgname, iface=None):
+def client_send_msg(msgname, iface=None, src=None):
     r"""Build message (e.g. SOLICIT) with all details specified in steps.
 
     Like:
@@ -154,8 +154,10 @@ def client_send_msg(msgname, iface=None):
     :type msgname:
     :param iface: (Default value = None)
     :type iface:
+    :param src: source address (Default value = None)
+    :type src:
     """
-    dhcpmsg.client_send_msg(msgname, iface, None)
+    dhcpmsg.client_send_msg(msgname, iface, src=src)
 
 
 @step(r'Send (\S+) with raw appending (.+)')
