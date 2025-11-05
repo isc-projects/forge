@@ -77,6 +77,7 @@ run_pydoctor() {
   # __init__.py files are required by pydoctor.
   files=$(add_init_py)
   pydoctor --docformat restructuredtext --testing . || FAILURE=true
+  echo  # pydoctor does not add a trailing new line. Add it ourselves.
   rm ${files}
 }
 
