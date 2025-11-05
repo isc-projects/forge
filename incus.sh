@@ -15,7 +15,7 @@ arch=$(uname -m)
 # logFile="/tmp/incus_$(date +'%Y_%m_%d_%H_%M_%S')_.log"
 logFile="/dev/null"
 
-while test "${#}" > 0; do
+while test 0 -lt "${#}"; do
     if ! echo "${1}" | grep -E '^--' > /dev/null; then
         break
     fi
