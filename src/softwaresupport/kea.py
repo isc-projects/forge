@@ -2565,15 +2565,32 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
     :type destination_address:
     """
     if world.f_cfg.install_method == 'make':
-        log_paths = glob.glob(world.f_cfg.log_join('kea.log*'))
         # Logs are copied to temp directory because fabric has prolems with listing non world readable folders.
         cmd = 'rm -rf /tmp/kealogs/'
         fabric_sudo_command(cmd, destination_host=destination_address)
         cmd = 'mkdir -m 777 -p /tmp/kealogs/'
         fabric_sudo_command(cmd, destination_host=destination_address)
-        for file in log_paths:
+
+        # Get list of logs.
+        log_dir = world.f_cfg.log_join('')
+        glob_expression = 'kea.log*'
+        result = fabric_sudo_command(
+            f'find "{log_dir}" -mindepth 1 -maxdepth 1 -name "{glob_expression}"', destination_host=destination_address
+        )
+        log_files = result.stdout.strip().split('\n')
+        log_files = [file for file in log_files if file != '']
+
+        # Move logs to temp directory.
+        for file in log_files:
             fabric_sudo_command(f'cp "{file}" "/tmp/kealogs/"', destination_host=destination_address)
-        log_path = '/tmp/kealogs/kea.log*'
+
+        # Get list of logs from temp directory.
+        result = fabric_sudo_command(
+            f'find "/tmp/kealogs" -mindepth 1 -maxdepth 1 -name "{glob_expression}"',
+            destination_host=destination_address,
+        )
+        log_files = result.stdout.strip().split('\n')
+        log_files = [file for file in log_files if file != '']
     else:
         if world.server_system in ['redhat', 'fedora', 'alpine']:
             service_name = f'kea-dhcp{world.proto[1]}'
@@ -2587,7 +2604,7 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
             cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
             cmd += ' /tmp/kea.log'
         fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
-        log_path = '/tmp/kea.log'
+        log_files = ['/tmp/kea.log']
 
     # If there are already saved logs then the next ones save in separate folder.
     # For subsequent logs create folder kea-logs-1. If it exists then kea-logs-2,
@@ -2605,9 +2622,13 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
         if not found:
             raise Exception('cannot store log, there is already 100 files stored')
 
-    fabric_download_file(log_path, local_dest_dir,
-                         destination_host=destination_address, ignore_errors=True,
-                         hide_all=world.f_cfg.forge_verbose == 0)
+    for file in log_files:
+        fabric_download_file(
+            file,
+            local_dest_dir,
+            destination_host=destination_address,
+            hide_all=world.f_cfg.forge_verbose == 0,
+        )
 
     if fabric_is_file('/tmp/keactrl.log', destination_address):
         fabric_download_file(
