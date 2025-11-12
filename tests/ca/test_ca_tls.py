@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium.
+# Copyright (C) 2022-2025 Internet Systems Consortium.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,10 +11,12 @@
 # pylint: disable=unused-argument
 
 import pytest
+
 from src import misc
 from src import srv_msg
 from src import srv_control
 
+from src.softwaresupport.kea import Certificates
 from src.forge_cfg import world
 
 
@@ -37,7 +39,7 @@ def test_ca_tls_basic(dhcp_version, client_cert_required):
     :type client_cert_required: bool
     """
     # Create certificates.
-    certificate = srv_control.generate_certificate()
+    certificate = Certificates()
     # Download required certificates.
     ca_cert = certificate.download('ca_cert')
     if client_cert_required:
@@ -94,7 +96,7 @@ def test_ca_tls_basic_negative(dhcp_version, client_cert_required):
     :type client_cert_required: bool
     """
     # Create certificates.
-    certificate = srv_control.generate_certificate()
+    certificate = Certificates()
     # Download required certificates.
     server_cert = certificate.download('server_cert')
     ca_cert = certificate.download('ca_cert')

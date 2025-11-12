@@ -16,6 +16,7 @@ from src import srv_msg
 
 from src.forge_cfg import world
 from src.softwaresupport.multi_server_functions import fabric_send_file
+from src.softwaresupport.kea import Certificates
 from .steps import get_status_HA, wait_until_ha_state
 
 HA_CONFIG = {
@@ -67,7 +68,7 @@ def test_ha_tls_with_ca(dhcp_version, backend):
     """
     # HA SERVER 1
     # Create certificates.
-    certificate = srv_control.generate_certificate()
+    certificate = Certificates()
     ca_cert = certificate.download('ca_cert')
     server_cert = certificate.download('server_cert')
     server_key = certificate.download('server_key')
@@ -202,7 +203,7 @@ def test_ha_tls_without_ca(dhcp_version, backend):
     """
     # HA SERVER 1
     # Create certificates.
-    certificate = srv_control.generate_certificate()
+    certificate = Certificates()
     ca_cert = certificate.download('ca_cert')
     server_cert = certificate.download('server_cert')
     server_key = certificate.download('server_key')

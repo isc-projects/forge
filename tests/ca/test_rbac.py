@@ -9,6 +9,7 @@
 # pylint: disable=redefined-outer-name
 # pylint: disable=unused-argument
 # pylint: disable=possibly-used-before-assignment  # too many false positives in this file
+
 from base64 import b64encode
 
 import os
@@ -17,7 +18,9 @@ import pytest
 from src import misc
 from src import srv_msg
 from src import srv_control
+
 from src.forge_cfg import world
+from src.softwaresupport.kea import Certificates
 
 # note: a lot of reconfigures in all those tests could be done by config-set, this would make tests cleaner
 # but due to discovered bug https://gitlab.isc.org/isc-projects/kea/-/issues/2475 I choose to go with reconfigure
@@ -34,7 +37,7 @@ def test_rbac_cert_subject(dhcp_version):
     :type dhcp_version: str
     """
     # Create certificates.
-    certificate = srv_control.generate_certificate()
+    certificate = Certificates()
     # Download required certificates.
     ca_cert = certificate.download('ca_cert')
     client_cert = certificate.download('client_cert')
@@ -155,7 +158,7 @@ def test_rbac_cert_issuer(dhcp_version):
     :type dhcp_version: str
     """
     # Create certificates.
-    certificate = srv_control.generate_certificate()
+    certificate = Certificates()
     # Download required certificates.
     ca_cert = certificate.download('ca_cert')
     client_cert = certificate.download('client_cert')
@@ -250,7 +253,7 @@ def test_rbac_remote_address(dhcp_version, tls):
     """
     if tls:
         # Create certificates.
-        certificate = srv_control.generate_certificate()
+        certificate = Certificates()
         # Download required certificates.
         ca_cert = certificate.download('ca_cert')
         client_cert = certificate.download('client_cert')
@@ -374,7 +377,7 @@ def test_rbac_basic_authentication(dhcp_version, tls):
     """
     # Create certificates.
     if tls:
-        certificate = srv_control.generate_certificate()
+        certificate = Certificates()
         # Download required certificates.
         ca_cert = certificate.download('ca_cert')
         client_cert = certificate.download('client_cert')

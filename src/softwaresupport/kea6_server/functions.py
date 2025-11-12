@@ -25,7 +25,7 @@ from src.softwaresupport.kea import prepare_cfg_add_option, prepare_cfg_add_opti
 from src.softwaresupport.kea import prepare_cfg_add_option_shared_network, config_require_client_classification
 from src.softwaresupport.kea import kea_otheroptions6, config_client_classification, add_option_to_defined_class
 from src.softwaresupport.kea import host_reservation, host_reservation_extension, config_srv_id, prepare_cfg_prefix
-from src.softwaresupport.kea import update_ha_hook_parameter, db_setup, generate_certificate
+from src.softwaresupport.kea import update_ha_hook_parameter, db_setup
 from src.softwaresupport.kea import disable_lease_affinity, update_expired_leases_processing, configure_multi_threading
 from src.softwaresupport.kea import add_prefix_to_subnet, config_pool_client_classification
 from src.softwaresupport.kea import add_database_hook, enable_https

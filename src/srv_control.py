@@ -1511,15 +1511,6 @@ def print_cfg(service='DHCP'):
         print(json.dumps(world.ca_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
 
 
-def generate_certificate():
-    """Generate certificate.
-
-    :return:
-    :rtype:
-    """
-    return dhcp.generate_certificate()
-
-
 def enable_https(trust_anchor, cert_file, key_file, cert_required):
     """Enable HTTPS.
 

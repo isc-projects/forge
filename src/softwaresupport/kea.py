@@ -196,11 +196,11 @@ world.kea_options4 = {
 }
 
 
-class CreateCert:
+class Certificates:
     """Creates TLS certificates for CA, server and client, mostly for testing Control Agent with TLS.
 
     class attributes return certificate files paths on server.
-    eg. CreateCert.ca_key returns "/home/user/kea/ca_key.pem"
+    eg. Certificates.ca_key returns "/home/user/kea/ca_key.pem"
 
     download() function downloads selected certificate to test result directory on forge machine
     and returns full path of the file.
@@ -460,15 +460,6 @@ class CreateCert:
             else:
                 copy_file_from_server(world.f_cfg.data_join(cert_name), cert_name)
                 return os.path.join(world.cfg["test_result_dir"], cert_name)
-
-
-def generate_certificate():
-    """Generate certificate.
-
-    :return:
-    :rtype:
-    """
-    return CreateCert()
 
 
 def _get_option_code(option_name: str):
