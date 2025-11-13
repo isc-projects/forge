@@ -55,7 +55,7 @@ score is not lower. Do not clutter your MRs that have substantial code changes w
 If you want to, open dedicated MRs for that, but please do that in moderation. This is a rabbit hole
 that can easily suck a lot of time.
 
-To check the code with pylint, use `check-style.sh` script.
+To check the code with pylint and other linters, use `lint.sh` script.
 
 Changelog
 ---------

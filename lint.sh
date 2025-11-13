@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Usage:
-# ./check-style.sh [--add-init.py] [--changed] [--bandit] [--pylint] [--pycodestyle] [--pydoctor] [--pydocstyle] [file, ...]
+# ./lint.sh [--add-init.py] [--changed] [--bandit] [--pylint] [--pycodestyle] [--pydoctor] [--pydocstyle] [file, ...]
 
 # shellcheck disable=SC2086
 # SC2086 (info): Double quote to prevent globbing and word splitting.

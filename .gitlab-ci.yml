@@ -37,7 +37,7 @@ bandit:
   <<: *rules
   script:
     - *get_modified_python_scripts
-    - ./check-style.sh --bandit ${MODIFIED_PYTHON_SCRIPTS}
+    - ./lint.sh --bandit ${MODIFIED_PYTHON_SCRIPTS}
 
 pages:
   rules:
@@ -46,7 +46,7 @@ pages:
       when: on_success
   script:
     # Add __init__.py files.
-    - ./check-style.sh --add-init.py
+    - ./lint.sh --add-init.py
     # Generate docs.
     - pydoctor --docformat restructuredtext --html-output public .
   artifacts:
@@ -57,22 +57,22 @@ pycodestyle:
   <<: *rules
   script:
     - *get_modified_python_scripts
-    - ./check-style.sh --pycodestyle ${MODIFIED_PYTHON_SCRIPTS}
+    - ./lint.sh --pycodestyle ${MODIFIED_PYTHON_SCRIPTS}
 
 pydocstyle:
   <<: *rules
   script:
     - *get_modified_python_scripts
-    - ./check-style.sh --pydocstyle ${MODIFIED_PYTHON_SCRIPTS}
+    - ./lint.sh --pydocstyle ${MODIFIED_PYTHON_SCRIPTS}
 
 pydoctor:
   <<: *rules
   script:
-    - ./check-style.sh --pydoctor
+    - ./lint.sh --pydoctor
 
 pylint:
   <<: *rules
   script:
     - *get_modified_python_scripts
-    - ./check-style.sh --pylint ${MODIFIED_PYTHON_SCRIPTS}
+    - ./lint.sh --pylint ${MODIFIED_PYTHON_SCRIPTS}
 
