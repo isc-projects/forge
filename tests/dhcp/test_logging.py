@@ -17,7 +17,7 @@ from src import misc
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
 from src.softwaresupport.multi_server_functions import verify_file_permissions
-from src.softwaresupport.multi_server_functions import fabric_sudo_command, fabric_download_file
+from src.protosupport.multi_protocol_functions import get_journal_logs
 
 
 def _verify_log_permissions():
@@ -29,19 +29,6 @@ def _verify_log_permissions():
         service_name = f'kea-dhcp{world.proto[1]}'
         logging_file_path = world.f_cfg.log_join(f'{service_name}.log')
         verify_file_permissions(logging_file_path)
-
-
-def _get_journal_logs(syslog):
-    """Get journal logs for a given log file.
-
-    :param syslog: syslog facility
-    :type syslog: str
-    """
-    facility = int(syslog[-1]) + 16
-    cmd = f'journalctl SYSLOG_FACILITY={facility} > /tmp/kea_syslog.log'
-    fabric_sudo_command(cmd, ignore_errors=True)
-    fabric_download_file('/tmp/kea_syslog.log', world.cfg["test_result_dir"], ignore_errors=True,
-                         hide_all=world.f_cfg.forge_verbose == 0)
 
 
 @pytest.mark.v4
@@ -1096,7 +1083,7 @@ def test_v4_syslog(facility: str):
     log_doesnt_contain(r'DEBUG \[kea-dhcp4\.leases', wrong_facility)
 
     # Forge does not archive journal logs by default, so we need to get them manually
-    _get_journal_logs(facility)
+    get_journal_logs(facility)
 
 
 @pytest.mark.v4
@@ -2156,7 +2143,7 @@ def test_v6_syslog(facility: str):
     log_doesnt_contain(r'DEBUG \[kea-dhcp6.options', wrong_facility)
 
     # Forge does not archive journal logs by default, so we need to get them manually
-    _get_journal_logs(facility)
+    get_journal_logs(facility)
 
 
 @pytest.mark.v6

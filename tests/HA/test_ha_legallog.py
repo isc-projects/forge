@@ -16,6 +16,7 @@ from src import srv_msg
 
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import file_contains_line_n_times, fabric_sudo_command
+from src.protosupport.multi_protocol_functions import log_contains_n_times, get_journal_logs
 from .steps import get_status_HA, wait_until_ha_state
 
 HA_CONFIG = {
@@ -68,7 +69,7 @@ def _message(server, ip_address, mac):
 @pytest.mark.v6
 @pytest.mark.ha
 @pytest.mark.legal_logging
-@pytest.mark.parametrize('backend', ['file', 'mysql', 'postgresql'])
+@pytest.mark.parametrize('backend', ['file', 'syslog', 'mysql', 'postgresql'])
 def test_ha_legallog(dhcp_version, backend):
     """
     Test if both HA servers log proper messages in Legal Log.
@@ -77,10 +78,15 @@ def test_ha_legallog(dhcp_version, backend):
     :param dhcp_version:
     :type dhcp_version: str
     """
+    if world.server_system == 'alpine' and backend == 'syslog':
+        pytest.skip("Alpine do not support syslog:local* facilities out of the box")
+
     # HA SERVER 1
     misc.test_setup()
     if backend == 'file':
         srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'), dest=world.f_cfg.mgmt_address)
+    elif backend == 'syslog':
+        srv_control.clear_some_data('logs', force_syslog=True)
     else:
         srv_msg.remove_from_db_table('logs', backend, destination=world.f_cfg.mgmt_address)
     if dhcp_version == 'v6':
@@ -94,7 +100,8 @@ def test_ha_legallog(dhcp_version, backend):
 
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_hooks('libdhcp_ha.so')
-    srv_control.add_database_hook(backend)
+    if backend != 'syslog':
+        srv_control.add_database_hook(backend)
     srv_control.add_hooks('libdhcp_legal_log.so')
     if backend != 'file':
         srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
@@ -119,6 +126,8 @@ def test_ha_legallog(dhcp_version, backend):
     srv_control.clear_some_data('all', dest=world.f_cfg.mgmt_address_2)
     if backend == 'file':
         srv_msg.remove_file_from_server(world.f_cfg.log_join('kea-legal*.txt'), dest=world.f_cfg.mgmt_address_2)
+    elif backend == 'syslog':
+        srv_control.clear_some_data('logs', force_syslog=True, dest=world.f_cfg.mgmt_address_2)
     else:
         srv_msg.remove_from_db_table('logs', backend, destination=world.f_cfg.mgmt_address_2)
     if dhcp_version == 'v6':
@@ -136,8 +145,11 @@ def test_ha_legallog(dhcp_version, backend):
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.add_hooks('libdhcp_lease_cmds.so')
     srv_control.add_hooks('libdhcp_ha.so')
-    srv_control.add_database_hook(backend)
+    if backend != 'syslog':
+        srv_control.add_database_hook(backend)
     srv_control.add_hooks('libdhcp_legal_log.so')
+    if backend == 'syslog':
+        srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'type', 'syslog')
     if backend != 'file':
         srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'name', '$(DB_NAME)')
         srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'password', '$(DB_PASSWD)')
@@ -191,6 +203,25 @@ def test_ha_legallog(dhcp_version, backend):
             file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 2,
                                        _message('standby', '2001:db8:1::2', '00:03:00:01:66:55:44:33:22:22'),
                                        destination=world.f_cfg.mgmt_address_2)
+        elif backend == 'syslog':
+            log_contains_n_times(
+                _message("primary", "2001:db8:1::1", "00:03:00:01:66:55:44:33:22:11"), 1,
+                "syslog:local0", destination=world.f_cfg.mgmt_address
+            )
+            log_contains_n_times(
+                _message("standby", "2001:db8:1::1", "00:03:00:01:66:55:44:33:22:11"), 1,
+                "syslog:local0", destination=world.f_cfg.mgmt_address_2
+            )
+            log_contains_n_times(
+                _message("primary", "2001:db8:1::2", "00:03:00:01:66:55:44:33:22:22"), 2,
+                "syslog:local0", destination=world.f_cfg.mgmt_address
+            )
+            log_contains_n_times(
+                _message("standby", "2001:db8:1::2", "00:03:00:01:66:55:44:33:22:22"), 2,
+                "syslog:local0", destination=world.f_cfg.mgmt_address_2
+            )
+            # Forge does not archive journal logs by default, so we need to get them manually
+            get_journal_logs('syslog:local0')
         else:
             srv_msg.table_contains_line_n_times('logs', backend, 1,
                                                 _message('primary', '2001:db8:1::1',
@@ -229,6 +260,25 @@ def test_ha_legallog(dhcp_version, backend):
             file_contains_line_n_times(world.f_cfg.log_join('kea-legal*.txt'), 2,
                                        _message('standby', '192.168.50.2', 'ff:01:02:03:ff:05'),
                                        destination=world.f_cfg.mgmt_address_2)
+        elif backend == 'syslog':
+            log_contains_n_times(
+                _message("primary", "192.168.50.1", "ff:01:02:03:ff:04"), 1,
+                "syslog:local0", destination=world.f_cfg.mgmt_address
+            )
+            log_contains_n_times(
+                _message("standby", "192.168.50.1", "ff:01:02:03:ff:04"), 1,
+                "syslog:local0", destination=world.f_cfg.mgmt_address_2
+            )
+            log_contains_n_times(
+                _message("primary", "192.168.50.2", "ff:01:02:03:ff:05"), 2,
+                "syslog:local0", destination=world.f_cfg.mgmt_address
+            )
+            log_contains_n_times(
+                _message("standby", "192.168.50.2", "ff:01:02:03:ff:05"), 2,
+                "syslog:local0", destination=world.f_cfg.mgmt_address_2
+            )
+            # Forge does not archive journal logs by default, so we need to get them manually
+            get_journal_logs('syslog:local0')
         else:
             srv_msg.table_contains_line_n_times('logs', backend, 1,
                                                 _message('primary', '192.168.50.1', 'ff:01:02:03:ff:04'),

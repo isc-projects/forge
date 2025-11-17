@@ -1324,6 +1324,8 @@ def add_hooks(library_path):
                                                   "parameters": {
                                                       "high-availability": [{"peers": [],
                                                                              "state-machine": {"states": []}}]}})
+        if world.f_cfg.mgmt_address_2 == '':
+            print('\033[93m' + 'WARNING: MGMT_ADDRESS_2 is empty, HA hook may not work as expected.' + '\033[0m')
     else:
         # we might test if library is already in the list, but it would prevent us from writing negative tests
         world.dhcp_cfg["hooks-libraries"].append({"library": library_path})

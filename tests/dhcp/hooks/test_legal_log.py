@@ -17,8 +17,8 @@ from src import srv_msg
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import file_contains_line_n_times, file_doesnt_contain_line
 from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain, log_contains_n_times
-from src.softwaresupport.multi_server_functions import fabric_sudo_command, fabric_download_file
-from src.softwaresupport.multi_server_functions import verify_file_permissions
+from src.protosupport.multi_protocol_functions import get_journal_logs
+from src.softwaresupport.multi_server_functions import fabric_sudo_command, verify_file_permissions
 
 
 # number of messages that the client will send in each test
@@ -368,19 +368,6 @@ def _add_guarded_subnet_with_logging_off6(class_test=False):
     world.dhcp_cfg.update({'reservations': reservations})
     world.dhcp_cfg['early-global-reservations-lookup'] = True
     world.dhcp_cfg['reservations-global'] = True
-
-
-def _get_journal_logs(syslog):
-    """Get journal logs for a given log file.
-
-    :param syslog: syslog facility
-    :type syslog: str
-    """
-    facility = int(syslog[-1]) + 16
-    cmd = f'journalctl SYSLOG_FACILITY={facility} > /tmp/kea_syslog.log'
-    fabric_sudo_command(cmd, ignore_errors=True)
-    fabric_download_file('/tmp/kea_syslog.log', world.cfg["test_result_dir"], ignore_errors=True,
-                         hide_all=world.f_cfg.forge_verbose == 0)
 
 
 @pytest.mark.v6
@@ -1785,6 +1772,9 @@ def test_legal_log_syslog(dhcp_version, facility):
     :param facility: The syslog facility to use.
     :type facility: str
     """
+    if world.server_system == 'alpine':
+        pytest.skip("Alpine do not support syslog:local* facilities out of the box")
+
     misc.test_procedure()
     srv_control.clear_some_data('logs', force_syslog=True)
 
@@ -1826,4 +1816,4 @@ def test_legal_log_syslog(dhcp_version, facility):
     log_doesnt_contain(log_message, wrong_facility)
 
     # Forge does not archive journal logs by default, so we need to get them manually
-    _get_journal_logs(facility)
+    get_journal_logs(facility)

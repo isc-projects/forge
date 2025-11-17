@@ -475,6 +475,36 @@ def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination
         forge_sleep(100, 'milliseconds')
 
 
+def get_journal_logs(syslog):
+    """Get journal logs for a given syslog facility.
+
+    :param syslog: syslog facility number or string in 'syslog:localX' format.
+                   If None or 'syslog', all logs are returned.
+    :type syslog: str or int
+    """
+    if world.server_system == "alpine":
+        print(
+            "\033[93m"
+            + "WARNING: Alpine do not support syslog:local* facilities without additional packages"
+            + "\033[0m"
+        )
+
+    if syslog == 'syslog' or syslog is None:
+        file_name = 'syslog.log'
+        cmd = f'journalctl > /tmp/{file_name}'
+    else:
+        # If syslog is a string with 'syslog:localX' format, convert it to a number
+        facility = syslog if isinstance(syslog, int) else (int(syslog[-1]) + 16)
+        if facility < 0 or facility > 23:
+            raise ValueError(f'Invalid syslog facility: {syslog}, must be between 0 and 23')
+        file_name = f'syslog_facility_{facility}.log'
+        cmd = f'journalctl SYSLOG_FACILITY={facility} > /tmp/{file_name}'
+
+    fabric_sudo_command(cmd, ignore_errors=True)
+    fabric_download_file(f'/tmp/{file_name}', world.cfg["test_result_dir"], ignore_errors=True,
+                         hide_all=world.f_cfg.forge_verbose == 0)
+
+
 ################################################################################
 
 
