@@ -346,6 +346,7 @@ class ConfigModel(ConfigElem):
         cfg['ddns-send-updates'] = True
         cfg['ddns-conflict-resolution-mode'] = 'check-with-dhcid'
         cfg['cache-threshold'] = 0.0
+        cfg['allow-address-registration'] = True
 
         # combining whole config
         dhcp_key = 'Dhcp' + proto
