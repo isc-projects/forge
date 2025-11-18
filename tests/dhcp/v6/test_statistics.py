@@ -76,7 +76,13 @@ class StatsState6:
             'v6-ia-pd-lease-reuses': 0,
             'assigned-nas': 0,
             'assigned-pds': 0,
-            'pkt6-service-disabled': 0
+            'pkt6-service-disabled': 0,
+            'pkt6-admin-filtered': 0,
+            'pkt6-limit-exceeded': 0,
+            'pkt6-not-for-us': 0,
+            'pkt6-processing-failed': 0,
+            'pkt6-queue-full': 0,
+            'pkt6-rfc-violation': 0,
         }
 
     def compare(self):
@@ -381,6 +387,7 @@ def test_stats_basic():
     stats.s['pkt6-received'] += 1
     stats.s['pkt6-solicit-received'] += 1
     stats.s['pkt6-receive-drop'] += 1
+    stats.s['pkt6-rfc-violation'] += 1
     stats.compare()
 
     assert get_stat("declined-addresses") == [1, 0], "Stat declined-addresses is not correct"
@@ -392,6 +399,7 @@ def test_stats_basic():
     assert get_stat("pkt6-advertise-sent") == [4, 3, 2, 1, 0], "Stat pkt6-advertise-sent is not correct"
     assert get_stat("pkt6-parse-failed") == [0], "Stat pkt6-parse-failed is not correct"
     assert get_stat("pkt6-receive-drop") == [1, 0], "Stat pkt6-receive-drop is not correct"
+    assert get_stat("pkt6-rfc-violation") == [1, 0], "Stat pkt6-rfc-violation is not correct"
     assert get_stat("pkt6-received") == [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], "Stat pkt6-received is not correct"
     assert get_stat("pkt6-request-received") == [4, 3, 2, 1, 0], "Stat pkt6-request-received is not correct"
     assert get_stat("pkt6-release-received") == [2, 1, 0], "Stat pkt6-release-received is not correct"

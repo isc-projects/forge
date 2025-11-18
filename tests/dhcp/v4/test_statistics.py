@@ -62,7 +62,13 @@ class StatsState4:
             'v4-lease-reuses': 0,
             'v4-reservation-conflicts': 0,
             'assigned-addresses': 0,
-            'pkt4-service-disabled': 0
+            'pkt4-service-disabled': 0,
+            'pkt4-admin-filtered': 0,
+            'pkt4-limit-exceeded': 0,
+            'pkt4-not-for-us': 0,
+            'pkt4-processing-failed': 0,
+            'pkt4-queue-full': 0,
+            'pkt4-rfc-violation': 0,
         }
 
     def compare(self):
@@ -381,6 +387,7 @@ def test_stats_basic():
     stats.s['pkt4-received'] += 1
     stats.s['pkt4-discover-received'] += 1
     stats.s['pkt4-receive-drop'] += 1
+    stats.s['pkt4-rfc-violation'] += 1
     stats.compare()
 
     assert get_stat("declined-addresses") == [1, 0], "Stat declined-addresses is not correct"
@@ -395,6 +402,7 @@ def test_stats_basic():
     assert get_stat("pkt4-offer-sent") == [4, 3, 2, 1, 0], "Stat pkt4-offer-sent is not correct"
     assert get_stat("pkt4-parse-failed") == [0], "Stat pkt4-parse-failed is not correct"
     assert get_stat("pkt4-receive-drop") == [1, 0], "Stat pkt4-receive-drop is not correct"
+    assert get_stat("pkt4-rfc-violation") == [1, 0], "Stat pkt4-rfc-violation is not correct"
     assert get_stat("pkt4-received") == [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], "Stat pkt4-received is not correct"
     assert get_stat("pkt4-request-received") == [4, 3, 2, 1, 0], "Stat pkt4-request-received is not correct"
     assert get_stat("pkt4-release-received") == [2, 1, 0], "Stat pkt4-release-received is not correct"
