@@ -249,6 +249,7 @@ CONFIG_DEFAULTS['v6'] = {
     't1-percent': 0.5,
     't2-percent': 0.8,
     'valid-lifetime': 7200,
+    'allow-address-registration': True,
 }
 
 
@@ -346,7 +347,6 @@ class ConfigModel(ConfigElem):
         cfg['ddns-send-updates'] = True
         cfg['ddns-conflict-resolution-mode'] = 'check-with-dhcid'
         cfg['cache-threshold'] = 0.0
-        cfg['allow-address-registration'] = True
 
         # combining whole config
         dhcp_key = 'Dhcp' + proto
