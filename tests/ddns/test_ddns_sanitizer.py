@@ -6,6 +6,7 @@
 
 """DDNS hostname sanitization tests"""
 
+import re
 import pytest
 
 from src import srv_control
@@ -2014,3 +2015,190 @@ def test_ddns6_expired_fqdn_sanitization():
     misc.pass_criteria()
     srv_msg.send_wait_for_query('MUST')
     srv_msg.dns_option('ANSWER', expect_include=False)
+
+
+@pytest.mark.v4
+@pytest.mark.ddns
+@pytest.mark.hostname_sanitization
+@pytest.mark.parametrize('hostname', ['___', '_e__', '---', '$$^&*'])
+def test_ddns4_hostname_option_invalid(hostname):
+    """ Tests for hostname-char-set and hostname-char-replacement
+    Tests CVE-2025-11232 and kea#4148 .
+
+    :param hostname: hostname to send to server
+    :type hostname: str
+    """
+    charset = r'[^A-Za-z0-9.-]'
+    replaced_hostname = re.sub(charset, '', hostname)
+    replaced_hostname = replaced_hostname if replaced_hostname.endswith('.') else replaced_hostname + '.'
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.30-192.168.50.30')
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_behavioral_options('hostname-char-set', charset)
+    srv_control.add_ddns_server_behavioral_options('hostname-char-replacement', '')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_does_include_with_value('hostname', hostname)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    if replaced_hostname in ['', '.']:
+        srv_msg.response_check_include_option(12, expect_include=False)
+    else:
+        srv_msg.response_check_include_option(12)
+        srv_msg.response_check_option_content(12, 'value', replaced_hostname + 'my.domain.com')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.30')
+    srv_msg.client_does_include_with_value('hostname', hostname)
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    if replaced_hostname in ['', '.']:
+        srv_msg.response_check_include_option(12, expect_include=False)
+        srv_msg.check_leases({"address": "192.168.50.30"})
+    else:
+        srv_msg.response_check_include_option(12)
+        srv_msg.response_check_option_content(12, 'value', replaced_hostname + 'my.domain.com')
+        # Use '-- ' to escape hostname starting with '--'
+        srv_msg.check_leases({"address": "192.168.50.30", "hostname": '-- ' + replaced_hostname + 'my.domain.com'})
+
+
+@pytest.mark.v4
+@pytest.mark.ddns
+@pytest.mark.hostname_sanitization
+@pytest.mark.parametrize('hostname', ['___', '_e__', '---', '$$^&*'])
+def test_ddns4_fqdn_option_invalid(hostname):
+    """ Tests for hostname-char-set and hostname-char-replacement
+    Tests CVE-2025-11232 and kea#4148 .
+
+    :param hostname: hostname to send to server
+    :type hostname: str
+    """
+    charset = r'[^A-Za-z0-9.-]'
+    replaced_hostname = re.sub(charset, '', hostname)
+    replaced_hostname = replaced_hostname if replaced_hostname.endswith('.') else replaced_hostname + '.'
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.30-192.168.50.30')
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_behavioral_options('hostname-char-set', charset)
+    srv_control.add_ddns_server_behavioral_options('hostname-char-replacement', '')
+
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', hostname)
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    if replaced_hostname in ['', '.']:
+        srv_msg.response_check_include_option(81, expect_include=False)
+    else:
+        srv_msg.response_check_include_option(81)
+        srv_msg.response_check_option_content(81, 'fqdn', replaced_hostname + 'my.domain.com.')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.30')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', hostname)
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    if replaced_hostname in ['', '.']:
+        srv_msg.response_check_include_option(81, expect_include=False)
+        srv_msg.check_leases({"address": "192.168.50.30"})
+    else:
+        srv_msg.response_check_include_option(81)
+        srv_msg.response_check_option_content(81, 'fqdn', replaced_hostname + 'my.domain.com.')
+        # Use '-- ' to escape hostname starting with '--'
+        srv_msg.check_leases({"address": "192.168.50.30", "fqdn": '-- ' + replaced_hostname + 'my.domain.com'})
+
+
+@pytest.mark.v6
+@pytest.mark.ddns
+@pytest.mark.hostname_sanitization
+@pytest.mark.parametrize('hostname', ['___', '_e__', '---', '$$^&*'])
+def test_ddns6_hostname_invalid(hostname):
+    """ Tests for hostname-char-set and hostname-char-replacement
+    Tests CVE-2025-11232 and kea#4148 .
+
+    :param hostname: hostname to send to server
+    :type hostname: str
+    """
+    charset = r'[^A-Za-z0-9.-]'
+    replaced_hostname = re.sub(charset, '', hostname)
+    replaced_hostname = replaced_hostname if replaced_hostname.endswith('.') else replaced_hostname + '.'
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('3000::/64', '3000::1-3000::ff')
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'my.domain.com')
+    srv_control.add_ddns_server_behavioral_options('hostname-char-set', charset)
+    srv_control.add_ddns_server_behavioral_options('hostname-char-replacement', '')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', hostname)
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_does_include('Client', 'IA-NA')
+    srv_msg.client_send_msg('SOLICIT')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
+    srv_msg.response_check_include_option(3)
+    if replaced_hostname in ['', '.']:
+        srv_msg.response_check_include_option(39, expect_include=False)
+    else:
+        srv_msg.response_check_include_option(39)
+        srv_msg.response_check_option_content(39, 'fqdn', replaced_hostname)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server-id')
+    srv_msg.client_copy_option('IA_NA')
+    srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:01')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', hostname)
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_does_include('Client', 'client-id')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'REPLY')
+    srv_msg.response_check_include_option(3)
+    if replaced_hostname in ['', '.']:
+        srv_msg.response_check_include_option(39, expect_include=False)
+        srv_msg.check_leases({"address": "3000::1"})
+    else:
+        srv_msg.response_check_include_option(39)
+        srv_msg.response_check_option_content(39, 'fqdn', replaced_hostname)
+        srv_msg.check_leases({"address": "3000::1", "fqdn": '-- ' + replaced_hostname})
