@@ -864,7 +864,7 @@ def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
     add_interface(interface + "/" + address)
 
 
-def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space, record_types="",**kwargs):
+def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space, record_types="", **kwargs):
     """prepare_cfg_add_custom_option.
 
     :param opt_name:

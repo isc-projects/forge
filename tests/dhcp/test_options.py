@@ -1396,7 +1396,10 @@ def test_cablelabs(suboption3_type):
     misc.test_procedure()
     srv_msg.client_copy_option('server_id')
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_requests_option(122)
     srv_msg.client_send_msg('REQUEST')
 
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(122)
+    srv_msg.response_check_option_content(122, 'value', cablelabs_option)
