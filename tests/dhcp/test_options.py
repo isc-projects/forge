@@ -1325,3 +1325,78 @@ def test_v6_never_send_various_combinations():
     misc.pass_criteria()
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(7, expect_include=False)
+
+
+@pytest.mark.v4
+@pytest.mark.parametrize('suboption3_type', ['ip4-address', 'fqdn'])
+def test_cablelabs(suboption3_type):
+    """Test cablelabs client conf option with suboption 3 of type ip4-address or fqdn.
+    RFC3495 (that defines CableLabs option, code 122) and RCF3594, RFC3634.
+
+    :param suboption3_type: type of suboption 3, can be 'ip4-address' or 'fqdn'
+    :type suboption3_type: str
+    """
+
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
+    srv_control.config_srv_opt('cablelabs-client-conf', None)  # option 122
+    # suboption 1 and 2
+    srv_control.config_srv_opt_space('cablelabs-client-conf', 'tsp-primary-server', '199.199.199.1')
+    srv_control.config_srv_opt_space('cablelabs-client-conf', 'tsp-secondary-server', '199.199.199.2')
+
+    # suboption 3 can be ip4-address or fqdn
+    if suboption3_type == 'ip4-address':
+        srv_control.config_srv_custom_opt('tsp-provisioning-server', 3, 'record', '1, 199.199.199.3',
+                                          space='cablelabs-client-conf', record_types='uint8, ipv4-address')
+        # suboption 3, length 5, type octet 1 for ip4-address, value 199.199.199.1
+        suboption3 = b"\x03\x05\x01\xc7\xc7\xc7\x03"
+    else:
+        srv_control.config_srv_custom_opt('tsp-provisioning-server', 3, 'record', '0, provisioning.example.com.',
+                                          space='cablelabs-client-conf', record_types='uint8, fqdn')
+        # suboption 3, length 26, type octet 0 for fqdn, value provisioning.example.com.
+        suboption3 = b"\x03\x1b\x00\x0cprovisioning\x07example\x03com\x00"
+
+    # suboption 4 to 10
+    srv_control.config_srv_opt_space('cablelabs-client-conf', 'tsp-as-parameters', '1234, 5678, 9101')
+    srv_control.config_srv_opt_space('cablelabs-client-conf', 'tsp-ap-parameters', '2222, 3333, 4444')
+    srv_control.config_srv_opt_space('cablelabs-client-conf', 'tsp-realm', 'abc.example.com.')
+    srv_control.config_srv_opt_space('cablelabs-client-conf', 'tsp-use-tgt', 1)
+    srv_control.config_srv_opt_space('cablelabs-client-conf', 'tsp-provisioning-timer', 123)
+    srv_control.config_srv_opt_space('cablelabs-client-conf', 'tsp-sct', 3)
+    srv_control.config_srv_opt_space('cablelabs-client-conf', 'kdc-server', '199.199.199.9, 199.199.199.10')
+
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    cablelabs_option = (
+        b"\x01\x04\xc7\xc7\xc7\x01"  # suboption 1, length 4, value 199.199.199.1
+        + b"\x02\x04\xc7\xc7\xc7\x02"  # suboption 2, length 4, value 199.199.199.2
+        + suboption3
+        + b"\x04\x0c\x00\x00\x04\xd2\x00\x00\x16.\x00\x00#\x8d"  # suboption 4, length 12, value 1234, 5678, 9101
+        + b"\x05\x0c\x00\x00\x08\xae\x00\x00\r\x05\x00\x00\x11\\"  # suboption 5, length 12, value 1234, 5678, 9101
+        + b"\x06\x11\x03abc\x07example\x03com\x00"  # suboption 6, length 17, value abc.example.com.
+        + b"\x07\x01\x01"  # suboption 7, length 1, value 1
+        + b"\x08\x01{"  # suboption 8, length 1, value 123
+        + b"\x09\x02\x00\x03"  # suboption 9, length 2, value 3
+        + b"\x0a\x08\xc7\xc7\xc7\t\xc7\xc7\xc7\n"  # suboption 10, length 8, value 199.199.199.9, 199.199.199.10
+    )
+
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_requests_option(122)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(122)
+    srv_msg.response_check_option_content(122, 'value', cablelabs_option)
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:11:11:22')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')

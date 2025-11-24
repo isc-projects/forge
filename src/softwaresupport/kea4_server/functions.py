@@ -23,7 +23,7 @@ from src.softwaresupport.kea import add_line_to_shared_subnet, add_to_shared_sub
 from src.softwaresupport.kea import prepare_cfg_subnet_specific_interface, prepare_cfg_subnet
 from src.softwaresupport.kea import prepare_cfg_add_option, prepare_cfg_add_option_subnet, prepare_cfg_add_option_pool
 from src.softwaresupport.kea import prepare_cfg_add_option_shared_network, config_client_classification
-from src.softwaresupport.kea import kea_otheroptions, add_option_to_defined_class, config_require_client_classification
+from src.softwaresupport.kea import kea_otheroptions4, add_option_to_defined_class, config_require_client_classification
 from src.softwaresupport.kea import host_reservation, host_reservation_extension, add_siaddr, disable_client_echo
 from src.softwaresupport.kea import update_ha_hook_parameter, db_setup, generate_certificate
 from src.softwaresupport.kea import disable_lease_affinity, update_expired_leases_processing, configure_multi_threading

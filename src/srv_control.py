@@ -300,7 +300,7 @@ def config_srv_opt_space(space, option_name, option_value, **kwargs):
 
 
 @step(r'Server is configured with custom option (\S+)/(\d+) with type (\S+) and value (\S+).')
-def config_srv_custom_opt(opt_name, opt_code, opt_type, opt_value, **kwargs):
+def config_srv_custom_opt(opt_name, opt_code, opt_type, opt_value, space=None, **kwargs):
     """Prepare server configuration with the specified custom option.
 
     :param opt_name: name of the option, e.g. foo
@@ -311,11 +311,15 @@ def config_srv_custom_opt(opt_name, opt_code, opt_type, opt_value, **kwargs):
     :type opt_type:
     :param opt_value: value of the option, e.g. 1
     :type opt_value:
+    :param space: space of the option, e.g. dhcp4
+    :type space:
     :param kwargs:
     :type kwargs:
     """
+    if space is None:
+        space = world.cfg["space"]
     opt_name, opt_code, opt_type, opt_value = test_define_value(opt_name, opt_code, opt_type, opt_value)
-    dhcp.prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, world.cfg["space"],
+    dhcp.prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space,
                                        **kwargs)
 
 

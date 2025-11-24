@@ -45,7 +45,7 @@ log = logging.getLogger('forge')
 
 # kea_otheroptions was originally designed for vendor options
 # because codes sometime overlap with basic options
-kea_otheroptions = {
+kea_otheroptions6 = {
     "tftp-servers": 32,
     "config-file": 33,
     "syslog-servers": 34,
@@ -91,6 +91,19 @@ world.kea_options6 = {
     "erp-local-domain-name": 65,
     "v6-dnr": 144,
     "addr-reg-enable": 148
+}
+
+kea_otheroptions4 = {
+    "tsp-primary-server": 1,
+    "tsp-secondary-server": 2,
+    "tsp-provisioning-server": 3,
+    "tsp-as-parameters": 4,
+    "tsp-ap-parameters": 5,
+    "tsp-realm": 6,
+    "tsp-use-tgt": 7,
+    "tsp-provisioning-timer": 8,
+    "tsp-sct": 9,
+    "kdc-server": 10
 }
 
 world.kea_options4 = {
@@ -175,6 +188,7 @@ world.kea_options4 = {
     "subnet-selection": 118,  # ipv4-address
     "domain-search": 119,  # binary
     "classless-static-route": 121,  # internal
+    "cablelabs-client-conf": 122,  # empty
     "vivco-suboptions": 124,  # binary
     "vivso-suboptions": 125,  # binary
     "v4-dnr": 162,
@@ -466,10 +480,12 @@ def _get_option_code(option_name: str):
     """
     if world.proto == 'v4':
         option_code = world.kea_options4.get(option_name)
+        if option_code is None:
+            option_code = kea_otheroptions4.get(option_name)
     else:
         option_code = world.kea_options6.get(option_name)
         if option_code is None:
-            option_code = kea_otheroptions.get(option_name)
+            option_code = kea_otheroptions6.get(option_name)
     return option_code
 
 
@@ -848,7 +864,7 @@ def prepare_cfg_subnet_specific_interface(interface, address, subnet, pool):
     add_interface(interface + "/" + address)
 
 
-def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space, **kwargs):
+def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space, record_types="",**kwargs):
     """prepare_cfg_add_custom_option.
 
     :param opt_name:
@@ -861,6 +877,8 @@ def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space
     :type opt_value:
     :param space:
     :type space:
+    :param record_types: record types of the option, e.g. uint8, ipv4-address
+    :type record_types:
     :param kwargs:
     :type kwargs:
     """
@@ -870,7 +888,7 @@ def prepare_cfg_add_custom_option(opt_name, opt_code, opt_type, opt_value, space
         world.dhcp_cfg["option-def"] = []
 
     world.dhcp_cfg["option-def"].append({"code": int(opt_code), "name": opt_name,
-                                         "space": space, "encapsulate": "", "record-types": "",
+                                         "space": space, "encapsulate": "", "record-types": record_types,
                                          "array": False, "type": opt_type})
 
 
