@@ -25,6 +25,7 @@ import os
 import glob
 import json
 import logging
+import subprocess  # nosec B404
 
 from pytest import skip
 from src import srv_msg
@@ -36,7 +37,7 @@ from src.protosupport.multi_protocol_functions import remove_file_from_server, c
 from src.protosupport.multi_protocol_functions import sort_container
 from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
-from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_is_file, fabric_sudo_command
+from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_is_dir, fabric_is_file, fabric_sudo_command
 from src.softwaresupport.multi_server_functions import fabric_remove_file_command, fabric_download_file
 from src.softwaresupport.multi_server_functions import check_local_path_for_downloaded_files
 
@@ -227,17 +228,21 @@ class Certificates:
         self.clear()
         # Generate certificates.
         self.generate()
+        # Update trust store.
+        # self.update_trust()
 
     @staticmethod
-    def change_access(p):
+    def change_access(p, mode='644'):
         """change_access.
 
-        :param p:
-        :type p:
+        :param p: certificate files
+        :type p: str|list
+        :param mode: mode bits
+        :type mode: str
         """
         if isinstance(p, list):
             p = " ".join(p)
-        fabric_sudo_command(f'chmod 644 {p}')
+        fabric_sudo_command(f'chmod {mode} {p}')
         # set_ownership_of_a_file(p) it shouldn't be needed.
 
     def clear(self, name: str = None):
@@ -262,6 +267,7 @@ class Certificates:
             remove_file_from_server(self.server2_cert)
             remove_file_from_server(self.server2_csr)
             remove_file_from_server(self.server2_key)
+        # self.remove_trust()
 
     def generate(self):
         """Generate certs and keys with default names and location."""
@@ -296,7 +302,8 @@ class Certificates:
                       f'-out {cert} ' \
                       f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={ca_name}"'
         fabric_sudo_command(generate_ca)
-        self.change_access([key, cert])
+        self.change_access(cert)
+        self.change_access(key, '600')
 
     def generate_server(self,
                         cn: str = world.f_cfg.mgmt_address,
@@ -344,7 +351,8 @@ class Certificates:
 
         fabric_sudo_command(serv_prv)
         fabric_sudo_command(server)
-        self.change_access([s_key, s_csr, s_crt])
+        self.change_access([s_csr, s_crt])
+        self.change_access(s_key, '600')
 
     def generate_client(self, cn: str = 'client',
                         client_key_name: str = None,
@@ -389,7 +397,8 @@ class Certificates:
 
         fabric_sudo_command(cli_prv)
         fabric_sudo_command(cli_crt)
-        self.change_access([c_key, c_crt, c_csr])
+        self.change_access([c_crt, c_csr])
+        self.change_access(c_key, '600')
 
     def generate_server_2(self, cn: str = world.f_cfg.mgmt_address_2,
                           server_key_name: str = None,
@@ -436,7 +445,28 @@ class Certificates:
 
         fabric_sudo_command(serv_prv)
         fabric_sudo_command(serv)
-        self.change_access([s_key, s_csr, s_crt])
+        self.change_access([s_csr, s_crt])
+        self.change_access(s_key, '600')
+
+    def copy(self, target_dir: str = None, dest: str = world.f_cfg.mgmt_address):
+        """Copy certificates to target dir.
+
+        :param target_dir: path to target directory
+        :type target_dir: str
+        :param dest: host to copy to
+        :type dest: str
+        :return: dict with new paths
+        :rtype: dict[str, str]
+        """
+        if not fabric_is_dir(target_dir, dest):
+            fabric_sudo_command(f'mkdir -p {target_dir}', dest)
+
+        certs = {}
+        for name, path in self.__dict__.items():
+            target_path = os.path.join(target_dir, os.path.basename(path))
+            fabric_sudo_command(f"cp '{path}' '{target_dir}'", dest)
+            certs[name] = target_path
+        return certs
 
     def download(self, cert_name: str = None):
         """Download selected certificate to test result directory on forge machine.
@@ -462,6 +492,19 @@ class Certificates:
             else:
                 copy_file_from_server(world.f_cfg.data_join(cert_name), cert_name)
                 return os.path.join(world.cfg["test_result_dir"], cert_name)
+
+    def update_trust(self):
+        """Trust the certificate."""
+        subprocess.call(f'cp {self.ca_cert} /usr/share/ca-certificates/trust-source/', shell=True)
+        subprocess.call('/usr/sbin/update-ca-trust extract', shell=True)
+
+    def remove_trust(self):
+        """Remove trust in the certificate."""
+        subprocess.call(
+            f'rm -f /etc/ca-certificates/trust-source/{os.path.basename(self.ca_cert)}',
+            shell=True,
+        )
+        subprocess.call('/usr/sbin/update-ca-trust extract', shell=True)
 
 
 def _get_option_code(option_name: str):
@@ -2779,6 +2822,10 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     if disable:
         return
 
+    # Make sure any settings done for databases by previous abnormal terminations of Forge (e.g. TLS) are cleared.
+    database.clear_database(dest)
+    database.restart_databases(dest)
+
     if world.f_cfg.install_method != 'make':
         if world.server_system in ['redhat', 'fedora']:
             fabric_run_command("rpm -qa '*kea*'", destination_host=dest)
@@ -2786,9 +2833,6 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
             fabric_run_command("apk list '*kea*' | grep 'installed'", destination_host=dest)
         else:
             fabric_run_command("dpkg -l '*kea*'", destination_host=dest)
-
-    database.restart_database('mariadb')
-    database.restart_database('postgresql')
 
     kea_admin = world.f_cfg.sbin_join('kea-admin')
 
