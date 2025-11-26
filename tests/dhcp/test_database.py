@@ -1002,3 +1002,40 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
                                             'Address: 2001:db8:1::51 has been assigned for 0 hrs 10 mins 0 secs '
                                             'to a device with DUID: 00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:05 '
                                             'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
+
+
+@pytest.mark.usefixtures('_restart_databases')
+@pytest.mark.v4
+@pytest.mark.v6
+@pytest.mark.parametrize('security_type', ['CA-based-validation', 'mutual-authentication'])
+@pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
+def test_db_tls(backend, security_type, dhcp_version):
+    misc.test_setup()
+    certificates = Certificates()
+
+    database.configure_tls_on_the_database_server(backend, certificates)
+
+    srv_control.define_lease_db_backend(backend)
+    world.dhcp_cfg['lease-database'].update(
+        {
+            'trust-anchor': certificates.ca_cert,
+        }
+    )
+    if security_type == 'mutual-authentication':
+        world.dhcp_cfg['lease-database'].update(
+            {
+                'cert-file': certificates.client_cert,
+                'key-file': certificates.client_key,
+            }
+        )
+    if dhcp_version == 'v4':
+        srv_control.config_srv_subnet('192.0.2.0/24', '192.0.2.10-192.0.2.250')
+    else:
+        srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::10 - 2001:db8::250')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    if dhcp_version == 'v4':
+        srv_msg.DORA('192.0.2.10', chaddr='ff:01:02:03:ff:04')
+    else:
+        srv_msg.SARR('2001:db8::10', duid='00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01')
