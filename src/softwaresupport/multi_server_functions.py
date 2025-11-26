@@ -252,6 +252,24 @@ def fabric_is_file(remote_path, destination_host=world.f_cfg.mgmt_address):
     return result.succeeded
 
 
+def fabric_is_dir(remote_path, destination_host=world.f_cfg.mgmt_address):
+    """Check if a directory exists on a remote node.
+
+    :param remote_path: remote file path
+    :type remote_path: str
+    :param destination_host: destination host
+    :type destination_host: str, optional
+    :return: result of the command
+    :rtype: fabric.result.Result
+    """
+    result = fabric_sudo_command(
+        f'test -d {remote_path}',
+        destination_host=destination_host,
+        ignore_errors=True
+    )
+    return result.succeeded
+
+
 def fabric_file_permissions(remote_path, destination_host=world.f_cfg.mgmt_address, ignore_errors=False):
     """Get file permissions on a remote node.
 
@@ -537,3 +555,25 @@ def download_tcpdump_capture(location, file_name):
     fabric_download_file(os.path.join('/tmp', file_name),
                          os.path.join(world.cfg["test_result_dir"], file_name),
                          destination_host=location, ignore_errors=True)
+
+
+def add_line_if_not_exists(file_path, line_to_add):
+    """Add a line to the file if it doesn't already exist.
+
+    :param file_path: path to file
+    :type file_path: str
+    :param line_to_add: content to add
+    :type line_to_add: str
+    """
+    try:
+        with open(file_path, 'r+', encoding='utf-8') as file:
+            lines = file.readlines()
+            # Check if line already exists.
+            if any(line.strip() == line_to_add.strip() for line in lines):
+                return
+            # Add the line.
+            file.write(line_to_add.rstrip('\n') + '\n')
+    except FileNotFoundError:
+        # File doesn't exist, create it and add the line.
+        with open(file_path, 'w', encoding='utf-8') as file:
+            file.write(line_to_add.rstrip('\n') + '\n')
