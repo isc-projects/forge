@@ -14,40 +14,13 @@ from src import srv_control
 from src import misc
 from src import srv_msg
 from src.forge_cfg import world
-from src.protosupport.multi_protocol_functions import log_contains_n_times, log_doesnt_contain, \
-    wait_for_message_in_log
 
-
-def _start_database(database, destination_address=world.f_cfg.mgmt_address):
-    """
-    :param database:
-    :param destination_address: (Default value = world.f_cfg.mgmt_address)
-    """
-    database = database.lower()
-    if world.server_system == 'alpine':
-        # We use mariadb on Alpine instead of mysql
-        database = 'mariadb' if database == 'mysql' else database
-        cmd = f'sudo rc-service {database} start'
-    else:
-        cmd = f'sudo systemctl start {database}'
-    srv_msg.execute_shell_cmd(
-        cmd, dest=destination_address, save_results=False)
-
-
-def _stop_database(database, destination_address=world.f_cfg.mgmt_address):
-    """
-    :param database:
-    :param destination_address: (Default value = world.f_cfg.mgmt_address)
-    """
-    database = database.lower()
-    if world.server_system == 'alpine':
-        # We use mariadb on Alpine instead of mysql
-        database = 'mariadb' if database == 'mysql' else database
-        cmd = f'sudo rc-service {database} stop'
-    else:
-        cmd = f'sudo systemctl stop {database}'
-    srv_msg.execute_shell_cmd(
-        cmd, dest=destination_address, save_results=False)
+from src.protosupport.multi_protocol_functions import (
+    log_contains_n_times,
+    log_doesnt_contain,
+    wait_for_message_in_log,
+)
+from src.softwaresupport.kea import database, Certificates
 
 
 def _confirm_no_dhcp_service(dhcp_version):
@@ -72,8 +45,13 @@ def _restart_databases(backend):
 
     :param backend: database backend
     """
+    database.clear_database(world.f_cfg.mgmt_address)
+    database.restart_database(backend, destination_address=world.f_cfg.mgmt_address)
     yield
-    _start_database(backend, destination_address=world.f_cfg.mgmt_address)
+    # if not world.f_cfg.teardown_after_last_test and world.current_test_index == world.test_count:
+    #     return
+    database.clear_database(world.f_cfg.mgmt_address)
+    database.restart_database(backend, destination_address=world.f_cfg.mgmt_address)
 
 
 @pytest.mark.usefixtures('_restart_databases')
@@ -99,7 +77,7 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
     wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
-    _stop_database(backend)
+    database.stop_database(backend)
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     else:
@@ -164,7 +142,7 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
     log_doesnt_contain(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown')
 
     # Start DB
-    _start_database(backend)
+    database.start_database(backend)
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
@@ -205,7 +183,7 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
     wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
-    _stop_database(backend)
+    database.stop_database(backend)
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
         srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
@@ -273,7 +251,7 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
     log_doesnt_contain(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown')
 
     # Start DB
-    _start_database(backend)
+    database.start_database(backend)
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
@@ -314,7 +292,7 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
     wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
-    _stop_database(backend)
+    database.stop_database(backend)
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
         srv_control.config_srv_opt('subnet-mask', '255.255.255.0')
@@ -394,7 +372,7 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
     log_doesnt_contain(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown')
 
     # Start DB
-    _start_database(backend)
+    database.start_database(backend)
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
@@ -451,7 +429,7 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
     srv_control.add_http_control_channel()
     srv_control.add_unix_socket()
     # Stop database engine so Kea does not have anything to connect to.
-    _stop_database(backend)
+    database.stop_database(backend)
     # Start Kea
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -489,7 +467,7 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
     log_doesnt_contain(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown')
 
     # Start DB
-    _start_database(backend)
+    database.start_database(backend)
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
@@ -543,7 +521,7 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
     srv_control.add_unix_socket()
 
     # Stop database engine so Kea does not have anything to connect to.
-    _stop_database(backend)
+    database.stop_database(backend)
     # Start Kea
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -584,7 +562,7 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
     log_doesnt_contain(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown')
 
     # Start DB
-    _start_database(backend)
+    database.start_database(backend)
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
@@ -640,7 +618,7 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
     srv_control.add_http_control_channel()
 
     # Stop database engine so Kea does not have anything to connect to.
-    _stop_database(backend)
+    database.stop_database(backend)
     # Start Kea
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -685,7 +663,7 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
     log_doesnt_contain(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown')
 
     # Start DB
-    _start_database(backend)
+    database.start_database(backend)
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
@@ -720,7 +698,7 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
     wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
-    _stop_database(backend)
+    database.stop_database(backend)
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     else:
@@ -739,7 +717,6 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'max-reconnect-tries', retries)
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'on-fail', 'stop-retry-exit')
-    srv_control.add_database_hook(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 
@@ -780,7 +757,7 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
     log_doesnt_contain(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown')
 
     # Start DB
-    _start_database(backend)
+    database.start_database(backend)
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
@@ -823,7 +800,7 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
     wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
-    _stop_database(backend)
+    database.stop_database(backend)
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     else:
@@ -842,7 +819,6 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'max-reconnect-tries', retries)
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'on-fail', 'serve-retry-exit')
-    srv_control.add_database_hook(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 
@@ -892,7 +868,7 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
         srv_msg.SARR('2001:db8:1::50', duid='00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01')
 
     # Start DB
-    _start_database(backend)
+    database.start_database(backend)
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(
@@ -935,7 +911,7 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
     wait_time = 2000
     misc.test_setup()
     # Stop database engine so Kea does not have anything to connect to.
-    _stop_database(backend)
+    database.stop_database(backend)
     if dhcp_version == 'v4':
         srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.10')
     else:
@@ -954,7 +930,6 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'max-reconnect-tries', retries)
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'reconnect-wait-time', wait_time)
     srv_control.add_parameter_to_hook("libdhcp_legal_log.so", 'on-fail', 'serve-retry-continue')
-    srv_control.add_database_hook(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
 
@@ -1008,7 +983,7 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
         srv_msg.SARR('2001:db8:1::50', duid='00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01')
 
     # Start DB
-    _start_database(backend)
+    database.start_database(backend)
 
     # Wait for Kea to recover connection to DB
     wait_for_message_in_log(

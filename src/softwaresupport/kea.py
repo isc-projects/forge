@@ -40,6 +40,8 @@ from src.softwaresupport.multi_server_functions import copy_configuration_file, 
 from src.softwaresupport.multi_server_functions import fabric_remove_file_command, fabric_download_file
 from src.softwaresupport.multi_server_functions import check_local_path_for_downloaded_files
 
+from . import database
+
 log = logging.getLogger('forge')
 
 
@@ -2784,6 +2786,9 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
             fabric_run_command("apk list '*kea*' | grep 'installed'", destination_host=dest)
         else:
             fabric_run_command("dpkg -l '*kea*'", destination_host=dest)
+
+    database.restart_database('mariadb')
+    database.restart_database('postgresql')
 
     kea_admin = world.f_cfg.sbin_join('kea-admin')
 
