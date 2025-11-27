@@ -1327,6 +1327,52 @@ def test_v6_never_send_various_combinations():
     srv_msg.response_check_include_option(7, expect_include=False)
 
 
+def _construct_cablelabs_suboption(code: int, values: list):
+    """Construct CableLabs suboption with given code and values.
+
+    :param code: code of the suboption
+    :type code: int
+    :param values: values of the suboption
+    :type values: list of tuples (value, value_type)
+        - value: value of the suboption
+        - value_type: type of the value, can be 'boolean', 'uint8', 'uint16', 'uint32', 'ipv4-address',
+        'fqdn', 'string', 'bytes'
+    :return: the constructed suboption
+    :rtype: bytes
+    """
+    if len(values) < 0:
+        assert False, "At least one value is required"
+    suboption = bytes([code])
+    contents = bytes()
+
+    for value, value_type in values:
+        if value_type == 'boolean':
+            contents += bytes([1 if value else 0])
+        elif value_type == 'uint8':
+            contents += bytearray(value.to_bytes(1, byteorder='big'))
+        elif value_type == 'uint16':
+            contents += bytearray(value.to_bytes(2, byteorder='big'))
+        elif value_type == 'uint32':
+            contents += bytearray(value.to_bytes(4, byteorder='big'))
+        elif value_type == 'ipv4-address':
+            ipv4 = value.split('.')
+            for octet in ipv4:
+                contents += bytes([int(octet)])
+        elif value_type == 'fqdn':
+            fqdn = value[:-1].split('.')
+            for domain in fqdn:
+                contents += bytes([len(domain)]) + domain.encode('utf-8')
+            contents += bytes([0])
+        elif value_type == 'string':
+            contents += value.encode('utf-8')
+        elif value_type == 'bytes':
+            contents += value
+        else:
+            assert False, "Invalid value type"
+
+    return suboption + bytes([len(contents)]) + contents
+
+
 @pytest.mark.v4
 @pytest.mark.parametrize('suboption3_type', ['ip4-address', 'fqdn'])
 def test_cablelabs(suboption3_type):
@@ -1349,12 +1395,12 @@ def test_cablelabs(suboption3_type):
         srv_control.config_srv_custom_opt('tsp-provisioning-server', 3, 'record', '1, 199.199.199.3',
                                           space='cablelabs-client-conf', record_types='uint8, ipv4-address')
         # suboption 3, length 5, type octet 1 for ip4-address, value 199.199.199.1
-        suboption3 = b"\x03\x05\x01\xc7\xc7\xc7\x03"
+        suboption3 = _construct_cablelabs_suboption(3, [(1, 'uint8'), ('199.199.199.3', 'ipv4-address')])
     else:
         srv_control.config_srv_custom_opt('tsp-provisioning-server', 3, 'record', '0, provisioning.example.com.',
                                           space='cablelabs-client-conf', record_types='uint8, fqdn')
         # suboption 3, length 26, type octet 0 for fqdn, value provisioning.example.com.
-        suboption3 = b"\x03\x1b\x00\x0cprovisioning\x07example\x03com\x00"
+        suboption3 = _construct_cablelabs_suboption(3, [(0, 'uint8'), ('provisioning.example.com.', 'fqdn')])
 
     # suboption 4 to 10
     srv_control.config_srv_opt_space('cablelabs-client-conf', 'tsp-as-parameters', '1234, 5678, 9101')
@@ -1371,16 +1417,16 @@ def test_cablelabs(suboption3_type):
     srv_control.start_srv('DHCP', 'started')
 
     cablelabs_option = (
-        b"\x01\x04\xc7\xc7\xc7\x01"  # suboption 1, length 4, value 199.199.199.1
-        + b"\x02\x04\xc7\xc7\xc7\x02"  # suboption 2, length 4, value 199.199.199.2
-        + suboption3
-        + b"\x04\x0c\x00\x00\x04\xd2\x00\x00\x16.\x00\x00#\x8d"  # suboption 4, length 12, value 1234, 5678, 9101
-        + b"\x05\x0c\x00\x00\x08\xae\x00\x00\r\x05\x00\x00\x11\\"  # suboption 5, length 12, value 1234, 5678, 9101
-        + b"\x06\x11\x03abc\x07example\x03com\x00"  # suboption 6, length 17, value abc.example.com.
-        + b"\x07\x01\x01"  # suboption 7, length 1, value 1
-        + b"\x08\x01{"  # suboption 8, length 1, value 123
-        + b"\x09\x02\x00\x03"  # suboption 9, length 2, value 3
-        + b"\x0a\x08\xc7\xc7\xc7\t\xc7\xc7\xc7\n"  # suboption 10, length 8, value 199.199.199.9, 199.199.199.10
+        _construct_cablelabs_suboption(1, [('199.199.199.1', 'ipv4-address')]) +
+        _construct_cablelabs_suboption(2, [('199.199.199.2', 'ipv4-address')]) +
+        suboption3 +
+        _construct_cablelabs_suboption(4, [(1234, 'uint32'), (5678, 'uint32'), (9101, 'uint32')]) +
+        _construct_cablelabs_suboption(5, [(2222, 'uint32'), (3333, 'uint32'), (4444, 'uint32')]) +
+        _construct_cablelabs_suboption(6, [('abc.example.com.', 'fqdn')]) +
+        _construct_cablelabs_suboption(7, [(True, 'boolean')]) +
+        _construct_cablelabs_suboption(8, [(123, 'uint8')]) +
+        _construct_cablelabs_suboption(9, [(3, 'uint16')]) +
+        _construct_cablelabs_suboption(10, [('199.199.199.9', 'ipv4-address'), ('199.199.199.10', 'ipv4-address')])
     )
 
     misc.test_procedure()
