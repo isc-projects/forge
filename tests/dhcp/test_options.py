@@ -1329,6 +1329,7 @@ def test_v6_never_send_various_combinations():
 
 def _construct_cablelabs_suboption(code: int, values: list):
     """Construct CableLabs suboption with given code and values.
+    This function is up to removal once qa-dhcp#573 is finished.
 
     :param code: code of the suboption
     :type code: int
