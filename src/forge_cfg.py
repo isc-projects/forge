@@ -521,6 +521,11 @@ def step(pattern):
                 txt += txt_kwargs
             txt += ')\n'
 
+            # world.cfg is only initialized before each test. This code might be reached before any test is run.
+            # Let's mock enough of world.cfg to make this function pass.
+            if not hasattr(world, 'cfg'):
+                world.cfg = {'test_result_dir': 'tests_results'}
+
             fout = os.path.join(world.cfg["test_result_dir"], 'test-steps.txt')
             with open(fout, 'a') as f:
                 f.write(txt)
