@@ -83,6 +83,9 @@ class StatsState6:
             'pkt6-processing-failed': 0,
             'pkt6-queue-full': 0,
             'pkt6-rfc-violation': 0,
+            'pkt6-duplicate': 0,
+            'pkt6-lease-query-received': 0,
+            'pkt6-lease-query-reply-sent': 0,
         }
 
     def compare(self):

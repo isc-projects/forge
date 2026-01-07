@@ -69,6 +69,11 @@ class StatsState4:
             'pkt4-processing-failed': 0,
             'pkt4-queue-full': 0,
             'pkt4-rfc-violation': 0,
+            'pkt4-duplicate': 0,
+            'pkt4-lease-query-received': 0,
+            'pkt4-lease-query-response-active-sent': 0,
+            'pkt4-lease-query-response-unassigned-sent': 0,
+            'pkt4-lease-query-response-unknown-sent': 0
         }
 
     def compare(self):
