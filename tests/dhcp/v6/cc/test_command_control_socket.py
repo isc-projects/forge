@@ -176,7 +176,7 @@ def test_control_channel_socket_config_set_basic():
 
     for socket in world.dhcp_cfg["Dhcp6"]["control-sockets"]:
         if socket["socket-type"] == "unix":
-            verify_file_permissions(socket["socket-name"], '750')
+            verify_file_permissions(socket["socket-name"], '770')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -240,7 +240,7 @@ def test_control_channel_socket_path():
         if should_succeed:
             if path == '':
                 path = world.f_cfg.run_join('')
-            verify_file_permissions(path + 'control_socket', '750')
+            verify_file_permissions(path + 'control_socket', '770')
             verify_file_permissions(path, '750')
 
         misc.test_procedure()
@@ -258,7 +258,7 @@ def test_control_channel_socket_change_socket_during_reconfigure():
 
     for socket in world.dhcp_cfg["Dhcp6"]["control-sockets"]:
         if socket["socket-type"] == "unix":
-            verify_file_permissions(socket["socket-name"], '750')
+            verify_file_permissions(socket["socket-name"], '770')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -283,7 +283,7 @@ def test_control_channel_socket_change_socket_during_reconfigure():
 
     for socket in world.dhcp_cfg["Dhcp6"]["control-sockets"]:
         if socket["socket-type"] == "unix":
-            verify_file_permissions(world.f_cfg.run_join(socket["socket-name"]), '750')
+            verify_file_permissions(world.f_cfg.run_join(socket["socket-name"]), '770')
 
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
     srv_msg.client_does_include('Client', 'client-id')
@@ -316,7 +316,7 @@ def test_control_channel_socket_after_restart_load_config_file():
 
     for socket in world.dhcp_cfg["Dhcp6"]["control-sockets"]:
         if socket["socket-type"] == "unix":
-            verify_file_permissions(socket["socket-name"], '750')
+            verify_file_permissions(socket["socket-name"], '770')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
@@ -341,7 +341,7 @@ def test_control_channel_socket_after_restart_load_config_file():
 
     for socket in world.dhcp_cfg["Dhcp6"]["control-sockets"]:
         if socket["socket-type"] == "unix":
-            verify_file_permissions(socket["socket-name"], '750')
+            verify_file_permissions(socket["socket-name"], '770')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:66:55:44:33:22:11')
