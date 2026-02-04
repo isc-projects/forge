@@ -15,6 +15,7 @@ from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import log_contains
+from src.softwaresupport.multi_server_functions import fabric_is_file, fabric_remove_file_command
 
 
 @pytest.mark.v4
@@ -242,6 +243,13 @@ def test_control_channel_http_headers_illegal(dhcp_version, socket_protocol):
                 log_contains(test_case["error_message"])
 
 
+def _remove_alpine_err_log(dhcp_version, host=world.f_cfg.mgmt_address):
+    if fabric_is_file(f'/var/log/kea/kea-dhcp{dhcp_version[1]}.err', host):
+        fabric_remove_file_command(
+            f'/var/log/kea/kea-dhcp{dhcp_version[1]}.err', host, hide_all=world.f_cfg.forge_verbose == 0
+        )
+
+
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.controlchannel
@@ -284,6 +292,8 @@ def test_control_channel_http_headers_negative(dhcp_version, socket_protocol):
 
     for test_case in test_cases:
         srv_control.clear_some_data('logs')
+        if world.server_system == 'alpine' and world.f_cfg.install_method == 'native':
+            _remove_alpine_err_log(dhcp_version)
         misc.test_setup()
         if dhcp_version == 'v4':
             srv_control.config_srv_subnet(
@@ -307,4 +317,7 @@ def test_control_channel_http_headers_negative(dhcp_version, socket_protocol):
             log_contains(test_case["error_message"], '/tmp/keactrl.log')
         else:
             if not world.f_cfg.control_agent:  # 'log_contains' does not support CA installed with packages
-                log_contains(test_case["error_message"])
+                if world.server_system == 'alpine':
+                    log_contains(test_case["error_message"], f'/var/log/kea/kea-dhcp{dhcp_version[1]}.err')
+                else:
+                    log_contains(test_case["error_message"])
