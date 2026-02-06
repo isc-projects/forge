@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -394,24 +394,16 @@ def _tweak_radius_config(destination: str = world.f_cfg.mgmt_address):
     content = ''.join([line for line in content.splitlines(True)
                        if not re.search(r'^\s*#.*', line) and not re.search(r'^$', line)])
 
-    # Make sure auth logs are enabled.
+    # Make sure logging is verbose.
+    if 'level = debug' not in content:
+        content = content.replace('log {', 'log {\n  level = debug')
     content = content.replace('auth = no', 'auth = yes')
     content = content.replace('auth_badpass = no', 'auth_badpass = yes')
     content = content.replace('auth_goodpass = no', 'auth_goodpass = yes')
 
-    if 'listen {' not in content:
-        content += '''
-listen {
-    type = auth
-    ipaddr = *
-    port = 1812
-}
-listen {
-    type = acct
-    ipaddr = *
-    port = 1813
-}
-'''
+    # Temporary disabling of security. Revert when TLS is implemented.
+    content = content.replace('require_message_authenticator = auto', 'require_message_authenticator = false')
+    content = content.replace('limit_proxy_state = auto', 'limit_proxy_state = false')
 
     # Write config back.
     with open(local_radius_conf, 'w', encoding='utf-8') as file:
