@@ -519,6 +519,7 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
     :return: list of parsed DHCP4 messages
     :rtype: list
     """
+    # pylint: disable = too-many-locals
     if address is None:
         address = world.f_cfg.dns4_addr
     if port is None:

@@ -132,6 +132,9 @@ def test_suboptions_configfile(parameter):
     Kea is configured with option 160 and suboption 1 in shared-networks, subnet and client-classes.
     Forge tests if client gets suboption value.
     Test for Kea#3481
+
+    :param parameter: scope of options
+    :type parameter: str
     """
     misc.test_setup()
     # Option definitions.
@@ -252,6 +255,13 @@ def test_suboptions(parameter, order, backend):
     order: Set order of adding Option-def and option-data
 
     Test for Kea#3481
+
+    :param parameter: scope of options
+    :type parameter: str
+    :parameter order: order
+    :type order: str
+    :param backend: database type for the config backend
+    :type backend: str
     """
     option_data = [
         {

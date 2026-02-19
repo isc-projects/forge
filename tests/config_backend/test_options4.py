@@ -16,9 +16,7 @@ from src.protosupport.dhcp4_scen import get_address
 from src.softwaresupport.cb_model import setup_server_for_config_backend_cmds
 
 
-pytestmark = [pytest.mark.hook,
-              pytest.mark.v4,
-              pytest.mark.cb]
+pytestmark = [pytest.mark.hook, pytest.mark.v4, pytest.mark.cb]
 
 
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -133,6 +131,8 @@ def test_suboptions_configfile(parameter):
     Forge tests if client gets suboption value.
     Test for Kea#3481
 
+    :param parameter: scope of options
+    :type parameter: str
     """
     misc.test_setup()
     option_data = [{
@@ -191,6 +191,11 @@ def test_suboptions(parameter, backend):
     Suboption 61 is added to config backend in all possible ways.
     Forge tests if client gets suboption value.
     Test for Kea#3481
+
+    :param parameter: scope of options
+    :type parameter: str
+    :param backend: database type for the config backend
+    :type backend: str
     """
     cfg = setup_server_for_config_backend_cmds(backend_type=backend)
 

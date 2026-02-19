@@ -360,7 +360,7 @@ SHAREDNETWORK_V4_CONFIG = [
     }
 ]
 
-CLASS_v4_CONFIG = [
+CLASS_V4_CONFIG = [
     {
         "boot-file-name": "",
         "name": "first-class",
@@ -383,7 +383,7 @@ CLASS_v4_CONFIG = [
     }
 ]
 
-CLASS_v6_CONFIG = [
+CLASS_V6_CONFIG = [
     {
         "name": "first-class",
         "option-data": [],
@@ -462,9 +462,9 @@ def test_config_commands_usercontext(scope: str, dhcp_version: str):
     if scope == 'shared_network' and dhcp_version == 'v6':
         config_set[f"Dhcp{dhcp_version[1]}"]['shared-networks'] = SHAREDNETWORK_V6_CONFIG
     if scope == 'class' and dhcp_version == 'v4':
-        config_set[f"Dhcp{dhcp_version[1]}"]['client-classes'] = CLASS_v4_CONFIG
+        config_set[f"Dhcp{dhcp_version[1]}"]['client-classes'] = CLASS_V4_CONFIG
     if scope == 'class' and dhcp_version == 'v6':
-        config_set[f"Dhcp{dhcp_version[1]}"]['client-classes'] = CLASS_v6_CONFIG
+        config_set[f"Dhcp{dhcp_version[1]}"]['client-classes'] = CLASS_V6_CONFIG
 
     # Sort config for easier comparison
     config_set = sort_container(config_set)
