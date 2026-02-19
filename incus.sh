@@ -589,7 +589,9 @@ function get_kea_pkg_version() {
 function upload_pytest() {
     # no arguments needed
     rm -rf tests_results
-    incus file push -r -q . kea-forge//home/forge/.
+    incus file push -r -q . kea-forge/home/forge/.
+    # Incus 6.0.4 has a bug that changes the ownership of parent directory when uploading ".".
+    incus exec kea-forge -- sudo chown forge:forge /home/forge
 }
 
 function setup_forge() {
@@ -890,8 +892,7 @@ case "$command" in
         install_kea_tarball "$@"
         ;;
     update-pytest)
-        rm -rf tests_results
-        incus file push -r -q . kea-forge/home/forge/
+        upload_pytest
         ;;
     run-pytest)
         run_pytest "$@"

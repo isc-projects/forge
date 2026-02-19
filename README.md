@@ -67,6 +67,7 @@ Other useful documentation
 
 - [Installation](doc/install.md) - a quick overview of Forge installation
 - [Usage](doc/usage.md) - how to use Forge once installed
-- [Working Example](doc/example.md) - a step-by-step instructions for setting up Forge with Kea and
-  running some tests.
+- Working Examples - step-by-step instructions for setting up Forge with Kea and running some tests.
+  - [Manual VM set up](doc/example_manual.md)
+  - [Automatic Incus set up](doc/example_automatic.md)
 - [Coding Guidelines](doc/coding-guidelines.md) - various tips for developers and contributors.
