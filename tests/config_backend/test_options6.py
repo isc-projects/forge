@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -246,7 +246,7 @@ def _send_option_data(option_data, parameter, backend, cfg):
 def test_suboptions(parameter, order, backend):
     """
     Kea is configured with empty data in option 160 and suboption using config backend commands.
-    Suboption and option definition is added to config backend in all posible places.
+    Suboption and option definition is added to config backend in all possible places.
     Forge tests if client gets suboption value.
 
     order: Set order of adding Option-def and option-data

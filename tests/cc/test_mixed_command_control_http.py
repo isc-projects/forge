@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2025-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -52,7 +52,7 @@ def test_control_channel_http_headers_basic(dhcp_version, socket_protocol):
         }
     ]
 
-    # Use diferent configuration file for Control agent or direct Kea testing.
+    # Use different configuration file for Control agent or direct Kea testing.
     if world.f_cfg.control_agent:
         world.ca_cfg["Control-agent"]["http-headers"] = headers_config
     else:
@@ -112,7 +112,7 @@ def test_control_channel_http_headers_multiple(dhcp_version, socket_protocol):
         }
     ]
 
-    # Use diferent configuration file for Control agent or direct Kea testing.
+    # Use different configuration file for Control agent or direct Kea testing.
     if world.f_cfg.control_agent:
         world.ca_cfg["Control-agent"]["http-headers"] = headers_config
     else:
@@ -164,7 +164,7 @@ def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
         }
     ]
 
-    # Use diferent configuration file for Control agent or direct Kea testing.
+    # Use different configuration file for Control agent or direct Kea testing.
     if world.f_cfg.control_agent:
         world.ca_cfg["Control-agent"]["http-headers"] = headers_config
     else:
@@ -227,7 +227,7 @@ def test_control_channel_http_headers_illegal(dhcp_version, socket_protocol):
         srv_control.add_unix_socket()
         srv_control.add_http_control_channel(server_address)
 
-        # Use diferent configuration file for Control agent or direct Kea testing.
+        # Use different configuration file for Control agent or direct Kea testing.
         if world.f_cfg.control_agent:
             world.ca_cfg["Control-agent"]["http-headers"] = [test_case["header"]]
         else:
@@ -304,7 +304,7 @@ def test_control_channel_http_headers_negative(dhcp_version, socket_protocol):
         srv_control.add_unix_socket()
         srv_control.add_http_control_channel(server_address)
 
-        # Use diferent configuration file for Control agent or direct Kea testing.
+        # Use different configuration file for Control agent or direct Kea testing.
         if world.f_cfg.control_agent:
             world.ca_cfg["Control-agent"]["http-headers"] = [test_case["header"]]
         else:

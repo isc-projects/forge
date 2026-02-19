@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -351,7 +351,7 @@ def test_HA_load_balancing_fail_detected_in_secondary(dhcp_version, backend):
     srv_control.start_srv('DHCP', 'stopped', dest=world.f_cfg.mgmt_address_2)
     kea.insert_message_in_server_logs('server2 is now stopped.')
 
-    # The primary node is expected to not enter partner-down untill all these DISCOVERs or SOLICITs
+    # The primary node is expected to not enter partner-down until all these DISCOVERs or SOLICITs
     # were sent. It's a sensitive timing issue, because after each message, forge waits to make sure
     # there is no answer, and that takes time.
     if dhcp_version == 'v4':

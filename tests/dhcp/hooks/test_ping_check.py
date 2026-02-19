@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2023-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -33,7 +33,7 @@ def generate_ip_address_shift():
 
     ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
     srv4_addr = ipaddress.IPv4Interface(f'{world.f_cfg.srv4_addr}/24')
-    # chceck if srv4_addr is bigger than ciaddr by 10 to fit new ip
+    # check if srv4_addr is bigger than ciaddr by 10 to fit new ip
     if srv4_addr.ip > ciaddr.ip+10:
         return [1, 2, 3, 4, 5]
     # if not, check if srv4_addr is bigger than ciaddr and if ciaddr - 10 is in the same subnet

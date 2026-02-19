@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -355,7 +355,7 @@ def _wait_till_elapsed(start, seconds):
 
 
 def _add_guarded_subnet_with_logging_off6(class_test=False):
-    # Create guarded subnet with classs and reservation to check if it is not logged
+    # Create guarded subnet with class and reservation to check if it is not logged
     srv_control.config_srv_another_subnet_no_interface('2001:db8:20::/64', '2001:db8:20::5-2001:db8:20::50',
                                                        client_classes=['50'], id=5,
                                                        user_context={"legal-logging": False})
@@ -1765,7 +1765,7 @@ def test_legal_log_rotate_actions(dhcp_version):
 @pytest.mark.parametrize('facility', ['undefined', 'local0', 'local1', 'local2'])
 def test_legal_log_syslog(dhcp_version, facility):
     """
-    Test legal log using diferent syslog facilities.
+    Test legal log using different syslog facilities.
     The test is parametrized to test with different syslog facilities.
     :param dhcp_version: The DHCP version to use.
     :type dhcp_version: str

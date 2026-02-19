@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -348,7 +348,7 @@ def test_server_tag_global_map4(backend):
     xyz = _get_server_config()
     assert xyz["arguments"]["Dhcp4"]["expired-leases-processing"]["reclaim-timer-wait-time"] == 345
 
-    # this should overwrite what we have set prevously with "all"
+    # this should overwrite what we have set previously with "all"
     _set_global_map_parameter(backend, "abc", "expired-leases-processing.reclaim-timer-wait-time", 655)
     xyz = _get_server_config()
     assert xyz["arguments"]["Dhcp4"]["expired-leases-processing"]["reclaim-timer-wait-time"] == 655

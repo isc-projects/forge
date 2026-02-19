@@ -1,4 +1,4 @@
-# Copyright (C) 2024-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2024-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,7 +34,7 @@ def generate_ip_address_shift():
 
     ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
     srv4_addr = ipaddress.IPv4Interface(f'{world.f_cfg.srv4_addr}/24')
-    # chceck if srv4_addr is bigger than ciaddr by 10 to fit new ip
+    # check if srv4_addr is bigger than ciaddr by 10 to fit new ip
     if srv4_addr.ip > ciaddr.ip+10:
         return [1, 2, 3, 4, 5]
     # if not, check if srv4_addr is bigger than ciaddr and if ciaddr - 10 is in the same subnet
@@ -222,7 +222,7 @@ def test_v4_ping_check_basic_ha(ha_state):
 def test_v4_ping_check_requests_ha(ha_state):
     """
     Test that checks configuration of number of ping requests.
-    'partnerdown' parametr tests if feature works with primary server down.
+    'partnerdown' parameter tests if feature works with primary server down.
 
     :param ha_state: state of HA pair
     :type ha_state: str
@@ -327,7 +327,7 @@ def test_v4_ping_check_requests_ha(ha_state):
 def test_v4_ping_check_timeout_ha(ha_state):
     """
     Test that checks configuration of ping timeout.
-    'partnerdown' parametr tests if feature works with primary server down.
+    'partnerdown' parameter tests if feature works with primary server down.
 
     :param ha_state: state of HA pair
     :type ha_state: str

@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -186,7 +186,7 @@ def client_does_include_with_value(opt_type, value):
     :param value:
     :type value:
     """
-    assert world.f_cfg.proto == 'v4', 'funciton only used for DHCPv4'
+    assert world.f_cfg.proto == 'v4', 'function only used for DHCPv4'
     opt_type, value = test_define_value(opt_type, value)
     dhcpmsg.client_does_include(None, opt_type, value)
 

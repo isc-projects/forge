@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2023-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -129,7 +129,7 @@ def test_v4_exclude_first_last_24_subnet_25_first_half():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
-    # Address 0 not leasesd.
+    # Address 0 not leased.
     for i in range(1, 128):
         srv_msg.DORA(f'192.0.2.{i}', chaddr=f'ff:ff:01:01:01:{i:02x}', subnet_mask='255.255.254.0')
 
@@ -176,7 +176,7 @@ def test_v4_exclude_first_last_24_subnet_25_second_half():
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'reconfigured')
 
-    # Address 255 not leasesd.
+    # Address 255 not leased.
     for i in range(128, 255):
         srv_msg.DORA(f'192.0.2.{i}', chaddr=f'ff:ff:01:01:01:{i:02x}', subnet_mask='255.255.254.0')
 

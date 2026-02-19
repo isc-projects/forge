@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1987,7 +1987,7 @@ def create_user_and_password_file(user=world.f_cfg.auth_user, password=world.f_c
     """create_user_and_password_file Create a user and password file.
 
     For the RBAC tests that are using basic authentication.
-    Usulally basic authentication uses one file with username
+    Usually basic authentication uses one file with username
     and password. Let's use separate files for each user in those tests.
 
     :param user: The user to create in the file
@@ -2585,7 +2585,7 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
     :type destination_address:
     """
     if world.f_cfg.install_method == 'make':
-        # Logs are copied to temp directory because fabric has prolems with listing non world readable folders.
+        # Logs are copied to temp directory because fabric has problems with listing non world readable folders.
         cmd = 'rm -rf /tmp/kealogs/'
         fabric_sudo_command(cmd, destination_host=destination_address)
         cmd = 'mkdir -m 777 -p /tmp/kealogs/'

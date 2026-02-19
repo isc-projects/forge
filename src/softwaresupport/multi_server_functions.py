@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -183,7 +183,7 @@ def fabric_download_file(remote_path, local_path,
             else:
                 result = get(remote_path, local_path, use_sudo=use_sudo)
             fabric.state.output.warnings = True
-    if '*' in remote_path:  # return permisions to original state
+    if '*' in remote_path:  # return permissions to original state
         if int(permissions) >= 0:
             fabric_sudo_command(
                 f'chmod {permissions} {remote_path.rsplit("/", 1)[0]}', hide_all=world.f_cfg.forge_verbose == 0

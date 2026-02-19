@@ -8,7 +8,7 @@
 
 # pylint: disable=redefined-outer-name
 # pylint: disable=unused-argument
-# pylint: disable=possibly-used-before-assignment  # too many false positves in this file
+# pylint: disable=possibly-used-before-assignment  # too many false positives in this file
 from base64 import b64encode
 
 import os

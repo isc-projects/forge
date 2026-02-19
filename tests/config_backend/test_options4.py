@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -129,7 +129,7 @@ def test_options_inherit(backend):
 @pytest.mark.parametrize('parameter', ['shared-networks', 'subnet', 'global', 'client-classes', 'pool'])
 def test_suboptions_configfile(parameter):
     """Control tests using config file.
-    Kea is configured with option 43 and suboption 61 in diferent places.
+    Kea is configured with option 43 and suboption 61 in different places.
     Forge tests if client gets suboption value.
     Test for Kea#3481
 
@@ -188,7 +188,7 @@ def test_suboptions_configfile(parameter):
 def test_suboptions(parameter, backend):
     """
     Kea is configured with empty option 43.
-    Suboption 61 is added to config backend in all posible ways.
+    Suboption 61 is added to config backend in all possible ways.
     Forge tests if client gets suboption value.
     Test for Kea#3481
     """

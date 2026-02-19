@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -516,7 +516,7 @@ class ConfigModel(ConfigElem):
     def add_option(self, *args, **kwargs):
         """Add option using config backend command and update local configuration.
 
-        Function accepts option parameters as arguments or as a list of dictionares.
+        Function accepts option parameters as arguments or as a list of dictionaries.
 
         :param args: the arguments to add
         :type args: list
@@ -564,7 +564,7 @@ class ConfigModel(ConfigElem):
     def add_option_def(self, *args, **kwargs):
         """Add option definition using config backend command and update local configuration.
 
-        Function accepts option parameters as arguments or as a list of dictionares.
+        Function accepts option parameters as arguments or as a list of dictionaries.
 
         :param args: the arguments to add
         :type args: list

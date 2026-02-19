@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2025-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -63,7 +63,7 @@ def register_address(ip_addr, src_address, expect_response=True):
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_v6_address_registration_basic(option, registration, backend):
     """Test address registration basic functionality.
-    This test asumes that option return and lease registration are defined and working independently.
+    This test assumes that option return and lease registration are defined and working independently.
 
     :param option: Option defined or undefined
     :type option: str

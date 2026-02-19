@@ -1,6 +1,6 @@
   Working example
  -----------------
-We present you step-by-step instructions to manualy set up example testing environment and run some Forge tests on Kea server.
+We present you step-by-step instructions to manually set up example testing environment and run some Forge tests on Kea server.
 In this example we will use Ubuntu server 24.04.2 installed from ISO on two Virtual Machines.
 
 We used this image: https://releases.ubuntu.com/24.04.2/ubuntu-24.04.2-live-server-amd64.iso
@@ -230,7 +230,7 @@ You can use git clone to download Forge from repository.
 git clone https://gitlab.isc.org/isc-projects/forge.git
 ```
 
-### 5. Install python enviroment
+### 5. Install python environment
 Install Python virtual environment module, dev tools and build-essential (it should install also python pip)
 ```shell
 sudo apt install python3.12-venv

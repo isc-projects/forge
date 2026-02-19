@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2020-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -35,7 +35,7 @@ def kill_kea_on_second_system():
 
 
 def _clear_leases_from_server(dhcp_version, backend, server):
-    """srv_control.clear_some_data() does not remove leases freom RUNNING server with memfile.
+    """srv_control.clear_some_data() does not remove leases from RUNNING server with memfile.
     This function is a workaround for this issue.
     """
     if backend == 'memfile':

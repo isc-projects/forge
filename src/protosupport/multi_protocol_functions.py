@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -105,7 +105,7 @@ def copy_file_from_server(remote_path, local_filename='downloaded_file', dest=wo
     :rtype:
     """
     if '*' in remote_path:
-        # Logs are copied to temp directory because fabric has prolems with listing non world readable folders.
+        # Logs are copied to temp directory because fabric has problems with listing non world readable folders.
         cmd = 'rm -rf /tmp/forge_downloads/'
         fabric_sudo_command(cmd, destination_host=dest)
         cmd = 'mkdir -m 777 -p /tmp/forge_downloads/'

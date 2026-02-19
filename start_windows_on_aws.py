@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2025-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,7 +18,7 @@ logging.basicConfig(format='[WINDOWS ON AWS] %(asctime)-15s %(message)s', level=
 
 
 def _setup_win_ad_dns(ami, domain):
-    """Start windows node with prefocnfigured AD and DNS on AWS.
+    """Start windows node with preconfigured AD and DNS on AWS.
 
     :param ami: string with AMI id
     :type ami: str

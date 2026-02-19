@@ -1,4 +1,4 @@
-# Copyright (C) 2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2024-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -265,7 +265,7 @@ def test_v4_lease_circuit(backend, stash):
     for i in range(4, 9):
         _renew_locally(f"192.168.50.{i}", f"00:00:00:00:0{i}:03", expect=stash)
 
-    # let's check if renewed addresses are handeled correctly
+    # let's check if renewed addresses are handled correctly
     cmd = {"command": "lease4-get-all", "arguments": {"subnets": [66]}}
     rsp = srv_msg.send_ctrl_cmd(cmd)
     assert "5 IPv4 lease(s) found." in rsp["text"], "Lease count text is incorrect"
@@ -285,7 +285,7 @@ def test_v4_lease_circuit(backend, stash):
             )
         else:
             srv_msg.lease_dump(backend)
-        # let's make sure that lease is actyally released,
+        # let's make sure that lease is actually released,
         # if it wouldn't be, ",,0," would contain lifetime value instead of 0
         log_contains(f"192.168.50.{i},00:00:00:00:0{i}:03,,0,", "/tmp/kea-leases.csv")
 
@@ -406,7 +406,7 @@ def test_v4_lease_agent_option(backend, option, stash):
             "/tmp/kea-leases.csv",
         )
 
-    # let's check if renewed addresses are handeled correctly
+    # let's check if renewed addresses are handled correctly
     cmd = {"command": "lease4-get-all", "arguments": {"subnets": [66]}}
     rsp = srv_msg.send_ctrl_cmd(cmd)
     assert "5 IPv4 lease(s) found." in rsp["text"], "Lease count text is incorrect"
@@ -426,7 +426,7 @@ def test_v4_lease_agent_option(backend, option, stash):
             )
         else:
             srv_msg.lease_dump(backend)
-        # let's make sure that lease is actyally released,
+        # let's make sure that lease is actually released,
         # if it wouldn't be, ",,0," would contain lifetime value instead of 0
         log_contains(f"192.168.50.{i},00:00:00:00:0{i}:03,,0,", "/tmp/kea-leases.csv")
 

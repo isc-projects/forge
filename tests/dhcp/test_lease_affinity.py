@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2023-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -311,7 +311,7 @@ def test_v6_lease_affinity(backend):
 
     lease_ccch = srv_msg.send_ctrl_cmd(cmd)  # get leases from command control channel
     for lease in lease_ccch['arguments']['leases']:
-        # release changes state to relesed (3)
+        # release changes state to released (3)
         assert lease['state'] == 3, f"Address is not in proper state! {lease}"
         assert lease['valid-lft'] == 0, f"Address has incorrect valid lifetime {lease}"
 

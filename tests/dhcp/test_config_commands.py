@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -716,7 +716,7 @@ def test_config_commands_config_write(dhcp_version: str, backend: str):
 @pytest.mark.v6
 @pytest.mark.controlchannel
 def test_config_commands_config_write_path(dhcp_version: str):
-    """Test config-write limitig output paths.
+    """Test config-write limiting output paths.
 
     :type dhcp_version: str
     :param dhcp_version: DHCP version

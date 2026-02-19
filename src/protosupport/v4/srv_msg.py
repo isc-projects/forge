@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1138,7 +1138,7 @@ def DORA(
     :type options: dict
     :param request_options: what options to request in the client message
     :type request_options: list[str]
-    :param exchange: can have values 'dora-only' for 4 way DORA exhange, 'full' meaning
+    :param exchange: can have values 'dora-only' for 4 way DORA exchange, 'full' meaning
         DORA plus an additional request-reply for the re-new scenario or "renew-only".
         It is a string instead of a boolean for clearer test names because this value often
         comes from pytest parametrization. (default: 'full')

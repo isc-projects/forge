@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -155,10 +155,10 @@ def _get_target(database: str):
     return 'database'
 
 
-def _get_multiple_iana(adresses, iaids, duid):
+def _get_multiple_iana(addresses, iaids, duid):
     """
-    :param adresses:
-    :type adresses:
+    :param addresses:
+    :type addresses:
     :param iaids:
     :type iaids:
     :param duid:
@@ -189,7 +189,7 @@ def _get_multiple_iana(adresses, iaids, duid):
     srv_msg.send_wait_for_message('MUST', 'REPLY')
     srv_msg.response_check_include_option(3)
     srv_msg.response_check_option_content(3, 'sub-option', 5)
-    for ip in adresses:
+    for ip in addresses:
         srv_msg.response_check_suboption_content(5, 3, 'addr', ip)
 
 

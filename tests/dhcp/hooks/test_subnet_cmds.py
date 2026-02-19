@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -235,7 +235,7 @@ def test_hook_v4_subnet_cmds_add():
     ]
     _send_command("subnet4-add", {"subnet4": subnet})
 
-    # let's retrive new subnet in 3 different ways, and check returend values
+    # let's retrieve new subnet in 3 different ways, and check returned values
     resp1 = _send_command("subnet4-get", {"id": 234})
     resp2 = _send_command("subnet4-get", {"subnet": "192.168.50.0/24"})
     resp3 = _config_get()

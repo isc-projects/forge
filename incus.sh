@@ -385,7 +385,7 @@ function configure_internal_network(){
     # Because of relay tests, Forge expects that main testing network is:
     # v4: 192.168.50.0/24 and 2001:db8:1::/64
     # Using for loop we can easily setup all needed networks
-    # but v4 networks has to have $i - 1 in the ip v4 configuraiton.
+    # but v4 networks has to have $i - 1 in the ip v4 configuration.
     for i in $(seq 1 "$2"); do
         eth="eth$i"
         set_address 192.168.5"$(($i - 1))".240/24 "${eth}" kea-forge
@@ -636,7 +636,7 @@ function get_from_kea_forge() {
 }
 
 function populate_forge_init() {
-    log "Upadting forge init script"
+    log "Updating forge init script"
 
 cat << EOF >> init_all.py
 LOGLEVEL = "info"

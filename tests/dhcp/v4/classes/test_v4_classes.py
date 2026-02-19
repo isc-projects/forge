@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1106,7 +1106,7 @@ def test_v4_classification_tagging_gating_vivso():
     srv_msg.response_check_option_content(61, 'value', '313131')
     srv_msg.client_does_include_with_value('vendor_specific_information', '1234')
 
-    # Client should not recive option.
+    # Client should not receive option.
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
     srv_msg.client_does_include_with_value('client_id', '00010203040506')
@@ -1141,8 +1141,8 @@ def test_v4_classification_tagging_gating_vivso():
 
 @pytest.mark.v4
 @pytest.mark.classification
-def test_v4_classification_tagging_gating_standart():
-    """ Verifies that standart suboption can be gated by option class tagging.
+def test_v4_classification_tagging_gating_standard():
+    """ Verifies that standard suboption can be gated by option class tagging.
     """
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.100', id=1)

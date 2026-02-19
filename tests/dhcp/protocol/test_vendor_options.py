@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1306,7 +1306,7 @@ def test_v4_two_vendors_two_options_using_vendor_class_option_data():
 def test_v4_multiple_vendors_multiple_options_using_global_option_data():
     """
     Check that multiple vendors can get multiple custom options from different vendors using
-    always-send in global option-data. This is not a very useful Kea confgiuration since all clients
+    always-send in global option-data. This is not a very useful Kea configuration since all clients
     get every option, but let's test it anyway.
     """
     misc.test_setup()

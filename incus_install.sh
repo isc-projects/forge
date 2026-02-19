@@ -28,7 +28,7 @@ done
 systemctl restart incus
 
 # "incus admin init --auto" should have already done these actions, but in some cases it says
-# "manual confgiuration is required", so if not done, let us do them ourselves.
+# "manual configuration is required", so if not done, let us do them ourselves.
 if ! ip a s incusbr0 > /dev/null 2>&1; then
   sudo incus network create incusbr0 ipv4.address=192.168.100.1/24 ipv6.address=2001:db0::1/32 ipv4.nat=yes ipv6.nat=yes ipv4.dhcp=yes ipv4.dhcp.ranges=192.168.100.1-192.168.100.100 ipv4.dhcp.gateway=192.168.100.1
 fi

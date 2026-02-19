@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -515,7 +515,7 @@ def _generate_ip_address_shift():
     """
     ciaddr = ipaddress.IPv4Interface(f'{world.f_cfg.ciaddr}/24')
     srv4_addr = ipaddress.IPv4Interface(f'{world.f_cfg.srv4_addr}/24')
-    # chceck if srv4_addr is bigger than ciaddr and 4 more addresses will fit in the same subnet
+    # check if srv4_addr is bigger than ciaddr and 4 more addresses will fit in the same subnet
     if srv4_addr.ip > ciaddr.ip and (srv4_addr + 4).network.subnet_of(srv4_addr.network):
         return [1, 2, 3]
     # if not, check if srv4_addr is bigger than ciaddr + 4 and 4 more addresses will fit between them.
@@ -534,7 +534,7 @@ def _prepare_multiple_http_env():
     """
     ip_address_shift = _generate_ip_address_shift()
     srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
-    # Assign additional IP addressess to server interface
+    # Assign additional IP addresses to server interface
     for ip_shift in ip_address_shift:
         new_ip = srv4_addr + ip_shift
         fabric_sudo_command(f'ip address replace {new_ip}/24 dev {world.f_cfg.server_iface}')

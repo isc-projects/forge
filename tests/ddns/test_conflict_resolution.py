@@ -1,4 +1,4 @@
-# Copyright (C) 2023-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2023-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -305,10 +305,10 @@ def send_cmd(cmd, address=world.f_cfg.mgmt_address, exp_result=0, exp_failed=Fal
 def test_ddns4_conflict_resolution_check_with_dhcid(level):
     """Test ddns-conflict-resolution-mode set to "check-with-dhcid" at 3 levels.
     https://datatracker.ietf.org/doc/html/rfc4703
-    Each new DNS entry is checked against existing entries. If DHCID maches, entry is updated, if not, entry is not updated.
+    Each new DNS entry is checked against existing entries. If DHCID matches, entry is updated, if not, entry is not updated.
     If record was updated expiration of previous address should not remove DNS record.
 
-    If the same client get's address from different subnet, it should be able to update DNS entry.
+    If the same client gets an address from different subnet, it should be able to update DNS entry.
 
     :param level:
     :type level:
@@ -363,7 +363,7 @@ def test_ddns4_conflict_resolution_check_with_dhcid(level):
 
     # overwrite existing records with the same DHCID
 
-    # client 1 get's en address from subnet 0 (first client will be used to test expiration)
+    # client 1 gets an address from subnet 0 (first client will be used to test expiration)
     start_time = time.time()
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:01",
@@ -373,7 +373,7 @@ def test_ddns4_conflict_resolution_check_with_dhcid(level):
         class_id="subnet0",
     )
 
-    # client 1 get's en address from subnet 2, DNS record should be updated (longer lifetime)
+    # client 1 gets an address from subnet 2, DNS record should be updated (longer lifetime)
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:01",
         client_fqdn="abc-client-1.four.example.com.",
@@ -382,7 +382,7 @@ def test_ddns4_conflict_resolution_check_with_dhcid(level):
         class_id="subnet2",
     )
 
-    # client 2 get's en address from subnet 0
+    # client 2 gets an address from subnet 0
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:02",
         client_fqdn="abc-client-2.four.example.com.",
@@ -391,7 +391,7 @@ def test_ddns4_conflict_resolution_check_with_dhcid(level):
         class_id="subnet0",
     )
 
-    # client 2 get's en address from subnet 1, DNS record should be updated
+    # client 2 gets an address from subnet 1, DNS record should be updated
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:02",
         client_fqdn="abc-client-2.four.example.com.",
@@ -400,7 +400,7 @@ def test_ddns4_conflict_resolution_check_with_dhcid(level):
         class_id="subnet1",
     )
 
-    # client 3 get's en address from subnet 1, DNS record should be created
+    # client 3 gets an address from subnet 1, DNS record should be created
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:03",
         client_fqdn="abc-client-3.four.example.com.",
@@ -533,7 +533,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
     srv_control.use_dns_set_number(32)
     srv_control.start_srv("DNS", "started")
 
-    # client 1 get's en address from subnet 0
+    # client 1 gets an address from subnet 0
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:01",
         client_fqdn="abc-client-1.four.example.com.",
@@ -542,7 +542,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
         class_id="subnet0",
     )
 
-    # client 2 get's en address from subnet 1
+    # client 2 gets an address from subnet 1
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:02",
         client_fqdn="abc-client-2.four.example.com.",
@@ -551,7 +551,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
         class_id="subnet1",
     )
 
-    # client 3 get's en address from subnet 2
+    # client 3 gets an address from subnet 2
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:03",
         client_fqdn="abc-client-3.four.example.com.",
@@ -561,7 +561,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
     )
 
     # let's overwrite now existing records
-    # client 4 get's en address from subnet 0 with FQDN assigned to client 1
+    # client 4 gets an address from subnet 0 with FQDN assigned to client 1
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:04",
         client_fqdn="abc-client-1.four.example.com.",
@@ -570,7 +570,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
         class_id="subnet0",
     )
 
-    # client 5 get's en address from subnet 1 with FQDN assigned to client 2
+    # client 5 gets an address from subnet 1 with FQDN assigned to client 2
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:05",
         client_fqdn="abc-client-2.four.example.com.",
@@ -579,7 +579,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
         class_id="subnet1",
     )
 
-    # client 6 get's en address from subnet 2 with FQDN assigned to client 3
+    # client 6 gets an address from subnet 2 with FQDN assigned to client 3
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:06",
         client_fqdn="abc-client-3.four.example.com.",
@@ -589,7 +589,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
     )
     start_time = time.time()
     # let's overwrite now existing records
-    # client 4 get's en address from subnet 0 with different FQDN
+    # client 4 gets an address from subnet 0 with different FQDN
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:04",
         client_fqdn="abc-client-1-1.four.example.com.",
@@ -598,7 +598,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
         class_id="subnet0",
     )
 
-    # client 5 get's en address from subnet 1 with different FQDN
+    # client 5 gets an address from subnet 1 with different FQDN
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:05",
         client_fqdn="abc-client-2-2.four.example.com.",
@@ -607,7 +607,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
         class_id="subnet1",
     )
 
-    # client 6 get's en address from subnet 2 with different FQDN
+    # client 6 gets an address from subnet 2 with different FQDN
     _get_address_and_check_dns_record(
         mac="00:00:00:00:11:06",
         client_fqdn="abc-client-3-3.four.example.com.",
@@ -736,7 +736,7 @@ def test_ddns4_conflict_resolution(level, conflict):
         class_id="subnet1",
     )
 
-    # main diffeerece between check-exists-with-dhcid and no-check-without-dhcid is that in first case
+    # main difference between check-exists-with-dhcid and no-check-without-dhcid is that in first case
     # we can overwrite only records with DHCID, in second case we can overwrite any record, even static one
     _check_fqdn_record(
         "dns.four.example.com.",
@@ -764,10 +764,10 @@ def test_ddns4_conflict_resolution(level, conflict):
 def test_ddns6_conflict_resolution_check_with_dhcid(level):
     """Test ddns-conflict-resolution-mode set to "check-with-dhcid" at 3 levels.
     https://datatracker.ietf.org/doc/html/rfc4703
-    Each new DNS entry is checked against existing entries. If DHCID maches, entry is updated, if not, entry is not updated.
+    Each new DNS entry is checked against existing entries. If DHCID matches, entry is updated, if not, entry is not updated.
     If record was updated expiration of previous address should not remove DNS record.
 
-    If the same client get's address from different subnet, it should be able to update DNS entry.
+    If the same client gets an address from different subnet, it should be able to update DNS entry.
 
     :param level:
     :type level:
@@ -822,7 +822,7 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
 
     # overwrite existing records with the same DHCID
 
-    # client 1 get's en address from subnet 0 (first client will be used to test expiration)
+    # client 1 gets an address from subnet 0 (first client will be used to test expiration)
     start_time = time.time()
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:01",
@@ -833,7 +833,7 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
         version=6,
     )
 
-    # client 1 get's en address from subnet 2, DNS record should be updated (longer lifetime)
+    # client 1 gets an address from subnet 2, DNS record should be updated (longer lifetime)
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:01",
         client_fqdn="abc-client-1.six.example.com.",
@@ -843,7 +843,7 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
         version=6,
     )
 
-    # client 2 get's en address from subnet 0
+    # client 2 gets an address from subnet 0
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:02",
         client_fqdn="abc-client-2.six.example.com.",
@@ -853,7 +853,7 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
         version=6,
     )
 
-    # client 2 get's en address from subnet 1, DNS record should be updated
+    # client 2 gets an address from subnet 1, DNS record should be updated
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:02",
         client_fqdn="abc-client-2.six.example.com.",
@@ -863,7 +863,7 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
         version=6,
     )
 
-    # client 3 get's en address from subnet 1, DNS record should be created
+    # client 3 gets an address from subnet 1, DNS record should be created
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:03",
         client_fqdn="abc-client-3.six.example.com.",
@@ -936,7 +936,7 @@ def test_ddns6_conflict_resolution_check_with_dhcid(level):
         class_id="subnet2",
     )
 
-    # main diffeerece between check-exists-with-dhcid and no-check-without-dhcid is that in first case
+    # main difference between check-exists-with-dhcid and no-check-without-dhcid is that in first case
     # we can overwrite only records with DHCID, in second case we can overwrite any record, even static one
     _check_fqdn_record("dns6-1.six.example.com.", address="2001:db8:a::1", version=6)
 
@@ -1013,7 +1013,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
     srv_control.use_dns_set_number(31)
     srv_control.start_srv("DNS", "started")
 
-    # client 1 get's en address from subnet 0
+    # client 1 gets an address from subnet 0
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:00:11:01",
         client_fqdn="abc-client-1.six.example.com.",
@@ -1023,7 +1023,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
         version=6,
     )
 
-    # client 2 get's en address from subnet 1
+    # client 2 gets an address from subnet 1
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:02",
         client_fqdn="abc-client-2.six.example.com.",
@@ -1033,7 +1033,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
         version=6,
     )
 
-    # client 3 get's en address from subnet 2
+    # client 3 gets an address from subnet 2
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:03:00:01:00:00:00:00:11:03",
         client_fqdn="abc-client-3.six.example.com.",
@@ -1044,7 +1044,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
     )
 
     # let's overwrite now existing records
-    # client 4 get's en address from subnet 0 with FQDN assigned to client 1
+    # client 4 gets an address from subnet 0 with FQDN assigned to client 1
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:04",
         client_fqdn="abc-client-1.six.example.com.",
@@ -1054,7 +1054,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
         version=6,
     )
 
-    # client 5 get's en address from subnet 1 with FQDN assigned to client 2
+    # client 5 gets an address from subnet 1 with FQDN assigned to client 2
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:05",
         client_fqdn="abc-client-2.six.example.com.",
@@ -1064,7 +1064,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
         version=6,
     )
 
-    # client 6 get's en address from subnet 2 with FQDN assigned to client 3
+    # client 6 gets an address from subnet 2 with FQDN assigned to client 3
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:06",
         client_fqdn="abc-client-3.six.example.com.",
@@ -1075,7 +1075,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
     )
     start_time = time.time()
     # let's overwrite now existing records
-    # client 4 get's en address from subnet 0 with different FQDN
+    # client 4 gets an address from subnet 0 with different FQDN
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:04",
         client_fqdn="abc-client-1-1.six.example.com.",
@@ -1085,7 +1085,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
         version=6,
     )
 
-    # client 5 get's en address from subnet 1 with different FQDN
+    # client 5 gets an address from subnet 1 with different FQDN
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:05",
         client_fqdn="abc-client-2-2.six.example.com.",
@@ -1095,7 +1095,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
         version=6,
     )
 
-    # client 6 get's en address from subnet 2 with different FQDN
+    # client 6 gets an address from subnet 2 with different FQDN
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:06",
         client_fqdn="abc-client-3-3.six.example.com.",
@@ -1123,7 +1123,7 @@ def test_ddns6_conflict_resolution_no_check_with_dhcid(level):
         class_id="subnet2",
     )
 
-    # main diffeerece between check-exists-with-dhcid and no-check-without-dhcid is that in first case
+    # main difference between check-exists-with-dhcid and no-check-without-dhcid is that in first case
     # we can overwrite only records with DHCID, in second case we can overwrite any record, even static one
     _check_fqdn_record("dns6-1.six.example.com.", address="2001:db8:c::12", version=6)
 
@@ -1240,7 +1240,7 @@ def test_ddns6_conflict_resolution(level, conflict):
         class_id="subnet2",
     )
 
-    # main diffeerece between check-exists-with-dhcid and no-check-without-dhcid is that in first case
+    # main difference between check-exists-with-dhcid and no-check-without-dhcid is that in first case
     # we can overwrite only records with DHCID, in second case we can overwrite any record, even static one
     _check_fqdn_record(
         "dns6-1.six.example.com.",
@@ -1269,7 +1269,7 @@ def test_ddns6_conflict_resolution(level, conflict):
 def test_ddns6_conflict_resolution_simple_scenario(level):
     """Test ddns-conflict-resolution-mode set to "check-with-dhcid" at 3 levels.
     https://datatracker.ietf.org/doc/html/rfc4703
-    Each new DNS entry is checked against existing entries. If DHCID maches, entry is updated, if not, entry is not updated.
+    Each new DNS entry is checked against existing entries. If DHCID matches, entry is updated, if not, entry is not updated.
     If record was updated expiration of previous address should not remove DNS record.
 
     :param level:
@@ -1323,7 +1323,7 @@ def test_ddns6_conflict_resolution_simple_scenario(level):
     srv_control.use_dns_set_number(31)
     srv_control.start_srv("DNS", "started")
 
-    # client 1 get's en address from subnet 0
+    # client 1 gets an address from subnet 0
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:01",
         client_fqdn="abc-client-1.six.example.com.",
@@ -1348,7 +1348,7 @@ def test_ddns6_conflict_resolution_simple_scenario(level):
         "0.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.a.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.",
     )
 
-    # client 3 get's en address from subnet 1
+    # client 3 gets an address from subnet 1
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:05",
         client_fqdn="abc-client-2.six.example.com.",
@@ -1373,7 +1373,7 @@ def test_ddns6_conflict_resolution_simple_scenario(level):
         "1.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.b.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.",
     )
 
-    # client 3 get's en address from subnet 2
+    # client 3 gets an address from subnet 2
     _get_address_and_check_dns_record(
         mac="00:03:00:01:00:00:00:00:11:06",
         client_fqdn="abc-client-3.six.example.com.",
@@ -1409,7 +1409,7 @@ def test_ddns6_conflict_resolution_simple_scenario(level):
         class_id="subnet2",
     )
 
-    # main diffeerece between check-exists-with-dhcid and no-check-without-dhcid is that in first case
+    # main difference between check-exists-with-dhcid and no-check-without-dhcid is that in first case
     # we can overwrite only records with DHCID, in second case we can overwrite any record, even static one
     _check_fqdn_record("dns6-1.six.example.com.", address="2001:db8:a::1", version=6)
 
