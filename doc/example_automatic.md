@@ -80,7 +80,7 @@ sudo ./incus_install.sh
 
   Preparing containers.
  ------------------------------------
-### 1. Prepare testing enviroment.
+### 1. Prepare testing environment.
 Incus script allows preparing various OSes for testing. We will start with Ubuntu 24.04 with 2 kea containers and 2 networks:
 ```shell
 sudo ./incus.sh prepare-env ubuntu/24.04 2 2 master

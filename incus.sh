@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#set -eu  # temporary disabled
+set -eu
 
 export LANGUAGE="C"
 export LC_ALL="C"
@@ -44,7 +44,7 @@ while test 0 -lt "${#}"; do
     shift
 done
 
-if [[ $(tput colors 2> /dev/null) -ge 8 ]]; then
+if [ $(tput colors 2> /dev/null) -ge 8 ]; then
     RED='\033[0;31m'
     # GREEN='\033[0;32m'
     BLUE='\033[0;34m'
@@ -87,7 +87,7 @@ function install_base_pkgs() {
 
 function prepare_freeradius() {
     node=$1
-    if [[ "$usedSystem" == "fedora" ]]; then
+    if [ "$usedSystem" = "fedora" ]; then
         log "Preparing FreeRadius Certificates on $node - $usedSystem $osVersion"
         incus exec "$node" -- mkdir -p /etc/raddb/certs/dh
         incus exec "$node" -- /etc/raddb/certs/bootstrap
@@ -96,22 +96,21 @@ function prepare_freeradius() {
 
 function get_os() {
     # The first argument is OS name/OS version
-    oldIFS=$IFS
-    IFS='/' read -r usedSystem osVersion <<< "$1"
-    IFS=$oldIFS
+    usedSystem=$(echo "${1}" | cut -d '/' -f 1)
+    osVersion=$(echo "${1}" | cut -d '/' -f 2)
 }
 
 function prepare_node() {
     # The first argument is the OS name/OS version
     # The second argument is the number of kea nodes
-    if [[ "$2" != "forge" ]]; then
+    if [ "$2" != "forge" ]; then
         get_os "$1"
     fi
     if ! is_instance_created "kea-${2}"; then
         log "Creating kea-$2 node - $1"
         incus launch images:"$1" kea-"$2"
         sleep 5
-        if [[ "$1" == "fedora/41" ]]; then
+        if [ "$1" = "fedora/41" ]; then
             log "Some jobs listed as running, should be killed"
             incus exec kea-"$2" -- systemctl list-jobs
             incus exec kea-"$2" -- bash -c 'systemctl list-jobs | awk "NR>1 && \$4==\"running\" {print \$2}" | xargs -r systemctl stop'
@@ -132,19 +131,20 @@ function copy_node() {
 
 function update_node() {
     # The first argument is the number of the kea node or "forge"
-    # The second argument is the branch name of a Kea repository from which hammer will be downloaded
+    # The second argument is the branch name of a Kea repository from which hammer will be downloaded. Optional.
     hammerBranch="master"
-    if [[ -n "$2" ]]; then
+    if [ -n "${2+x}" ]; then
         hammerBranch="$2"
     fi
 
-    if [[ "$1" == "forge" ]]; then
+    if [ "$1" = "forge" ]; then
         # This is always ubuntu
         incus exec kea-"$1" -- apt update > "$logFile" 2>&1
         incus exec kea-"$1" -- apt install python3 python3-venv g++ python3-dev libpcap-dev git tcpdump openssh-server -y > "$logFile" 2>&1
         # let's edit ssh config here as well
         printf "Host *\n    StrictHostKeyChecking no\n" > my.conf
-        incus file push my.conf kea-forge//etc/ssh/ssh_config.d/my.conf
+        incus file push my.conf kea-forge/etc/ssh/ssh_config.d/my.conf
+        rm my.conf
     else
         update kea-"$1"
         install_base_pkgs kea-"$1"
@@ -161,7 +161,15 @@ function create_networks() {
     for i in $(seq 1 ${1}); do
         if ! is_network_created "internal-net-${i}"; then
             log "Creating network internal-net-$i"
-            incus network create internal-net-"$i" ipv4.nat=false ipv6.nat=false ipv4.dhcp=false ipv6.dhcp=false ipv4.firewall=false ipv6.firewall=false
+            if ! incus network create internal-net-"$i" ipv4.nat=false ipv6.nat=false ipv4.dhcp=false ipv6.dhcp=false ipv4.firewall=false ipv6.firewall=false; then
+                # If this is "Error: Failed generating auto config: Failed to automatically find an unused IPv6 subnet, manual configuration required":
+                # v6 address needs to be from the same subnet as on the host so let us determine that automatically.
+                internet_facing_interface=$(ip route | grep -E '^default' | grep -Eo 'dev [a-z0-9]*' | cut -d ' ' -f 2)
+                v6_network=$(ip a s "${internet_facing_interface}" | grep -E ' inet6 .* global ' | tr -s ' ' | cut -d ' ' -f 3)
+                different_v6_address="$(echo "${v6_network}" | sed 's#:[0-9a-f]*/#:ffff/#')"
+
+                incus network create internal-net-"$i" "ipv6.address=${different_v6_address}" ipv4.nat=false ipv6.nat=false ipv4.dhcp=false ipv6.dhcp=false ipv4.firewall=false ipv6.firewall=false
+            fi
         fi
     done
     incus network list
@@ -194,7 +202,7 @@ function update() {
     case "$usedSystem" in
         "ubuntu"|"debian")
             incus exec "$1" -- apt update  > "$logFile" 2>&1
-            incus exec "$1" -- DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y  > "$logFile" 2>&1
+            incus exec "$1" --env DEBIAN_FRONTEND=noninteractive -- apt dist-upgrade -y  > "$logFile" 2>&1
             ;;
         "rockylinux"|"fedora")
             incus exec "$1" -- dnf update -y  > "$logFile" 2>&1
@@ -290,7 +298,7 @@ function remove_incus_network() {
 
 function enable_ssh() {
     # The first argument is a node name
-    if [[ "$1" == "kea-forge" ]]; then
+    if [ "$1" = "kea-forge" ]; then
         incus exec "$1" -- systemctl enable ssh
         incus exec "$1" -- systemctl start ssh
     else
@@ -319,14 +327,14 @@ function enable_ssh() {
 
 function create_user() {
     # The first argument is a node name
-    # The second argument is the OS name/OS version, if not provided $usedSystem will be used
+    # The second argument is the OS name/OS version, if not provided $usedSystem will be used. Optional.
     local system=$usedSystem
-    if [[ -n "${2+x}" ]]; then
+    if [ -n "${2+x}" ]; then
         local system="$2"
     fi
     log "Creating user forge in $1 - $system"
     if ! incus exec "$1" -- id forge > /dev/null; then
-        if [[ "$system" == "fedora" || "$system" == "rockylinux" ]]; then
+        if [ "$system" = "fedora" ] || [ "$system" = "rockylinux" ]; then
             incus exec "$1" -- useradd -m -s /bin/bash forge
             (printf "test0test1") | incus exec "$1" -- passwd --stdin forge
         else
@@ -336,7 +344,8 @@ function create_user() {
     fi
     enable_ssh "$1"
     printf "forge ALL=(ALL) NOPASSWD:ALL" > nopasswd
-    incus file push nopasswd "$1"//etc/sudoers.d/forge
+    incus file push nopasswd "$1"/etc/sudoers.d/forge
+    rm nopasswd
     incus exec "$1" -- chmod 440 /etc/sudoers.d/forge
     incus exec "$1" -- chown root:root /etc/sudoers.d/forge
 }
@@ -345,6 +354,7 @@ function generate_rsa_key() {
     # no arguments needed
     log "Generating RSA key for kea-forge"
     # we need this just in kea-forge, it will ssh into other nodes
+    incus exec kea-forge -- sudo rm -f /home/forge/.ssh/id_rsa
     incus exec kea-forge -- sudo -u forge ssh-keygen -t rsa -N "" -f /home/forge/.ssh/id_rsa
     incus exec kea-forge -- cat /home/forge/.ssh/id_rsa.pub > kea-forge.pub
     cat kea-forge.pub
@@ -364,6 +374,10 @@ function migrate_rsa_key() {
     incus file push kea-forge.pub "$1"/home/forge/.ssh/authorized_keys
     incus exec "$1" -- chown forge:forge /home/forge/.ssh/authorized_keys
     incus exec "$1" -- chmod 600 /home/forge/.ssh/authorized_keys
+}
+
+function delete_rsa_key() {
+    rm -f kea-forge.pub
 }
 
 function set_address() {
@@ -415,7 +429,7 @@ function install_nexus_repo() {
                 ;;
             "rockylinux"|"fedora")
                 local repo_name="${usedSystem}"
-                if [[ "$usedSystem" == "rockylinux" ]]; then
+                if [ "$usedSystem" = "rockylinux" ]; then
                     repo_name="rhel"
                 fi
 cat << EOF > kea.repo
@@ -448,13 +462,13 @@ function install_kea_pkgs() {
     # The third argument is the kea pkgs version
 
     # Check if the third argument ($3) is empty
-    if [ -z "$3" ]; then
+    if [ -z "${3+x}" ]; then
         pkg_version=$(get_kea_pkg_version)
     else
         pkg_version=$3
     fi
 
-    if [ -z "$pkg_version" ]; then
+    if [ -z "${pkg_version+x}" ]; then
         log_error "PKG version is empty and couldn't be determined"
         exit 1
     fi
@@ -485,7 +499,7 @@ function install_kea_pkgs() {
                 ;;
             "rockylinux"|"fedora")
                 local suffix="fc${osVersion}"
-                if [[ "$usedSystem" == "rockylinux" ]]; then
+                if [ "$usedSystem" = "rockylinux" ]; then
                     suffix="el${osVersion}"
                 fi
                 incus exec kea-"$node" -- dnf install isc-kea-*-"$pkg_version"."$suffix" -y
@@ -499,7 +513,7 @@ function install_kea_pkgs() {
                 for pkg in "${pkgs[@]}"; do
                     wget -P alpine_pkgs https://packages.aws.isc.org/repository/kea-"$usedSystem"-"$osVersion"/isc"${pkg_version: -14}"/v"$osVersion"/"$arch"/"$pkg"-"$pkg_version".apk
                 done
-                incus file push -q -p -r alpine_pkgs kea-"$node"//tmp/.
+                incus file push -q -p -r alpine_pkgs kea-"$node"/tmp/.
                 for i in "${!pkgs[@]}"; do
                     pkgs[i]="${pkgs[$i]}-${pkg_version}.apk"
                 done
@@ -540,7 +554,7 @@ temporary_dir = /tmp/ccache/
 compiler_check = content
 EOF
     incus exec "$1" -- mkdir -p .ccache
-    incus file push -q ccache.conf "$1"//root/.ccache/ccache.conf
+    incus file push -q ccache.conf "$1"/root/.ccache/ccache.conf
 }
 
 function install_kea_tarball() {
@@ -550,7 +564,7 @@ function install_kea_tarball() {
     for node in $(seq 1 "$1"); do
         log "Installing kea from the source code on node kea-$node - $usedSystem $osVersion"
         incus exec kea-"$node" -- rm -rf /tmp/kea
-        incus file push -r -q "$2" kea-"$node"//tmp/.
+        incus file push -r -q "$2" kea-"$node"/tmp/.
         incus exec kea-"$node" --cwd=/tmp/kea -- python3 /tmp/hammer.py build -p local -w ccache,forge,install,mysql,pgsql,shell,gssapi,netconf -x docs,perfdhcp,unittest --ccache-dir /ccache #
     done
     printf '\nINSTALL_METHOD="make"\n' >> init_all.py
@@ -561,10 +575,12 @@ function print_summary() {
     incus image list
     incus list -cns46tSDM
     incus network list
-    log "v6 routes in kea-1:"
-    incus exec kea-1 -- ip -6 route show
-    log "v4 routes in kea-1:"
-    incus exec kea-1 -- ip -4 route show
+    if is_instance_created kea-1; then
+        log "v6 routes in kea-1:"
+        incus exec kea-1 -- ip -6 route show
+        log "v4 routes in kea-1:"
+        incus exec kea-1 -- ip -4 route show
+    fi
 }
 
 function check_installed_kea() {
@@ -612,7 +628,7 @@ function run_pytest() {
     local new_args=()
 
     for arg in "${args[@]}"; do
-        if [[ "$arg" == "--upload-pytest" ]]; then
+        if [ "$arg" = "--upload-pytest" ]; then
             log "Uploading forge source code to kea-forge"
             upload_pytest
         else
@@ -628,13 +644,13 @@ function run_pytest() {
 function get_results() {
     log "Downloading results from kea-forge"
     rm -rf tests_results
-    incus file pull -r kea-forge//home/forge/tests_results .
+    incus file pull -r kea-forge/home/forge/tests_results .
 }
 
 function get_from_kea_forge() {
     log "Downloading $1 from kea-forge"
     rm -rf "$1"
-    incus file pull -r kea-forge//home/forge/"$1" .
+    incus file pull -r kea-forge/home/forge/"$1" .
 }
 
 function populate_forge_init() {
@@ -651,8 +667,6 @@ DB_TYPE = "memfile"
 SHOW_PACKETS_FROM = ""
 REL4_ADDR = "0.0.0.0"
 CLI_LINK_LOCAL = ""
-copylist = []
-removelist = []
 OUTPUT_WAIT_INTERVAL = 2
 OUTPUT_WAIT_MAX_INTERVALS = 3
 PACKET_WAIT_INTERVAL = 3
@@ -687,10 +701,10 @@ FORGE_VERBOSE = 0
 DISABLE_DB_SETUP = False
 EOF
 
-if [[ "$usedSystem" == "fedora" || "$usedSystem" == "rockylinux" ]]; then
-    printf "DNS_DATA_PATH = \"/etc/\"" >> init_all.py
+if [ "$usedSystem" = "fedora" ] || [ "$usedSystem" = "rockylinux" ]; then
+    printf 'DNS_DATA_PATH = "/etc/"\n' >> init_all.py
 else
-    printf "DNS_DATA_PATH = \"/etc/bind/\"" >> init_all.py
+    printf 'DNS_DATA_PATH = "/etc/bind/"\n' >> init_all.py
 fi
 }
 
@@ -734,7 +748,7 @@ function help() {
     exit 1
 }
 
-if [[ $# -lt 1 ]]; then
+if [ $# -lt 1 ]; then
     help
 fi
 
@@ -750,12 +764,13 @@ case "$command" in
         ;;
     initialize-container)
         # The first argument is an OS name/version
+        # The second argument is the branch name of a Kea repository from which hammer will be downloaded. Optional.
         # This command is used to initialize a container from a template
         # and prepare it for kea installation. It's just creating one node
         # which will be cloned after kea is installed.
 
         hammerBranch="master"
-        if [[ -n "$2" ]]; then
+        if [ -n "${2+x}" ]; then
             hammerBranch="$2"
         fi
 
@@ -798,6 +813,7 @@ case "$command" in
             create_user kea-"$i"
             migrate_rsa_key kea-"$i"
         done
+        delete_rsa_key
         install_kerberos kea-1
         incus list --format json | jq > incus.json
         setup_forge
@@ -810,12 +826,13 @@ case "$command" in
         ;;
     prepare-env)
         # start kea nodes kea-1 kea-2 etc
+        # The fourth argument is the branch name of a Kea repository from which hammer will be downloaded. Optional.
         startTime=$(date +%s)
         osName=$1
         numberOfNodes=$2
         numberOfNetworks=$3
         hammerBranch="master"
-        if [[ -n "$4" ]]; then
+        if [ -n "${4+x}" ]; then
             hammerBranch="$4"
         fi
         for i in $(seq 1 "$numberOfNodes"); do
@@ -849,6 +866,7 @@ case "$command" in
             migrate_rsa_key kea-"$i"
             mount_ccache kea-"$i"
         done
+        delete_rsa_key
         incus list --format json | jq > incus.json
         setup_forge
 
@@ -890,6 +908,9 @@ case "$command" in
         ;;
     install-kea-tarball)
         install_kea_tarball "$@"
+        ;;
+    print-summary)
+        print_summary
         ;;
     update-pytest)
         upload_pytest
