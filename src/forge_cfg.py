@@ -97,6 +97,19 @@ SETTINGS = {
     'WIN_DNS_ADDR_2016': '',
     'WIN_DNS_ADDR_2019': '',
     'FORGE_VERBOSE': 1,
+    # --- DHCP client compliance testing ---
+    'CLIENT_MGMT_ADDRESS': '',
+    'CLIENT_MGMT_USERNAME': '',
+    'CLIENT_MGMT_PASSWORD': '',
+    'CLIENT_IFACE': '',
+    'CLIENT_START_CMD': '',
+    'CLIENT_STOP_CMD': '',
+    'CLIENT_FLUSH_CMD': '',
+    'CLIENT_RENEW_CMD': '',
+    'CLIENT_REBIND_CMD': '',
+    'CLIENT_INFORM_CMD': '',
+    'CLIENT_RELEASE_CMD': '',
+    'CLIENT_BROADCASTS_FLAG': '',
 }
 
 

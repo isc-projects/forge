@@ -196,7 +196,7 @@ def reconfigure_srv(*args):
     test_pause()
 
 
-def stop_srv(*args):
+def stop_srv(value=False, destination_address=None):  # Matches other modules
     pass
 
 
@@ -205,17 +205,18 @@ def restart_srv():
     test_pause()
 
 
-def clear_leases():
+def clear_leases(**kwargs):
     pass
 
 
-def save_leases():
+def save_leases(**kwargs):
     pass
 
 
-def save_logs():
+def save_logs(**kwargs):
     pass
 
 
-def clear_all():
+def clear_all(destination_address=None, software_install_path=None, 
+              db_user=None, db_passwd=None, db_name=None, remove_logs=True):
     pass

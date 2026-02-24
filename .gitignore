@@ -1,6 +1,7 @@
 *.pyc
 *.pyo
 /init_all.py
+init_all.py
 
 # Packages
 *.egg

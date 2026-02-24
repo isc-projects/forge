@@ -231,3 +231,59 @@ MGMT_PASSWORD = ''
 # DNS_DATA_PATH = '/opt/bind/data'
 
 # WIN_DNS_ADDR' = ''
+
+
+# ==============================================================================
+# ========================= DHCP CLIENT COMPLIANCE =============================
+# Settings for testing a DHCP client under test on a separate remote machine.
+# The framework is client-agnostic: each operation is a shell command run via
+# SSH (sudo) on the remote client machine.  Set a value to '' (empty string) to
+# indicate that the operation is not supported by the client under test; tests
+# that require that operation will be automatically skipped.
+#
+# Required for any client_compliance test to run:
+# CLIENT_MGMT_ADDRESS = ''   # IP of the remote client machine
+# CLIENT_MGMT_USERNAME = ''  # SSH username (defaults to MGMT_USERNAME)
+# CLIENT_MGMT_PASSWORD = ''  # SSH password  (defaults to MGMT_PASSWORD)
+# CLIENT_IFACE = ''          # Network interface name on the client machine
+# CLIENT_START_CMD = ''      # Start DHCP client and begin lease acquisition
+# CLIENT_STOP_CMD  = ''      # Stop client; SHOULD send DHCPRELEASE
+# CLIENT_FLUSH_CMD = ''      # Erase all cached lease state (for test isolation)
+#
+# Optional — if empty, the corresponding tests are skipped or fall back to
+# timer-wait mode (which makes them timing_sensitive):
+# CLIENT_RENEW_CMD  = ''     # Trigger unicast renewal  (M20-M23, M30)
+# CLIENT_REBIND_CMD = ''     # Trigger broadcast rebind (M24-M27)
+# CLIENT_INFORM_CMD = ''     # Send DHCPINFORM          (M42-M43, S14)
+#
+# Optional hint for S06/S07 broadcast-flag SHOULD tests:
+#   'true'  -> client is expected to set the broadcast flag
+#   'false' -> client is expected to clear the broadcast flag
+#   ''      -> skip the comparison (still log the observed value)
+# CLIENT_BROADCASTS_FLAG = ''
+#
+# Example values for common clients (replace eth0 with CLIENT_IFACE value):
+#
+#   systemd-networkd:
+#     CLIENT_START_CMD  = 'systemctl restart systemd-networkd'
+#     CLIENT_STOP_CMD   = 'systemctl stop systemd-networkd'
+#     CLIENT_FLUSH_CMD  = 'networkctl flush eth0'
+#     CLIENT_RENEW_CMD  = 'networkctl renew eth0'
+#     CLIENT_REBIND_CMD = ''
+#     CLIENT_INFORM_CMD = ''
+#
+#   dhcpcd:
+#     CLIENT_START_CMD  = 'dhcpcd eth0'
+#     CLIENT_STOP_CMD   = 'dhcpcd -k eth0'
+#     CLIENT_FLUSH_CMD  = 'rm -f /var/lib/dhcpcd/eth0.lease'
+#     CLIENT_RENEW_CMD  = 'dhcpcd -N eth0'
+#     CLIENT_REBIND_CMD = 'dhcpcd -n eth0'
+#     CLIENT_INFORM_CMD = 'dhcpcd -s eth0'
+#
+#   dhclient:
+#     CLIENT_START_CMD  = 'dhclient eth0'
+#     CLIENT_STOP_CMD   = 'dhclient -r eth0'
+#     CLIENT_FLUSH_CMD  = 'rm -f /var/lib/dhclient/dhclient.leases'
+#     CLIENT_RENEW_CMD  = ''
+#     CLIENT_REBIND_CMD = ''
+#     CLIENT_INFORM_CMD = 'dhclient -S eth0'

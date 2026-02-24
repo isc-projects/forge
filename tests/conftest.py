@@ -56,7 +56,14 @@ def pytest_runtest_teardown(item, nextitem):
     :type nextitem: pytest.Item
     """
     from src import terrain
+    from src.forge_cfg import world
     item.failed = None
+    
+    # If the test was skipped via a marker during collection, the setup fixture
+    # was never run and world is not initialized. Skip cleanup in that case.
+    if not hasattr(world, 'proto'):
+        return
+        
     terrain.cleanup(item)
 
 
