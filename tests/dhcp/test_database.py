@@ -1,4 +1,4 @@
-# Copyright (C) 2024-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2024-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +15,7 @@ from src import misc
 from src import srv_msg
 from src.forge_cfg import world
 
+from src.misc import Version
 from src.protosupport.multi_protocol_functions import (
     log_contains_n_times,
     log_doesnt_contain,
@@ -40,21 +41,21 @@ def _confirm_no_dhcp_service(dhcp_version):
 
 
 @pytest.fixture()
-def _restart_databases(backend):
+def _restart_all_databases(backend):
     """Restart database even if test fails.
 
     :param backend: database backend
     """
     database.clear_database(world.f_cfg.mgmt_address)
-    database.restart_database(backend, destination_address=world.f_cfg.mgmt_address)
+    database.restart_database(backend, host=world.f_cfg.mgmt_address)
     yield
     # if not world.f_cfg.teardown_after_last_test and world.current_test_index == world.test_count:
     #     return
     database.clear_database(world.f_cfg.mgmt_address)
-    database.restart_database(backend, destination_address=world.f_cfg.mgmt_address)
+    database.restart_database(backend, host=world.f_cfg.mgmt_address)
 
 
-@pytest.mark.usefixtures('_restart_databases')
+@pytest.mark.usefixtures('_restart_all_databases')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -159,7 +160,7 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
 
 
 @pytest.mark.disabled  # This on-fail setting with lease db is strongly discouraged in Kea ARM
-@pytest.mark.usefixtures('_restart_databases')
+@pytest.mark.usefixtures('_restart_all_databases')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -268,7 +269,7 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
 
 
 @pytest.mark.disabled  # This on-fail setting with lease db is strongly discouraged in Kea ARM
-@pytest.mark.usefixtures('_restart_databases')
+@pytest.mark.usefixtures('_restart_all_databases')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -388,7 +389,7 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
         srv_msg.check_leases({'address': '2001:db8:1::50'}, backend)
 
 
-@pytest.mark.usefixtures('_restart_databases')
+@pytest.mark.usefixtures('_restart_all_databases')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -480,7 +481,7 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
         srv_msg.SARR('2001:db8:1::100', duid='00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01')
 
 
-@pytest.mark.usefixtures('_restart_databases')
+@pytest.mark.usefixtures('_restart_all_databases')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -576,7 +577,7 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
         srv_msg.SARR('2001:db8:1::100', duid='00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01')
 
 
-@pytest.mark.usefixtures('_restart_databases')
+@pytest.mark.usefixtures('_restart_all_databases')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -676,7 +677,7 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
         srv_msg.SARR('2001:db8:1::100', duid='00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01')
 
 
-@pytest.mark.usefixtures('_restart_databases')
+@pytest.mark.usefixtures('_restart_all_databases')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -778,7 +779,7 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
                                             'and hardware address: hwtype=1 f6:f5:f4:f3:f2:01 (from DUID)')
 
 
-@pytest.mark.usefixtures('_restart_databases')
+@pytest.mark.usefixtures('_restart_all_databases')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -889,7 +890,7 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
                                             'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
 
 
-@pytest.mark.usefixtures('_restart_databases')
+@pytest.mark.usefixtures('_restart_all_databases')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
@@ -1004,12 +1005,18 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
                                             'and hardware address: hwtype=1 f6:f5:f4:f3:f2:05 (from DUID)')
 
 
-@pytest.mark.usefixtures('_restart_databases')
+@pytest.mark.usefixtures('_restart_all_databases')
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.parametrize('security_type', ['CA-based-validation', 'mutual-authentication'])
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_db_tls(backend, security_type, dhcp_version):
+    if (
+        backend == 'mysql'
+        and security_type == 'mutual-authentication'
+        and Version(misc.get_openssl_version()) < Version('3.6.0')
+    ):
+        pytest.skip('MySQL mutual authentication does not seem to work on old OpenSSL versions.')
     misc.test_setup()
     certificates = Certificates()
 

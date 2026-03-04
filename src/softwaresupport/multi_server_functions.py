@@ -31,10 +31,14 @@ from src.forge_cfg import world
 log = logging.getLogger('forge')
 
 
-def fabric_run_command(cmd, destination_host=world.f_cfg.mgmt_address,
-                       user_loc=world.f_cfg.mgmt_username,
-                       password_loc=world.f_cfg.mgmt_password, hide_all=False,
-                       ignore_errors=False):
+def fabric_run_command(
+    cmd,
+    destination_host=world.f_cfg.mgmt_address,
+    user_loc=world.f_cfg.mgmt_username,
+    password_loc=world.f_cfg.mgmt_password,
+    hide_all=False,
+    ignore_errors=False,
+):
     """Run unprivileged command on a remote node.
 
     :param cmd: command to run
@@ -234,6 +238,24 @@ def fabric_remove_file_command(remote_path,
     return result
 
 
+def fabric_is_command(command_name, host=world.f_cfg.mgmt_address):
+    """Check if a command is available on a remote node.
+
+    :param command_name: remote file path
+    :type command_name: str
+    :param host: destination host
+    :type host: str, optional
+    :return: result of the command
+    :rtype: fabric.result.Result
+    """
+    result = fabric_sudo_command(
+        f'which {command_name}',
+        destination_host=host,
+        ignore_errors=True,
+    )
+    return result.succeeded
+
+
 def fabric_is_file(remote_path, destination_host=world.f_cfg.mgmt_address):
     """Check if a file exists on a remote node.
 
@@ -252,19 +274,19 @@ def fabric_is_file(remote_path, destination_host=world.f_cfg.mgmt_address):
     return result.succeeded
 
 
-def fabric_is_dir(remote_path, destination_host=world.f_cfg.mgmt_address):
+def fabric_is_dir(remote_path, host=world.f_cfg.mgmt_address):
     """Check if a directory exists on a remote node.
 
     :param remote_path: remote file path
     :type remote_path: str
-    :param destination_host: destination host
-    :type destination_host: str, optional
+    :param host: destination host
+    :type host: str, optional
     :return: result of the command
     :rtype: fabric.result.Result
     """
     result = fabric_sudo_command(
         f'test -d {remote_path}',
-        destination_host=destination_host,
+        destination_host=host,
         ignore_errors=True
     )
     return result.succeeded
@@ -557,16 +579,22 @@ def download_tcpdump_capture(location, file_name):
                          destination_host=location, ignore_errors=True)
 
 
-def add_line_if_not_exists(file_path, line_to_add):
-    """Add a line to the file if it doesn't already exist.
+def add_line_if_not_exists(file_path, line_to_add, host=world.f_cfg.mgmt_address):
+    """Add a line to the file if the line does not already exist in the file.
 
     :param file_path: path to file
     :type file_path: str
     :param line_to_add: content to add
     :type line_to_add: str
+    :param host: Machine where file exists
+    :type host: str
     """
+    # Download file, edit, then upload with sudo. Works around the case where the file is not editable because the user
+    # does not have permissions e.g. user non-root and file owned by root.
+    if fabric_is_file(file_path, destination_host=host):
+        fabric_download_file(file_path, 'tmp.txt', destination_host=host)
     try:
-        with open(file_path, 'r+', encoding='utf-8') as file:
+        with open('tmp.txt', 'r+', encoding='utf-8') as file:
             lines = file.readlines()
             # Check if line already exists.
             if any(line.strip() == line_to_add.strip() for line in lines):
@@ -575,5 +603,25 @@ def add_line_if_not_exists(file_path, line_to_add):
             file.write(line_to_add.rstrip('\n') + '\n')
     except FileNotFoundError:
         # File doesn't exist, create it and add the line.
-        with open(file_path, 'w', encoding='utf-8') as file:
+        with open('tmp.txt', 'w', encoding='utf-8') as file:
             file.write(line_to_add.rstrip('\n') + '\n')
+    fabric_send_file('tmp.txt', file_path, destination_host=host)
+    os.remove('tmp.txt')
+
+
+def write_to_file(file_path, content, host=world.f_cfg.mgmt_address):
+    """Add a line to the file if the line does not already exist in the file.
+
+    :param file_path: path to file
+    :type file_path: str
+    :param content: content to add
+    :type content: str
+    :param host: Machine where file exists
+    :type host: str
+    """
+    # Edit file locally, then upload with sudo. Works around the case where the file is not editable because the user
+    # does not have permissions e.g. user non-root and file owned by root.
+    with open('tmp.txt', 'w', encoding='utf-8') as file:
+        file.write(content)
+    fabric_send_file('tmp.txt', file_path, destination_host=host)
+    os.remove('tmp.txt')

@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,10 +12,38 @@
 # pylint: disable=invalid-name
 # pylint: disable=superfluous-parens
 
-from scapy.layers.dhcp6 import DHCP6OptOptReq
-
+from .softwaresupport.multi_server_functions import fabric_run_command
 from .forge_cfg import world, step
 from .softwaresupport.configuration import KeaConfiguration
+
+
+class Version:
+    """Version representation optimized for comparison."""
+
+    def __init__(self, value):
+        """Construct a version.
+
+        Populate value as an array containing each version part.
+        """
+        self.value = [int(i) for i in value.split('.')]
+
+    def __lt__(self, other):
+        """Less-than operator.
+
+        :param other: right-hand operator
+        :type other: str
+        :return: True if v1 < v2, False otherwise
+        :rtype: bool
+        """
+        for i in range(0, len(self.value)):
+            if i < len(other.value):
+                if self.value[i] < other.value[i]:
+                    return True
+                if self.value[i] > other.value[i]:
+                    return False
+        if len(self.value) < len(other.value):
+            return True
+        return False
 
 
 def set_world():
@@ -122,3 +150,17 @@ def merge_containers(target, source, identify=None, last_list_parent_key=None):
             for s in source:
                 if (s not in target):
                     target.append(s)
+
+
+def get_openssl_version(host=world.f_cfg.mgmt_address):
+    """Return the openssl version on the host.
+
+    :param host: Host to run openssl command on.
+    :type host: str
+    :return: OpenSSL version
+    :rtype: str
+    """
+    result = fabric_run_command('openssl version', hide_all=world.f_cfg.forge_verbose == 0, destination_host=host)
+    words = result.stdout.rstrip().split(' ')
+    version = words[1]
+    return version

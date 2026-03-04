@@ -251,6 +251,7 @@ class Certificates:
         :param name: name of a cert/key to be removed
         :type name:
         """
+        # self.remove_trust()
         if name is not None:
             remove_file_from_server(name)
             return
@@ -267,7 +268,6 @@ class Certificates:
             remove_file_from_server(self.server2_cert)
             remove_file_from_server(self.server2_csr)
             remove_file_from_server(self.server2_key)
-        # self.remove_trust()
 
     def generate(self):
         """Generate certs and keys with default names and location."""
@@ -302,8 +302,7 @@ class Certificates:
                       f'-out {cert} ' \
                       f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={ca_name}"'
         fabric_sudo_command(generate_ca)
-        self.change_access(cert)
-        self.change_access(key, '600')
+        self.change_access([cert, key])
 
     def generate_server(self,
                         cn: str = world.f_cfg.mgmt_address,
@@ -351,8 +350,7 @@ class Certificates:
 
         fabric_sudo_command(serv_prv)
         fabric_sudo_command(server)
-        self.change_access([s_csr, s_crt])
-        self.change_access(s_key, '600')
+        self.change_access([s_csr, s_crt, s_key])
 
     def generate_client(self, cn: str = 'client',
                         client_key_name: str = None,
@@ -397,8 +395,7 @@ class Certificates:
 
         fabric_sudo_command(cli_prv)
         fabric_sudo_command(cli_crt)
-        self.change_access([c_crt, c_csr])
-        self.change_access(c_key, '600')
+        self.change_access([c_crt, c_csr, c_key])
 
     def generate_server_2(self, cn: str = world.f_cfg.mgmt_address_2,
                           server_key_name: str = None,
@@ -445,8 +442,7 @@ class Certificates:
 
         fabric_sudo_command(serv_prv)
         fabric_sudo_command(serv)
-        self.change_access([s_csr, s_crt])
-        self.change_access(s_key, '600')
+        self.change_access([s_csr, s_crt, s_key])
 
     def copy(self, target_dir: str = None, dest: str = world.f_cfg.mgmt_address):
         """Copy certificates to target dir.
@@ -493,11 +489,13 @@ class Certificates:
                 copy_file_from_server(world.f_cfg.data_join(cert_name), cert_name)
                 return os.path.join(world.cfg["test_result_dir"], cert_name)
 
+    # Unused.
     def update_trust(self):
         """Trust the certificate."""
         subprocess.call(f'cp {self.ca_cert} /usr/share/ca-certificates/trust-source/', shell=True)
         subprocess.call('/usr/sbin/update-ca-trust extract', shell=True)
 
+    # Unused.
     def remove_trust(self):
         """Remove trust in the certificate."""
         subprocess.call(
@@ -2823,8 +2821,8 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
         return
 
     # Make sure any settings done for databases by previous abnormal terminations of Forge (e.g. TLS) are cleared.
-    database.clear_database(dest)
-    database.restart_databases(dest)
+    database.clear_database(host=dest)
+    database.restart_all_databases(host=dest)
 
     if world.f_cfg.install_method != 'make':
         if world.server_system in ['redhat', 'fedora']:
