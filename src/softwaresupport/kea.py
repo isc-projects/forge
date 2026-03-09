@@ -2401,6 +2401,35 @@ def _reload_kea_with_openrc(destination_address):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
+def modify_systemd_service(service_name: str, action: str, destination_address: str = world.f_cfg.mgmt_address):
+    """Modify a systemd service.
+
+    :param destination_address: management address of server
+    :type destination_address:
+    :param service_name: name of the service to modify
+    :type service_name:
+    :param action: action to perform on the service
+    :type action:
+    :return: True if the service was modified, False otherwise
+    :rtype: bool
+    """
+    if action == 'override-restart':
+        if world.server_system in ['redhat', 'fedora', 'ubuntu', 'debian']:
+            cmd = f'mkdir -p /etc/systemd/system/{service_name}.service.d'
+            fabric_sudo_command(cmd, destination_host=destination_address)
+            cmd = f'echo "[Service]\nRestart=no" > /etc/systemd/system/{service_name}.service.d/override.conf'
+            fabric_sudo_command(cmd, destination_host=destination_address)
+            fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
+            return True
+    elif action == 'remove-override':
+        cmd = f'systemctl revert {service_name}'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
+        return True
+    print(f'Unknown action: {action}')
+    return False
+
+
 def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_address, process=""):
     """Start kea with generated config.
 

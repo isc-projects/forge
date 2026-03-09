@@ -307,6 +307,20 @@ def declare_all(dhcp_version=None):
     world.radius_log = None
 
 
+def _get_kea_service_names():
+    """Get Kea service names.
+
+    :return: list of Kea service names
+    :rtype: list
+    """
+    if world.f_cfg.install_method == 'native':
+        if world.server_system in ['ubuntu', 'debian']:
+            return ['isc-kea-dhcp4-server', 'isc-kea-dhcp6-server', 'isc-kea-dhcp-ddns-server']
+        if world.server_system in ['redhat', 'fedora']:
+            return ['kea-dhcp4', 'kea-dhcp6', 'kea-dhcp-ddns']
+    return []
+
+
 # @before.all
 def test_start():
     """
@@ -372,6 +386,17 @@ def test_start():
             kea.db_setup(dest=world.f_cfg.mgmt_address_2)
         if world.f_cfg.mgmt_address_3:
             kea.db_setup(dest=world.f_cfg.mgmt_address_3)
+
+    # Override restart for systemd services
+    if kea_under_test and world.f_cfg.install_method == 'native':
+        for service_name in _get_kea_service_names():
+            kea.modify_systemd_service(service_name=service_name, action='override-restart')
+            if world.f_cfg.mgmt_address_2:
+                kea.modify_systemd_service(service_name=service_name, action='override-restart',
+                                           destination_address=world.f_cfg.mgmt_address_2)
+            if world.f_cfg.mgmt_address_3:
+                kea.modify_systemd_service(service_name=service_name, action='override-restart',
+                                           destination_address=world.f_cfg.mgmt_address_3)
 
 
 def _clear_remainings():
@@ -520,6 +545,24 @@ def cleanup(scenario):
 # @after.all
 def say_goodbye():
     """Clean up after all tests."""
+    # Check if Kea is under test
+    kea_under_test = False
+    if not world.f_cfg.no_server_management:
+        for sut_name in world.f_cfg.software_under_test:
+            if 'kea' in sut_name:
+                kea_under_test = True
+
+    # Remove override restart from systemd services
+    if kea_under_test and world.f_cfg.install_method == 'native':
+        for service_name in _get_kea_service_names():
+            kea.modify_systemd_service(service_name=service_name, action='remove-override')
+        if world.f_cfg.mgmt_address_2:
+            kea.modify_systemd_service(service_name=service_name, action='remove-override',
+                                       destination_address=world.f_cfg.mgmt_address_2)
+        if world.f_cfg.mgmt_address_3:
+            kea.modify_systemd_service(service_name=service_name, action='remove-override',
+                                       destination_address=world.f_cfg.mgmt_address_3)
+
     if world.f_cfg.history:
         result = open('result', 'w')
         for item in world.result:
