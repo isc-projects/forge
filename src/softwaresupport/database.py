@@ -120,7 +120,7 @@ def postgresql_conf(host=world.f_cfg.mgmt_address):
     :return: the path to postgresql.conf
     :rtype: str
     """
-    return fabric_sudo_command("sudo -u postgres psql -A -t -c 'SHOW config_file;'", destination_host=host)
+    return fabric_sudo_command("cd /tmp; sudo -u postgres psql -A -t -c 'SHOW config_file;'", destination_host=host)
 
 
 def postgresql_conf_d(host=world.f_cfg.mgmt_address):
