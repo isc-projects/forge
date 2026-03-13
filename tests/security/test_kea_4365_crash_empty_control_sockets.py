@@ -22,10 +22,13 @@ def test_kea_4365_empty_control_sockets():
     misc.test_setup()
     srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.start_srv('CA', 'started')
 
     config = {'Control-agent': {'control-sockets': {'': {}}}}
     command = {'command': 'config-set', 'arguments': config}
 
     # Expect error.
     srv_msg.send_ctrl_cmd_via_http(command, exp_result=1)
+
+    # Check that commands still work.
+    srv_msg.send_ctrl_cmd_via_http({'command': 'config-get'}, exp_result=0)
