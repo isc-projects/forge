@@ -51,5 +51,14 @@ def test_kea_4268_crash_big_pdexclude_prefix(channel):
     else:
         pytest.fail(f'unknown channel {channel}')
 
-    # But server continues to function.
+    # But commands should still work.
+    command = {'command': 'config-get'}
+    if channel == 'http':
+        srv_msg.send_ctrl_cmd_via_http(command, exp_result=0)
+    elif channel == 'unix':
+        srv_msg.send_ctrl_cmd_via_socket(command, exp_result=0)
+    else:
+        pytest.fail(f'unknown channel {channel}')
+
+    # And DHCP should still function.
     srv_msg.SARR('2001:db8::10')
