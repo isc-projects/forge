@@ -263,7 +263,7 @@ def test_control_channel_socket_change_socket_during_reconfigure():
 
     for socket in world.dhcp_cfg["Dhcp4"]["control-sockets"]:
         if socket["socket-type"] == "unix":
-            verify_file_permissions(world.f_cfg.run_join(socket["socket-name"]), '750')
+            verify_file_permissions(world.f_cfg.run_join(socket["socket-name"]), '770')
 
     srv_msg.client_requests_option(1)
     srv_msg.client_send_msg('DISCOVER')
@@ -312,7 +312,7 @@ def test_control_channel_socket_after_restart_load_config_file():
 
     for socket in world.dhcp_cfg["Dhcp4"]["control-sockets"]:
         if socket["socket-type"] == "unix":
-            verify_file_permissions(socket["socket-name"], '750')
+            verify_file_permissions(socket["socket-name"], '770')
 
     misc.test_procedure()
     srv_msg.client_requests_option(1)
