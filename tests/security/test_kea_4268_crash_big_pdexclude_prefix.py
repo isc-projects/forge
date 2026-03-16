@@ -20,8 +20,8 @@ def test_kea_4268_crash_big_pdexclude_prefix(channel):
     """Issue description in kea#4268, fix in kea#4295"""
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::10 - 2001:db8::20')
-    srv_control.add_http_control_channel()
-    srv_control.add_unix_socket()
+    srv_control.agent_control_channel()
+    srv_control.open_control_channel()
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
