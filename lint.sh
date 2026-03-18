@@ -85,11 +85,15 @@ run_pydocstyle() {
   pydocstyle ${PY_FILES} || FAILURE=true
 }
 
+version() {
+  $1 --version | head -n 1 | grep -E -o  '[0-9]+\.[0-9]+\.[0-9]+'
+}
+
 # Call the linters.
 printf 'Checking %s files...\n' "$(printf '%s\n' "${PY_FILES}" | wc -w)"
 for linter in ${linters}; do
-  printf '======== %s\n' "${linter}"
-  "run_${linter}"
+  printf '======== %s (%s)\n' "${linter}" "`version ${linter}`"
+   "run_${linter}"
 done
 
 # This trick is so that all linters are run, while the script still exits
