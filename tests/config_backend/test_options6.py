@@ -258,7 +258,7 @@ def test_suboptions(parameter, order, backend):
 
     :param parameter: scope of options
     :type parameter: str
-    :parameter order: order
+    :param order: order
     :type order: str
     :param backend: database type for the config backend
     :type backend: str
