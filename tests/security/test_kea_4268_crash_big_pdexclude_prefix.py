@@ -17,7 +17,11 @@ from src.forge_cfg import world
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['http', 'unix', 'plain-config'])
 def test_kea_4268_crash_big_pdexclude_prefix(channel):
-    """Issue description in kea#4268, fix in kea#4295"""
+    """Issue description in kea#4268, fix in kea#4295
+
+    :param channel: what channel to send command by: HTTP or Unix
+    :type channel: str
+    """
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8::/64', '2001:db8::10 - 2001:db8::20')
     srv_control.add_http_control_channel()
