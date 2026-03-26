@@ -17,6 +17,7 @@ from src import srv_msg
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import file_contains_line_n_times, file_doesnt_contain_line
 from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain, log_contains_n_times
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.protosupport.multi_protocol_functions import get_journal_logs
 from src.softwaresupport.multi_server_functions import fabric_sudo_command, verify_file_permissions
 
@@ -1615,6 +1616,30 @@ def test_legal_log_path_configfile(dhcp_version):
 
         log_contains(message)
 
+def _check_kea_is_down(dhcp_version):
+    """
+    Check if Kea is down.
+    :param dhcp_version: The DHCP version to use.
+    :type dhcp_version: str
+    """
+    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=1,
+                            timeout=10)
+    if dhcp_version == 'v4':
+        srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
+        srv_msg.client_requests_option(1)
+        srv_msg.client_send_msg('DISCOVER')
+
+        misc.pass_criteria()
+        srv_msg.send_wait_for_message('MUST', 'OFFER',expect_response=False)
+    else:
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_send_msg('SOLICIT')
+
+        misc.pass_criteria()
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE',expect_response=False)
+
 
 @pytest.mark.v4
 @pytest.mark.v6
@@ -1627,18 +1652,15 @@ def test_legal_log_path_config_set(dhcp_version):
     """
 
     illegal_paths = [
-        ['/tmp/', 1, 'One or more hook libraries failed to load'],
-        ['~/', 1, 'One or more hook libraries failed to load'],
-        ['/var/', 1, 'One or more hook libraries failed to load'],
-        ['/srv/', 1, 'One or more hook libraries failed to load'],
-        ['/etc/kea/', 1, 'One or more hook libraries failed to load'],
+        ['/tmp/', 5, 'One or more hook libraries failed to load'],
+        ['~/', 5, 'One or more hook libraries failed to load'],
+        ['/var/', 5, 'One or more hook libraries failed to load'],
+        ['/srv/', 5, 'One or more hook libraries failed to load'],
+        ['/etc/kea/', 5, 'One or more hook libraries failed to load'],
     ]
 
-    misc.test_procedure()
+        misc.test_setup()
 
-    misc.test_setup()
-    # Remove old custom legal log files.
-    srv_msg.remove_file_from_server(world.f_cfg.log_join('custom-log*.txt'))
     srv_control.set_time('renew-timer', 100)
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('valid-lifetime', 600)
@@ -1655,46 +1677,44 @@ def test_legal_log_path_config_set(dhcp_version):
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
 
-    # Check if kea is running
-    if dhcp_version == 'v4':
-        _send_client_requests4(1)
-    else:
-        _send_client_requests(1)
-
-    # Get current config
-    cmd = {"command": "config-get", "arguments": {}}
-    response = srv_msg.send_ctrl_cmd(cmd, 'http')
-    config_set = response['arguments']
-    del config_set['hash']
-
-    # Send config set with wrong path and check kea response.
+    misc.test_procedure()
     for path, exp_result, message in illegal_paths:
+        # Remove old custom legal log files.
         srv_msg.remove_file_from_server(path + 'custom-log*.txt')
+        srv_control.clear_some_data('logs')
+        srv_control.start_srv('DHCP', 'started')
+
+        # Check if kea is running
+        if dhcp_version == 'v4':
+            _send_client_requests4(1)
+        else:
+            _send_client_requests(1)
+
+        # Get current config
+        cmd = {"command": "config-get", "arguments": {}}
+        response = srv_msg.send_ctrl_cmd(cmd, 'http')
+        config_set = response['arguments']
+        del config_set['hash']
+
+        # Send config set with wrong path and check kea response.
         config_set[f"Dhcp{dhcp_version[1]}"]['hooks-libraries'][0]['parameters']['path'] = path
         cmd = {"command": "config-set", "arguments": config_set}
         resp = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=exp_result)
         assert message in resp['text']
 
-    # Send request and check if kea is still running after sending wrong path.
-    if dhcp_version == 'v4':
-        _send_client_requests4(1)
-        log_message = 'Address: 192.168.50.1 has been assigned for 0 hrs 10 mins 0 secs ' \
-                      'to a device with hardware address: hwtype=1 ff:01:02:03:ff:04, ' \
-                      'client-id: 00:01:02:03:04:05:06'
-    else:
-        _send_client_requests(1)
-        log_message = 'Address: 2001:db8:1::5 has been assigned for 0 hrs 10 mins 0 secs ' \
-                      'to a device with DUID: 00:03:00:01:f6:f5:f4:f3:f2:04 ' \
-                      'and hardware address: hwtype=1 f6:f5:f4:f3:f2:04 (from DUID)'
+        # Check if kea had shut down after config set with wrong path.
+        _check_kea_is_down(dhcp_version)
 
-    # acquire date from server
-    date = fabric_sudo_command('date +"%Y%m%d"')
-    # Check contents of the log files (2 entries - one after server start, second after config set)
-    file_contains_line_n_times(world.f_cfg.log_join(f'custom-log.{date}.txt'), 2, log_message)
-    # Check if file has 640 permissions
-    verify_file_permissions(world.f_cfg.log_join(f'custom-log.{date}.txt'))
+    srv_msg.remove_file_from_server(path + 'custom-log*.txt')
+    srv_control.clear_some_data('logs')
+    srv_control.start_srv('DHCP', 'started')
+
+    # Check if kea is running after fresh start
+        if dhcp_version == 'v4':
+            _send_client_requests4(1)
+        else:
+            _send_client_requests(1)
 
 
 # v4 disabled for time saving:

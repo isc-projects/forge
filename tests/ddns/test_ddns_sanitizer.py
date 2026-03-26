@@ -13,6 +13,8 @@ from src import srv_control
 from src import misc
 from src import srv_msg
 
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
+
 
 @pytest.mark.v4
 @pytest.mark.ddns
@@ -2202,3 +2204,173 @@ def test_ddns6_hostname_invalid(hostname):
         srv_msg.response_check_include_option(39)
         srv_msg.response_check_option_content(39, 'fqdn', replaced_hostname)
         srv_msg.check_leases({"address": "3000::1", "fqdn": '-- ' + replaced_hostname})
+
+
+@pytest.mark.v4
+@pytest.mark.ddns
+@pytest.mark.notsig
+@pytest.mark.forward_reverse_remove
+@pytest.mark.hostname_sanitization
+def test_ddns4_hostname_newline():
+
+    misc.test_setup()
+    # srv_control.define_lease_db_backend('memfile', persist=True, lfc_interval=10)
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.20')
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'example.com')
+    srv_control.add_ddns_server_behavioral_options('hostname-char-set', '')  # '[^A-Za-z0-9.-]'
+    srv_control.add_ddns_server_behavioral_options('hostname-char-replacement', '')
+    srv_control.add_forward_ddns('four.example.com.', 'EMPTY_KEY')
+    srv_control.add_reverse_ddns('50.168.192.in-addr.arpa.', 'EMPTY_KEY')
+    srv_control.add_unix_socket()
+    srv_control.add_http_control_channel()
+    srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    srv_control.use_dns_set_number(20)
+    srv_control.start_srv('DNS', 'started')
+
+    misc.test_procedure()
+    srv_msg.dns_question_record('abc\rde.four.example.com', 'A', 'IN')
+    srv_msg.client_send_dns_query()
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_query('MUST')
+    srv_msg.dns_option('ANSWER', expect_include=False)
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.10')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+    misc.test_procedure()
+    srv_msg.client_save_option_count(1, 'server_id')
+    srv_msg.client_add_saved_option_count(1)
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.10')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_does_include_with_value('hostname', 'abc\rde.four.example.com')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.10')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_include_option(12)
+    srv_msg.response_check_option_content(12, 'value', 'abc\rde.four.example.com')
+
+
+    # wait_for_message_in_log("DHCPSRV_MEMFILE_LFC_EXECUTE", timeout=11)
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.11')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+    misc.test_procedure()
+    srv_msg.client_save_option_count(1, 'server_id')
+    srv_msg.client_add_saved_option_count(1)
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.11')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.11')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+        # Check if the leases are added, and remember the cltt
+    cmd = {"command": "lease4-get-all",
+           "arguments": {"subnets": [1]}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+
+    srv_control.start_srv('DHCP', 'stopped')
+    srv_msg.forge_sleep(10, 'seconds')
+    srv_control.start_srv('DHCP', 'started')
+
+
+    misc.test_procedure()
+    srv_msg.client_requests_option(1)
+    srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:12')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_content('yiaddr', '192.168.50.12')
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+    misc.test_procedure()
+    srv_msg.client_save_option_count(1, 'server_id')
+    srv_msg.client_add_saved_option_count(1)
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.12')
+    srv_msg.client_requests_option(1)
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_content('yiaddr', '192.168.50.12')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+
+
+    # misc.test_procedure()
+    # srv_msg.client_save_option('server_id')
+    # srv_msg.dns_question_record('abc\rde.four.example.com', 'A', 'IN')
+    # srv_msg.client_send_dns_query()
+
+    # misc.pass_criteria()
+    # srv_msg.send_wait_for_query('MUST')
+    # srv_msg.dns_option('ANSWER')
+    # srv_msg.dns_option_content('ANSWER', 'rdata', '192.168.50.10')
+    # srv_msg.dns_option_content('ANSWER', 'rrname', 'abc\rde.four.example.com.')
+
+    # misc.test_procedure()
+    # srv_msg.dns_question_record('10.50.168.192.in-addr.arpa.', 'PTR', 'IN')
+    # srv_msg.client_send_dns_query()
+
+    # misc.pass_criteria()
+    # srv_msg.send_wait_for_query('MUST')
+    # srv_msg.dns_option('ANSWER')
+    # srv_msg.dns_option_content('ANSWER', 'rdata', 'abc\rde.four.example.com.')
+    # srv_msg.dns_option_content('ANSWER', 'rrname', '10.50.168.192.in-addr.arpa.')
+
+    # misc.test_procedure()
+    # srv_msg.client_add_saved_option_count(1)
+    # srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
+    # srv_msg.client_does_include_with_value('hostname', 'abc\rde.four.example.com)
+    # srv_msg.client_send_msg('RELEASE')
+
+    # misc.pass_criteria()
+    # srv_msg.send_dont_wait_for_message()
+
+    # misc.test_procedure()
+    # srv_msg.dns_question_record('abc\rde.four.example.com', 'A', 'IN')
+    # srv_msg.client_send_dns_query()
+
+    # misc.pass_criteria()
+    # srv_msg.send_wait_for_query('MUST')
+    # srv_msg.dns_option('ANSWER', expect_include=False)
+
+    # misc.test_procedure()
+    # srv_msg.dns_question_record('10.50.168.192.in-addr.arpa.', 'PTR', 'IN')
+    # srv_msg.client_send_dns_query()
+
+    # misc.pass_criteria()
+    # srv_msg.send_wait_for_query('MUST')
+    # srv_msg.dns_option('ANSWER', expect_include=False)
