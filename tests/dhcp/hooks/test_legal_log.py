@@ -1627,11 +1627,11 @@ def test_legal_log_path_config_set(dhcp_version):
     """
 
     illegal_paths = [
-        ['/tmp/', 1, 'One or more hook libraries failed to load'],
-        ['~/', 1, 'One or more hook libraries failed to load'],
-        ['/var/', 1, 'One or more hook libraries failed to load'],
-        ['/srv/', 1, 'One or more hook libraries failed to load'],
-        ['/etc/kea/', 1, 'One or more hook libraries failed to load'],
+        ['/tmp/', 5, 'One or more hook libraries failed to load'],
+        ['~/', 5, 'One or more hook libraries failed to load'],
+        ['/var/', 5, 'One or more hook libraries failed to load'],
+        ['/srv/', 5, 'One or more hook libraries failed to load'],
+        ['/etc/kea/', 5, 'One or more hook libraries failed to load'],
     ]
 
     misc.test_procedure()
