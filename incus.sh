@@ -74,7 +74,7 @@ function install_base_pkgs() {
             install_pkgs "$1" bind ccache freeradius git net-tools openssh-server socat tcpdump vim python3
             ;;
         "rockylinux")
-            install_pkgs "$1" bind freeradius git net-tools openssh-server socat tcpdump vim python3
+            install_pkgs "$1" bind freeradius git net-tools openssh-server socat tcpdump vim python3 tar
             ;;
         "alpine")
             install_pkgs "$1" bash bind ccache curl freeradius git gnupg net-tools openssl openssh python3 socat sudo tcpdump vim
