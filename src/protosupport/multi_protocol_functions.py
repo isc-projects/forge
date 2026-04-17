@@ -49,6 +49,7 @@ from base64 import b64encode
 import requests
 
 from src.forge_cfg import world
+from src.misc import text_color
 from src.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file, \
         fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name, \
         save_local_file, fabric_run_command
@@ -484,10 +485,7 @@ def get_journal_logs(syslog):
     """
     if world.server_system == "alpine":
         print(
-            "\033[93m"
-            + "WARNING: Alpine do not support syslog:local* facilities without additional packages"
-            + "\033[0m"
-        )
+            text_color("WARNING: Alpine do not support syslog:local* facilities without additional packages", "yellow"))
 
     if syslog == 'syslog' or syslog is None:
         file_name = 'syslog.log'

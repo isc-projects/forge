@@ -184,7 +184,7 @@ def test_v6_ntp_negative():
         # Add test case specific option data to the configuration.
         world.dhcp_cfg['option-data'].append(test_case['option_data'])
         # Print test case in green for debugging.
-        print(f'\033[92mOption test case: {test_case["option_data"]}\033[0m')
+        print(misc.text_color(f'Option test case: {test_case["option_data"]}', "green"))
 
         srv_control.build_and_send_config_files()
         srv_control.start_srv('DHCP', 'started', should_succeed=False)

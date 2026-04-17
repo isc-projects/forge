@@ -31,7 +31,7 @@ from pytest import skip
 from src import srv_msg
 
 from src.forge_cfg import world
-from src.misc import merge_containers
+from src.misc import merge_containers, text_color
 from src.protosupport.multi_protocol_functions import add_variable, substitute_vars
 from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
 from src.protosupport.multi_protocol_functions import sort_container
@@ -1377,7 +1377,7 @@ def add_hooks(library_path):
                                                       "high-availability": [{"peers": [],
                                                                              "state-machine": {"states": []}}]}})
         if world.f_cfg.mgmt_address_2 == '':
-            print('\033[93m' + 'WARNING: MGMT_ADDRESS_2 is empty, HA hook may not work as expected.' + '\033[0m')
+            print(text_color('WARNING: MGMT_ADDRESS_2 is empty, HA hook may not work as expected.', "yellow"))
     else:
         # we might test if library is already in the list, but it would prevent us from writing negative tests
         world.dhcp_cfg["hooks-libraries"].append({"library": library_path})

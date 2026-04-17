@@ -7,6 +7,7 @@
 """Pytest additional configuration."""
 
 import pytest
+from src.misc import text_color
 from src.forge_cfg import world
 
 # pylint: disable=import-outside-toplevel
@@ -71,8 +72,8 @@ def pytest_runtest_logstart(nodeid, location):
     banner = f' START {world.get_test_progress()}: {nodeid} '
     stars = 140 - len(banner)
     half_stars = int(stars / 2)
-    banner = '\n\n\u001b[36m' + ('*' * half_stars) + banner + ('*' * (stars - half_stars)) + '\u001b[0m\n'
-    print(banner)
+    banner = '\n\n' + ('*' * half_stars) + banner + ('*' * (stars - half_stars)) + '\n'
+    print(text_color(banner, 'cyan'))
 
 
 def pytest_runtest_logfinish(nodeid, location):
@@ -86,9 +87,9 @@ def pytest_runtest_logfinish(nodeid, location):
     banner = f' END {world.get_test_progress()}: {nodeid} '
     stars = 140 - len(banner)
     half_stars = int(stars / 2)
-    banner = '\n\u001b[36;1m' + ('*' * half_stars) + banner + ('*' * (stars - half_stars)) + '\u001b[0m'
+    banner = '\n' + ('*' * half_stars) + banner + ('*' * (stars - half_stars)) + '\n'
     world.current_test_index += 1
-    print(banner)
+    print(text_color(banner, 'cyan'))
 
 
 def pytest_runtest_logreport(report):
@@ -105,9 +106,9 @@ def pytest_runtest_logreport(report):
         half_stars = int(stars / 2)
         banner = ('*' * half_stars) + banner + ('*' * (stars - half_stars))
         if report.outcome == 'passed':
-            banner = '\u001b[32;1m' + banner + '\u001b[0m'
+            banner = text_color(banner, 'green')
         else:
-            banner = '\u001b[31;1m' + banner + '\u001b[0m'
+            banner = text_color(banner, 'red')
         print(banner)
 
 

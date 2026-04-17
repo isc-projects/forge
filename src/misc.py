@@ -12,6 +12,7 @@
 # pylint: disable=invalid-name
 # pylint: disable=superfluous-parens
 
+import sys
 from .softwaresupport.multi_server_functions import fabric_run_command
 from .forge_cfg import world, step
 from .softwaresupport.configuration import KeaConfiguration
@@ -164,3 +165,30 @@ def get_openssl_version(host=world.f_cfg.mgmt_address):
     words = result.stdout.rstrip().split(' ')
     version = words[1]
     return version
+
+
+def text_color(text, color):
+    """
+    Add color to text if stdout is a terminal.
+
+    :param text: string, text to add color to
+    :type text: str
+    :param color: string, color to add
+    :type color: str
+    :return: string, text with color
+    :rtype: str
+    """
+    if sys.stdout.isatty():
+        colors = {
+            "green": '\033[32m',
+            "red": '\033[31m',
+            "blue": '\033[34m',
+            "yellow": '\033[33m',
+            "cyan": '\033[36m',
+        }
+        end = '\033[0m'
+        if color in colors:
+            return f"{colors[color]}{text}{end}"
+        if '\033[' in color:
+            return f"{color}{text}{end}"
+    return text
