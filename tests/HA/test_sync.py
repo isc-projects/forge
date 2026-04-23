@@ -215,7 +215,6 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
     srv_control.add_http_control_channel()
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.dhcpsrv', 'DEBUG', 99)
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL')
 
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -250,7 +249,6 @@ def test_HA_hot_standby_different_sync_page_limit(dhcp_version: str, backend: st
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.dhcpsrv', 'DEBUG', 99)
     srv_control.configure_loggers(f'kea-dhcp{world.proto[1]}.ha-hooks', 'DEBUG', 99)
-    srv_control.configure_loggers('kea-ctrl-agent', 'DEBUG', 99, 'kea.log-CTRL2')
 
     load_hook_libraries(dhcp_version, hook_order)
 

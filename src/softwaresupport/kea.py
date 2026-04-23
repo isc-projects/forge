@@ -1599,7 +1599,6 @@ def enable_https(trust_anchor: str, cert_file: str, key_file: str, cert_required
             assert False, "No http control socket found"
 
 
-# Start kea-ctrl-agent if it's enabled
 def add_http_control_channel(host_address: str, host_port: int, socket_name: str = 'control_socket',
                              auth: dict = None, append: bool = False) -> None:
     """add_http_control_channel Add http control channel to the configuration.
@@ -1630,38 +1629,20 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
                     ]
                 }}
 
-    if world.f_cfg.control_agent:
-        assert not append, 'append does not make sense for CA'
-        if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
-            logging_file = 'kea-ctrl-agent.log'
-            logging_file_path = world.f_cfg.log_join(logging_file)
-        else:
-            logging_file_path = 'stdout'
-
-        server_socket_type = f'dhcp{world.proto[1]}'
-        world.ca_cfg["Control-agent"] = {'http-host': host_address,
-                                         'http-port':  int(host_port),
-                                         'control-sockets': {server_socket_type: {"socket-type": "unix",
-                                                                                  "socket-name": world.f_cfg.run_join(socket_name)}},
-                                         "loggers": [
-                                            {"debuglevel": 99, "name": "kea-ctrl-agent",
-                                             "output-options": [{"output": logging_file_path}],
-                                             "severity": "DEBUG"}]}
+    if "control-sockets" not in world.dhcp_cfg:
+        world.dhcp_cfg["control-sockets"] = []
+    for socket in world.dhcp_cfg["control-sockets"]:
+        if socket["socket-type"] == "http" and not append:
+            socket["socket-address"] = host_address
+            socket["socket-port"] = int(host_port)
+            socket["authentication"] = auth["authentication"]
+            break
     else:
-        if "control-sockets" not in world.dhcp_cfg:
-            world.dhcp_cfg["control-sockets"] = []
-        for socket in world.dhcp_cfg["control-sockets"]:
-            if socket["socket-type"] == "http" and not append:
-                socket["socket-address"] = host_address
-                socket["socket-port"] = int(host_port)
-                socket["authentication"] = auth["authentication"]
-                break
-        else:
-            conf = {"socket-type": "http",
-                    "socket-address": host_address,
-                    "socket-port": int(host_port)}
-            conf.update(auth)
-            world.dhcp_cfg["control-sockets"].append(conf)
+        conf = {"socket-type": "http",
+                "socket-address": host_address,
+                "socket-port": int(host_port)}
+        conf.update(auth)
+        world.dhcp_cfg["control-sockets"].append(conf)
 
 
 def config_srv_id(id_type, id_value):
@@ -1774,12 +1755,10 @@ def _set_kea_ctrl_config():
     world.cfg["keactrl"] = '''kea_config_file={path}/etc/kea/kea.conf
     dhcp4_srv={path}/sbin/kea-dhcp4
     dhcp6_srv={path}/sbin/kea-dhcp6
-    ctrl_agent_srv={path}/sbin/kea-ctrl-agent
     dhcp_ddns_srv={path}/sbin/kea-dhcp-ddns
     netconf_srv={path}/sbin/kea-netconf
     kea_dhcp4_config_file={path}/etc/kea/kea-dhcp4.conf
     kea_dhcp6_config_file={path}/etc/kea/kea-dhcp6.conf
-    kea_ctrl_agent_config_file={path}/etc/kea/kea-ctrl-agent.conf
     kea_dhcp_ddns_config_file={path}/etc/kea/kea-dhcp-ddns.conf
     kea_netconf_config_file={path}/etc/kea/kea-netconf.conf
     dhcp4={kea4}
@@ -1893,12 +1872,6 @@ def _cfg_write():
         with open("kea-dhcp-ddns.conf", 'w') as conf_file:
             conf_file.write(json.dumps(world.ddns_cfg, indent=4, sort_keys=False))
 
-    if world.f_cfg.control_agent:
-        add_variable("AGENT_CONFIG", json.dumps(world.ca_cfg), False)
-        world.ca_cfg = sort_container(world.ca_cfg)
-        with open("kea-ctrl-agent.conf", 'w') as conf_file:
-            conf_file.write(json.dumps(world.ca_cfg, indent=4, sort_keys=False))
-
     add_variable("DHCP_CONFIG", json.dumps(world.dhcp_cfg), False)
     world.dhcp_cfg = sort_container(world.dhcp_cfg)
     with open(f'kea-dhcp{world.proto[1]}.conf', 'w') as conf_file:
@@ -1911,10 +1884,6 @@ def _write_cfg2(cfg):
     :param cfg:
     :type cfg:
     """
-    if "Control-agent" in cfg:
-        with open("kea-ctrl-agent.conf", 'w') as cfg_file:
-            json.dump({"Control-agent": cfg["Control-agent"]}, cfg_file, sort_keys=False,
-                      indent=4, separators=(',', ': '))
 
     if f'Dhcp{world.proto[1]}' in cfg:
         cfg = disable_mt_if_required(cfg)
@@ -2075,13 +2044,6 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
                      mode="0o640")
     set_ownership_of_a_file(world.f_cfg.etc_join(f'kea-dhcp{world.proto[1]}.conf'), destination_address)
 
-    if world.f_cfg.control_agent:
-        fabric_send_file("kea-ctrl-agent.conf",
-                         world.f_cfg.etc_join("kea-ctrl-agent.conf"),
-                         destination_host=destination_address,
-                         mode="0o640")
-        set_ownership_of_a_file(world.f_cfg.etc_join("kea-ctrl-agent.conf"), destination_address)
-
     if world.ddns_enable:
         fabric_send_file("kea-dhcp-ddns.conf",
                          world.f_cfg.etc_join("kea-dhcp-ddns.conf"),
@@ -2097,10 +2059,6 @@ def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cf
     copy_configuration_file(f'kea-dhcp{world.proto[1]}.conf',
                             f'kea-dhcp{world.proto[1]}.conf', destination_host=destination_address)
     remove_local_file(f'kea-dhcp{world.proto[1]}.conf')
-
-    if world.f_cfg.control_agent:
-        copy_configuration_file("kea-ctrl-agent.conf", "kea-ctrl-agent.conf", destination_host=destination_address)
-        remove_local_file("kea-ctrl-agent.conf")
 
     if world.ddns_enable:
         copy_configuration_file("kea-dhcp-ddns.conf", "kea-dhcp-ddns.conf", destination_host=destination_address)
@@ -2289,14 +2247,6 @@ def _restart_kea_with_systemctl(destination_address):
     cmd = cmd_tpl.format(service=service_name)
     fabric_sudo_command(cmd, destination_host=destination_address)
 
-    if world.f_cfg.control_agent:
-        if world.server_system in ['redhat', 'fedora']:
-            service_name = 'kea-ctrl-agent'
-        else:
-            service_name = 'isc-kea-ctrl-agent'
-        cmd = cmd_tpl.format(service=service_name)
-        fabric_sudo_command(cmd, destination_host=destination_address)
-
     if world.ddns_enable:
         if world.server_system in ['redhat', 'fedora']:
             service_name = 'kea-dhcp-ddns'
@@ -2320,11 +2270,6 @@ def _restart_kea_with_openrc(destination_address):
     service_name = f'kea-dhcp{world.proto[1]}'
     cmd = cmd_tpl.format(service=service_name)
     fabric_sudo_command(cmd, destination_host=destination_address)
-
-    if world.f_cfg.control_agent:
-        service_name = 'kea-ctrl-agent'
-        cmd = cmd_tpl.format(service=service_name)
-        fabric_sudo_command(cmd, destination_host=destination_address)
 
     if world.ddns_enable:
         service_name = 'kea-dhcp-ddns'
@@ -2355,14 +2300,6 @@ def _reload_kea_with_systemctl(destination_address):
 
     cmd = cmd_tpl.format(service=service_name, sentence='initiate server reconfiguration')
     fabric_sudo_command(cmd, destination_host=destination_address)
-
-    if world.f_cfg.control_agent:
-        if world.server_system in ['redhat', 'fedora']:
-            service_name = 'kea-ctrl-agent'
-        else:
-            service_name = 'isc-kea-ctrl-agent'
-        cmd = cmd_tpl.format(service=service_name, sentence='reloading configuration')
-        fabric_sudo_command(cmd, destination_host=destination_address)
 
     if world.ddns_enable:
         if world.server_system in ['redhat', 'fedora']:
@@ -2468,14 +2405,14 @@ def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
     """
     if world.f_cfg.install_method == 'make':
         # for now just killall kea processes and ignore errors
-        fabric_sudo_command("killall -q kea-ctrl-agent  kea-dhcp-ddns  kea-dhcp4  kea-dhcp6",
+        fabric_sudo_command("killall -q kea-dhcp-ddns  kea-dhcp4  kea-dhcp6",
                             ignore_errors=True, destination_host=destination_address, hide_all=value)
 
     else:
         if world.server_system in ['redhat', 'fedora', 'alpine']:
-            service_names = 'kea-dhcp4 kea-dhcp6 kea-ctrl-agent kea-dhcp-ddns'
+            service_names = 'kea-dhcp4 kea-dhcp6 kea-dhcp-ddns'
         else:
-            service_names = 'isc-kea-dhcp4-server isc-kea-dhcp6-server isc-kea-ctrl-agent isc-kea-dhcp-ddns-server'
+            service_names = 'isc-kea-dhcp4-server isc-kea-dhcp6-server isc-kea-dhcp-ddns-server'
 
         if world.server_system == 'alpine':
             service_names = service_names.split()
@@ -2753,35 +2690,6 @@ def save_ddns_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address)
             cmd += ' /tmp/kea-dhcp-ddns.log'
         fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
         log_path = '/tmp/kea-dhcp-ddns.log'
-    fabric_download_file(log_path, local_dest_dir,
-                         destination_host=destination_address, ignore_errors=True,
-                         hide_all=world.f_cfg.forge_verbose == 0)
-
-
-def save_ctrl_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address):
-    """Download logs from kea-ctrl-agent.
-
-    :param local_dest_dir: results directory
-    :type local_dest_dir:
-    :param destination_address: ip address of a remote system
-    :type destination_address:
-    """
-    if world.f_cfg.install_method == 'make':
-        log_path = world.f_cfg.log_join('kea-ctrl-agent.log')
-    else:
-        if world.server_system in ['redhat', 'fedora', 'alpine']:
-            service_name = 'kea-ctrl-agent'
-        else:
-            service_name = 'isc-kea-ctrl-agent'
-        if world.server_system == 'alpine':
-            logging_file_path = world.f_cfg.log_join('kea-ctrl-agent.log')
-            cmd = f'cat {logging_file_path} > '  # get logs of kea service
-            cmd += ' /tmp/kea-ctrl-agent.log'
-        else:
-            cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
-            cmd += ' /tmp/kea-ctrl-agent.log'
-        fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
-        log_path = '/tmp/kea-ctrl-agent.log'
     fabric_download_file(log_path, local_dest_dir,
                          destination_host=destination_address, ignore_errors=True,
                          hide_all=world.f_cfg.forge_verbose == 0)

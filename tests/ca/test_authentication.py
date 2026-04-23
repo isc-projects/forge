@@ -41,12 +41,7 @@ def test_ca_basic_authentication(dhcp_version):
                 }
             ]
         }}
-    if world.f_cfg.control_agent:
-        srv_control.add_http_control_channel()
-        world.ca_cfg["Control-agent"].update(auth)
-    else:
-        srv_control.add_http_control_channel(auth=auth)
-
+    srv_control.add_http_control_channel(auth=auth)
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 

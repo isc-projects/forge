@@ -483,7 +483,6 @@ function install_kea_pkgs() {
             "isc-kea-dhcp-ddns"
             "isc-kea-hooks"
             "isc-kea-admin"
-            "isc-kea-ctrl-agent"
             "isc-kea-common"
             "isc-kea-mysql"
             "isc-kea-pgsql"

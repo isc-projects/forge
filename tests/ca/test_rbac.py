@@ -28,7 +28,6 @@ from src.softwaresupport.kea import Certificates
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 def test_rbac_cert_subject(dhcp_version):
     """
     Test assign-role-method set to cert subject
@@ -61,7 +60,6 @@ def test_rbac_cert_subject(dhcp_version):
     misc.test_setup()
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
-    # Configure Control Agent to use TLS.
     srv_control.enable_https(
         certificate.ca_cert,
         certificate.server_cert,
@@ -98,10 +96,7 @@ def test_rbac_cert_subject(dhcp_version):
         }
     }]
 
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -110,10 +105,6 @@ def test_rbac_cert_subject(dhcp_version):
     resp = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert, client_key))
 
     cmd = {"command": "config-get", "arguments": {}}
-    if world.f_cfg.control_agent:
-        resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert, client_key))
-        assert resp["arguments"]["Control-agent"]["hooks-libraries"] == hook
-
     for i in ["status-get", "list-commands", "config-get"]:
         cmd = {"command": i, "arguments": {}}
         resp = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert_2, client_key_2), exp_result=403)
@@ -124,31 +115,13 @@ def test_rbac_cert_subject(dhcp_version):
         resp = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert, client_key), exp_result=403)
         assert resp['text'] == 'Forbidden', f"text message from response should be 'Forbidden' it is {resp} instead."
 
-    if world.f_cfg.control_agent:
-        for i in ["list-commands", "status-get"]:
-            cmd = {"command": i, "arguments": {}}
-            resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert, client_key),
-                                         exp_result=403)
-            assert resp['text'] == 'Forbidden', f"text message from response should be\
-                  'Forbidden' it is {resp} instead."
-
     for i in ["list-commands", "status-get"]:
         cmd = {"command": i, "arguments": {}}
-        if world.f_cfg.control_agent:
-            resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert,
-                                         cert=(client_cert_3, client_key_3))
         resp = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert_3, client_key_3))
-
-    if world.f_cfg.control_agent:
-        cmd = {"command": "config-get", "arguments": {}}
-        resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert_3, client_key_3),
-                                     exp_result=403)
-        assert resp['text'] == 'Forbidden', f"text message from response should be 'Forbidden' it is {resp} instead."
 
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 def test_rbac_cert_issuer(dhcp_version):
     """
     Test assign-role-method set to cert issuer
@@ -167,7 +140,6 @@ def test_rbac_cert_issuer(dhcp_version):
     misc.test_setup()
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
-    # Configure Control Agent to use TLS.
     srv_control.enable_https(
         certificate.ca_cert,
         certificate.server_cert,
@@ -194,10 +166,7 @@ def test_rbac_cert_issuer(dhcp_version):
         }
     }]
 
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -207,10 +176,6 @@ def test_rbac_cert_issuer(dhcp_version):
     resp = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert, client_key))
 
     cmd = {"command": "config-get", "arguments": {}}
-    if world.f_cfg.control_agent:
-        resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent', verify=ca_cert, cert=(client_cert, client_key))
-        assert resp["arguments"]["Control-agent"]["hooks-libraries"] == hook
-
     # some of not allowed
     for i in ["status-get", "list-commands"]:
         cmd = {"command": i, "arguments": {}}
@@ -219,16 +184,12 @@ def test_rbac_cert_issuer(dhcp_version):
 
     # let's change config for different ca issuer
     hook[0]["parameters"]["roles"][0]["name"] = "NOT_KEA"
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg[f"Dhcp{world.proto[1]}"]["hooks-libraries"] = hook
+    world.dhcp_cfg[f"Dhcp{world.proto[1]}"]["hooks-libraries"] = hook
 
     # configure it via config-set
     cmd = {"command": "config-set",
-           "arguments": world.ca_cfg if world.f_cfg.control_agent else world.dhcp_cfg}
-    resp = srv_msg.send_ctrl_cmd(cmd, 'https', service='agent' if world.f_cfg.control_agent else None, verify=ca_cert,
-                                 cert=(client_cert, client_key))
+           "arguments": world.dhcp_cfg}
+    resp = srv_msg.send_ctrl_cmd(cmd, 'https', verify=ca_cert, cert=(client_cert, client_key))
 
     # and now all commands will fail:
     for i in ["status-get", "list-commands", "config-set", "config-get"]:
@@ -239,7 +200,6 @@ def test_rbac_cert_issuer(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.parametrize('tls', [True, False])
 def test_rbac_remote_address(dhcp_version, tls):
     """
@@ -262,7 +222,6 @@ def test_rbac_remote_address(dhcp_version, tls):
     misc.test_setup()
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
-    # Configure Control Agent to use TLS.
     if tls:
         srv_control.enable_https(
             certificate.ca_cert,
@@ -291,10 +250,7 @@ def test_rbac_remote_address(dhcp_version, tls):
         }
     }]
 
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -305,25 +261,13 @@ def test_rbac_remote_address(dhcp_version, tls):
                                  verify=ca_cert if tls else None,  # depends on tls parameter
                                  cert=(client_cert, client_key) if tls else None)  # depends on tls parameter
 
-    cmd = {"command": "config-get", "arguments": {}}
-    if world.f_cfg.control_agent:
-        resp = srv_msg.send_ctrl_cmd(cmd,
-                                     'https' if tls else 'http',  # depends on tls parameter
-                                     service='agent',
-                                     verify=ca_cert if tls else None,  # depends on tls parameter
-                                     cert=(client_cert, client_key) if tls else None)  # depends on tls parameter
-        assert resp["arguments"]["Control-agent"]["hooks-libraries"] == hook
 
     cmds = ["list-commands", "status-get"]
-    service = [None]
-    if world.f_cfg.control_agent:
-        service.append('agent')
 
-    for i, serv in tuple(zip(cmds, service)):
+    for i in cmds:
         cmd = {"command": i, "arguments": {}}
         resp = srv_msg.send_ctrl_cmd(cmd,
                                      'https' if tls else 'http',
-                                     service=serv,
                                      verify=ca_cert if tls else None,
                                      cert=(client_cert, client_key) if tls else None,
                                      exp_result=403)
@@ -331,31 +275,22 @@ def test_rbac_remote_address(dhcp_version, tls):
 
     # let's change config for different ca issuer
     hook[0]["parameters"]["roles"][0]["name"] = "192.168.51.33"
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg[f"Dhcp{world.proto[1]}"]["hooks-libraries"] = hook
+    world.dhcp_cfg[f"Dhcp{world.proto[1]}"]["hooks-libraries"] = hook
 
     # configure it via config-set
     cmd = {"command": "config-set",
-           "arguments": world.ca_cfg if world.f_cfg.control_agent else world.dhcp_cfg}
+           "arguments": world.dhcp_cfg}
     resp = srv_msg.send_ctrl_cmd(cmd,
                                  'https' if tls else 'http',
-                                 service='agent',
                                  verify=ca_cert if tls else None,
                                  cert=(client_cert, client_key) if tls else None)
 
     cmds = ["list-commands", "status-get", "config-get", "config-set"]
 
-    service = [None]
-    if world.f_cfg.control_agent:
-        service.append('agent')
-
-    for i, serv in tuple(zip(cmds, service)):
+    for i in cmds:
         cmd = {"command": i, "arguments": {}}
         resp = srv_msg.send_ctrl_cmd(cmd,
                                      'https' if tls else 'http',
-                                     service=serv,
                                      verify=ca_cert if tls else None,
                                      cert=(client_cert, client_key) if tls else None,
                                      exp_result=403)
@@ -364,7 +299,6 @@ def test_rbac_remote_address(dhcp_version, tls):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.parametrize('tls', [False, True])
 def test_rbac_basic_authentication(dhcp_version, tls):
     """
@@ -404,13 +338,8 @@ def test_rbac_basic_authentication(dhcp_version, tls):
                     }
                 ]
             }}
-    if world.f_cfg.control_agent:
-        srv_control.add_http_control_channel()
-        world.ca_cfg["Control-agent"].update(auth)
-    else:
-        srv_control.add_http_control_channel(auth=auth)
+    srv_control.add_http_control_channel(auth=auth)
 
-    # Configure Control Agent to use TLS.
     if tls:
         srv_control.enable_https(
             certificate.ca_cert,
@@ -449,42 +378,31 @@ def test_rbac_basic_authentication(dhcp_version, tls):
         }
     }]
 
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
     cmds = ["list-commands", "config-get"]
-    service = [None]
-    if world.f_cfg.control_agent:
-        service.append('agent')
-
     # first admin, check commands that should be accepted
-    for i, serv in tuple(zip(cmds, service)):
+    for i in cmds:
         cmd = {"command": i, "arguments": {}}
         headers = {'Authorization': f'Basic {b64encode(b"admin:p@ssw0rd").decode("ascii")}'}
         # send different command if there is tls enabled or not
         resp = srv_msg.send_ctrl_cmd(cmd,  # command
                                      'https' if tls else 'http',   # depends on tls parameter
-                                     service=serv, headers=headers,
+                                     headers=headers,
                                      verify=ca_cert if tls else None,   # depends on tls parameter
                                      cert=(client_cert, client_key) if tls else None)    # depends on tls parameter
 
     # first admin, check commands that should be rejected
     cmds = ["status-get", "config-set"]
-    service = [None]
-    if world.f_cfg.control_agent:
-        service.append('agent')
-
     # first admin, check commands that should be accepted
-    for i, serv in tuple(zip(cmds, service)):
+    for i in cmds:
         cmd = {"command": i, "arguments": {}}
         headers = {'Authorization': f'Basic {b64encode(b"admin:p@ssw0rd").decode("ascii")}'}
         resp = srv_msg.send_ctrl_cmd(cmd, 'https' if tls else 'http',
-                                     service=serv, headers=headers, exp_result=403,
+                                     headers=headers, exp_result=403,
                                      verify=ca_cert if tls else None,
                                      cert=(client_cert, client_key) if tls else None)
         assert resp['text'] == 'Forbidden', f"text message from response should be 'Forbidden' it is {resp} instead."
@@ -509,15 +427,11 @@ def test_rbac_basic_authentication(dhcp_version, tls):
 
     # second admin, check commands that should be accepted
     cmds = ["config-get", "list-commands"]
-    service = [None]
-    if world.f_cfg.control_agent:
-        service.append('agent')
-
-    for i, serv in tuple(zip(cmds, service)):
+    for i in cmds:
         cmd = {"command": i, "arguments": {}}
         headers = {'Authorization': f'Basic {b64encode(b"admin2:p@ssw0rd").decode("ascii")}'}
         resp = srv_msg.send_ctrl_cmd(cmd, 'https' if tls else 'http',
-                                     service=serv, headers=headers,
+                                     headers=headers,
                                      verify=ca_cert if tls else None,
                                      cert=(client_cert, client_key) if tls else None)
 
@@ -554,11 +468,7 @@ def _preconfigure_test():
                     }
                 ]}}
 
-    if world.f_cfg.control_agent:
-        srv_control.add_http_control_channel()
-        world.ca_cfg["Control-agent"].update(auth)
-    else:
-        srv_control.add_http_control_channel(auth=auth)
+    srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
         "library": "libca_rbac.so",
@@ -599,7 +509,6 @@ def make_sure_file_is_correct():
 
 
 @pytest.mark.v4
-@pytest.mark.ca
 @pytest.mark.v6
 def test_rbac_access_by_read_write(dhcp_version, make_sure_file_is_correct):
     """
@@ -628,10 +537,7 @@ def test_rbac_access_by_read_write(dhcp_version, make_sure_file_is_correct):
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -669,7 +575,6 @@ def test_rbac_access_by_read_write(dhcp_version, make_sure_file_is_correct):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 def test_rbac_access_by_name_removed_file(dhcp_version, make_sure_file_is_correct):
     """
     Check how Control Agent reacts on removed command definition file from share/api
@@ -696,10 +601,7 @@ def test_rbac_access_by_name_removed_file(dhcp_version, make_sure_file_is_correc
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
 
@@ -716,12 +618,11 @@ def test_rbac_access_by_name_removed_file(dhcp_version, make_sure_file_is_correc
     srv_control.start_srv('DHCP', 'stopped')
 
     # start without dhcp-disable file, agent should log an error and exit
-    srv_control.start_srv('CA' if world.f_cfg.control_agent else 'DHCP', 'started', should_succeed=False)
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 def test_rbac_access_by_name_removed_file_2(dhcp_version, make_sure_file_is_correct):
     """
     Check how Control Agent reacts on removed command definition file from share/api
@@ -752,15 +653,12 @@ def test_rbac_access_by_name_removed_file_2(dhcp_version, make_sure_file_is_corr
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
 
     # start without dhcp-disable file, agent should log an error and exit
-    srv_control.start_srv('CA' if world.f_cfg.control_agent else 'DHCP', 'started', should_succeed=False)
+    srv_control.start_srv('DHCP', 'started', should_succeed=False)
 
     # now let's add dhcp-disable as our custom command in custom hook, and add 3rd admin based on
     # our new my-custom-hook
@@ -787,10 +685,7 @@ def test_rbac_access_by_name_removed_file_2(dhcp_version, make_sure_file_is_corr
         }
     )
 
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -806,7 +701,6 @@ def test_rbac_access_by_name_removed_file_2(dhcp_version, make_sure_file_is_corr
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 def test_rbac_access_by_all_none(dhcp_version):
     """
     Check key words ALL and NONE in ACL definition and "list-match-first" parameter
@@ -831,10 +725,7 @@ def test_rbac_access_by_all_none(dhcp_version):
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
 
@@ -863,10 +754,7 @@ def test_rbac_access_by_all_none(dhcp_version):
     ]
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
 
@@ -889,10 +777,7 @@ def test_rbac_access_by_all_none(dhcp_version):
     ]
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
 
@@ -913,10 +798,7 @@ def test_rbac_access_by_all_none(dhcp_version):
     ]
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
 
@@ -929,7 +811,6 @@ def test_rbac_access_by_all_none(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 def test_rbac_access_by_hook_name(dhcp_version):
     """
     Check ACL based on hook names
@@ -954,10 +835,7 @@ def test_rbac_access_by_hook_name(dhcp_version):
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -983,7 +861,6 @@ def test_rbac_access_by_hook_name(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 def test_rbac_access_by_commands_with_other_list(dhcp_version):
     """Check "other-commands" ACL definition
 
@@ -1002,10 +879,7 @@ def test_rbac_access_by_commands_with_other_list(dhcp_version):
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1029,10 +903,7 @@ def test_rbac_access_by_commands_with_other_list(dhcp_version):
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'restarted')
@@ -1051,7 +922,6 @@ def test_rbac_access_by_commands_with_other_list(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 def test_rbac_filter_responses(dhcp_version):
     """Check response filtering defined in "response-filters": ["list-commands"]
     issue https://gitlab.isc.org/isc-projects/kea/-/issues/2483
@@ -1070,10 +940,7 @@ def test_rbac_filter_responses(dhcp_version):
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
@@ -1096,10 +963,7 @@ def test_rbac_filter_responses(dhcp_version):
 
     hook = _preconfigure_test()
     hook[0]["parameters"]["roles"] = roles
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.add_hooks('libdhcp_subnet_cmds.so')
     srv_control.build_and_send_config_files()
@@ -1116,7 +980,6 @@ def test_rbac_filter_responses(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.disabled
 def test_default_role(dhcp_version):
     """Test default role. Disabled.
@@ -1131,10 +994,7 @@ def test_default_role(dhcp_version):
         "reject-commands": "WRITE",
     }})
 
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1148,7 +1008,6 @@ def test_default_role(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 def test_unknown_role(dhcp_version):
     """Check if redefinition of unknown-rule works
 
@@ -1161,10 +1020,7 @@ def test_unknown_role(dhcp_version):
         "reject-commands": "WRITE",
     }})
 
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1182,10 +1038,7 @@ def test_unknown_role(dhcp_version):
         "list-match-first": "accept"
     }})
 
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'restarted')
@@ -1198,7 +1051,6 @@ def test_unknown_role(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 def test_creating_access_list_for_multiple_use_cases(dhcp_version):
     """Define multiple ACLs in "access-control-lists" and then use those in different roles
 
@@ -1229,11 +1081,7 @@ def test_creating_access_list_for_multiple_use_cases(dhcp_version):
                 }
             ]
     }}
-    if world.f_cfg.control_agent:
-        srv_control.add_http_control_channel()
-        world.ca_cfg["Control-agent"].update(auth)
-    else:
-        srv_control.add_http_control_channel(auth=auth)
+    srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
         "library": "libca_rbac.so",
@@ -1267,10 +1115,7 @@ def test_creating_access_list_for_multiple_use_cases(dhcp_version):
         }
     }]
 
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1309,7 +1154,6 @@ def test_creating_access_list_for_multiple_use_cases(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 def test_mixed_roles(dhcp_version):
     """Test all access lists types and logic in one single ACL
 
@@ -1331,11 +1175,7 @@ def test_mixed_roles(dhcp_version):
             ]
     }}
 
-    if world.f_cfg.control_agent:
-        srv_control.add_http_control_channel()
-        world.ca_cfg["Control-agent"].update(auth)
-    else:
-        srv_control.add_http_control_channel(auth=auth)
+    srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
         "library": "libca_rbac.so",
@@ -1357,10 +1197,7 @@ def test_mixed_roles(dhcp_version):
         }
     }]
 
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["hooks-libraries"] = hook
-    else:
-        world.dhcp_cfg["hooks-libraries"] = hook
+    world.dhcp_cfg["hooks-libraries"] = hook
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')

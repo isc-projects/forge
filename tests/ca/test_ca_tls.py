@@ -22,7 +22,6 @@ from src.forge_cfg import world
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('client_cert_required', [True, False])
 def test_ca_tls_basic(dhcp_version, client_cert_required):
@@ -78,7 +77,6 @@ def test_ca_tls_basic(dhcp_version, client_cert_required):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('client_cert_required', [True, False])
 def test_ca_tls_basic_negative(dhcp_version, client_cert_required):
