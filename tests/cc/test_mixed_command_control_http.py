@@ -52,11 +52,7 @@ def test_control_channel_http_headers_basic(dhcp_version, socket_protocol):
         }
     ]
 
-    # Use different configuration file for Control agent or direct Kea testing.
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["http-headers"] = headers_config
-    else:
-        world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
+    world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
 
     srv_control.build_and_send_config_files()
 
@@ -112,11 +108,7 @@ def test_control_channel_http_headers_multiple(dhcp_version, socket_protocol):
         }
     ]
 
-    # Use different configuration file for Control agent or direct Kea testing.
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["http-headers"] = headers_config
-    else:
-        world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
+    world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
 
     srv_control.build_and_send_config_files()
 
@@ -164,11 +156,7 @@ def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
         }
     ]
 
-    # Use different configuration file for Control agent or direct Kea testing.
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["http-headers"] = headers_config
-    else:
-        world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
+    world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
 
     srv_control.build_and_send_config_files()
 
@@ -176,9 +164,6 @@ def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
 
     if world.f_cfg.install_method == 'make':
         log_contains("Some error message in logs", '/tmp/keactrl.log')  # TODO: add more specific error message
-    else:
-        if not world.f_cfg.control_agent:  # 'log_contains' does not support CA installed with packages
-            log_contains("Some error message in logs")  # TODO: add more specific error message
 
 
 @pytest.mark.v4
@@ -227,11 +212,7 @@ def test_control_channel_http_headers_illegal(dhcp_version, socket_protocol):
         srv_control.add_unix_socket()
         srv_control.add_http_control_channel(server_address)
 
-        # Use different configuration file for Control agent or direct Kea testing.
-        if world.f_cfg.control_agent:
-            world.ca_cfg["Control-agent"]["http-headers"] = [test_case["header"]]
-        else:
-            world.dhcp_cfg["control-sockets"][1]["http-headers"] = [test_case["header"]]
+        world.dhcp_cfg["control-sockets"][1]["http-headers"] = [test_case["header"]]
 
         srv_control.build_and_send_config_files()
         srv_control.start_srv('DHCP', 'started', should_succeed=False)
@@ -239,8 +220,7 @@ def test_control_channel_http_headers_illegal(dhcp_version, socket_protocol):
         if world.f_cfg.install_method == 'make':
             log_contains(test_case["error_message"], '/tmp/keactrl.log')
         else:
-            if not world.f_cfg.control_agent:  # 'log_contains' does not support CA installed with packages
-                log_contains(test_case["error_message"])
+            log_contains(test_case["error_message"])
 
 
 def _remove_alpine_err_log(dhcp_version, host=world.f_cfg.mgmt_address):
@@ -304,11 +284,7 @@ def test_control_channel_http_headers_negative(dhcp_version, socket_protocol):
         srv_control.add_unix_socket()
         srv_control.add_http_control_channel(server_address)
 
-        # Use different configuration file for Control agent or direct Kea testing.
-        if world.f_cfg.control_agent:
-            world.ca_cfg["Control-agent"]["http-headers"] = [test_case["header"]]
-        else:
-            world.dhcp_cfg["control-sockets"][1]["http-headers"] = [test_case["header"]]
+        world.dhcp_cfg["control-sockets"][1]["http-headers"] = [test_case["header"]]
 
         srv_control.build_and_send_config_files()
         srv_control.start_srv('DHCP', 'started', should_succeed=False)
@@ -316,8 +292,4 @@ def test_control_channel_http_headers_negative(dhcp_version, socket_protocol):
         if world.f_cfg.install_method == 'make':
             log_contains(test_case["error_message"], '/tmp/keactrl.log')
         else:
-            if not world.f_cfg.control_agent:  # 'log_contains' does not support CA installed with packages
-                if world.server_system == 'alpine':
-                    log_contains(test_case["error_message"], f'/var/log/kea/kea-dhcp{dhcp_version[1]}.err')
-                else:
-                    log_contains(test_case["error_message"])
+            log_contains(test_case["error_message"])

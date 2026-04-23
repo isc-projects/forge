@@ -1565,10 +1565,7 @@ def update_expired_leases_processing(param):
 def enable_https(trust_anchor: str, cert_file: str, key_file: str, cert_required: bool = False) -> None:
     """enable_https Enable HTTPS for the control channel.
 
-    If forge is configured to use Control Agent daemon, it will be configured here with all the parameters
-    (trust-anchor, cert-file, key-file, cert-required).
-
-    If forge is not configured to use Control Agent daemon, https parameters will be added to the http control sockets.
+    Add https parameters to the http control sockets.
 
     :param trust_anchor: Path to the trust anchor file
     :type trust_anchor: str
@@ -1579,24 +1576,18 @@ def enable_https(trust_anchor: str, cert_file: str, key_file: str, cert_required
     :param cert_required: Whether certificate is required
     :type cert_required: bool
     """
-    if world.f_cfg.control_agent:
-        world.ca_cfg["Control-agent"]["trust-anchor"] = trust_anchor
-        world.ca_cfg["Control-agent"]["cert-file"] = cert_file
-        world.ca_cfg["Control-agent"]["key-file"] = key_file
-        world.ca_cfg["Control-agent"]["cert-required"] = cert_required
+    if "control-sockets" not in world.dhcp_cfg:
+        assert False, "Control sockets must be configured before enabling HTTPS"
+    for socket in world.dhcp_cfg["control-sockets"]:
+        if socket["socket-type"] == "http":
+            socket["socket-type"] = "https"
+            socket.update({"trust-anchor": trust_anchor,
+                            "cert-file": cert_file,
+                            "key-file": key_file,
+                            "cert-required": cert_required})
+            break
     else:
-        if "control-sockets" not in world.dhcp_cfg:
-            assert False, "Control sockets must be configured before enabling HTTPS"
-        for socket in world.dhcp_cfg["control-sockets"]:
-            if socket["socket-type"] == "http":
-                socket["socket-type"] = "https"
-                socket.update({"trust-anchor": trust_anchor,
-                               "cert-file": cert_file,
-                               "key-file": key_file,
-                               "cert-required": cert_required})
-                break
-        else:
-            assert False, "No http control socket found"
+        assert False, "No http control socket found"
 
 
 def add_http_control_channel(host_address: str, host_port: int, socket_name: str = 'control_socket',
@@ -1749,8 +1740,6 @@ def _set_kea_ctrl_config():
         kea4 = 'yes'
     if world.ddns_enable:
         ddns = 'yes'
-    if world.f_cfg.control_agent and world.ca_cfg["Control-agent"] != {}:
-        ctrl_agent = 'yes'
 
     world.cfg["keactrl"] = '''kea_config_file={path}/etc/kea/kea.conf
     dhcp4_srv={path}/sbin/kea-dhcp4
@@ -1764,7 +1753,6 @@ def _set_kea_ctrl_config():
     dhcp4={kea4}
     dhcp6={kea6}
     dhcp_ddns={ddns}
-    ctrl_agent={ctrl_agent}
     kea_verbose=no
     netconf=no
     '''.format(**locals())
@@ -1918,12 +1906,6 @@ def build_config_files(cfg=None):
     :param cfg:
     :type cfg:
     """
-    # let's make sure that if CA is used, we will execute only tests that use CA
-    if world.f_cfg.control_agent and world.ca_cfg["Control-agent"] == {}:
-        # uncomment this for debugging purposes
-        # print(json.dumps(world.dhcp_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
-        # print(json.dumps(world.ca_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
-        skip("CA is NOT used in this test, skipping entire test.")
 
     substitute_vars(world.dhcp_cfg)
     if world.proto == 'v4':
@@ -2327,11 +2309,6 @@ def _reload_kea_with_openrc(destination_address):
     cmd = cmd_tpl.format(service=service_name, pid=pid)
     fabric_sudo_command(cmd, destination_host=destination_address)
 
-    if world.f_cfg.control_agent:
-        pid = fabric_sudo_command(f'pidof {service_name}', destination_host=destination_address)
-        cmd = cmd_tpl.format(service=service_name, pid=pid)
-        fabric_sudo_command(cmd, destination_host=destination_address)
-
     if world.ddns_enable:
         pid = fabric_sudo_command(f'pidof {service_name}', destination_host=destination_address)
         cmd = cmd_tpl.format(service=service_name, pid=pid)
@@ -2726,9 +2703,6 @@ def save_logs(destination_address: str = world.f_cfg.mgmt_address):
     local_dest_dir = check_local_path_for_downloaded_files(world.cfg["test_result_dir"], '.', destination_address)
 
     save_dhcp_logs(local_dest_dir, destination_address)
-
-    if world.f_cfg.control_agent:
-        save_ctrl_logs(local_dest_dir, destination_address)
 
     if world.ddns_enable:
         save_ddns_logs(local_dest_dir, destination_address)

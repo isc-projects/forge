@@ -130,9 +130,6 @@ class ForgeConfiguration:
         # easy comparison between single and multi, or use as fixture
         self.multi_threading_enabled = True
 
-        # value of --with-ca pytest option determines if control agent is used, by default CA is not used
-        self.control_agent = ''
-
         if self.install_method == 'native':
             self.software_install_path = '/usr'
 

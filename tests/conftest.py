@@ -45,7 +45,7 @@ def initialize_terrain(request):
     """
     from src import terrain
     terrain.initialize(request)
-    world.f_cfg.control_agent = request.config.getoption("--with-ca")
+
 
 
 def pytest_runtest_teardown(item, nextitem):
@@ -192,8 +192,6 @@ def pytest_addoption(parser):
     """
     parser.addoption("--iters-factor", action="store", default=1,
                      help="iterations factor, initial iterations in tests are multiplied by this value, default 1")
-    parser.addoption("--with-ca", action="store_true", default=False,
-                     help="Enable CA settings in the test suite")
 
 
 @pytest.fixture

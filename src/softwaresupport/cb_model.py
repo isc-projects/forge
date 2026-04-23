@@ -987,17 +987,17 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
                 "control-sockets": [{"socket-type": 'unix',
                                      "socket-name": world.f_cfg.run_join('control_socket')},
                                     ]}
-    if not world.f_cfg.control_agent:
-        init_cfg["control-sockets"].append({"socket-type": "http",
-                                            "socket-address": world.f_cfg.mgmt_address,
-                                            "socket-port": 8000,
-                                            "authentication": {
-                                                "type": "basic",
-                                                "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds"),
-                                                "clients": [
-                                                    {"password-file": "hiddens"}
-                                                ]
-                                            }})
+
+    init_cfg["control-sockets"].append({"socket-type": "http",
+                                        "socket-address": world.f_cfg.mgmt_address,
+                                        "socket-port": 8000,
+                                        "authentication": {
+                                            "type": "basic",
+                                            "directory": os.path.join(world.f_cfg.get_share_path(), "kea-creds"),
+                                            "clients": [
+                                                {"password-file": "hiddens"}
+                                            ]
+                                        }})
 
     for param, val in kwargs.items():
         if val is None or param == 'check-config':

@@ -70,14 +70,6 @@ def test_ca_basic_authentication(dhcp_version):
     resp = srv_msg.send_ctrl_cmd(cmd, 'http', headers=headers, exp_result=401)
     assert resp["text"] == "Unauthorized", f"Expected text is not 'Unauthorized' it's {resp['text']}"
 
-    if world.f_cfg.control_agent:
-        headers = {'Authorization': f'Basic {b64encode(b"admin:p@ssw0rd").decode("ascii")}'}
-        resp = srv_msg.send_ctrl_cmd(cmd, 'http', service='agent', headers=headers)
-
-        headers = {'Authorization': f'Basic {b64encode(b"admin:p@ssw0rd"*5000000).decode("ascii")}'}
-        resp = srv_msg.send_ctrl_cmd(cmd, 'http', service='agent', headers=headers, exp_result=401)
-        assert resp["text"] == "Unauthorized", f"Expected text is not 'Unauthorized' it's {resp['text']}"
-
     # let's make sure that control channel is still working
     headers = {'Authorization': f'Basic {b64encode(b"admin:p@ssw0rd").decode("ascii")}'}
     srv_msg.send_ctrl_cmd(cmd, 'http', headers=headers)

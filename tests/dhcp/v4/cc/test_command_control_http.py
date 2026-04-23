@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-"""Kea Control Channel Agent - HTTP"""
+"""Kea Control Channel - HTTP"""
 
 # pylint: disable=line-too-long
 
@@ -219,10 +219,6 @@ def test_control_channel_http_change_socket_during_reconfigure():
     srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_http({"command": "config-set", "service": ["dhcp4"], "arguments":  world.dhcp_cfg},
                                    '$(SRV4_ADDR)')
-    # reconfigure control-agent to switch to new dhcp4 socket
-    if world.f_cfg.control_agent:
-        srv_msg.send_ctrl_cmd_via_http({"command": "config-set", "arguments":  world.ca_cfg},
-                                       '$(SRV4_ADDR)')
 
     misc.test_procedure()
     srv_msg.client_requests_option(1)
@@ -261,7 +257,6 @@ def test_control_channel_http_after_restart_load_config_file():
     srv_msg.response_check_content('yiaddr', '192.168.50.1')
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-    # now configuration is set over control-agent
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.51.0/24', '192.168.51.1-192.168.51.1')
     srv_control.add_http_control_channel('$(SRV4_ADDR)')
@@ -553,9 +548,6 @@ def test_control_channel_multiple_http_basic():
     This test will add additional IP addresses to the server interface and open http control channels on them.
     It will then send config-get command to all addresses and check if the response is the same.
     """
-    if world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be disabled. Making tests not viable because of CA deprecation.')
-
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.add_unix_socket()
@@ -624,9 +616,6 @@ def test_control_channel_http_127_0_0_1():
     This test will add additional IP addresses to the server interface and add http control channel to 127.0.0.1.
     It will then send config-get command to all addresses and check if the response is correct.
     """
-    if world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be disabled. Making tests not viable because of CA deprecation.')
-
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.add_unix_socket()
@@ -667,9 +656,6 @@ def test_control_channel_http_0_0_0_0():
     This test will add additional IP addresses to the server interface and add http control channel to 0.0.0.0.
     It will then send config-get command to all addresses and check if the response is correct.
     """
-    if world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be disabled. Making tests not viable because of CA deprecation.')
-
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.1-192.168.50.1')
     srv_control.add_unix_socket()
@@ -701,9 +687,6 @@ def test_control_channel_multiple_http_reload_config():
     This test will add additional IP addresses to the server interface and open http control channels on them.
     It will then send config-reload command and check if the sockets are closed.
     """
-    if world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be disabled. Making tests not viable because of CA deprecation.')
-
     # Generate ip addresses for http sockets
     srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
     srv_ip_addresses = [world.f_cfg.srv4_addr]
@@ -755,9 +738,6 @@ def test_control_channel_multiple_http_config_set():
     This test will add additional IP addresses to the server interface and open http control channels on them.
     It will then send config-set command and check if the sockets are closed.
     """
-    if world.f_cfg.control_agent:
-        pytest.skip('This test requires CA to be disabled. Making tests not viable because of CA deprecation.')
-
     # Generate ip addresses for http sockets
     srv4_addr = ipaddress.ip_address(world.f_cfg.srv4_addr)
     srv_ip_addresses = [world.f_cfg.srv4_addr]
