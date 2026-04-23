@@ -47,7 +47,6 @@ def initialize_terrain(request):
     terrain.initialize(request)
 
 
-
 def pytest_runtest_teardown(item, nextitem):
     """Call for each test after execution.
 

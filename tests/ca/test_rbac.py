@@ -261,7 +261,6 @@ def test_rbac_remote_address(dhcp_version, tls):
                                  verify=ca_cert if tls else None,  # depends on tls parameter
                                  cert=(client_cert, client_key) if tls else None)  # depends on tls parameter
 
-
     cmds = ["list-commands", "status-get"]
 
     for i in cmds:

@@ -27,7 +27,6 @@ import json
 import logging
 import subprocess  # nosec B404
 
-from pytest import skip
 from src import srv_msg
 
 from src.forge_cfg import world
@@ -1582,9 +1581,9 @@ def enable_https(trust_anchor: str, cert_file: str, key_file: str, cert_required
         if socket["socket-type"] == "http":
             socket["socket-type"] = "https"
             socket.update({"trust-anchor": trust_anchor,
-                            "cert-file": cert_file,
-                            "key-file": key_file,
-                            "cert-required": cert_required})
+                           "cert-file": cert_file,
+                           "key-file": key_file,
+                           "cert-required": cert_required})
             break
     else:
         assert False, "No http control socket found"
@@ -1872,7 +1871,6 @@ def _write_cfg2(cfg):
     :param cfg:
     :type cfg:
     """
-
     if f'Dhcp{world.proto[1]}' in cfg:
         cfg = disable_mt_if_required(cfg)
         with open(f'kea-dhcp{world.proto[1]}.conf', 'w') as cfg_file:
@@ -1906,7 +1904,6 @@ def build_config_files(cfg=None):
     :param cfg:
     :type cfg:
     """
-
     substitute_vars(world.dhcp_cfg)
     if world.proto == 'v4':
         add_defaults4()
