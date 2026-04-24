@@ -2816,7 +2816,7 @@ def insert_message_in_server_logs(message: str):
 
     # Log.
     for host in hosts:
-        for file in [world.cfg["kea_log_file"], world.cfg["kea_ca_log_file"]]:
+        for file in [world.cfg["kea_log_file"]]:
             result = fabric_sudo_command(f'echo {message} >> {file}', destination_host=host)
             assert result.succeeded
 

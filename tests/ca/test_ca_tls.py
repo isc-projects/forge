@@ -26,7 +26,7 @@ from src.forge_cfg import world
 @pytest.mark.parametrize('client_cert_required', [True, False])
 def test_ca_tls_basic(dhcp_version, client_cert_required):
     """
-    Basic test of Control Agent with TLS connectivity.
+    Basic test of Kea server with TLS connectivity.
     Parametrization sets requirement of client certificate.
 
     Test creates all required certificates on server(ca, server, client),

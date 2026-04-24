@@ -1506,9 +1506,6 @@ def print_cfg(service='DHCP'):
     elif service.lower() == 'ddns':
         print("DDNS config:")
         print(json.dumps(world.ddns_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
-    elif service.lower() == 'ca':
-        print("Control Agent config:")
-        print(json.dumps(world.ca_cfg, sort_keys=True, indent=2, separators=(',', ': ')))
 
 
 def enable_https(trust_anchor, cert_file, key_file, cert_required):
