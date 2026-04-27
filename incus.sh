@@ -385,10 +385,31 @@ function set_address() {
     # The second argument is an interface name
     # The third argument is a node name
     log "Configuring address $1 for interface $2 on node $3"
-    if ! incus exec "$3" -- ip addr show dev "${2}" | grep -E "inet(|6) $1"; then
-        incus exec "$3" -- ip addr add "$1" dev "$2"
+    if [ "$3" = "kea-forge" ]; then
+        if ! incus exec "$3" -- ip addr show dev "${2}" | grep -E "inet(|6) $1"; then
+            incus exec "$3" -- ip addr add "$1" dev "$2"
+        fi
+        incus exec "$3" -- ip link set "$2" up
+    else
+        case "$usedSystem" in
+            "ubuntu"|"debian"|"fedora"|"alpine")
+                if ! incus exec "$3" -- ip addr show dev "${2}" | grep -E "inet(|6) $1"; then
+                    incus exec "$3" -- ip addr add "$1" dev "$2"
+                fi
+                incus exec "$3" -- ip link set "$2" up
+                ;;
+            "rockylinux")
+                if [[ "$1" == *:* ]]; then # dirty but addresses are almost hardcoded anyway
+                    incus exec "$3" -- nmcli device modify "$2" ipv6.method manual ipv6.addresses "$1"
+                else
+                    incus exec "$3" -- nmcli device modify "$2" ipv4.method manual ipv4.addresses "$1"
+                fi
+                ;;
+            *)
+            printf "Not in the list"
+            ;;
+        esac
     fi
-    incus exec "$3" -- ip link set "$2" up
 }
 
 function configure_internal_network(){
@@ -759,6 +780,7 @@ case "$command" in
         incus image copy images:ubuntu/24.04 local:
         incus image copy images:fedora/40 local:
         incus image copy images:alpine/3.20 local:
+        incus image copy images:rockylinux/10 local:
         incus image list
         ;;
     initialize-container)
@@ -888,7 +910,11 @@ case "$command" in
         setup_forge
         ;;
     configure-networks)
-        configure_internal_network "$@"
+        osName=$1
+        numberOfNodes=$2
+        numberOfNetworks=$3
+        get_os "$osName"
+        configure_internal_network "$numberOfNodes" "$numberOfNetworks"
         ;;
     check-ssh)
         check_ssh "$@"
