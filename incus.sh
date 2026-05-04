@@ -399,7 +399,7 @@ function set_address() {
                 incus exec "$3" -- ip link set "$2" up
                 ;;
             "rockylinux")
-                if [[ "$1" == *:* ]]; then # dirty but addresses are almost hardcoded anyway
+                if echo "${1}" | grep -q ':'; then  # dirty but addresses are almost hardcoded anyway
                     incus exec "$3" -- nmcli device modify "$2" ipv6.method manual ipv6.addresses "$1"
                 else
                     incus exec "$3" -- nmcli device modify "$2" ipv4.method manual ipv4.addresses "$1"
