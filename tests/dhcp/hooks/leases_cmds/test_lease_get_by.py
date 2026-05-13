@@ -55,7 +55,7 @@ def _get_address(mac, address, cli_id=None, fqdn=None):
     srv_msg.response_check_content('yiaddr', address)
 
 
-# lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-address
+# lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-address, lease4-get-by-state
 @pytest.mark.v4
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
@@ -101,110 +101,84 @@ def test_control_channel_lease4_get_by_positive(backend):
     _get_address("11:11:11:11:11:11", "192.168.51.11", fqdn="xyz.com.")
 
     # let's get 08:08:08:08:08:08 for in a different ways
-    by_id_1 = _send_cmd("lease4-get-by-client-id", extra_param={"client-id": "00010203040506"})
-    del by_id_1["arguments"]["leases"][0]["cltt"]
-    assert by_id_1["arguments"]["leases"][0] == {"fqdn-fwd": True,
-                                                 "fqdn-rev": True,
-                                                 "client-id": "00:01:02:03:04:05:06",
-                                                 "hostname": "four.hostname.com.",
-                                                 "hw-address": "08:08:08:08:08:08",
-                                                 "ip-address": "192.168.50.5",
-                                                 # "pool-id": 0, if id is 0 it's no longer returned
-                                                 "state": 0,
-                                                 "subnet-id": 1,
-                                                 "valid-lft": 4000}
+    lease_1 = {"fqdn-fwd": True,
+               "fqdn-rev": True,
+               "client-id": "00:01:02:03:04:05:06",
+               "hostname": "four.hostname.com.",
+               "hw-address": "08:08:08:08:08:08",
+               "ip-address": "192.168.50.5",
+               # "pool-id": 0, if id is 0 it's no longer returned
+               "state": 0,
+               "subnet-id": 1,
+               "valid-lft": 4000}
+    by_id = _send_cmd("lease4-get-by-client-id", extra_param={"client-id": "00010203040506"})
+    del by_id["arguments"]["leases"][0]["cltt"]
+    assert by_id["arguments"]["leases"][0] == lease_1
 
-    by_host_1 = _send_cmd("lease4-get-by-hostname", extra_param={"hostname": "four.hostname.com."})
-    del by_host_1["arguments"]["leases"][0]["cltt"]
-    assert by_host_1["arguments"]["leases"][0] == {"fqdn-fwd": True,
-                                                   "fqdn-rev": True,
-                                                   "client-id": "00:01:02:03:04:05:06",
-                                                   "hostname": "four.hostname.com.",
-                                                   "hw-address": "08:08:08:08:08:08",
-                                                   "ip-address": "192.168.50.5",
-                                                   # "pool-id": 0, if id is 0 it's no longer returned
-                                                   "state": 0,
-                                                   "subnet-id": 1,
-                                                   "valid-lft": 4000}
-    by_hw_1 = _send_cmd("lease4-get-by-hw-address", extra_param={"hw-address": "08:08:08:08:08:08"})
-    del by_hw_1["arguments"]["leases"][0]["cltt"]
-    assert by_hw_1["arguments"]["leases"][0] == {"fqdn-fwd": True,
-                                                 "fqdn-rev": True,
-                                                 "client-id": "00:01:02:03:04:05:06",
-                                                 "hostname": "four.hostname.com.",
-                                                 "hw-address": "08:08:08:08:08:08",
-                                                 "ip-address": "192.168.50.5",
-                                                 # "pool-id": 0, if id is 0 it's no longer returned
-                                                 "state": 0,
-                                                 "subnet-id": 1,
-                                                 "valid-lft": 4000}
+    by_host = _send_cmd("lease4-get-by-hostname", extra_param={"hostname": "four.hostname.com."})
+    del by_host["arguments"]["leases"][0]["cltt"]
+    assert by_host["arguments"]["leases"][0] == lease_1
+
+    by_hw = _send_cmd("lease4-get-by-hw-address", extra_param={"hw-address": "08:08:08:08:08:08"})
+    del by_hw["arguments"]["leases"][0]["cltt"]
+    assert by_hw["arguments"]["leases"][0] == lease_1
 
     # let's get 09:09:09:09:09:09 for in a different ways
-    by_id_1 = _send_cmd("lease4-get-by-client-id", extra_param={"client-id": "00010203040507"})
-    del by_id_1["arguments"]["leases"][0]["cltt"]
-    assert by_id_1["arguments"]["leases"][0] == {"fqdn-fwd": False,
-                                                 "fqdn-rev": False,
-                                                 "client-id": "00:01:02:03:04:05:07",
-                                                 "hw-address": "09:09:09:09:09:09",
-                                                 "ip-address": "192.168.50.6",
-                                                 "hostname": "",
-                                                 # "pool-id": 0, if id is 0 it's no longer returned
-                                                 "state": 0,
-                                                 "subnet-id": 1,
-                                                 "valid-lft": 4000}
+    lease_2 = {"fqdn-fwd": False,
+               "fqdn-rev": False,
+               "client-id": "00:01:02:03:04:05:07",
+               "hw-address": "09:09:09:09:09:09",
+               "ip-address": "192.168.50.6",
+               "hostname": "",
+               # "pool-id": 0, if id is 0 it's no longer returned
+               "state": 0,
+               "subnet-id": 1,
+               "valid-lft": 4000}
+    by_id = _send_cmd("lease4-get-by-client-id", extra_param={"client-id": "00010203040507"})
+    del by_id["arguments"]["leases"][0]["cltt"]
+    assert by_id["arguments"]["leases"][0] == lease_2
 
-    by_hw_1 = _send_cmd("lease4-get-by-hw-address", extra_param={"hw-address": "09:09:09:09:09:09"})
-    del by_hw_1["arguments"]["leases"][0]["cltt"]
-    assert by_hw_1["arguments"]["leases"][0] == {"fqdn-fwd": False,
-                                                 "fqdn-rev": False,
-                                                 "client-id": "00:01:02:03:04:05:07",
-                                                 "hw-address": "09:09:09:09:09:09",
-                                                 "ip-address": "192.168.50.6",
-                                                 "hostname": "",
-                                                 # "pool-id": 0, if id is 0 it's no longer returned
-                                                 "state": 0,
-                                                 "subnet-id": 1,
-                                                 "valid-lft": 4000}
+    by_hw = _send_cmd("lease4-get-by-hw-address", extra_param={"hw-address": "09:09:09:09:09:09"})
+    del by_hw["arguments"]["leases"][0]["cltt"]
+    assert by_hw["arguments"]["leases"][0] == lease_2
 
     # let's get 11:11:11:11:11:11 for in a different ways
     # THOSE TWO ARE FAILING
-    by_host_1 = _send_cmd("lease4-get-by-hostname", extra_param={"hostname": "xyz.com."})
-    del by_host_1["arguments"]["leases"][0]["cltt"]
-    assert by_host_1["arguments"]["leases"][0] == {"fqdn-fwd": False,
-                                                   "fqdn-rev": False,
-                                                   # "client-id": "", #TODO I think it should be added kea#1391
-                                                   "hostname": "xyz.com.",
-                                                   "hw-address": "11:11:11:11:11:11",
-                                                   "ip-address": "192.168.51.11",
-                                                   # "pool-id": 0, if id is 0 it's no longer returned
-                                                   "state": 0,
-                                                   "subnet-id": 2,
-                                                   "valid-lft": 4000}
-    by_hw_1 = _send_cmd("lease4-get-by-hw-address", extra_param={"hw-address": "11:11:11:11:11:11"})
-    del by_hw_1["arguments"]["leases"][0]["cltt"]
-    assert by_hw_1["arguments"]["leases"][0] == {"fqdn-fwd": False,
-                                                 "fqdn-rev": False,
-                                                 # "client-id": "", #TODO I think it should be added kea#1391
-                                                 "hostname": "xyz.com.",
-                                                 "hw-address": "11:11:11:11:11:11",
-                                                 "ip-address": "192.168.51.11",
-                                                 # "pool-id": 0, if id is 0 it's no longer returned
-                                                 "state": 0,
-                                                 "subnet-id": 2,
-                                                 "valid-lft": 4000}
+    lease_3 = {"fqdn-fwd": False,
+               "fqdn-rev": False,
+               # "client-id": "", #TODO I think it should be added kea#1391
+               "hostname": "xyz.com.",
+               "hw-address": "11:11:11:11:11:11",
+               "ip-address": "192.168.51.11",
+               # "pool-id": 0, if id is 0 it's no longer returned
+               "state": 0,
+               "subnet-id": 2,
+               "valid-lft": 4000}
+    by_host = _send_cmd("lease4-get-by-hostname", extra_param={"hostname": "xyz.com."})
+    del by_host["arguments"]["leases"][0]["cltt"]
+    assert by_host["arguments"]["leases"][0] == lease_3
 
-    by_hw_1 = _send_cmd("lease4-get-by-hw-address", extra_param={"hw-address": "10:10:10:10:10:10"})
-    del by_hw_1["arguments"]["leases"][0]["cltt"]
-    assert by_hw_1["arguments"]["leases"][0] == {"fqdn-fwd": False,
-                                                 "fqdn-rev": False,
-                                                 # "client-id": "", #TODO I think it should be added kea#1391
-                                                 "hw-address": "10:10:10:10:10:10",
-                                                 "ip-address": "192.168.51.10",
-                                                 "hostname": "",
-                                                 # "pool-id": 0, if id is 0 it's no longer returned
-                                                 "state": 0,
-                                                 "subnet-id": 2,
-                                                 "valid-lft": 4000}
+    by_hw = _send_cmd("lease4-get-by-hw-address", extra_param={"hw-address": "11:11:11:11:11:11"})
+    del by_hw["arguments"]["leases"][0]["cltt"]
+    assert by_hw["arguments"]["leases"][0] == lease_3
+
+    by_hw = _send_cmd("lease4-get-by-hw-address", extra_param={"hw-address": "11:11:11:11:11:11"})
+    del by_hw["arguments"]["leases"][0]["cltt"]
+    assert by_hw["arguments"]["leases"][0] == lease_3
+
+    lease_4 = {"fqdn-fwd": False,
+               "fqdn-rev": False,
+               # "client-id": "", #TODO I think it should be added kea#1391
+               "hw-address": "10:10:10:10:10:10",
+               "ip-address": "192.168.51.10",
+               "hostname": "",
+               # "pool-id": 0, if id is 0 it's no longer returned
+               "state": 0,
+               "subnet-id": 2,
+               "valid-lft": 4000}
+    by_hw = _send_cmd("lease4-get-by-hw-address", extra_param={"hw-address": "10:10:10:10:10:10"})
+    del by_hw["arguments"]["leases"][0]["cltt"]
+    assert by_hw["arguments"]["leases"][0] == lease_4
 
     _send_cmd("lease4-get-by-hw-address", extra_param={"hw-address": "11:11:12:12:13:13"}, exp_result=3)
     _send_cmd("lease4-get-by-hostname", extra_param={"hostname": "abc.com."}, exp_result=3)
@@ -215,7 +189,7 @@ def test_control_channel_lease4_get_by_positive(backend):
     _send_cmd("lease4-get-by-client-id", exp_result=1)
 
 
-# lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-address
+# lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-address, lease4-get-by-state
 @pytest.mark.v4
 @pytest.mark.controlchannel
 def test_control_channel_lease4_get_by_negative():
