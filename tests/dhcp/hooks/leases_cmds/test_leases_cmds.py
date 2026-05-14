@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1156,7 +1156,7 @@ def test_v6_lease_cmds_add_valid_with_options(backend):
     # checking if leases are available - should be none
     srv_msg.SA(duid='00:03:00:01:66:55:44:33:22:11')
 
-    # checking if added lease is got by Control Agent
+    # checking if added lease is received by the Kea DHCP server
     cmd = {"command": "lease6-get",
            "arguments": {"ip-address": "2001:db8:1::1", "type": "IA_NA"}}
     srv_msg.send_ctrl_cmd(cmd)

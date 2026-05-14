@@ -1,4 +1,4 @@
-# Copyright (C) 2024-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2024-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -67,7 +67,6 @@ def _check_subnet4o6_select_test(arguments, exp_result, response, channel):
 
 
 @pytest.mark.v4
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet4_select_test_negative(channel):
@@ -124,7 +123,6 @@ def test_subnet4_select_test_negative(channel):
 
 
 @pytest.mark.v4
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet4_select_test(channel):
@@ -178,7 +176,6 @@ def test_subnet4_select_test(channel):
 
 
 @pytest.mark.v4
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet4o6_select_test_negative(channel):
@@ -234,7 +231,6 @@ def test_subnet4o6_select_test_negative(channel):
 
 
 @pytest.mark.v4
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet4o6_select_test(channel):
@@ -335,7 +331,6 @@ def test_subnet4o6_select_test(channel):
 
 
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet6_select_test_negative(channel):
@@ -379,7 +374,6 @@ def test_subnet6_select_test_negative(channel):
 
 
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket'])
 def test_subnet6_select_test(channel):

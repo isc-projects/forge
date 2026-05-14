@@ -24,7 +24,7 @@ from src.forge_cfg import world
 @pytest.mark.v6
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('client_cert_required', [True, False])
-def test_ca_tls_basic(dhcp_version, client_cert_required):
+def test_tls_basic(dhcp_version, client_cert_required):
     """
     Basic test of Kea server with TLS connectivity.
     Parametrization sets requirement of client certificate.
@@ -79,9 +79,9 @@ def test_ca_tls_basic(dhcp_version, client_cert_required):
 @pytest.mark.v6
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('client_cert_required', [True, False])
-def test_ca_tls_basic_negative(dhcp_version, client_cert_required):
+def test_tls_basic_negative(dhcp_version, client_cert_required):
     """
-    Basic negative test of Control Agent with TLS connectivity.
+    Basic negative test of Kea server with TLS connectivity.
     Parametrization sets requirement of client certificate.
 
     Test creates all required certificates on server(ca, server, client),

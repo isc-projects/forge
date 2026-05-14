@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -191,7 +191,7 @@ def test_v4_ddns_tuning_basic(backend, hostname_type, option):
     elif option == 'hostname':
         # remove trailing dot from fqdn for hostname
         _get_address_v4('192.168.50.1', chaddr='ff:01:02:03:ff:04', hostname='test.com', expected_hostname=fqdn[:-1])
-    # get lease details from Kea using Control Agent
+    # get lease details from Kea
     cmd = {"command": "lease4-get-all"}
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
     # remove trailing dot from fqdn for hostname
@@ -251,7 +251,7 @@ def test_v6_ddns_tuning_basic(backend, hostname_type):
     # Acquire lease
     _get_address_v6(duid='00:03:00:01:66:55:44:33:22:11', fqdn='test.com.', expected_fqdn=fqdn)
     cmd = {"command": "lease6-get-all"}
-    # get lease details from Kea using Control Agent
+    # get lease details from Kea
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
     # Check fqdn/hostname returned by Control Channel
     assert response['arguments']['leases'][0]['hostname'] == fqdn
@@ -336,7 +336,7 @@ def test_v4_ddns_tuning_subnets(backend, hostname_type, option):
                             expected_hostname=fqdn[:-1])
         cmd = {"command": "lease4-get",
                "arguments": {"ip-address": f'192.168.5{i}.10'}}
-        # get lease details from Kea using Control Agent
+        # get lease details from Kea
         response = srv_msg.send_ctrl_cmd(cmd, 'http')
         fqdn = fqdn[:-1] if hostname_type != 'empty' or option == 'hostname' else fqdn
         # Check fqdn/hostname returned by Control Channel
@@ -412,7 +412,7 @@ def test_v6_ddns_tuning_subnets(backend, hostname_type):
         _get_address_v6(duid=f'00:03:00:01:66:55:44:33:22:1{i}', fqdn=f'test{i}.com', expected_fqdn=fqdn)
         cmd = {"command": "lease6-get",
                "arguments": {"ip-address": f'2001:db8:{i}::1'}}
-        # get lease details from Kea using Control Agent
+        # get lease details from Kea
         response = srv_msg.send_ctrl_cmd(cmd, 'http')
         # Check hostname returned by Control Channel
         assert response['arguments']['hostname'] == fqdn
@@ -490,7 +490,7 @@ def test_v4_ddns_tuning_skip(backend, option):
     # Second lease should not update dns records according to class
     _check_fqdn_record("host-ff-01-02-03-ff-05.four.example.com.", expect='empty')
 
-    # get lease details from Kea using Control Agent
+    # get lease details from Kea
     cmd = {"command": "lease4-get-all"}
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
 
@@ -568,7 +568,7 @@ def test_v6_ddns_tuning_skip(backend):
     # Second lease should not update dns records according to class
     _check_fqdn_record_v6("host-00-03-00-01-66-55-44-33-22-22.four.example.com.", expect='empty')
 
-    # get lease details from Kea using Control Agent
+    # get lease details from Kea
     cmd = {"command": "lease6-get-all"}
     response = srv_msg.send_ctrl_cmd(cmd, 'http')
 

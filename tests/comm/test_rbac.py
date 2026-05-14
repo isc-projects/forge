@@ -67,7 +67,7 @@ def test_rbac_cert_subject(dhcp_version):
         True
     )
     hook = [{
-        "library": world.f_cfg.hooks_join("libca_rbac.so"),
+        "library": "libdhcp_rbac.so",
         "parameters": {
             "assign-role-method": "cert-subject",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -147,7 +147,7 @@ def test_rbac_cert_issuer(dhcp_version):
         True
     )
     hook = [{
-        "library": world.f_cfg.hooks_join("libca_rbac.so"),
+        "library": "libdhcp_rbac.so",
         "parameters": {
             "assign-role-method": "cert-issuer",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -230,7 +230,7 @@ def test_rbac_remote_address(dhcp_version, tls):
             True
         )
     hook = [{
-        "library": world.f_cfg.hooks_join("libca_rbac.so"),
+        "library": "libdhcp_rbac.so",
         "parameters": {
             "assign-role-method": "remote-address",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -348,7 +348,7 @@ def test_rbac_basic_authentication(dhcp_version, tls):
         )
 
     hook = [{
-        "library": "libca_rbac.so",
+        "library": "libdhcp_rbac.so",
         "parameters": {
             "assign-role-method": "basic-authentication",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -439,7 +439,7 @@ def _preconfigure_test():
     """
     A lot of tests below use the same basic configuration
 
-    :return: list, part of a Control Agent/DHCP configuration
+    :return: list, part of a DHCP configuration
     """
     misc.test_setup()
     srv_control.add_unix_socket()
@@ -470,7 +470,7 @@ def _preconfigure_test():
     srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
-        "library": "libca_rbac.so",
+        "library": "libdhcp_rbac.so",
         "parameters": {
             "assign-role-method": "basic-authentication",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -483,7 +483,7 @@ def _preconfigure_test():
 
 def _send_cmd(cmd, user='admin', service=None, result=0):
     """
-    Send command to control agent
+    Send command to Kea DHCP server.
     :param cmd: dict command
     :param user: string, user name
     :param service: string, service name
@@ -512,7 +512,7 @@ def make_sure_file_is_correct():
 def test_rbac_access_by_read_write(dhcp_version, make_sure_file_is_correct):
     """
     Check ACLs based on READ and WRITE key words, also check how changing command definition files
-    in share/api will reflect on Control Agent work
+    in share/api will reflect in a Kea DHCP server's behavior.
 
     :param dhcp_version: DHCP version
     :type dhcp_version: str
@@ -576,7 +576,7 @@ def test_rbac_access_by_read_write(dhcp_version, make_sure_file_is_correct):
 @pytest.mark.v6
 def test_rbac_access_by_name_removed_file(dhcp_version, make_sure_file_is_correct):
     """
-    Check how Control Agent reacts on removed command definition file from share/api
+    Check how Kea DHCP server reacts on removed command definition file from share/api
 
     :param dhcp_version: DHCP version
     :type dhcp_version: str
@@ -624,7 +624,7 @@ def test_rbac_access_by_name_removed_file(dhcp_version, make_sure_file_is_correc
 @pytest.mark.v6
 def test_rbac_access_by_name_removed_file_2(dhcp_version, make_sure_file_is_correct):
     """
-    Check how Control Agent reacts on removed command definition file from share/api
+    Check how Kea DHCP server reacts on removed command definition file from share/api
 
     :param dhcp_version: DHCP version
     :type dhcp_version: str
@@ -1083,7 +1083,7 @@ def test_creating_access_list_for_multiple_use_cases(dhcp_version):
     srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
-        "library": "libca_rbac.so",
+        "library": "libdhcp_rbac.so",
         "parameters": {
             "assign-role-method": "basic-authentication",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),
@@ -1177,7 +1177,7 @@ def test_mixed_roles(dhcp_version):
     srv_control.add_http_control_channel(auth=auth)
 
     hook = [{
-        "library": "libca_rbac.so",
+        "library": "libdhcp_rbac.so",
         "parameters": {
             "assign-role-method": "basic-authentication",
             "api-files": os.path.join(world.f_cfg.software_install_path, "share/kea/api"),

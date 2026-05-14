@@ -425,7 +425,6 @@ EMPTY_RESERVATIONS_V6_CONFIG = [
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('scope', ['global', 'shared_network', 'class'])
 def test_config_commands_usercontext(scope: str, dhcp_version: str):
@@ -511,7 +510,6 @@ def test_config_commands_usercontext(scope: str, dhcp_version: str):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 def test_config_commands_empty_reservations(dhcp_version: str):
     """
@@ -596,7 +594,6 @@ def test_config_commands_empty_reservations(dhcp_version: str):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 def test_config_hash_get(dhcp_version: str):
     """

@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2023 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,11 +18,15 @@ from src.softwaresupport.multi_server_functions import fabric_sudo_command
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket', 'http'])
 def test_status_get_basic(channel, dhcp_version):
     """ Tests if server responds with expected arguments without checking their content.
+
+    :param channel: communicaton channel: 'http' or 'socket'
+    :type channel: str
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     misc.test_setup()
     srv_control.add_unix_socket()
@@ -42,11 +46,15 @@ def test_status_get_basic(channel, dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket', 'http'])
 def test_status_get_reload(channel, dhcp_version):
     """ Tests if server changes last configuration reload timer after config reload.
+
+    :param channel: communication channel: 'http' or 'socket'
+    :type channel: str
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     misc.test_setup()
     srv_control.add_unix_socket()
@@ -66,12 +74,16 @@ def test_status_get_reload(channel, dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket', 'http'])
 def test_status_get_restart(channel, dhcp_version):
     """ Tests if server reports new PID after restart.
     Test also checks if PID is the same as reported by OS
+
+    :param channel: communication channel: 'http' or 'socket'
+    :type channel: str
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     misc.test_setup()
     srv_control.add_unix_socket()
@@ -101,12 +113,16 @@ def test_status_get_restart(channel, dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket', 'http'])
 def test_status_get_multi_threading_disabled(channel, dhcp_version):
     """ Tests if server with disabled multi-threading reports it properly.
     Test also checks if certain arguments are omitted in status when multi-threading is disabled.
+
+    :param channel: communication channel: 'http' or 'socket'
+    :type channel: str
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     misc.test_setup()
     srv_control.configure_multi_threading(False)
@@ -127,11 +143,13 @@ def test_status_get_multi_threading_disabled(channel, dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 def test_status_get_multi_threading_explicit_setting(dhcp_version):
     """ Tests if server with disabled multi-threading reports it properly.
     Test also checks if certain arguments are omitted in status when multi-threading is disabled.
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     misc.test_setup()
     srv_control.configure_multi_threading(True, 5, 50)
@@ -150,11 +168,13 @@ def test_status_get_multi_threading_explicit_setting(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 def test_status_get_multi_threading_default_setting(dhcp_version):
     """ Tests if server with disabled multi-threading reports it properly.
     Test also checks if certain arguments are omitted in status when multi-threading is disabled.
+
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     misc.test_setup()
     world.f_cfg.auto_multi_threading_configuration = False
@@ -171,12 +191,16 @@ def test_status_get_multi_threading_default_setting(dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['socket', 'http'])
 def test_status_get_multi_threading_enabled(channel, dhcp_version):
     """ Tests if server with enabled multi-threading reports it properly.
     Test also checks if certain arguments are returned properly in status when multi-threading is enabled.
+
+    :param channel: communication channel: 'http' or 'socket'
+    :type channel: str
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     misc.test_setup()
     srv_control.add_unix_socket()
@@ -197,11 +221,15 @@ def test_status_get_multi_threading_enabled(channel, dhcp_version):
 
 @pytest.mark.v4
 @pytest.mark.v6
-@pytest.mark.ca
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('channel', ['http'])
 def test_status_get_multi_threading_queue(channel, dhcp_version):
     """ Tests if server with enabled multi-threading reports changes in packet-queue-statistics.
+
+    :param channel: communication channel: 'http' or 'socket'
+    :type channel: str
+    :param dhcp_version: DHCP version
+    :type dhcp_version: str
     """
     misc.test_setup()
     world.f_cfg.auto_multi_threading_configuration = True

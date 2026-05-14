@@ -205,7 +205,6 @@ def test_control_channel_http_config_set_basic():
     misc.test_setup()
     srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::1')
 
-    # Server has control agent configured on HTTP connection with address $(SRV4_ADDR):8000 and socket unix path: control_socket.
     srv_control.build_config_files()
     srv_msg.send_ctrl_cmd_via_http({"command": "config-set", "service": ["dhcp6"], "arguments":  world.dhcp_cfg},
                                    '$(SRV4_ADDR)')

@@ -54,8 +54,8 @@ def kill_kea_on_second_system():
 @pytest.mark.parametrize('backend', ['memfile', 'mysql', 'postgresql'])
 def test_ha_tls_with_ca(dhcp_version, backend):
     """
-    Basic test of TLS functionality in HA Setup with Control Agent.
-    Test generates certificate for both HA peers and their Control Agent.
+    Basic test of TLS functionality in HA Setup.
+    Test generates certificate for HA peers.
     We check for hot-standby HA status after server start and then try top get a lease
     and check both databases for it.
     If status is acquired and lease is propagated to both backends
@@ -87,7 +87,7 @@ def test_ha_tls_with_ca(dhcp_version, backend):
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address)
 
-    # Configure Control Agent to use TLS.
+    # Configure Kea node to use TLS.
     srv_control.enable_https(
         certificate.ca_cert,
         certificate.server_cert,
@@ -127,7 +127,8 @@ def test_ha_tls_with_ca(dhcp_version, backend):
 
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(world.f_cfg.mgmt_address_2)
-    # Configure Control Agent to use TLS.
+
+    # Configure Kea node to use TLS.
     srv_control.enable_https(
         certificate.ca_cert,
         certificate.server2_cert,
