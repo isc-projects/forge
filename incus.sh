@@ -343,7 +343,7 @@ function create_user() {
         fi
     fi
     enable_ssh "$1"
-    printf "forge ALL=(ALL) NOPASSWD:ALL" > nopasswd
+    echo 'forge ALL=(ALL) NOPASSWD:ALL' > nopasswd
     incus file push nopasswd "$1"/etc/sudoers.d/forge
     rm nopasswd
     incus exec "$1" -- chmod 440 /etc/sudoers.d/forge
@@ -777,9 +777,9 @@ shift
 case "$command" in
     cache-images)
         # let's download images to cache it locally
-        incus image copy images:ubuntu/24.04 local:
-        incus image copy images:fedora/40 local:
-        incus image copy images:alpine/3.20 local:
+        incus image copy images:ubuntu/26.04 local:
+        incus image copy images:fedora/44 local:
+        incus image copy images:alpine/3.23 local:
         incus image copy images:rockylinux/10 local:
         incus image list
         ;;
