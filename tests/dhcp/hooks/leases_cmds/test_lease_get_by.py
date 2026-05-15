@@ -202,7 +202,8 @@ def test_control_channel_lease4_get_by_positive(backend):
     assert by_assigned_subnet == [lease_1, lease_2]
 
     # subnet id 0 == all subnets
-    by_assigned_subnet = _send_cmd("lease4-get-by-state", extra_param={"state": "assigned", "subnet-id": 0}, exp_result=0)
+    by_assigned_subnet = _send_cmd("lease4-get-by-state",
+                                   extra_param={"state": "assigned", "subnet-id": 0}, exp_result=0)
     _del_cltt(by_assigned_subnet["arguments"]["leases"])
     by_assigned_subnet = sorted(by_assigned_subnet["arguments"]["leases"], key=lambda x: x["hw-address"])
     assert by_assigned_subnet == assigned_leases
@@ -389,8 +390,6 @@ def test_control_channel_lease4_get_by_negative():
     assert resp["text"] == "0 IPv4 lease(s) found with state 9."
 
 
-
-
 @pytest.mark.v6
 @pytest.mark.controlchannel
 @pytest.mark.hook
@@ -419,28 +418,51 @@ def test_v6_lease_get_by_positive(backend):
     cmd = {"command": "lease6-get-all"}
     srv_msg.send_ctrl_cmd(cmd, exp_result=3)
 
-    # add a lease
-    cmd = {"command": "lease6-add", "arguments": {"subnet-id": 1,
-                                                  "ip-address": "2001:db8:1::1",
-                                                  "duid": "00:03:00:01:66:55:44:33:22:11",
-                                                  "iaid": 1234,
-                                                  "hostname": "four.hostname.com",
-                                                  "hw-address": "08:08:08:08:08:08"}}
+    # add a leases
+    cmd = {"command": "lease6-bulk-apply", "arguments": {
+        "leases": [
+            {"subnet-id": 1,
+             "ip-address": "2001:db8:1::1",
+             "duid": "00:03:00:01:66:55:44:33:22:11",
+             "iaid": 1234,
+             "hostname": "four.hostname.com",
+             "hw-address": "08:08:08:08:08:08"},
+            {"subnet-id": 2,
+             "ip-address": "2001:db8:2::5",
+             "duid": "00:04:00:01:66:55:44:33:22:11",
+             "iaid": 1234,
+             "hostname": "five.hostname.com",
+             "hw-address": "09:09:09:09:09:09"},
+        ]}}
     srv_msg.send_ctrl_cmd(cmd)
 
-    lease_params = {"duid": "00:03:00:01:66:55:44:33:22:11",
-                    "fqdn-fwd": False,
-                    "fqdn-rev": False,
-                    "hostname": "four.hostname.com",
-                    "iaid": 1234,
-                    "ip-address": "2001:db8:1::1",
-                    "hw-address": "08:08:08:08:08:08",
-                    # "pool-id": 0, if id is 0 it's no longer returned
-                    "preferred-lft": 4000,
-                    "state": 0,
-                    "subnet-id": 1,
-                    "type": "IA_NA",
-                    "valid-lft": 4000}
+    lease1_params = {"duid": "00:03:00:01:66:55:44:33:22:11",
+                     "fqdn-fwd": False,
+                     "fqdn-rev": False,
+                     "hostname": "four.hostname.com",
+                     "iaid": 1234,
+                     "ip-address": "2001:db8:1::1",
+                     "hw-address": "08:08:08:08:08:08",
+                     # "pool-id": 0, if id is 0 it's no longer returned
+                     "preferred-lft": 4000,
+                     "state": 0,
+                     "subnet-id": 1,
+                     "type": "IA_NA",
+                     "valid-lft": 4000}
+    lease2_params = {"duid": "00:04:00:01:66:55:44:33:22:11",
+                     "fqdn-fwd": False,
+                     "fqdn-rev": False,
+                     "hostname": "five.hostname.com",
+                     "iaid": 1234,
+                     "ip-address": "2001:db8:2::5",
+                     "hw-address": "09:09:09:09:09:09",
+                     # "pool-id": 0, if id is 0 it's no longer returned
+                     "preferred-lft": 4000,
+                     "state": 0,
+                     "subnet-id": 2,
+                     "type": "IA_NA",
+                     "valid-lft": 4000}
+    leases_params = [lease1_params, lease2_params]
 
     # check for the lease by duid
     cmd = {"command": "lease6-get-by-duid",
@@ -448,7 +470,7 @@ def test_v6_lease_get_by_positive(backend):
     resp = srv_msg.send_ctrl_cmd(cmd)
 
     del resp["arguments"]["leases"][0]["cltt"]  # this value is dynamic so we delete it
-    assert resp["arguments"]["leases"][0] == lease_params
+    assert resp["arguments"]["leases"][0] == lease1_params
 
     # check for the lease by hostname
     cmd = {"command": "lease6-get-by-hostname",
@@ -456,7 +478,7 @@ def test_v6_lease_get_by_positive(backend):
     resp = srv_msg.send_ctrl_cmd(cmd)
 
     del resp["arguments"]["leases"][0]["cltt"]  # this value is dynamic so we delete it
-    assert resp["arguments"]["leases"][0] == lease_params
+    assert resp["arguments"]["leases"][0] == lease1_params
 
     # check for the lease by hw-address
     cmd = {"command": "lease6-get-by-hw-address",
@@ -464,13 +486,41 @@ def test_v6_lease_get_by_positive(backend):
     resp = srv_msg.send_ctrl_cmd(cmd)
 
     del resp["arguments"]["leases"][0]["cltt"]  # this value is dynamic so we delete it
-    assert resp["arguments"]["leases"][0] == lease_params
+    assert resp["arguments"]["leases"][0] == lease1_params
 
-    srv_msg.check_leases({"duid": "00:03:00:01:66:55:44:33:22:11",
-                          "address": "2001:db8:1::1",
-                          "iaid": 1234,
-                          "hostname": "four.hostname.com",
-                          "hw-address": "08:08:08:08:08:08"},
+    # check for the lease by state
+    cmd = {"command": "lease6-get-by-state",
+           "arguments": {"state": 0}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    _del_cltt(resp["arguments"]["leases"])
+    assert resp["arguments"]["leases"] == leases_params
+
+    cmd = {"command": "lease6-get-by-state",
+           "arguments": {"state": 0, "subnet-id": 2}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    _del_cltt(resp["arguments"]["leases"])
+    assert resp["arguments"]["leases"] == [lease2_params]
+
+    cmd = {"command": "lease6-get-by-state",
+           "arguments": {"state": "assigned", "subnet-id": 1}}
+    resp = srv_msg.send_ctrl_cmd(cmd)
+    _del_cltt(resp["arguments"]["leases"])
+    assert resp["arguments"]["leases"] == [lease1_params]
+
+    _send_cmd("lease6-get-by-state", extra_param={"state": 2}, exp_result=3)
+    _send_cmd("lease4-get-by-state", extra_param={"state": "released", "subnet-id": 1}, exp_result=3)
+
+    srv_msg.check_leases([{"duid": "00:03:00:01:66:55:44:33:22:11",
+                           "address": "2001:db8:1::1",
+                           "iaid": 1234,
+                           "hostname": "four.hostname.com",
+                           "hw-address": "08:08:08:08:08:08"},
+                          {"duid": "00:04:00:01:66:55:44:33:22:11",
+                           "address": "2001:db8:2::5",
+                           "iaid": 1234,
+                           "hostname": "five.hostname.com",
+                           "hw-address": "09:09:09:09:09:09"},
+                          ],
                          backend=backend)
 
 
@@ -640,3 +690,14 @@ def test_v6_lease_get_by_negative():
            "arguments": {"hw-address": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'hw-address' parameter must be a string"
+
+    cmd = {"command": "lease6-get-by-state",
+           "arguments": {"state": {}}}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "'state' parameter must be a number or a string"
+
+    resp = _send_cmd("lease6-get-by-state", extra_param={"state": "not_a_state"}, exp_result=1)
+    assert resp["text"] == "'state' parameter value (not_a_state) is not recognized"
+    # Inconsistent, ideally should also return 1
+    resp = _send_cmd("lease6-get-by-state", extra_param={"state": 9}, exp_result=3)
+    assert resp["text"] == "0 IPv6 lease(s) found with state 9."
