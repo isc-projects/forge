@@ -44,7 +44,7 @@ while test 0 -lt "${#}"; do
     shift
 done
 
-if [ $(tput colors 2> /dev/null) -ge 8 ]; then
+if test -t 1; then
     RED='\033[0;31m'
     # GREEN='\033[0;32m'
     BLUE='\033[0;34m'
