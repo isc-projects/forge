@@ -113,6 +113,34 @@ def get_stat(name: str) -> list:
     return result
 
 
+def compare_global_to_all_statistics(destination=world.f_cfg.mgmt_address):
+    """
+    Compare global statistics to all statistics.
+
+    :param destination: destination address
+    :type destination: str
+    """
+    result = srv_msg.send_ctrl_cmd_via_socket(
+        '{"command":"statistic-get-all","arguments":{}}',
+        destination_address=destination,
+    )
+    statistics_all = result["arguments"]
+
+    result = srv_msg.send_ctrl_cmd_via_socket(
+        '{"command":"statistic-global-get-all","arguments":{}}',
+        destination_address=destination,
+    )
+    statistics_global_all = result["arguments"]
+
+    # Strip subnet statistics from all statistics
+    statistics_all_stripped = {
+        k: v for k, v in statistics_all.items() if "subnet[" not in k
+    }
+
+    assert statistics_all_stripped == statistics_global_all, \
+        "Global part of statistic-get-all and statistic-global-get-all are not equal"
+
+
 @pytest.mark.v4
 def test_stats_basic():
     misc.test_setup()
@@ -151,6 +179,8 @@ def test_stats_basic():
         if c.startswith('statistic-'):
             cnt += 1
     assert len(stat_cmds) == cnt, "Number of returned statistic-* commands in list of available commands is incorrect!"
+
+    compare_global_to_all_statistics()
 
     srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'chaddr', "ff:01:02:03:ff:04")
@@ -423,6 +453,7 @@ def test_stats_basic():
     assert get_stat("subnet[1].total-addresses") == [10], "Stat subnet[1].total-addresses is not correct"
     assert get_stat("subnet[1].v4-reservation-conflicts") == [1, 0], "Stat subnet[1].v4-reservation-conflicts is not correct"
     assert get_stat("v4-reservation-conflicts") == [1, 0], "Stat v4-reservation-conflicts is not correct"
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.v4
@@ -496,6 +527,7 @@ def test_stats_remove_reset():
     srv_msg.send_wait_for_message('MUST', 'ACK')
 
     assert get_stat('pkt4-received') == [2, 1, 0], "Stat pkt4-received is not correct"
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.v4
@@ -537,6 +569,7 @@ def test_stats_reconfigure():
     assert get_stat('pkt4-received') == [0], "Stat pkt4-received is not correct"
     assert get_stat('subnet[1].total-addresses') == [1], "Stat subnet[1].total-addresses is not correct"
     assert get_stat('subnet[2].total-addresses') == [2], "Stat subnet[2].total-addresses is not correct"
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.v4
@@ -565,6 +598,7 @@ def test_stats_sample_count():
         srv_msg.send_wait_for_message('MUST', 'OFFER')
 
     assert get_stat('pkt4-received') == [3, 2], "Stat pkt4-received is not correct"
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.v4
@@ -597,6 +631,7 @@ def test_stats_sample_age():
             srv_msg.forge_sleep(1, 'second')
 
     assert get_stat('pkt4-received') == [3], "Stat pkt4-received is not correct"
+    compare_global_to_all_statistics()
 
 
 def _increase_mac(mac: str):
@@ -793,6 +828,7 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
     assert get_stat('subnet[1].pool[2].assigned-addresses')[0] == pool_2_size
     assert get_stat('subnet[1].pool[2].cumulative-assigned-addresses')[0] == 2 * pool_2_size
     assert get_stat('subnet[1].pool[2].reclaimed-leases')[0] == (pool_2_size if lease_remove_method == 'expire' else 0)
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.v4
@@ -896,3 +932,4 @@ def test_stats_pool_id_decline(backend):
     assert get_stat('subnet[1].pool[0].reclaimed-declined-addresses')[0] == pool_0_size
     assert get_stat('subnet[1].pool[1].reclaimed-declined-addresses')[0] == pool_1_size
     assert get_stat('subnet[1].pool[2].reclaimed-declined-addresses')[0] == pool_2_size
+    compare_global_to_all_statistics()

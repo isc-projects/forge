@@ -15,6 +15,7 @@ from src import misc
 from src import srv_control
 from src import srv_msg
 from src.forge_cfg import world
+from tests.dhcp.v4.test_statistics import compare_global_to_all_statistics
 
 
 class StatsState6:
@@ -142,6 +143,8 @@ def test_stats_basic():
     stats.compare()
 
     misc.test_procedure()
+
+    compare_global_to_all_statistics()
 
     result = srv_msg.send_ctrl_cmd_via_socket('{"command": "list-commands","arguments": {}}')
     stat_cmds = ['statistic-get',
@@ -418,6 +421,7 @@ def test_stats_basic():
     assert get_stat("subnet[1].total-nas") == [10], "Stat subnet[1].total-nas is not correct"
     assert get_stat("subnet[1].pool[0].total-nas") == [10], "Stat subnet[1].total-nas is not correct"
     assert get_stat("assigned-nas") == [1, 0, 1, 0, 1, 0], "Stat assigned-nas is not correct"
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.v6
@@ -494,6 +498,7 @@ def test_stats_remove_reset():
     srv_msg.send_wait_for_message('MUST', 'REPLY')
 
     assert get_stat('pkt6-received') == [2, 1, 0], "Stat pkt6-received is not correct"
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.v6
@@ -536,6 +541,7 @@ def test_stats_reconfigure():
     assert get_stat('pkt6-received') == [0], "Stat pkt6-received is not correct"
     assert get_stat('subnet[1].total-nas') == [1], "Stat subnet[1].total-nas is not correct"
     assert get_stat('subnet[2].total-nas') == [2], "Stat subnet[2].total-nas is not correct"
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.v6
@@ -564,6 +570,7 @@ def test_stats_sample_count():
         srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
     assert get_stat('pkt6-received') == [3, 2], "Stat pkt6-received is not correct"
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.v6
@@ -598,6 +605,7 @@ def test_stats_sample_age():
             srv_msg.forge_sleep(1, 'second')
 
     assert get_stat('pkt6-received') == [3], "Stat pkt6-received is not correct"
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.disabled
@@ -884,6 +892,7 @@ def test_stats_6():
 
     srv_msg.send_ctrl_cmd_via_socket('{"command":"statistic-get-all","arguments":{}}',
                                      socket_name='control_socket2')
+    compare_global_to_all_statistics()
 
 
 def _increase_mac(mac: str):
@@ -1085,6 +1094,7 @@ def test_stats_pool_id_assign_reclaim(lease_remove_method, backend):
     assert get_stat('subnet[1].pool[2].assigned-nas')[0] == pool_2_size
     assert get_stat('subnet[1].pool[2].cumulative-assigned-nas')[0] == 2 * pool_2_size
     assert get_stat('subnet[1].pool[2].reclaimed-leases')[0] == (pool_2_size if lease_remove_method == 'expire' else 0)
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.v6
@@ -1215,6 +1225,7 @@ def test_stats_pool_id_assign_reclaim_pd(lease_remove_method, backend):
     assert get_stat('subnet[1].pd-pool[2].assigned-pds')[0] == pool_2_size
     assert get_stat('subnet[1].pd-pool[2].cumulative-assigned-pds')[0] == 2 * pool_2_size
     assert get_stat('subnet[1].pd-pool[2].reclaimed-leases')[0] == (pool_2_size if lease_remove_method == 'expire' else 0)
+    compare_global_to_all_statistics()
 
 
 @pytest.mark.v6
@@ -1319,3 +1330,4 @@ def test_stats_pool_id_decline(backend):
     assert get_stat('subnet[1].pool[0].reclaimed-declined-addresses')[0] == pool_0_size
     assert get_stat('subnet[1].pool[1].reclaimed-declined-addresses')[0] == pool_1_size
     assert get_stat('subnet[1].pool[2].reclaimed-declined-addresses')[0] == pool_2_size
+    compare_global_to_all_statistics()
