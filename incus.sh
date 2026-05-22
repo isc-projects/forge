@@ -442,10 +442,10 @@ function install_nexus_repo() {
     log "Installing Nexus repository on node $1"
     case "$usedSystem" in
             "ubuntu"|"debian")
-                printf "deb https://packages.aws.isc.org/repository/kea-%s/ kea main" "$usedSystem-$osVersion" > kea.list
-                incus file push kea.list "$1"/etc/apt/sources.list.d/kea.list
-                incus exec kea-"$node" -- curl https://packages.aws.isc.org/repository/repo-keys/repo-key.gpg -o key
-                incus exec kea-"$node" -- apt-key add key
+                incus exec kea-"$node" -- curl https://packages.aws.isc.org/repository/repo-keys/repo-key.gpg -o repo-key.gpg
+                incus exec kea-"$node" -- gpg --dearmor -o /usr/share/keyrings/packages-aws-isc-org.gpg repo-key.gpg
+                printf "deb [signed-by=/usr/share/keyrings/packages-aws-isc-org.gpg] https://packages.aws.isc.org/repository/kea-%s/ kea main\n" "${usedSystem}-${osVersion}" > kea-nexus.list
+                incus file push kea-nexus.list "$1"/etc/apt/sources.list.d/kea-nexus.list
                 update kea-"$node"
                 ;;
             "rockylinux"|"fedora")
