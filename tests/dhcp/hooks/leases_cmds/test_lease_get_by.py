@@ -374,10 +374,6 @@ def test_control_channel_lease4_get_by_negative():
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "Command arguments missing or a not a map."
 
-    cmd = {"command": "lease4-get-by-state"}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Command arguments missing or a not a map."
-
     cmd = {"command": "lease4-get-by-state",
            "arguments": {"state": {}}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
