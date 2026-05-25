@@ -60,6 +60,41 @@ def _del_cltt(leases):
         del lease["cltt"]
 
 
+def _get_lease_by_state_corner_cases(v6 = False):
+
+    v = '6' if v6 else '4'
+    command = f"lease{v}-get-by-state"
+    # Lack of parameter or wrong parameter type => error 1
+    cmd = {"command": command}
+    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
+    assert resp["text"] == "Command arguments missing or a not a map."
+    resp = _send_cmd(command, extra_param={"state": {}}, exp_result=1)
+    assert resp["text"] == "'state' parameter must be a number or a string"
+    resp = _send_cmd(command, extra_param={"state": [1, 2]}, exp_result=1)
+    assert resp["text"] == "\'state\' parameter must be a number or a string"
+    resp = _send_cmd(command, extra_param={"state": True}, exp_result=1)
+    assert resp["text"] == "\'state\' parameter must be a number or a string"
+    resp = _send_cmd(command, extra_param={"state": 3.14}, exp_result=1)
+    assert resp["text"] == "\'state\' parameter must be a number or a string"
+
+    # Inconsistent cases:
+    # For strings wrong value is treated as error 1
+    resp = _send_cmd(command, extra_param={"state": "not_a_state"}, exp_result=1)
+    assert resp["text"] == "'state' parameter value (not_a_state) is not recognized"
+
+    # For ints wrong value is treated as error 3 (no leases found)
+    resp = _send_cmd(command, extra_param={"state": 9}, exp_result=3)
+    assert resp["text"] == f"0 IPv{v} lease(s) found with state 9."
+
+    # Wrong type, treated as wrong value due to overflow => error 3 (no leases found)
+    resp = _send_cmd(command, extra_param={"state": -1}, exp_result=3)
+    assert resp["text"] == f"0 IPv{v} lease(s) found with state 4294967295."
+
+    # Wrong type, uint32 max + 1 treated as correct value due to overflow => error 3 (no leases found)
+    resp = _send_cmd(command, extra_param={"state": 4294967296}, exp_result=3)
+    assert resp["text"] == f"0 IPv{v} lease(s) found with state default (0)."
+
+
 # lease4-get-by-client-id, lease4-get-by-hostname, lease4-get-by-hw-address, lease4-get-by-state
 @pytest.mark.v4
 @pytest.mark.controlchannel
@@ -370,20 +405,8 @@ def test_control_channel_lease4_get_by_negative():
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'hw-address' parameter must be a string"
 
-    cmd = {"command": "lease4-get-by-state"}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Command arguments missing or a not a map."
+    _get_lease_by_state_corner_cases()
 
-    cmd = {"command": "lease4-get-by-state",
-           "arguments": {"state": {}}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "'state' parameter must be a number or a string"
-
-    resp = _send_cmd("lease4-get-by-state", extra_param={"state": "not_a_state"}, exp_result=1)
-    assert resp["text"] == "'state' parameter value (not_a_state) is not recognized"
-    # Inconsistent, ideally should also return 1
-    resp = _send_cmd("lease4-get-by-state", extra_param={"state": 9}, exp_result=3)
-    assert resp["text"] == "0 IPv4 lease(s) found with state 9."
 
 
 @pytest.mark.v6
@@ -687,13 +710,4 @@ def test_v6_lease_get_by_negative():
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'hw-address' parameter must be a string"
 
-    cmd = {"command": "lease6-get-by-state",
-           "arguments": {"state": {}}}
-    resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "'state' parameter must be a number or a string"
-
-    resp = _send_cmd("lease6-get-by-state", extra_param={"state": "not_a_state"}, exp_result=1)
-    assert resp["text"] == "'state' parameter value (not_a_state) is not recognized"
-    # Inconsistent, ideally should also return 1
-    resp = _send_cmd("lease6-get-by-state", extra_param={"state": 9}, exp_result=3)
-    assert resp["text"] == "0 IPv6 lease(s) found with state 9."
+    _get_lease_by_state_corner_cases(v6=True)
