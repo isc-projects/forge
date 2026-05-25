@@ -60,8 +60,9 @@ def _del_cltt(leases):
     for lease in leases:
         del lease["cltt"]
 
-def _get_leases_by_state(v6 = False, arguments = None):
-    """Helper function to get leases by state, expects not empty result. 
+
+def _get_leases_by_state(v6=False, arguments=None):
+    """Helper function to get leases by state, expects not empty result.
     Deletes CLTT from the response and sorts leases by ip-address"""
 
     command = f"lease{'6' if v6 else '4'}-get-by-state"
@@ -70,7 +71,8 @@ def _get_leases_by_state(v6 = False, arguments = None):
     _del_cltt(leases)
     return sorted(leases, key=lambda x: x["ip-address"])
 
-def _get_lease_by_state_edge_cases(v6 = False):
+
+def _get_lease_by_state_edge_cases(v6=False):
     """ Test various edge cases of lease-get-by-state command, can be used for both v4 and v6. """
     v = '6' if v6 else '4'
     command = f"lease{v}-get-by-state"
@@ -418,7 +420,6 @@ def test_control_channel_lease4_get_by_negative():
     _get_lease_by_state_edge_cases()
 
 
-
 @pytest.mark.v6
 @pytest.mark.controlchannel
 @pytest.mark.hook
@@ -517,6 +518,10 @@ def test_v6_lease_get_by_positive(backend):
     lease1_params = leases_params[0]
     leases_params = sorted(leases_params, key=lambda x: x["ip-address"])
 
+    def _leases_params(state):
+        """Get expected leases parameters by state"""
+        return list(filter(lambda le: le["state"] == state, leases_params))
+
     # check for the lease by duid
     cmd = {"command": "lease6-get-by-duid",
            "arguments": {"duid": "00:03:00:01:66:55:44:33:22:11"}}
@@ -543,14 +548,14 @@ def test_v6_lease_get_by_positive(backend):
 
     # check for the leases by state
     for (i, state) in enumerate(["assigned", "declined", "expired-reclaimed", "released", "registered"]):
-        expected = list(filter(lambda l: l["state"] == i, leases_params))
+        expected = _leases_params(i)
         returned = _get_leases_by_state(v6=True, arguments={"state": state})
         assert returned == expected, f"Search by state '{state}' failed."
         returned = _get_leases_by_state(v6=True, arguments={"state": i})
         assert returned == expected, f"Search by state '{i}' failed."
 
     # check for the leases by state and subnet-id
-    expected = list(filter(lambda l: l["state"] == 0 and l["subnet-id"] == 2, leases_params))
+    expected = list(filter(lambda le: le["state"] == 0 and le["subnet-id"] == 2, leases_params))
     returned = _get_leases_by_state(v6=True, arguments={"state": "assigned", "subnet-id": 2})
     assert returned == expected
     returned = _get_leases_by_state(v6=True, arguments={"state": 0, "subnet-id": 2})
@@ -560,7 +565,6 @@ def test_v6_lease_get_by_positive(backend):
     _send_cmd("lease6-get-by-state", extra_param={"state": "declined", "subnet-id": 2}, exp_result=3)
     _send_cmd("lease6-get-by-state", extra_param={"state": 2, "subnet-id": 2}, exp_result=3)
     _send_cmd("lease6-get-by-state", extra_param={"state": "released", "subnet-id": 2}, exp_result=3)
-
 
     srv_msg.check_leases(
         [{"duid": lease["duid"],
