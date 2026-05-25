@@ -56,12 +56,22 @@ def _get_address(mac, address, cli_id=None, fqdn=None):
 
 
 def _del_cltt(leases):
+    """Helper function to delete CLTT from leases, as it's not deterministic and not needed for comparison"""
     for lease in leases:
         del lease["cltt"]
 
+def _get_leases_by_state(v6 = False, arguments = None):
+    """Helper function to get leases by state, expects not empty result. 
+    Deletes CLTT from the response and sorts leases by ip-address"""
 
-def _get_lease_by_state_corner_cases(v6 = False):
+    command = f"lease{'6' if v6 else '4'}-get-by-state"
+    resp = _send_cmd(command, extra_param=arguments, exp_result=0)
+    leases = resp["arguments"]["leases"]
+    _del_cltt(leases)
+    return sorted(leases, key=lambda x: x["ip-address"])
 
+def _get_lease_by_state_edge_cases(v6 = False):
+    """ Test various edge cases of lease-get-by-state command, can be used for both v4 and v6. """
     v = '6' if v6 else '4'
     command = f"lease{v}-get-by-state"
     # Lack of parameter or wrong parameter type => error 1
@@ -405,7 +415,7 @@ def test_control_channel_lease4_get_by_negative():
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'hw-address' parameter must be a string"
 
-    _get_lease_by_state_corner_cases()
+    _get_lease_by_state_edge_cases()
 
 
 
@@ -422,9 +432,9 @@ def test_v6_lease_get_by_positive(backend):
     :type backend: str
     """
     misc.test_setup()
-    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::2')
+    srv_control.config_srv_subnet('2001:db8:1::/64', '2001:db8:1::1-2001:db8:1::20')
     srv_control.config_srv_another_subnet_no_interface('2001:db8:2::/64',
-                                                       '2001:db8:2::5-2001:db8:2::6')
+                                                       '2001:db8:2::5-2001:db8:2::26')
     srv_control.define_lease_db_backend(backend)
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
@@ -436,52 +446,76 @@ def test_v6_lease_get_by_positive(backend):
     # check if there are no leases
     cmd = {"command": "lease6-get-all"}
     srv_msg.send_ctrl_cmd(cmd, exp_result=3)
+    _send_cmd("lease6-get-by-state", extra_param={"state": 2}, exp_result=3)
+    _send_cmd("lease4-get-by-state", extra_param={"state": "released", "subnet-id": 1}, exp_result=3)
 
     # add a leases
-    cmd = {"command": "lease6-bulk-apply", "arguments": {
-        "leases": [
-            {"subnet-id": 1,
-             "ip-address": "2001:db8:1::1",
-             "duid": "00:03:00:01:66:55:44:33:22:11",
-             "iaid": 1234,
-             "hostname": "four.hostname.com",
-             "hw-address": "08:08:08:08:08:08"},
-            {"subnet-id": 2,
-             "ip-address": "2001:db8:2::5",
-             "duid": "00:04:00:01:66:55:44:33:22:11",
-             "iaid": 1234,
-             "hostname": "five.hostname.com",
-             "hw-address": "09:09:09:09:09:09"},
-        ]}}
+    lease_inputs = [
+        {"subnet-id": 1,
+         "ip-address": "2001:db8:1::1",
+         "duid": "00:03:00:01:66:55:44:33:22:11",
+         "iaid": 1234,
+         "hostname": "four.hostname.com",
+         "hw-address": "08:08:08:08:08:08",
+         "state": 0},
+        {"subnet-id": 2,
+         "ip-address": "2001:db8:2::5",
+         "duid": "00:04:00:01:66:55:44:33:22:11",
+         "iaid": 1234,
+         "hostname": "five.hostname.com",
+         "hw-address": "09:09:09:09:09:09",
+         "state": 0},
+        {"subnet-id": 1,
+         "ip-address": "2001:db8:1::3",
+         "duid": "00:09:00:01:66:55:44:33:22:11",
+         "iaid": 1234,
+         "hostname": "declined-1.hostname.com",
+         "hw-address": "0d:0d:0d:0d:0d:0d",
+         "state": 1},
+        {"subnet-id": 1,
+         "ip-address": "2001:db8:1::4",
+         "duid": "00:0a:00:01:66:55:44:33:22:11",
+         "iaid": 1235,
+         "hostname": "declined-2.hostname.com",
+         "hw-address": "0a:0a:0a:0a:0a:0a",
+         "state": 1},
+        {"subnet-id": 1,
+         "ip-address": "2001:db8:1::5",
+         "duid": "00:0b:00:01:66:55:44:33:22:11",
+         "iaid": 1236,
+         "hostname": "expired-reclaimed.hostname.com",
+         "hw-address": "0b:0b:0b:0b:0b:0b",
+         "state": 2},
+        {"subnet-id": 1,
+         "ip-address": "2001:db8:1::6",
+         "duid": "00:0c:00:01:66:55:44:33:22:11",
+         "iaid": 1237,
+         "hostname": "released.hostname.com",
+         "hw-address": "0c:0c:0c:0c:0c:0c",
+         "state": 3},
+        {"subnet-id": 2,
+         "ip-address": "2001:db8:2::6",
+         "duid": "00:0e:00:01:66:55:44:33:22:11",
+         "iaid": 1238,
+         "hostname": "registered-2.hostname.com",
+         "hw-address": "0e:0e:0e:0e:0e:0e",
+         "state": 4},
+    ]
+
+    cmd = {"command": "lease6-bulk-apply", "arguments": {"leases": lease_inputs}}
     srv_msg.send_ctrl_cmd(cmd)
 
-    lease1_params = {"duid": "00:03:00:01:66:55:44:33:22:11",
-                     "fqdn-fwd": False,
-                     "fqdn-rev": False,
-                     "hostname": "four.hostname.com",
-                     "iaid": 1234,
-                     "ip-address": "2001:db8:1::1",
-                     "hw-address": "08:08:08:08:08:08",
-                     # "pool-id": 0, if id is 0 it's no longer returned
-                     "preferred-lft": 4000,
-                     "state": 0,
-                     "subnet-id": 1,
-                     "type": "IA_NA",
-                     "valid-lft": 4000}
-    lease2_params = {"duid": "00:04:00:01:66:55:44:33:22:11",
-                     "fqdn-fwd": False,
-                     "fqdn-rev": False,
-                     "hostname": "five.hostname.com",
-                     "iaid": 1234,
-                     "ip-address": "2001:db8:2::5",
-                     "hw-address": "09:09:09:09:09:09",
-                     # "pool-id": 0, if id is 0 it's no longer returned
-                     "preferred-lft": 4000,
-                     "state": 0,
-                     "subnet-id": 2,
-                     "type": "IA_NA",
-                     "valid-lft": 4000}
-    leases_params = [lease1_params, lease2_params]
+    leases_params = [
+        {**lease,
+         "fqdn-fwd": False,
+         "fqdn-rev": False,
+         "preferred-lft": 4000,
+         "type": "IA_NA",
+         "valid-lft": 4000}
+        for lease in lease_inputs
+    ]
+    lease1_params = leases_params[0]
+    leases_params = sorted(leases_params, key=lambda x: x["ip-address"])
 
     # check for the lease by duid
     cmd = {"command": "lease6-get-by-duid",
@@ -507,40 +541,35 @@ def test_v6_lease_get_by_positive(backend):
     del resp["arguments"]["leases"][0]["cltt"]  # this value is dynamic so we delete it
     assert resp["arguments"]["leases"][0] == lease1_params
 
-    # check for the lease by state
-    cmd = {"command": "lease6-get-by-state",
-           "arguments": {"state": 0}}
-    resp = srv_msg.send_ctrl_cmd(cmd)
-    _del_cltt(resp["arguments"]["leases"])
-    assert resp["arguments"]["leases"] == leases_params
+    # check for the leases by state
+    for (i, state) in enumerate(["assigned", "declined", "expired-reclaimed", "released", "registered"]):
+        expected = list(filter(lambda l: l["state"] == i, leases_params))
+        returned = _get_leases_by_state(v6=True, arguments={"state": state})
+        assert returned == expected, f"Search by state '{state}' failed."
+        returned = _get_leases_by_state(v6=True, arguments={"state": i})
+        assert returned == expected, f"Search by state '{i}' failed."
 
-    cmd = {"command": "lease6-get-by-state",
-           "arguments": {"state": 0, "subnet-id": 2}}
-    resp = srv_msg.send_ctrl_cmd(cmd)
-    _del_cltt(resp["arguments"]["leases"])
-    assert resp["arguments"]["leases"] == [lease2_params]
+    # check for the leases by state and subnet-id
+    expected = list(filter(lambda l: l["state"] == 0 and l["subnet-id"] == 2, leases_params))
+    returned = _get_leases_by_state(v6=True, arguments={"state": "assigned", "subnet-id": 2})
+    assert returned == expected
+    returned = _get_leases_by_state(v6=True, arguments={"state": 0, "subnet-id": 2})
+    assert returned == expected
 
-    cmd = {"command": "lease6-get-by-state",
-           "arguments": {"state": "assigned", "subnet-id": 1}}
-    resp = srv_msg.send_ctrl_cmd(cmd)
-    _del_cltt(resp["arguments"]["leases"])
-    assert resp["arguments"]["leases"] == [lease1_params]
+    # checks for the leases by state that should return no leases
+    _send_cmd("lease6-get-by-state", extra_param={"state": "declined", "subnet-id": 2}, exp_result=3)
+    _send_cmd("lease6-get-by-state", extra_param={"state": 2, "subnet-id": 2}, exp_result=3)
+    _send_cmd("lease6-get-by-state", extra_param={"state": "released", "subnet-id": 2}, exp_result=3)
 
-    _send_cmd("lease6-get-by-state", extra_param={"state": 2}, exp_result=3)
-    _send_cmd("lease4-get-by-state", extra_param={"state": "released", "subnet-id": 1}, exp_result=3)
 
-    srv_msg.check_leases([{"duid": "00:03:00:01:66:55:44:33:22:11",
-                           "address": "2001:db8:1::1",
-                           "iaid": 1234,
-                           "hostname": "four.hostname.com",
-                           "hw-address": "08:08:08:08:08:08"},
-                          {"duid": "00:04:00:01:66:55:44:33:22:11",
-                           "address": "2001:db8:2::5",
-                           "iaid": 1234,
-                           "hostname": "five.hostname.com",
-                           "hw-address": "09:09:09:09:09:09"},
-                          ],
-                         backend=backend)
+    srv_msg.check_leases(
+        [{"duid": lease["duid"],
+          "address": lease["ip-address"],
+          "iaid": lease["iaid"],
+          "hostname": lease["hostname"],
+          "hw-address": lease["hw-address"]}
+         for lease in lease_inputs],
+        backend=backend)
 
 
 @pytest.mark.v6
@@ -710,4 +739,4 @@ def test_v6_lease_get_by_negative():
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "'hw-address' parameter must be a string"
 
-    _get_lease_by_state_corner_cases(v6=True)
+    _get_lease_by_state_edge_cases(v6=True)
