@@ -121,7 +121,7 @@ def test_control_channel_lease4_get_by_positive(backend):
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.5-192.168.50.6')
     srv_control.config_srv_another_subnet_no_interface('192.168.51.0/24',
-                                                       '192.168.51.10-192.168.51.11')
+                                                       '192.168.51.10-192.168.51.17')
     srv_control.define_lease_db_backend(backend)
 
     world.dhcp_cfg.update({"ddns-send-updates": False})
@@ -232,28 +232,21 @@ def test_control_channel_lease4_get_by_positive(backend):
     del by_hw["arguments"]["leases"][0]["cltt"]
     assert by_hw["arguments"]["leases"][0] == lease_4
 
-    assigned_leases = sorted([lease_1, lease_2, lease_3, lease_4], key=lambda x: x["hw-address"])
-    by_assigned = _send_cmd("lease4-get-by-state", extra_param={"state": 0}, exp_result=0)
-    _del_cltt(by_assigned["arguments"]["leases"])
-    by_assigned = sorted(by_assigned["arguments"]["leases"], key=lambda x: x["hw-address"])
-    assert by_assigned == assigned_leases
-    # state in string form
-    by_assigned = _send_cmd("lease4-get-by-state", extra_param={"state": "assigned"}, exp_result=0)
-    _del_cltt(by_assigned["arguments"]["leases"])
-    by_assigned = sorted(by_assigned["arguments"]["leases"], key=lambda x: x["hw-address"])
+    assigned_leases = sorted([lease_1, lease_2, lease_3, lease_4], key=lambda x: x["ip-address"])
+
+    by_assigned = _get_leases_by_state(arguments={"state": 0})
     assert by_assigned == assigned_leases
 
-    by_assigned_subnet = _send_cmd("lease4-get-by-state", extra_param={"state": 0, "subnet-id": 1}, exp_result=0)
-    _del_cltt(by_assigned_subnet["arguments"]["leases"])
-    by_assigned_subnet = sorted(by_assigned_subnet["arguments"]["leases"], key=lambda x: x["hw-address"])
-    assert by_assigned_subnet == [lease_1, lease_2]
+    # state in string form
+    by_assigned = _get_leases_by_state(arguments={"state": "assigned"})
+    assert by_assigned == assigned_leases
 
     # subnet id 0 == all subnets
-    by_assigned_subnet = _send_cmd("lease4-get-by-state",
-                                   extra_param={"state": "assigned", "subnet-id": 0}, exp_result=0)
-    _del_cltt(by_assigned_subnet["arguments"]["leases"])
-    by_assigned_subnet = sorted(by_assigned_subnet["arguments"]["leases"], key=lambda x: x["hw-address"])
+    by_assigned_subnet = _get_leases_by_state(arguments={"state": 0, "subnet-id": 0})
     assert by_assigned_subnet == assigned_leases
+
+    by_assigned_subnet = _get_leases_by_state(arguments={"state": 0, "subnet-id": 1})
+    assert by_assigned_subnet == list(filter(lambda le: le["subnet-id"] == 1, assigned_leases))
 
     # Decline lease 1 and check if it's in declined state
     misc.test_procedure()
@@ -277,11 +270,76 @@ def test_control_channel_lease4_get_by_positive(backend):
                    'subnet-id': 1,
                    'valid-lft': 86400}  # "decline-probation-period"
 
+    # Test remaining states with lease4-get-by-state (expired-reclaimed(2), released(3), registered(4))
+    states = [2, 3, 4, 2, 2, 4]
+    leases_params = [
+        {
+            "subnet-id": 2,
+            "ip-address": f"192.168.51.{12 + i}",
+            "hw-address": f"1a:1b:1c:1d:1e:{12 + i:02x}",
+            "state": state,
+        } for i, state in enumerate(states)]
+    leases_params = sorted(leases_params, key=lambda x: x["ip-address"])
+
+    for lease in leases_params:
+        _send_cmd("lease4-add", extra_param=lease, exp_result=0)
+
+    result = _get_leases_by_state(arguments={"state": 2})
+    assert len(result) == 3, "lease4-get-by-state with state 2 should return 3 leases"
+    for i, l in enumerate(filter(lambda lp: lp["state"] == 2, leases_params)):
+        assert result[i]["ip-address"] == l["ip-address"], f"unexpected ip-address of lease ({i})"
+        assert result[i]["hw-address"] == l["hw-address"], f"unexpected hw-address of lease ({i})"
+        assert result[i]["subnet-id"] == l["subnet-id"], f"unexpected subnet-id of lease ({i})"
+        assert result[i]["state"] == l["state"], f"unexpected state of lease ({i})"
+
+    result = _get_leases_by_state(arguments={"state": "expired-reclaimed"})
+    assert len(result) == 3, "lease4-get-by-state with state 'expired-reclaimed' should return 3 leases"
+    for i, l in enumerate(filter(lambda lp: lp["state"] == 2, leases_params)):
+        assert result[i]["ip-address"] == l["ip-address"], f"unexpected ip-address of lease ({i})"
+        assert result[i]["hw-address"] == l["hw-address"], f"unexpected hw-address of lease ({i})"
+        assert result[i]["subnet-id"] == l["subnet-id"], f"unexpected subnet-id of lease ({i})"
+        assert result[i]["state"] == l["state"], f"unexpected state of lease ({i})"
+
+    result = _get_leases_by_state(arguments={"state": 3, "subnet-id": 2})
+    assert len(result) == 1, "lease4-get-by-state with state 3 and subnet-id 2 should return 1 lease"
+    for i, l in enumerate(filter(lambda lp: lp["state"] == 3 and lp["subnet-id"] == 2, leases_params)):
+        assert result[i]["ip-address"] == l["ip-address"], f"unexpected ip-address of lease ({i})"
+        assert result[i]["hw-address"] == l["hw-address"], f"unexpected hw-address of lease ({i})"
+        assert result[i]["subnet-id"] == l["subnet-id"], f"unexpected subnet-id of lease ({i})"
+        assert result[i]["state"] == l["state"], f"unexpected state of lease ({i})"
+
+    result = _get_leases_by_state(arguments={"state": "released", "subnet-id": 2})
+    assert len(result) == 1, "lease4-get-by-state with state 'released' and subnet-id 2 should return 1 lease"
+    for i, l in enumerate(filter(lambda lp: lp["state"] == 3 and lp["subnet-id"] == 2, leases_params)):
+        assert result[i]["ip-address"] == l["ip-address"], f"unexpected ip-address of lease ({i})"
+        assert result[i]["hw-address"] == l["hw-address"], f"unexpected hw-address of lease ({i})"
+        assert result[i]["subnet-id"] == l["subnet-id"], f"unexpected subnet-id of lease ({i})"
+        assert result[i]["state"] == l["state"], f"unexpected state of lease ({i})"
+
+    result = _get_leases_by_state(arguments={"state": 4, "subnet-id": 0})
+    assert len(result) == 2, "lease4-get-by-state with state 4 and subnet-id 0 should return 2 leases"
+    for i, l in enumerate(filter(lambda lp: lp["state"] == 4, leases_params)):
+        assert result[i]["ip-address"] == l["ip-address"], f"unexpected ip-address of lease ({i})"
+        assert result[i]["hw-address"] == l["hw-address"], f"unexpected hw-address of lease ({i})"
+        assert result[i]["subnet-id"] == l["subnet-id"], f"unexpected subnet-id of lease ({i})"
+        assert result[i]["state"] == l["state"], f"unexpected state of lease ({i})"
+
+    _send_cmd("lease4-get-by-state", extra_param={"state": "registered", "subnet-id": 1}, exp_result=3)
+
+    # Remove all leases with states expired-reclaimed(2), registered (3), released (4)
+    for i in range(len(states)):
+        arguments = {
+            "ip-address": f"192.168.51.{12 + i}",
+        }
+        _send_cmd("lease4-del", extra_param=arguments, exp_result=0)
+
     _send_cmd("lease4-get-by-hw-address", extra_param={"hw-address": "11:11:12:12:13:13"}, exp_result=3)
     _send_cmd("lease4-get-by-hostname", extra_param={"hostname": "abc.com."}, exp_result=3)
     _send_cmd("lease4-get-by-client-id", extra_param={"client-id": "111111111111"}, exp_result=3)
     _send_cmd("lease4-get-by-state", extra_param={"state": 2}, exp_result=3)
-    _send_cmd("lease4-get-by-state", extra_param={"state": "released", "subnet-id": 1}, exp_result=3)
+    _send_cmd("lease4-get-by-state", extra_param={"state": 3}, exp_result=3)
+    _send_cmd("lease4-get-by-state", extra_param={"state": 4}, exp_result=3)
+    _send_cmd("lease4-get-by-state", extra_param={"state": "declined", "subnet-id": 2}, exp_result=3)
 
     _send_cmd("lease4-get-by-hw-address", exp_result=1)
     _send_cmd("lease4-get-by-hostname", exp_result=1)
