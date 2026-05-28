@@ -96,6 +96,125 @@ def test_v4_host_reservation_hostname_fqdn_option():
 
 @pytest.mark.v4
 @pytest.mark.host_reservation
+def test_v4_host_reservation_fqdn_in_hostname():
+    """ Tests for kea#3949.
+
+    When hostname in reservation is FQDN and different from ddns-qualifying-suffix,
+    kea should not add suffix to the hostname. It should use the reservation FQDN as is.
+    Second scenario is when hostname in reservation is FQDN with the same suffix as ddns-qualifying-suffix.
+    """
+    misc.test_setup()
+    srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.30-192.168.50.30')
+    srv_control.add_ddns_server('127.0.0.1', '53001')
+    srv_control.add_ddns_server_connectivity_options('enable-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-send-updates', True)
+    srv_control.add_ddns_server_behavioral_options('ddns-qualifying-suffix', 'dyn.example.com.')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'foo.example.com.',
+                                           0,
+                                           'hw-address',
+                                           'ff:01:02:03:ff:04')
+    srv_control.host_reservation_in_subnet_add_value(0, 0, 'ip-address', '192.168.50.40')
+    srv_control.host_reservation_in_subnet('hostname',
+                                           'bar.dyn.example.com.',
+                                           0,
+                                           'hw-address',
+                                           'ff:01:02:03:ff:05')
+    srv_control.host_reservation_in_subnet_add_value(1, 0, 'ip-address', '192.168.50.50')
+    srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
+
+    # Test first reservation with `foo.example.com.` hostname.
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(81)
+    srv_msg.response_check_option_content(81, 'fqdn', 'foo.example.com.')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_content('yiaddr', '192.168.50.40')
+    srv_msg.response_check_content('chaddr', 'ff:01:02:03:ff:04')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.40')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(81)
+    srv_msg.response_check_option_content(81, 'fqdn', 'foo.example.com.')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_content('yiaddr', '192.168.50.40')
+    srv_msg.response_check_content('chaddr', 'ff:01:02:03:ff:04')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.40')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:04')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(81)
+    srv_msg.response_check_option_content(81, 'fqdn', 'foo.example.com.')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_content('yiaddr', '192.168.50.40')
+    srv_msg.response_check_content('chaddr', 'ff:01:02:03:ff:04')
+
+    # Test second reservation with `bar.dyn.example.com.` hostname.
+    misc.test_procedure()
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:05')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_send_msg('DISCOVER')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'OFFER')
+    srv_msg.response_check_include_option(81)
+    srv_msg.response_check_option_content(81, 'fqdn', 'bar.dyn.example.com.')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_content('chaddr', 'ff:01:02:03:ff:05')
+
+    misc.test_procedure()
+    srv_msg.client_copy_option('server_id')
+    srv_msg.client_does_include_with_value('requested_addr', '192.168.50.50')
+    srv_msg.client_sets_value('Client', 'FQDN_domain_name', 'sth6.six.example.com.')
+    srv_msg.client_sets_value('Client', 'FQDN_flags', 'S')
+    srv_msg.client_does_include('Client', 'fqdn')
+    srv_msg.client_sets_value('Client', 'chaddr', 'ff:01:02:03:ff:05')
+    srv_msg.client_send_msg('REQUEST')
+
+    misc.pass_criteria()
+    srv_msg.send_wait_for_message('MUST', 'ACK')
+    srv_msg.response_check_include_option(81)
+    srv_msg.response_check_option_content(81, 'fqdn', 'bar.dyn.example.com.')
+    srv_msg.response_check_include_option(1)
+    srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
+    srv_msg.response_check_content('yiaddr', '192.168.50.50')
+    srv_msg.response_check_content('chaddr', 'ff:01:02:03:ff:05')
+
+
+@pytest.mark.v4
+@pytest.mark.host_reservation
 def test_v4_host_reservation_hostname_hostname_option_and_address():
     misc.test_setup()
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.20-192.168.50.30')
