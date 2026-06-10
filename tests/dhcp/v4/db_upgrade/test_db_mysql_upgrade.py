@@ -11,9 +11,10 @@
 
 import glob
 import pytest
-from src import srv_msg
+
 from src import misc
 from src import srv_control
+from src import srv_msg
 
 from src.forge_cfg import world
 
@@ -190,10 +191,10 @@ def test_v4_upgrade_mysql_db():
     srv_msg.execute_shell_cmd(f"mysql -u{tmp_user_name} -p$(DB_PASSWD) {tmp_db_name} < /tmp/my_db_v4.sql")
     # start kea, which should fail due to mismatch in db version
     misc.test_setup()
-    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_cb_cmds.so')
-    srv_control.add_hooks('libdhcp_mysql.so')
+    srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
+    srv_control.add_hooks('libdhcp_mysql.so')
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel('$(MGMT_ADDRESS)')
     hosts = {"hosts-databases": [{"user": tmp_user_name,
@@ -219,7 +220,7 @@ def test_v4_upgrade_mysql_db():
     srv_control.start_srv('DHCP', 'started', should_succeed=False)
     # upgrade with kea admin
     kea_admin = world.f_cfg.sbin_join('kea-admin')
-    srv_msg.execute_shell_cmd(f"sudo {kea_admin} db-upgrade mysql -u {tmp_user_name} -p $(DB_PASSWD) -n {tmp_db_name}")
+    srv_msg.execute_shell_cmd(f'sudo {kea_admin} db-upgrade mysql -u {tmp_user_name} -p $(DB_PASSWD) -n {tmp_db_name}')
     # start kea
     srv_control.start_srv('DHCP', 'started')
 

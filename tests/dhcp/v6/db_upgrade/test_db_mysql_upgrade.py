@@ -167,7 +167,7 @@ def test_v6_upgrade_mysql_db():
     tmp_db_name = "kea_tmp_db"
     tmp_user_name = "kea_tmp_user"
     # make sure that new db does not exists
-    # srv_msg.execute_shell_cmd("mysql -u root -N -B -e \"DROP DATABASE IF EXISTS %s;\"" % tmp_db_name)
+    srv_msg.execute_shell_cmd(f"mysql -u root -N -B -e \"DROP DATABASE IF EXISTS {tmp_db_name};\"")
     # create new db without schema
     srv_control.build_database(
         db_name=tmp_db_name,
@@ -188,9 +188,9 @@ def test_v6_upgrade_mysql_db():
     srv_msg.execute_shell_cmd(f'mysql -u {tmp_user_name} -p$(DB_PASSWD) {tmp_db_name} < /tmp/my_db_v6.sql')
     # start kea, which should fail due to mismatch in db version
     misc.test_setup()
+    srv_control.add_hooks('libdhcp_cb_cmds.so')
     srv_control.add_hooks('libdhcp_host_cmds.so')
     srv_control.add_hooks('libdhcp_lease_cmds.so')
-    srv_control.add_hooks('libdhcp_cb_cmds.so')
     srv_control.add_hooks('libdhcp_mysql.so')
     srv_control.add_http_control_channel()
     srv_control.add_unix_socket()
