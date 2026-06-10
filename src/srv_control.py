@@ -486,9 +486,15 @@ def update_ha_hook_parameter(param, relationship=0):
     dhcp.update_ha_hook_parameter(param, relationship)
 
 
-def build_database(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
-                   db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-                   init_db=True, disable=False):
+def build_database(
+    dest=world.f_cfg.mgmt_address,
+    db_name=world.f_cfg.db_name,
+    db_user=world.f_cfg.db_user,
+    db_passwd=world.f_cfg.db_passwd,
+    init_db=True,
+    disable=False,
+    create_clauses='',
+):
     """Build database.
 
     :param dest: (Default value = world.f_cfg.mgmt_address)
@@ -503,9 +509,19 @@ def build_database(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     :type init_db:
     :param disable: (Default value = False)
     :type disable:
+    :param create_clauses: additional clauses passed to CREATE DATABASE
+    :type create_clauses: str
     """
     dest, db_name, db_user, db_passwd = test_define_value(dest, db_name, db_user, db_passwd)
-    dhcp.db_setup(dest=dest, db_name=db_name, db_user=db_user, db_passwd=db_passwd, init_db=init_db, disable=disable)
+    dhcp.db_setup(
+        dest=dest,
+        db_name=db_name,
+        db_user=db_user,
+        db_passwd=db_passwd,
+        init_db=init_db,
+        disable=disable,
+        create_clauses=create_clauses,
+    )
 
 
 @step(r'Use (\S+) as lease database backend.')

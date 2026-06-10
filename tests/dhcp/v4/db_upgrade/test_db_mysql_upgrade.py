@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -170,20 +170,22 @@ def test_v4_upgrade_mysql_db():
     # make sure that new db does not exists
     srv_msg.execute_shell_cmd(f"mysql -u root -N -B -e \"DROP DATABASE IF EXISTS {tmp_db_name};\"")
     # create new db without schema
-    srv_control.build_database(db_name=tmp_db_name, db_user=tmp_user_name, init_db=False)
+    srv_control.build_database(
+        db_name=tmp_db_name,
+        db_user=tmp_user_name,
+        init_db=False,
+        create_clauses='CHARACTER SET latin1 COLLATE latin1_swedish_ci',
+    )
     # send db dump file
     srv_msg.remove_file_from_server('/tmp/my_db_v4.sql')
     srv_msg.send_file_to_server(glob.glob("**/my_db_v4.sql", recursive=True)[0], '/tmp/my_db_v4.sql')
     # switch interface and username to the one setup is using
     srv_msg.execute_shell_cmd("sed -i 's/!serverinterface!/$(SERVER_IFACE)/g' /tmp/my_db_v4.sql")
     srv_msg.execute_shell_cmd(f"sed -i 's/!db_user!/{tmp_user_name}/g' /tmp/my_db_v4.sql")
-    if world.server_system in ['redhat', 'fedora']:
-        srv_msg.execute_shell_cmd("sed -i 's/CHARSET=utf8mb4/CHARSET=latin1/g' /tmp/my_db_v4.sql")
+    srv_msg.execute_shell_cmd("sed -i 's/CHARSET=utf8mb4/CHARSET=latin1/g' /tmp/my_db_v4.sql")
 
     # this solves the problem: "Variable 'sql_mode' can't be set to the value of 'NO_AUTO_CREATE_USER'"
     srv_msg.execute_shell_cmd("sed -i 's/NO_AUTO_CREATE_USER,//g' /tmp/my_db_v4.sql")
-    # create database without content with new name and user
-    srv_control.build_database(db_name=tmp_db_name, db_user=tmp_user_name, init_db=False)
     # recreate db content in new db
     srv_msg.execute_shell_cmd(f"mysql -u{tmp_user_name} -p$(DB_PASSWD) {tmp_db_name} < /tmp/my_db_v4.sql")
     # start kea, which should fail due to mismatch in db version

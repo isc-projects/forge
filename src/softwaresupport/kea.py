@@ -2709,7 +2709,7 @@ def save_logs(destination_address: str = world.f_cfg.mgmt_address):
 
 def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
              db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-             init_db=True, disable=world.f_cfg.disable_db_setup):
+             init_db=True, disable=world.f_cfg.disable_db_setup, create_clauses=''):
     """db_setup.
 
     :param dest:
@@ -2724,6 +2724,8 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     :type init_db:
     :param disable:
     :type disable:
+    :param create_clauses: additional clauses passed to CREATE DATABASE
+    :type create_clauses: str
     """
     if disable:
         return
@@ -2753,7 +2755,7 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     result = fabric_sudo_command(cmd, destination_host=dest)
     assert result.succeeded
 
-    cmd = "mysql -u root -e 'CREATE DATABASE {db_name};'".format(**locals())
+    cmd = "mysql -u root -e 'CREATE DATABASE {db_name} {create_clauses};'".format(**locals())
     fabric_sudo_command(cmd, destination_host=dest)
     cmd = "mysql -u root -e \"CREATE USER '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
     fabric_sudo_command(cmd, ignore_errors=True, destination_host=dest)
