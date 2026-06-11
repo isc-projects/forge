@@ -6,6 +6,8 @@
 
 """DHCPv6 Address Registration tests (RFC9686)"""
 
+import ipaddress
+
 import pytest
 
 from src import srv_msg
@@ -24,6 +26,15 @@ def _generate_testing_ip_address():
     subnet = ip_addr.split(':')[0] + ':' + ip_addr.split(':')[1]
     pool = subnet + '::1-' + subnet + '::100'
     return ip_addr, subnet, pool
+
+
+def _next_ip_address(ip_addr):
+    """Return the next IPv6 address after ip_addr."""
+    try:
+        return str(ipaddress.ip_address(ip_addr) + 1)
+    except ValueError:
+        prefix, hextet = ip_addr.rsplit(':', 1)
+        return f'{prefix}:{format(int(hextet, 16) + 1, "x")}'
 
 
 def _is_kea_responding():
@@ -485,7 +496,7 @@ def test_v6_address_registration_reserved_address(lease_backend, reservation_bac
 def test_v6_address_registration_relay():
     """Test if kea correctly registers address in relayed message."""
     ip_addr, subnet, pool = _generate_testing_ip_address()
-    next_ip_addr = ip_addr.rsplit(':', 1)[0] + ':' + str(int(ip_addr.rsplit(':', 1)[1]) + 1)
+    next_ip_addr = _next_ip_address(ip_addr)
     assert '3001' != ip_addr.split(':')[0] and '999' != ip_addr.split(':')[1], \
         "Subnet must be different from the one used for testing ip. That is rare coincidence in generating Forge IP."
 
@@ -541,7 +552,7 @@ def test_v6_address_registration_relay():
 def test_v6_address_registration_relay_negative():
     """Test proper rejection of relayedaddress registration."""
     ip_addr, subnet, pool = _generate_testing_ip_address()
-    wrong_ip_addr = ip_addr.rsplit(':', 1)[0] + ':' + str(int(ip_addr.rsplit(':', 1)[1]) + 1)
+    wrong_ip_addr = _next_ip_address(ip_addr)
 
     misc.test_setup()
     srv_control.config_srv_subnet(subnet + "::/32", pool, id=1)
