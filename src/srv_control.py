@@ -471,7 +471,6 @@ def add_parameter_to_ha_hook(parameter_name, parameter_value, relationship=0):
     :param relationship: (Default value = 0)
     :type relationship:
     """
-    parameter_name, parameter_value = test_define_value(parameter_name, parameter_value)
     dhcp.ha_add_parameter_to_hook(parameter_name, parameter_value, relationship)
 
 
@@ -1315,7 +1314,7 @@ def clear_some_data(data_type, service='dhcp', dest=world.f_cfg.mgmt_address,
 
 
 def create_password_files(user=world.f_cfg.auth_user, passwd=world.f_cfg.auth_passwd,
-                          dest=world.f_cfg.mgmt_address):
+                          dest=world.f_cfg.mgmt_address, filename="hiddens"):
     """create_password_files Create file with username and password for kea control channel.
 
     :param user: user name, (Default value = world.f_cfg.auth_user)
@@ -1325,8 +1324,10 @@ def create_password_files(user=world.f_cfg.auth_user, passwd=world.f_cfg.auth_pa
     :param dest: address of remote system where the password files are created,
         (Default value = world.f_cfg.mgmt_address)
     :type dest: str
+    :param filename: the name of the file to create
+    :type filename: str
     """
-    dhcp.create_password_files(user=user, passwd=passwd, destination_address=dest)
+    dhcp.create_password_files(user=user, passwd=passwd, destination_address=dest, filename=filename)
 
 
 def create_user_and_password_file(user=world.f_cfg.auth_user, password=world.f_cfg.auth_passwd,

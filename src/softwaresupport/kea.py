@@ -1507,10 +1507,8 @@ def ha_add_parameter_to_hook(parameter_name, parameter_value, relationship=0):
             if parameter_name == "machine-state":
                 hook["parameters"]["high-availability"][relationship]["state-machine"]["states"].append(parameter_value)
             elif parameter_name == "peers":
-                if isinstance(parameter_value, str):
-                    parameter_value.strip("'")
-                    parameter_value = json.loads(parameter_value)
-                hook["parameters"]["high-availability"][relationship]["peers"].append(parameter_value)
+                for i in range(len(hook["parameters"]["high-availability"][relationship]["peers"])):
+                    hook["parameters"]["high-availability"][relationship]["peers"][i].update(parameter_value)
             else:
                 if parameter_value.isdigit():
                     parameter_value = int(parameter_value)
@@ -1940,7 +1938,7 @@ def set_ownership_of_a_file(file_path, destination_address=world.f_cfg.mgmt_addr
 
 
 def create_password_files(user=world.f_cfg.auth_user, passwd=world.f_cfg.auth_passwd,
-                          destination_address=world.f_cfg.mgmt_address):
+                          destination_address=world.f_cfg.mgmt_address, filename="hiddens"):
     """create_password_files Create password files.
 
     :param user: user name, (Default value = world.f_cfg.auth_user)
@@ -1950,10 +1948,12 @@ def create_password_files(user=world.f_cfg.auth_user, passwd=world.f_cfg.auth_pa
     :param destination_address: address of remote system where the password files are created,
         (Default value = world.f_cfg.mgmt_address)
     :type destination_address: str
+    :param filename: the name of the file to create
+    :type filename: str
     """
     fabric_sudo_command(f'mkdir -m 750 -p {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
                         destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
-    fabric_sudo_command(f'echo "{user}:{passwd}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds", "hiddens")}',
+    fabric_sudo_command(f'echo "{user}:{passwd}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds", filename)}',
                         destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
     if world.f_cfg.install_method != 'make':
         if world.server_system in ['alpine', 'redhat', 'fedora']:
@@ -1983,17 +1983,18 @@ def create_user_and_password_file(user=world.f_cfg.auth_user, password=world.f_c
     fabric_sudo_command(f'mkdir -m 750 -p {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
                         destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
     fabric_sudo_command(f'echo "{user}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds", user)}',
-                        hide_all=world.f_cfg.forge_verbose == 0)
+                        destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
     user_password_file = os.path.join(world.f_cfg.get_share_path(), "kea-creds", f"{user}_password")
-    fabric_sudo_command(f'echo "{password}" > {user_password_file}', hide_all=world.f_cfg.forge_verbose == 0)
+    fabric_sudo_command(f'echo "{password}" > {user_password_file}', destination_host=destination_address,
+                        hide_all=world.f_cfg.forge_verbose == 0)
 
     if world.f_cfg.install_method != 'make':
         if world.server_system in ['alpine', 'redhat', 'fedora']:
             fabric_sudo_command(f'chown -R kea:kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
-                                hide_all=world.f_cfg.forge_verbose == 0)
+                                destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
         else:
             fabric_sudo_command(f'chown -R _kea:_kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
-                                hide_all=world.f_cfg.forge_verbose == 0)
+                                destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
 
 
 def build_and_send_config_files(destination_address=world.f_cfg.mgmt_address, cfg=None):

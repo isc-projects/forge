@@ -72,18 +72,26 @@ PASSIVE_BACKUP = {
 
 
 def send_heartbeat(dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_address, exp_failed=False,
-                   channel='http', verify=None, cert=None, port=8000, relationship=None):
+                   channel='http', verify=None, cert=None, port=8000, relationship=None, auth=None):
     if relationship is None:
         cmd = {"command": "ha-heartbeat"}
     else:
         cmd = {"command": "ha-heartbeat", "arguments": {"server-name": relationship}}
-    return send_command(cmd=cmd, dhcp_version=dhcp_version, exp_result=exp_result,
-                        dest=dest, exp_failed=exp_failed, channel=channel, verify=verify, cert=cert, port=port,)
+    return send_command(cmd=cmd,
+                        dhcp_version=dhcp_version,
+                        exp_result=exp_result,
+                        dest=dest,
+                        exp_failed=exp_failed,
+                        channel=channel,
+                        verify=verify,
+                        cert=cert,
+                        port=port,
+                        auth=auth)
 
 
 def send_command(cmd: dict = None, dhcp_version: str = 'v6', exp_result: int = 0,
                  dest: str = world.f_cfg.mgmt_address, exp_failed: bool = False,
-                 channel: str = 'http', verify: bool = None, cert: tuple = None, port=8000):
+                 channel: str = 'http', verify: bool = None, cert: tuple = None, port=8000, auth=None):
     """
     send command to CA with http
     :param cmd: command, if not set ha-heartbeat will be send
@@ -95,6 +103,7 @@ def send_command(cmd: dict = None, dhcp_version: str = 'v6', exp_result: int = 0
     :param verify: boolean, verification of certificate
     :param cert: tuple, contain client cert and key
     :param port: int, port number on which command will be send
+    :param auth: user and password for basic authentication, format: "user:password"
     :return: json response
     """
     service = 'dhcp6' if dhcp_version == 'v6' else 'dhcp4'
@@ -102,11 +111,11 @@ def send_command(cmd: dict = None, dhcp_version: str = 'v6', exp_result: int = 0
     if "service" not in cmd:
         cmd.update({"service": [service]})
     return srv_msg.send_ctrl_cmd(cmd, address=dest, exp_result=exp_result, exp_failed=exp_failed,
-                                 channel=channel, verify=verify, cert=cert, port=port)
+                                 channel=channel, verify=verify, cert=cert, port=port, auth=auth)
 
 
 def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1, dhcp_version='v6',
-                        channel='http', verify=None, cert=None, port=8000, relationship=None):
+                        channel='http', verify=None, cert=None, port=8000, relationship=None, auth=None):
     """
     Send ha-heartbeat messages to server as long as we get expected state, HA tend to be slow so it's
     way of active sleep
@@ -125,7 +134,7 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1,
     for _ in range(retry):
         srv_msg.forge_sleep(sleep, 'seconds')
         resp = send_heartbeat(dest=dest, dhcp_version=dhcp_version, channel=channel, verify=verify, cert=cert,
-                              port=port, relationship=relationship)
+                              port=port, relationship=relationship, auth=auth)
         if resp["arguments"]["state"] == "terminated":
             assert False, "State reached terminated! Tests will fail"
         elif resp["arguments"]["state"] == state:

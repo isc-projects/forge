@@ -1026,6 +1026,8 @@ def send_ctrl_cmd_via_http(command, address, port, exp_result=0, exp_failed=Fals
         user_passwd = f"{world.f_cfg.auth_user}:{world.f_cfg.auth_passwd}"
         d_headers.update({'Authorization': f'Basic {b64encode(user_passwd.encode("utf-8")).decode("ascii")}'})
     elif auth is not None and auth != "missing":
+        print(f"Adding authorization: {auth}")
+        print("")
         d_headers.update({'Authorization': f'Basic {b64encode(auth.encode("utf-8")).decode("ascii")}'})
 
     address = address if '.' in address else f'[{address}]'
