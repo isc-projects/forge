@@ -161,17 +161,29 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1,
     way of active sleep.
 
     :param state: what state we are waiting for
+    :type state: str
     :param dest: management address of server
+    :type dest: str, optional
     :param retry: number of retries before we declare defeat
+    :type retry: int, optional
     :param sleep: sleep between retries
+    :type sleep: int, optional
     :param dhcp_version: version of dhcp
+    :type dhcp_version: str, optional
     :param channel: definition which communication channel should be used
+    :type channel: str, optional
     :param verify: boolean, verification of certificate
+    :type verify: bool, optional
     :param cert: tuple, contain client cert and key
+    :type cert: tuple, optional
     :param port: int, port number used to send command
+    :type port: int, optional
     :param relationship: server name
+    :type relationship: str, optional
     :param auth: user and password for basic authentication, format: "user:password"
+    :type auth: str, optional
     :return: last response
+    :rtype: dict
     """
     for _ in range(retry):
         srv_msg.forge_sleep(sleep, 'seconds')
@@ -219,12 +231,19 @@ def generate_leases(leases_count: int = 1, iana: int = 1, iapd: int = 1,
     will assert if at the end number of leases will be smaller.
 
     :param leases_count: how many leases we want to generate
+    :type leases_count: int, optional
     :param iana: how many v6 addresses we want in single exchange (ignored for v4)
+    :type iana: int, optional
     :param iapd: how many prefixes we want in single exchange (ignored for v4)
+    :type iapd: int, optional
     :param dhcp_version: version of dhcp
+    :type dhcp_version: str, optional
     :param mac: mac we will start increase, to get different set of macs increase just first octet
+    :type mac: str, optional
     :param expected_server_id: server id we expect in the all messages, checked if not None
+    :type expected_server_id: str, optional
     :return: list of leases generated
+    :rtype: list
     """
     all_leases = []
     tmp = world.f_cfg.show_packets_from
@@ -351,10 +370,17 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
     """Send messages with increased elapsed time (v6) or secs field (v4) to simulate one node failure.
 
     :param msg_count: how many messages send
+    :type msg_count: int
     :param elapsed: value of time in seconds we are starting with
+    :type elapsed: int, optional
     :param dhcp_version: dhcp version
+    :type dhcp_version: str, optional
     :param mac: in load-balancing v4 we need to send specific mac addresses
+    :type mac: str or list, optional
     :param duid: in load-balancing v6 we need to send specific duids
+    :type duid: str or list, optional
+    :param iface: network interface used to send messages
+    :type iface: str, optional
     """
     iface = world.cfg["iface"] if iface is None else iface
     tmp = world.f_cfg.show_packets_from
@@ -447,7 +473,6 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
     :param channel: Communication channel for 'status-get' command ('http', 'socket', 'https')
     :param verify: CA certificate for https
     :param port: number of port used in command control channel
-    :return:
     """
     if server1:
         # Get status from Server1 and test the response
