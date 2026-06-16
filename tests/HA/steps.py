@@ -7,6 +7,8 @@
 # pylint: disable=invalid-name,line-too-long
 # pylint: disable=too-many-arguments
 
+"""Steps specific for HA tests."""
+
 import secrets
 from src import misc
 from src import srv_control
@@ -73,6 +75,32 @@ PASSIVE_BACKUP = {
 
 def send_heartbeat(dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_address, exp_failed=False,
                    channel='http', verify=None, cert=None, port=8000, relationship=None, auth=None):
+    """Send heartbeat to CA with http.
+
+    :param dhcp_version: dhcp version
+    :type dhcp_version: str, optional
+    :param exp_result: expected result
+    :type exp_result: int
+    :param dest: address of remote server
+    :type dest: str
+    :type dest: _type_, optional
+    :param exp_failed: do we expect command to fail
+    :type exp_failed: bool, optional
+    :param channel: definition which communication channel should be used
+    :type channel: str, optional
+    :param verify: boolean, verification of certificate
+    :type verify: bool
+    :param cert: tuple, contain client cert and key
+    :type cert: tuple
+    :param port: int, port number on which command will be send
+    :type port: int
+    :param relationship: server name
+    :type relationship: str
+    :param auth: user and password for basic authentication, format: "user:password"
+    :type auth: str
+    :return: json response
+    :rtype: dict
+    """
     if relationship is None:
         cmd = {"command": "ha-heartbeat"}
     else:
@@ -92,19 +120,30 @@ def send_heartbeat(dhcp_version='v6', exp_result=0, dest=world.f_cfg.mgmt_addres
 def send_command(cmd: dict = None, dhcp_version: str = 'v6', exp_result: int = 0,
                  dest: str = world.f_cfg.mgmt_address, exp_failed: bool = False,
                  channel: str = 'http', verify: bool = None, cert: tuple = None, port=8000, auth=None):
-    """
-    send command to CA with http
+    """Send command to CA with http.
+
     :param cmd: command, if not set ha-heartbeat will be send
+    :type cmd: dict
     :param dhcp_version: dhcp version
+    :type dhcp_version: str
     :param exp_result: expected result
+    :type exp_result: int
     :param dest: address of remote server
+    :type dest: str
     :param exp_failed: do we expect command to fail
+    :type exp_failed: bool
     :param channel: definition which communication channel should be used
+    :type channel: str
     :param verify: boolean, verification of certificate
+    :type verify: bool
     :param cert: tuple, contain client cert and key
+    :type cert: tuple
     :param port: int, port number on which command will be send
+    :type port: int
     :param auth: user and password for basic authentication, format: "user:password"
+    :type auth: str
     :return: json response
+    :rtype: dict
     """
     service = 'dhcp6' if dhcp_version == 'v6' else 'dhcp4'
     assert cmd is not None, "We can't send empty command"
@@ -116,9 +155,11 @@ def send_command(cmd: dict = None, dhcp_version: str = 'v6', exp_result: int = 0
 
 def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1, dhcp_version='v6',
                         channel='http', verify=None, cert=None, port=8000, relationship=None, auth=None):
-    """
+    """Wait until HA state is reached.
+
     Send ha-heartbeat messages to server as long as we get expected state, HA tend to be slow so it's
-    way of active sleep
+    way of active sleep.
+
     :param state: what state we are waiting for
     :param dest: management address of server
     :param retry: number of retries before we declare defeat
@@ -128,7 +169,8 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1,
     :param verify: boolean, verification of certificate
     :param cert: tuple, contain client cert and key
     :param port: int, port number used to send command
-
+    :param relationship: server name
+    :param auth: user and password for basic authentication, format: "user:password"
     :return: last response
     """
     for _ in range(retry):
@@ -144,14 +186,18 @@ def wait_until_ha_state(state, dest=world.f_cfg.mgmt_address, retry=20, sleep=1,
 
 
 def increase_mac(mac: str, rand: bool = False):
-    """
+    """Recalculate mac address.
+
     Recalculate mac address by: keep first octet unchanged (we can change it in test to make sure that
     consecutive steps will generate different sets, change second octet always by 1, all the rest we can
     change by one or random number between 3 and 20. Used rand=True to generate test data
 
     :param mac: mac address as string
+    :type mac: str
     :param rand: whether to use randomness in changing the MAC
+    :type rand: bool
     :return: increased mac address as string
+    :rtype: str
     """
     mac = mac.split(":")
     new_mac = (int(mac[0], 16),)
@@ -167,9 +213,11 @@ def increase_mac(mac: str, rand: bool = False):
 def generate_leases(leases_count: int = 1, iana: int = 1, iapd: int = 1,
                     dhcp_version: str = 'v6', mac: str = "01:02:0c:03:0a:00",
                     expected_server_id: str = None):
-    """
+    """Generate leases.
+
     Function will perform message exchanges to get specified number of leases,
-    will assert if at the end number of leases will be smaller
+    will assert if at the end number of leases will be smaller.
+
     :param leases_count: how many leases we want to generate
     :param iana: how many v6 addresses we want in single exchange (ignored for v4)
     :param iapd: how many prefixes we want in single exchange (ignored for v4)
@@ -300,8 +348,8 @@ def generate_leases(leases_count: int = 1, iana: int = 1, iapd: int = 1,
 def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
                                 mac="05:02:0c:03:0a:00", duid="00:03:00:01:05:02:0c:03:0a:00",
                                 iface=None):
-    """
-    Send messages with increased elapsed time (v6) or secs field (v4) to simulate one node failure
+    """Send messages with increased elapsed time (v6) or secs field (v4) to simulate one node failure.
+
     :param msg_count: how many messages send
     :param elapsed: value of time in seconds we are starting with
     :param dhcp_version: dhcp version
@@ -359,6 +407,13 @@ def send_increased_elapsed_time(msg_count, elapsed=3, dhcp_version='v6',
 
 
 def load_hook_libraries(dhcp_version, hook_order):
+    """load_hook_libraries Load hook libraries.
+
+    :param dhcp_version: dhcp version
+    :type dhcp_version: str
+    :param hook_order: hook order
+    :type hook_order: str
+    """
     if hook_order == 'alphabetical':
         if dhcp_version == 'v4_bootp':
             srv_control.add_hooks('libdhcp_bootp.so')
@@ -376,8 +431,8 @@ def get_status_HA(server1: bool, server2: bool, ha_mode: str, primary_state: str
                   comm_interrupt: bool = None, in_touch: bool = None, channel: str = 'http', verify: bool = None,
                   port: int = 8000):
     """Check HA dependent status returned by 'status-get' command according to parameters.
-    This function checks 2 servers in HA pair.
 
+    This function checks 2 servers in HA pair.
     :param server1: Should server1 be checked?
     :param server2: Should server2 be checked?
     :param ha_mode: HA mode that servers are in. ('load-balancing', 'hot-standby')
