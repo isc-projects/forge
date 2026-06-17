@@ -242,7 +242,7 @@ class Certificates:
         if isinstance(p, list):
             p = " ".join(p)
         fabric_sudo_command(f'chmod {mode} {p}')
-        # set_ownership_of_a_file(p) it shouldn't be needed.
+        set_ownership_of_a_file(p)
 
     def clear(self, name: str = None):
         """Remove all default keys and certs or just one singled out by name.

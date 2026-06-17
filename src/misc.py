@@ -36,11 +36,11 @@ class Version:
         :return: True if v1 < v2, False otherwise
         :rtype: bool
         """
-        for i in range(0, len(self.value)):
+        for i, v in enumerate(self.value):
             if i < len(other.value):
-                if self.value[i] < other.value[i]:
+                if v < other.value[i]:
                     return True
-                if self.value[i] > other.value[i]:
+                if v > other.value[i]:
                     return False
         if len(self.value) < len(other.value):
             return True

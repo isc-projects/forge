@@ -14,6 +14,7 @@ from src.forge_cfg import world
 from src.softwaresupport.multi_server_functions import (
     add_line_if_not_exists,
     fabric_is_command,
+    fabric_is_dir,
     fabric_sudo_command,
     write_to_file,
 )
@@ -46,7 +47,16 @@ def configure_tls_on_the_database_server(backend, certificates, host=world.f_cfg
         fabric_sudo_command('rm -fr /etc/mysql/tls', destination_host=host)
         certs = certificates.copy('/etc/mysql/tls')  # TODO host
         fabric_sudo_command('chown -R mysql:mysql /etc/mysql/tls', destination_host=host)
+        my_cnf = mysql_cnf(host=host)
         my_cnf_d = mysql_cnf_d(host=host)
+        if not fabric_is_dir(my_cnf_d, host=host):
+            fabric_sudo_command(f'mkdir -p {my_cnf_d}', destination_host=host)
+            content = f"""
+[mysqld]
+!includedir {my_cnf_d}
+"""
+            write_to_file(my_cnf, content, host=host)
+
         content = f"""\
 [mysqld]
 require_secure_transport = ON
@@ -92,12 +102,12 @@ ssl_key_file = '/var/lib/postgres/tls/server_key.pem'
     restart_database(backend, host=host)
 
 
-def mysql_cnf_d(host=world.f_cfg.mgmt_address):
-    """Get the directory which holds global custom configuration files for MySQL.
+def mysql_cnf(host=world.f_cfg.mgmt_address):
+    """Get the file which holds global configuration for MySQL.
 
     :param host: the host of the database server
     :type host: str
-    :return: the path to the global cnf.d directory
+    :return: the path to the global cnf file
     :rtype: str
     """
     mysql_help = fabric_sudo_command('mysql --help --verbose', hide_all=True, destination_host=host)
@@ -107,8 +117,19 @@ def mysql_cnf_d(host=world.f_cfg.mgmt_address):
         if line == 'Default options are read from the following files in the given order:':
             my_cnf = next(lines).split(' ')[0]
     assert my_cnf is not None
+    return my_cnf
+
+
+def mysql_cnf_d(host=world.f_cfg.mgmt_address):
+    """Get the directory which holds global custom configuration files for MySQL.
+
+    :param host: the host of the database server
+    :type host: str
+    :return: the path to the global cnf.d directory
+    :rtype: str
+    """
+    my_cnf = mysql_cnf(host)
     my_cnf_d = f"{my_cnf}.d"
-    fabric_sudo_command(f'mkdir -p {my_cnf_d}', destination_host=host)
     return my_cnf_d
 
 

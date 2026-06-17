@@ -443,7 +443,9 @@ function install_nexus_repo() {
     case "$usedSystem" in
             "ubuntu"|"debian")
                 incus exec kea-"$node" -- curl https://packages.aws.isc.org/repository/repo-keys/repo-key.gpg -o repo-key.gpg
+                incus exec kea-"$node" -- rm -f /usr/share/keyrings/packages-aws-isc-org.gpg
                 incus exec kea-"$node" -- gpg --dearmor -o /usr/share/keyrings/packages-aws-isc-org.gpg repo-key.gpg
+                incus exec kea-"$node" -- rm repo-key.gpg
                 printf "deb [signed-by=/usr/share/keyrings/packages-aws-isc-org.gpg] https://packages.aws.isc.org/repository/kea-%s/ kea main\n" "${usedSystem}-${osVersion}" > kea-nexus.list
                 incus file push kea-nexus.list "$1"/etc/apt/sources.list.d/kea-nexus.list
                 update kea-"$node"
@@ -659,6 +661,7 @@ function run_pytest() {
     log "Running pytest.."
     incus exec kea-forge --cwd=/home/forge -- sudo /home/forge/venv-client-node/bin/pytest "${new_args[@]}"
     get_results
+    log "Finished."
 }
 
 function get_results() {

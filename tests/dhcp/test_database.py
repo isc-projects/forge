@@ -15,7 +15,6 @@ from src import misc
 from src import srv_msg
 from src.forge_cfg import world
 
-from src.misc import Version
 from src.protosupport.multi_protocol_functions import (
     log_contains_n_times,
     log_doesnt_contain,
@@ -1011,12 +1010,6 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
 @pytest.mark.parametrize('security_type', ['CA-based-validation', 'mutual-authentication'])
 @pytest.mark.parametrize('backend', ['mysql', 'postgresql'])
 def test_db_tls(backend, security_type, dhcp_version):
-    if (
-        backend == 'mysql'
-        and security_type == 'mutual-authentication'
-        and Version(misc.get_openssl_version()) < Version('3.6.0')
-    ):
-        pytest.skip('MySQL mutual authentication does not seem to work on old OpenSSL versions.')
     misc.test_setup()
     certificates = Certificates()
 
