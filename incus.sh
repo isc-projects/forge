@@ -549,7 +549,7 @@ function install_kea_pkgs() {
             ;;
         esac
     done
-    printf '\nINSTALL_METHOD="native"\n' >> init_all.py
+    printf '\nINSTALL_METHOD="native"\n' >> install_method
 }
 
 function remove_kea_pkgs() {
@@ -589,7 +589,7 @@ function install_kea_tarball() {
         incus file push -r -q "$2" kea-"$node"/tmp/.
         incus exec kea-"$node" --cwd=/tmp/kea -- python3 /tmp/hammer.py build -p local -w ccache,forge,install,mysql,pgsql,shell,gssapi,netconf -x docs,perfdhcp,unittest --ccache-dir /ccache #
     done
-    printf '\nINSTALL_METHOD="make"\n' >> init_all.py
+    printf '\nINSTALL_METHOD="make"\n' >> install_method
 }
 
 function print_summary() {
@@ -638,6 +638,12 @@ function setup_forge() {
     upload_pytest
     incus exec kea-forge -- sudo -u forge python3 -m venv /home/forge/venv-client-node
     incus exec kea-forge -- sudo -u forge /home/forge/venv-client-node/bin/pip install -r /home/forge/requirements.txt
+    generate_init_all
+}
+
+function generate_init_all() {
+    # no arguments needed
+    log "Generating init_all.py"
     populate_forge_init
     python3 modify_init_all.py
 }
@@ -679,7 +685,7 @@ function get_from_kea_forge() {
 function populate_forge_init() {
     log "Updating forge init script"
 
-cat << EOF >> init_all.py
+cat << EOF > init_all.py
 LOGLEVEL = "info"
 IFACE = "eth1"
 SERVER_IFACE = "eth1"
@@ -723,6 +729,7 @@ MULTI_THREADING_ENABLED = True
 FORGE_VERBOSE = 0
 DISABLE_DB_SETUP = False
 EOF
+cat install_method >> init_all.py
 
 if [ "$usedSystem" = "fedora" ] || [ "$usedSystem" = "rockylinux" ]; then
     printf 'DNS_DATA_PATH = "/etc/"\n' >> init_all.py
@@ -922,6 +929,9 @@ case "$command" in
     check-ssh)
         check_ssh "$@"
         ;;
+    connect-to-node)
+        incus exec "$@" -- bash
+        ;;
     check-kea)
         check_installed_kea "$@"
         ;;
@@ -939,6 +949,9 @@ case "$command" in
         ;;
     print-summary)
         print_summary
+        ;;
+    generate-init-all)
+        generate_init_all
         ;;
     update-pytest)
         upload_pytest
