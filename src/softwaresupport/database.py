@@ -14,8 +14,8 @@ from src.forge_cfg import world
 from src.softwaresupport.multi_server_functions import (
     add_line_if_not_exists,
     fabric_is_command,
-    fabric_is_dir,
     fabric_sudo_command,
+    remove_line_if_exists,
     write_to_file,
 )
 
@@ -28,8 +28,67 @@ def clear_database(host=world.f_cfg.mgmt_address):
     """
     my_cnf_d = mysql_cnf_d(host=host)
     fabric_sudo_command(f'rm -f {my_cnf_d}/forge-tls.cnf', destination_host=host)
+    fabric_sudo_command(f'rm -f {my_cnf_d}/forge_listening_addresses.cnf', destination_host=host)
+    hba_file = postgresql_hba_file(host=host)
     pgsql_conf_d = postgresql_conf_d(host=host)
     fabric_sudo_command(f'rm -f {pgsql_conf_d}/forge-tls.conf', destination_host=host)
+    fabric_sudo_command(f'rm -f {pgsql_conf_d}/forge_listening_addresses.conf', destination_host=host)
+    remove_line_if_exists(
+        hba_file,
+        "host    all             all             samenet                 scram-sha-256",
+        host=host,
+    )
+
+
+def configure_listening_addresses_on_the_database_server(backend, host=world.f_cfg.mgmt_address):
+    """Configure listening addresses on the database server to allow all users to connect from other addresses.
+
+    :param backend:
+    :type backend: str
+    :param host: the host of the database server
+    :type host: str
+    """
+    if backend == 'mysql':
+        my_cnf_d = mysql_cnf_d(host=host)
+        # Add listen_addresses to override the default listen_addresses
+        content = """\
+[mysqld]
+bind-address = 0.0.0.0
+"""
+        write_to_file(f'{my_cnf_d}/forge_listening_addresses.cnf', content, host=host)
+    elif backend == 'postgresql':
+        conf = postgresql_conf(host=host)
+        pgsql_conf_d = postgresql_conf_d(host=host)
+        hba_file = postgresql_hba_file(host=host)
+        # Add include_dir to postgresql.conf if not exists
+        add_line_if_not_exists(conf, "include_dir = 'conf.d'", host=host)
+        fabric_sudo_command(f'mkdir -p {pgsql_conf_d}', destination_host=host)
+        # Add listen_addresses to override the default listen_addresses
+        content = """\
+listen_addresses = '*'
+"""
+        write_to_file(f'{pgsql_conf_d}/forge_listening_addresses.conf', content, host=host)
+
+        # Add host to pg_hba.conf to allow all users to connect from the same network
+        # Many still supported postgres versions do not support includes for pg_hba.conf
+        add_line_if_not_exists(
+            hba_file,
+            "host    all             all             samenet                 scram-sha-256",
+            host=host,
+        )
+
+        fabric_sudo_command(f'chown -R postgres:postgres {conf} {pgsql_conf_d} {hba_file}')
+        fabric_sudo_command(
+            f"chmod 600 {conf} {pgsql_conf_d}/forge_listening_addresses.conf {hba_file}"
+        )
+        fabric_sudo_command(f"chmod 700 {pgsql_conf_d}")
+        # If SELinux is enabled, restore PostgreSQL file types.
+        if fabric_is_command('restorecon'):
+            fabric_sudo_command(f'restorecon -Rv {pgsql_conf_d}')
+    else:
+        pytest.fail(f'backend {backend}?')
+
+    restart_database(backend, host=host)
 
 
 def configure_tls_on_the_database_server(backend, certificates, host=world.f_cfg.mgmt_address):
@@ -47,15 +106,7 @@ def configure_tls_on_the_database_server(backend, certificates, host=world.f_cfg
         fabric_sudo_command('rm -fr /etc/mysql/tls', destination_host=host)
         certs = certificates.copy('/etc/mysql/tls')  # TODO host
         fabric_sudo_command('chown -R mysql:mysql /etc/mysql/tls', destination_host=host)
-        my_cnf = mysql_cnf(host=host)
         my_cnf_d = mysql_cnf_d(host=host)
-        if not fabric_is_dir(my_cnf_d, host=host):
-            fabric_sudo_command(f'mkdir -p {my_cnf_d}', destination_host=host)
-            content = f"""
-[mysqld]
-!includedir {my_cnf_d}
-"""
-            write_to_file(my_cnf, content, host=host)
 
         content = f"""\
 [mysqld]
@@ -115,7 +166,7 @@ def mysql_cnf(host=world.f_cfg.mgmt_address):
     my_cnf = None
     for line in lines:
         if line == 'Default options are read from the following files in the given order:':
-            my_cnf = next(lines).split(' ')[0]
+            my_cnf = next(lines).strip().split(' ')[-2]
     assert my_cnf is not None
     return my_cnf
 
@@ -130,6 +181,10 @@ def mysql_cnf_d(host=world.f_cfg.mgmt_address):
     """
     my_cnf = mysql_cnf(host)
     my_cnf_d = f"{my_cnf}.d"
+    fabric_sudo_command(f'mkdir -p {my_cnf_d}', destination_host=host)
+    add_line_if_not_exists(my_cnf, f'!includedir {my_cnf_d}', host=host)
+    fabric_sudo_command(f'chown -R mysql:mysql {my_cnf}', destination_host=host)
+    fabric_sudo_command(f'chown -R mysql:mysql {my_cnf_d}', destination_host=host)
     return my_cnf_d
 
 
@@ -156,6 +211,17 @@ def postgresql_conf_d(host=world.f_cfg.mgmt_address):
     dirname = fabric_sudo_command(f"dirname '{conf}'", destination_host=host)
     conf_d = os.path.join(dirname, 'conf.d')
     return conf_d
+
+
+def postgresql_hba_file(host=world.f_cfg.mgmt_address):
+    """Get the path to PostgreSQL's hba file.
+
+    :param host: the host of the database server
+    :type host: str
+    :return: the path to hba.conf
+    :rtype: str
+    """
+    return fabric_sudo_command("cd /tmp; sudo -u postgres psql -A -t -c 'SHOW hba_file;'", destination_host=host)
 
 
 def service_action_on_database(database, action, host=world.f_cfg.mgmt_address):

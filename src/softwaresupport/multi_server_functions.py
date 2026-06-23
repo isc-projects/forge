@@ -609,6 +609,34 @@ def add_line_if_not_exists(file_path, line_to_add, host=world.f_cfg.mgmt_address
     os.remove('tmp.txt')
 
 
+def remove_line_if_exists(file_path, line_to_remove, host=world.f_cfg.mgmt_address):
+    """Remove a line from the file if the line exists in the file.
+
+    :param file_path: path to file
+    :type file_path: str
+    :param line_to_remove: content to remove
+    :type line_to_remove: str
+    :param host: Machine where file exists
+    :type host: str
+    """
+    if fabric_is_file(file_path, destination_host=host):
+        fabric_download_file(file_path, 'tmp.txt', destination_host=host)
+    try:
+        with open('tmp.txt', 'r+', encoding='utf-8') as file:
+            lines = file.readlines()
+            # Check if line already exists.
+            if any(line.strip() == line_to_remove.strip() for line in lines):
+                return
+            # Remove the line.
+            file.write(''.join(line for line in lines if line.strip() != line_to_remove.strip()))
+    except FileNotFoundError:
+        # File doesn't exist, do nothing.
+        os.remove('tmp.txt')
+        return
+    fabric_send_file('tmp.txt', file_path, destination_host=host)
+    os.remove('tmp.txt')
+
+
 def write_to_file(file_path, content, host=world.f_cfg.mgmt_address):
     """Add a line to the file if the line does not already exist in the file.
 
