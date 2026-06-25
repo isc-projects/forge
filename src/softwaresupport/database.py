@@ -77,14 +77,17 @@ listen_addresses = '*'
             host=host,
         )
 
-        fabric_sudo_command(f'chown -R postgres:postgres {conf} {pgsql_conf_d} {hba_file}')
         fabric_sudo_command(
-            f"chmod 600 {conf} {pgsql_conf_d}/forge_listening_addresses.conf {hba_file}"
+            f"chown -R postgres:postgres {conf} {pgsql_conf_d} {hba_file}",
+            destination_host=host,
         )
-        fabric_sudo_command(f"chmod 700 {pgsql_conf_d}")
+        fabric_sudo_command(
+            f"chmod 600 {conf} {pgsql_conf_d}/forge_listening_addresses.conf {hba_file}", destination_host=host
+        )
+        fabric_sudo_command(f"chmod 700 {pgsql_conf_d}", destination_host=host)
         # If SELinux is enabled, restore PostgreSQL file types.
-        if fabric_is_command('restorecon'):
-            fabric_sudo_command(f'restorecon -Rv {pgsql_conf_d}')
+        if fabric_is_command('restorecon', host=host):
+            fabric_sudo_command(f'restorecon -Rv {pgsql_conf_d}', destination_host=host)
     else:
         pytest.fail(f'backend {backend}?')
 
@@ -196,7 +199,19 @@ def postgresql_conf(host=world.f_cfg.mgmt_address):
     :return: the path to postgresql.conf
     :rtype: str
     """
-    return fabric_sudo_command("cd /tmp; sudo -u postgres psql -A -t -c 'SHOW config_file;'", destination_host=host)
+    # if postgres is not started yet, restart it to get the correct config file
+    result = fabric_sudo_command(
+        "cd /tmp; sudo -u postgres psql -A -t -c 'SHOW config_file;'",
+        destination_host=host,
+        ignore_errors=True,
+    )
+    if "error" in result:
+        restart_database("postgresql", host=host)
+        result = fabric_sudo_command(
+            "cd /tmp; sudo -u postgres psql -A -t -c 'SHOW config_file;'",
+            destination_host=host,
+        )
+    return result
 
 
 def postgresql_conf_d(host=world.f_cfg.mgmt_address):
@@ -221,7 +236,19 @@ def postgresql_hba_file(host=world.f_cfg.mgmt_address):
     :return: the path to hba.conf
     :rtype: str
     """
-    return fabric_sudo_command("cd /tmp; sudo -u postgres psql -A -t -c 'SHOW hba_file;'", destination_host=host)
+    # if postgres is not started yet, restart it to get the correct hba file
+    result = fabric_sudo_command(
+        "cd /tmp; sudo -u postgres psql -A -t -c 'SHOW hba_file;'",
+        destination_host=host,
+        ignore_errors=True,
+    )
+    if "error" in result:
+        restart_database("postgresql", host=host)
+        result = fabric_sudo_command(
+            "cd /tmp; sudo -u postgres psql -A -t -c 'SHOW hba_file;'",
+            destination_host=host,
+        )
+    return result
 
 
 def service_action_on_database(database, action, host=world.f_cfg.mgmt_address):

@@ -594,12 +594,14 @@ def add_line_if_not_exists(file_path, line_to_add, host=world.f_cfg.mgmt_address
     if fabric_is_file(file_path, destination_host=host):
         fabric_download_file(file_path, 'tmp.txt', destination_host=host)
     try:
-        with open('tmp.txt', 'r+', encoding='utf-8') as file:
+        with open('tmp.txt', 'r', encoding='utf-8') as file:
             lines = file.readlines()
             # Check if line already exists.
-            if any(line.strip() == line_to_add.strip() for line in lines):
-                return
-            # Add the line.
+        if any(line.strip() == line_to_add.strip() for line in lines):
+            os.remove('tmp.txt')
+            return
+        # Add the line.
+        with open('tmp.txt', 'a', encoding='utf-8') as file:
             file.write(line_to_add.rstrip('\n') + '\n')
     except FileNotFoundError:
         # File doesn't exist, create it and add the line.
@@ -626,13 +628,14 @@ def remove_line_if_exists(file_path, line_to_remove, host=world.f_cfg.mgmt_addre
             lines = file.readlines()
             # Check if line already exists.
             if any(line.strip() == line_to_remove.strip() for line in lines):
+                os.remove('tmp.txt')
                 return
-            # Remove the line.
-            file.write(''.join(line for line in lines if line.strip() != line_to_remove.strip()))
     except FileNotFoundError:
         # File doesn't exist, do nothing.
         os.remove('tmp.txt')
         return
+    with open('tmp.txt', 'w', encoding='utf-8') as file:
+        file.write(''.join(line for line in lines if line.strip() != line_to_remove.strip()))
     fabric_send_file('tmp.txt', file_path, destination_host=host)
     os.remove('tmp.txt')
 
