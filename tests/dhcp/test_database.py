@@ -340,7 +340,7 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
 
     # Wait for Kea to be done waiting
     wait_for_message_in_log(
-        f"DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: "
+        f"DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: "
         f"{retries}, has been exhausted without success",
         count=1,
         timeout=retries * wait_time / 1000 + 1,
@@ -643,7 +643,7 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
 
     # Wait for Kea to be done waiting
     wait_for_message_in_log(
-        f"DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: "
+        f"DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: "
         f"{retries}, has been exhausted without success",
         count=1,
         timeout=retries * wait_time / 1000 + 1,
@@ -960,7 +960,7 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
 
     # Wait for Kea to be done waiting
     wait_for_message_in_log(
-        f"DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: "
+        f"DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: "
         f"{retries}, has been exhausted without success",
         count=1,
         timeout=retries * wait_time / 1000 + 1,

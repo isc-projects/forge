@@ -2157,7 +2157,6 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
     fabric_remove_file_command(world.f_cfg.run_join('*'), destination_host=destination_address,
                                hide_all=world.f_cfg.forge_verbose == 0)
 
-
     start_database_if_not_running('mysql', host=destination_address)
     # use kea script for cleaning mysql
     cmd = 'bash {software_install_path}/share/kea/scripts/mysql/wipe_data.sh '
