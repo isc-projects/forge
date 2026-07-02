@@ -126,7 +126,7 @@ def test_db_retry_lease_stop_retry_exit(backend, dhcp_version):
                             timeout=retries*wait_time/1000+1)
 
     log_contains_n_times(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
+        f'DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
@@ -235,7 +235,7 @@ def test_db_retry_lease_serve_retry_exit(backend, dhcp_version):
                             timeout=retries*wait_time/1000+1)
 
     log_contains_n_times(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
+        f'DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
@@ -339,9 +339,12 @@ def test_db_retry_lease_serve_retry_continue(backend, dhcp_version):
         srv_msg.response_check_option_content(7, 'value', 123)
 
     # Wait for Kea to be done waiting
-    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
-                            f'{retries}, has been exhausted without success', count=1,
-                            timeout=retries*wait_time/1000+1)
+    wait_for_message_in_log(
+        f"DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: "
+        f"{retries}, has been exhausted without success",
+        count=1,
+        timeout=retries * wait_time / 1000 + 1,
+    )
 
     # Confirm Kea is still serving Clients non lease messages
     if dhcp_version == 'v4':
@@ -451,7 +454,7 @@ def test_db_retry_reservation_stop_retry_exit(backend, dhcp_version):
                             timeout=retries*wait_time/1000+1)
 
     log_contains_n_times(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
+        f'DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
@@ -546,7 +549,7 @@ def test_db_retry_reservation_serve_retry_exit(backend, dhcp_version):
                             timeout=retries*wait_time/1000+1)
 
     log_contains_n_times(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
+        f'DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
@@ -639,9 +642,12 @@ def test_db_retry_reservation_serve_retry_continue(backend, dhcp_version):
         srv_msg.SARR('2001:db8:1::50')
 
     # Wait for Kea to be done waiting
-    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
-                            f'{retries}, has been exhausted without success', count=1,
-                            timeout=retries*wait_time/1000+1)
+    wait_for_message_in_log(
+        f"DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: "
+        f"{retries}, has been exhausted without success",
+        count=1,
+        timeout=retries * wait_time / 1000 + 1,
+    )
 
     # Confirm Kea is still started and serves clients
     if dhcp_version == 'v4':
@@ -741,7 +747,7 @@ def test_db_retry_legallog_stop_retry_exit(backend, dhcp_version):
                             timeout=retries*wait_time/1000+1)
 
     log_contains_n_times(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
+        f'DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
@@ -846,7 +852,7 @@ def test_db_retry_legallog_serve_retry_exit(backend, dhcp_version):
                             timeout=retries*wait_time/1000+1)
 
     log_contains_n_times(
-        f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
+        f'DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
         f'{retries}, has been exhausted without success', 1)
 
     # Start Kea again (logs are cleared)
@@ -953,9 +959,12 @@ def test_db_retry_legallog_serve_retry_continue(backend, dhcp_version):
         srv_msg.SARR('2001:db8:1::50', duid='00:01:00:01:52:7b:a8:f0:f6:f5:f4:f3:f2:01')
 
     # Wait for Kea to be done waiting
-    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_DB_RECONNECT_FAILED maximum number of database reconnect attempts: '
-                            f'{retries}, has been exhausted without success', count=1,
-                            timeout=retries*wait_time/1000+1)
+    wait_for_message_in_log(
+        f"DHCP{dhcp_version[1]}_FATAL_DB_RECONNECT_FAILED maximum number of database reconnect attempts: "
+        f"{retries}, has been exhausted without success",
+        count=1,
+        timeout=retries * wait_time / 1000 + 1,
+    )
 
     # Confirm Kea is still started and serves clients
     if dhcp_version == 'v4':

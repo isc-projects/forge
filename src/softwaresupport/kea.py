@@ -39,6 +39,7 @@ from src.softwaresupport.multi_server_functions import fabric_run_command, fabri
 from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_is_dir, fabric_is_file, fabric_sudo_command
 from src.softwaresupport.multi_server_functions import fabric_remove_file_command, fabric_download_file
 from src.softwaresupport.multi_server_functions import check_local_path_for_downloaded_files
+from src.softwaresupport.database import start_database_if_not_running
 
 from . import database
 
@@ -2156,6 +2157,8 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
     fabric_remove_file_command(world.f_cfg.run_join('*'), destination_host=destination_address,
                                hide_all=world.f_cfg.forge_verbose == 0)
 
+
+    start_database_if_not_running('mysql', host=destination_address)
     # use kea script for cleaning mysql
     cmd = 'bash {software_install_path}/share/kea/scripts/mysql/wipe_data.sh '
     cmd += ' `mysql -u{db_user} -p{db_passwd} {db_name} -N -B'
@@ -2167,6 +2170,7 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
                      db_name=db_name)
     fabric_sudo_command(cmd, destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
 
+    start_database_if_not_running('postgresql', host=destination_address)
     # use kea script for cleaning pgsql
     cmd = 'PGPASSWORD={db_passwd} bash {software_install_path}/share/kea/scripts/pgsql/wipe_data.sh '
     cmd += ' `PGPASSWORD={db_passwd} psql --set ON_ERROR_STOP=1 -A -t -h "localhost" '

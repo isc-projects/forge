@@ -200,18 +200,12 @@ def postgresql_conf(host=world.f_cfg.mgmt_address):
     :rtype: str
     """
     # if postgres is not started yet, restart it to get the correct config file
-    result = fabric_sudo_command(
+    if not is_database_running("postgresql", host=host):
+        restart_database("postgresql", host=host)
+    return fabric_sudo_command(
         "cd /tmp; sudo -u postgres psql -A -t -c 'SHOW config_file;'",
         destination_host=host,
-        ignore_errors=True,
     )
-    if "error" in result:
-        restart_database("postgresql", host=host)
-        result = fabric_sudo_command(
-            "cd /tmp; sudo -u postgres psql -A -t -c 'SHOW config_file;'",
-            destination_host=host,
-        )
-    return result
 
 
 def postgresql_conf_d(host=world.f_cfg.mgmt_address):
@@ -237,21 +231,15 @@ def postgresql_hba_file(host=world.f_cfg.mgmt_address):
     :rtype: str
     """
     # if postgres is not started yet, restart it to get the correct hba file
-    result = fabric_sudo_command(
+    if not is_database_running("postgresql", host=host):
+        restart_database("postgresql", host=host)
+    return fabric_sudo_command(
         "cd /tmp; sudo -u postgres psql -A -t -c 'SHOW hba_file;'",
         destination_host=host,
-        ignore_errors=True,
     )
-    if "error" in result:
-        restart_database("postgresql", host=host)
-        result = fabric_sudo_command(
-            "cd /tmp; sudo -u postgres psql -A -t -c 'SHOW hba_file;'",
-            destination_host=host,
-        )
-    return result
 
 
-def service_action_on_database(database, action, host=world.f_cfg.mgmt_address):
+def service_action_on_database(database, action, host=world.f_cfg.mgmt_address, ignore_errors=False):
     """Service action on database.
 
     :param database:
@@ -260,13 +248,17 @@ def service_action_on_database(database, action, host=world.f_cfg.mgmt_address):
     :type action: str
     :param host: (Default value = world.f_cfg.mgmt_address)
     :type host: str
+    :param ignore_errors: ignore errors
+    :type ignore_errors: bool
+    :return: the result of the service action
+    :rtype: FabricResult
     """
     database = 'mariadb' if database == 'mysql' else database
     if world.server_system == 'alpine':
         cmd = f'rc-service {database} {action}'
     else:
         cmd = f'systemctl {action} {database}'
-    fabric_sudo_command(cmd, destination_host=host)
+    return fabric_sudo_command(cmd, destination_host=host, ignore_errors=ignore_errors)
 
 
 def restart_database(database, host=world.f_cfg.mgmt_address):
@@ -309,6 +301,33 @@ def start_all_databases(host=world.f_cfg.mgmt_address):
     """
     for database in ['mysql', 'postgresql']:
         start_database(database, host=host)
+
+
+def start_database_if_not_running(database, host=world.f_cfg.mgmt_address):
+    """Start database if not running.
+
+    :param database:
+    :type database: str
+    :param host: (Default value = world.f_cfg.mgmt_address)
+    :type host: str
+    """
+    if not is_database_running(database, host=host):
+        start_database(database, host=host)
+
+
+def is_database_running(database, host=world.f_cfg.mgmt_address):
+    """Check if database is running.
+
+    :param database:
+    :type database: str
+    :param host: (Default value = world.f_cfg.mgmt_address)
+    :type host: str
+    :return: True if database is running, False otherwise
+    :rtype: bool
+    """
+    action = 'status' if world.server_system == 'alpine' else 'is-active'
+    result = service_action_on_database(database, action, host=host, ignore_errors=True)
+    return result.succeeded
 
 
 def stop_database(database, host=world.f_cfg.mgmt_address):
