@@ -1616,6 +1616,7 @@ def test_legal_log_path_configfile(dhcp_version):
 
         log_contains(message)
 
+
 def _check_kea_is_down(dhcp_version):
     """
     Check if Kea is down.
@@ -1630,7 +1631,7 @@ def _check_kea_is_down(dhcp_version):
         srv_msg.client_send_msg('DISCOVER')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', 'OFFER',expect_response=False)
+        srv_msg.send_wait_for_message('MUST', 'OFFER', expect_response=False)
     else:
         srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
         srv_msg.client_does_include('Client', 'client-id')
@@ -1638,7 +1639,7 @@ def _check_kea_is_down(dhcp_version):
         srv_msg.client_send_msg('SOLICIT')
 
         misc.pass_criteria()
-        srv_msg.send_wait_for_message('MUST', 'ADVERTISE',expect_response=False)
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE', expect_response=False)
 
 
 @pytest.mark.v4
