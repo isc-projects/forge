@@ -1646,7 +1646,7 @@ def _check_kea_is_down(dhcp_version):
 @pytest.mark.legal_logging
 def test_legal_log_path_config_set(dhcp_version):
     """
-    Test to check if Kea makes log file in custom path.
+    Test to check if Kea rejects invalid log path in config set.
     :param dhcp_version: The DHCP version to use.
     :type dhcp_version: str
     """
@@ -1659,8 +1659,7 @@ def test_legal_log_path_config_set(dhcp_version):
         ['/etc/kea/', 5, 'One or more hook libraries failed to load'],
     ]
 
-        misc.test_setup()
-
+    misc.test_setup()
     srv_control.set_time('renew-timer', 100)
     srv_control.set_time('rebind-timer', 200)
     srv_control.set_time('valid-lifetime', 600)
@@ -1711,10 +1710,10 @@ def test_legal_log_path_config_set(dhcp_version):
     srv_control.start_srv('DHCP', 'started')
 
     # Check if kea is running after fresh start
-        if dhcp_version == 'v4':
-            _send_client_requests4(1)
-        else:
-            _send_client_requests(1)
+    if dhcp_version == 'v4':
+        _send_client_requests4(1)
+    else:
+        _send_client_requests(1)
 
 
 # v4 disabled for time saving:

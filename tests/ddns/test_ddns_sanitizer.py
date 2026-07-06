@@ -13,8 +13,6 @@ from src import srv_control
 from src import misc
 from src import srv_msg
 
-from src.protosupport.multi_protocol_functions import wait_for_message_in_log
-
 
 @pytest.mark.v4
 @pytest.mark.ddns
@@ -2267,9 +2265,6 @@ def test_ddns4_hostname_newline():
     srv_msg.response_check_include_option(12)
     srv_msg.response_check_option_content(12, 'value', 'abc\rde.four.example.com')
 
-
-    # wait_for_message_in_log("DHCPSRV_MEMFILE_LFC_EXECUTE", timeout=11)
-
     misc.test_procedure()
     srv_msg.client_requests_option(1)
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')
@@ -2294,15 +2289,12 @@ def test_ddns4_hostname_newline():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
 
-        # Check if the leases are added, and remember the cltt
     cmd = {"command": "lease4-get-all",
            "arguments": {"subnets": [1]}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=0)
+    assert resp["text"] == "2 IPv4 lease(s) found."
 
-    srv_control.start_srv('DHCP', 'stopped')
-    srv_msg.forge_sleep(10, 'seconds')
-    srv_control.start_srv('DHCP', 'started')
-
+    srv_control.start_srv('DHCP', 'restarted')
 
     misc.test_procedure()
     srv_msg.client_requests_option(1)
@@ -2327,50 +2319,3 @@ def test_ddns4_hostname_newline():
     srv_msg.response_check_content('yiaddr', '192.168.50.12')
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
-
-
-    # misc.test_procedure()
-    # srv_msg.client_save_option('server_id')
-    # srv_msg.dns_question_record('abc\rde.four.example.com', 'A', 'IN')
-    # srv_msg.client_send_dns_query()
-
-    # misc.pass_criteria()
-    # srv_msg.send_wait_for_query('MUST')
-    # srv_msg.dns_option('ANSWER')
-    # srv_msg.dns_option_content('ANSWER', 'rdata', '192.168.50.10')
-    # srv_msg.dns_option_content('ANSWER', 'rrname', 'abc\rde.four.example.com.')
-
-    # misc.test_procedure()
-    # srv_msg.dns_question_record('10.50.168.192.in-addr.arpa.', 'PTR', 'IN')
-    # srv_msg.client_send_dns_query()
-
-    # misc.pass_criteria()
-    # srv_msg.send_wait_for_query('MUST')
-    # srv_msg.dns_option('ANSWER')
-    # srv_msg.dns_option_content('ANSWER', 'rdata', 'abc\rde.four.example.com.')
-    # srv_msg.dns_option_content('ANSWER', 'rrname', '10.50.168.192.in-addr.arpa.')
-
-    # misc.test_procedure()
-    # srv_msg.client_add_saved_option_count(1)
-    # srv_msg.client_sets_value('Client', 'ciaddr', '192.168.50.10')
-    # srv_msg.client_does_include_with_value('hostname', 'abc\rde.four.example.com)
-    # srv_msg.client_send_msg('RELEASE')
-
-    # misc.pass_criteria()
-    # srv_msg.send_dont_wait_for_message()
-
-    # misc.test_procedure()
-    # srv_msg.dns_question_record('abc\rde.four.example.com', 'A', 'IN')
-    # srv_msg.client_send_dns_query()
-
-    # misc.pass_criteria()
-    # srv_msg.send_wait_for_query('MUST')
-    # srv_msg.dns_option('ANSWER', expect_include=False)
-
-    # misc.test_procedure()
-    # srv_msg.dns_question_record('10.50.168.192.in-addr.arpa.', 'PTR', 'IN')
-    # srv_msg.client_send_dns_query()
-
-    # misc.pass_criteria()
-    # srv_msg.send_wait_for_query('MUST')
-    # srv_msg.dns_option('ANSWER', expect_include=False)
