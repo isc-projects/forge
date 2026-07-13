@@ -227,7 +227,7 @@ function install_kerberos() {
             install_pkgs "$1" krb5-server krb5-workstation krb5-libs
             ;;
         *)
-            log_error "Not implemented yet"
+            log "Not implemented yet"
             ;;
     esac
 }
@@ -466,7 +466,7 @@ EOF
                 update kea-"$node"
                 ;;
             "alpine")
-                log_error "Alpine repo in Nexus is not supported, packages will be downloaded and installed locally"
+                log "Alpine repo in Nexus is not supported, packages will be downloaded and installed locally"
                 ;;
             *)
             printf "Not in the list"
@@ -477,6 +477,7 @@ EOF
 function install_cloudsmith_repo() {
     log "Installing Cloudsmith repository on node $1"
     log_error "Not implemented yet"
+    exit 1
 }
 
 function install_kea_pkgs() {
@@ -549,7 +550,6 @@ function install_kea_pkgs() {
             ;;
         esac
     done
-    printf '\nINSTALL_METHOD="native"\n' >> install_method
 }
 
 function remove_kea_pkgs() {
@@ -589,7 +589,6 @@ function install_kea_tarball() {
         incus file push -r -q "$2" kea-"$node"/tmp/.
         incus exec kea-"$node" --cwd=/tmp/kea -- python3 /tmp/hammer.py build -p local -w ccache,forge,install,mysql,pgsql,shell,gssapi,netconf -x docs,perfdhcp,unittest --ccache-dir /ccache #
     done
-    printf '\nINSTALL_METHOD="make"\n' >> install_method
 }
 
 function print_summary() {
@@ -730,13 +729,22 @@ MULTI_THREADING_ENABLED = True
 FORGE_VERBOSE = 0
 DISABLE_DB_SETUP = False
 EOF
-cat install_method >> init_all.py
+    version_info=$(incus exec kea-1 -- kea-dhcp6 -V)
+    if  test -z "${version_info-}"; then
+        log_error "Kea does not seem to be installed."
+        exit 1
+    fi
+    if echo "${version_info}" | grep tarball > /dev/null 2>&1; then
+        printf 'INSTALL_METHOD = "make"\n' >> init_all.py
+    else
+        printf 'INSTALL_METHOD = "native"\n' >> init_all.py
+    fi
 
-if [ "$usedSystem" = "fedora" ] || [ "$usedSystem" = "rockylinux" ]; then
-    printf 'DNS_DATA_PATH = "/etc/"\n' >> init_all.py
-else
-    printf 'DNS_DATA_PATH = "/etc/bind/"\n' >> init_all.py
-fi
+    if [ "$usedSystem" = "fedora" ] || [ "$usedSystem" = "rockylinux" ]; then
+        printf 'DNS_DATA_PATH = "/etc/"\n' >> init_all.py
+    else
+        printf 'DNS_DATA_PATH = "/etc/bind/"\n' >> init_all.py
+    fi
 }
 
 function help() {
@@ -790,7 +798,7 @@ case "$command" in
         # let's download images to cache it locally
         incus image copy images:ubuntu/26.04 local:
         incus image copy images:fedora/44 local:
-        incus image copy images:alpine/3.23 local:
+        incus image copy images:alpine/3.24 local:
         incus image copy images:rockylinux/10 local:
         incus image list
         ;;
