@@ -312,19 +312,19 @@ def test_control_channel_lease4_get_page_negative():
     cmd = {"command": "lease4-get-page",
            "arguments": {"from": "start", "limit": 0}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "page size of retrieved leases must not be 0"
+    assert resp["text"] == "'limit' parameter must not be 0."
 
     # Check if lease4-get-page with 0 "limit" argument returns error
     cmd = {"command": "lease4-get-page",
            "arguments": {"from": "start", "limit": -5}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "page size of retrieved leases must not be greater than 4294967295"
+    assert resp["text"] == "'limit' parameter is not a 32 bit unsigned integer."
 
     # Check if lease4-get-page with over max "limit" argument returns error
     cmd = {"command": "lease4-get-page",
            "arguments": {"from": "start", "limit": 4294967299}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "page size of retrieved leases must not be greater than 4294967295"
+    assert resp["text"] == "'limit' parameter is not a 32 bit unsigned integer."
 
     # Check if lease4-get-page with wrong "limit" argument returns error
     cmd = {"command": "lease4-get-page",
@@ -664,19 +664,19 @@ def test_v6_lease_get_page_negative():
     cmd = {"command": "lease6-get-page",
            "arguments": {"from": "start", "limit": 0}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "page size of retrieved leases must not be 0"
+    assert resp["text"] == "'limit' parameter must not be 0."
 
     # Check if lease6-get-page with 0 "limit" argument returns error
     cmd = {"command": "lease6-get-page",
            "arguments": {"from": "start", "limit": -5}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "page size of retrieved leases must not be greater than 4294967295"
+    assert resp["text"] == "'limit' parameter is not a 32 bit unsigned integer."
 
     # Check if lease6-get-page with over max "limit" argument returns error
     cmd = {"command": "lease6-get-page",
            "arguments": {"from": "start", "limit": 4294967299}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "page size of retrieved leases must not be greater than 4294967295"
+    assert resp["text"] == "'limit' parameter is not a 32 bit unsigned integer."
 
     # Check if lease6-get-page with wrong "limit" argument returns error
     cmd = {"command": "lease6-get-page",

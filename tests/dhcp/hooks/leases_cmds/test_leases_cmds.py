@@ -744,8 +744,8 @@ def test_v4_lease_cmds_lease_get_negative():
                          "identifier-type": "something",
                          "subnet-id": 1}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "Incorrect identifier type: something, the only supported values are: address, hw-address, client-id"
-    # TODO: test fails, kea#2260
+    assert resp["text"] == "Incorrect identifier type: something, the only supported values are: " \
+                           "hw-address, duid, client-id"
 
     cmd = {"command": "lease4-get",
            "arguments": {"identifier": "ff:01:02:03:ff:05",
@@ -2143,26 +2143,26 @@ def test_v6_lease_cmds_del_negative():
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "Incorrect identifier type: xxx, the only supported values " \
-                           "are: address, hw-address, duid"
+                           "are: hw-address, duid, client-id"
 
     # duid
     # sending wrong duid identifier to lease6-del command
     cmd = {"command": "lease6-del", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "identifier is too short (0), at least 3 is required"
+    assert resp["text"] == "Bad 'duid' identifier: identifier is too short (0), at least 3 is required"
 
     # sending wrong duid identifier to lease6-del command
     cmd = {"command": "lease6-del", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "two consecutive separators (' ') specified in a decoded string ' '"
+    assert resp["text"] == "Bad 'duid' identifier: two consecutive separators (' ') specified in a decoded string ' '"
 
     # sending wrong duid identifier to lease6-del command
     cmd = {"command": "lease6-del", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": "xxx"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "'xxx' is not a valid string of hexadecimal digits"
+    assert resp["text"] == "Bad 'duid' identifier: 'xxx' is not a valid string of hexadecimal digits"
 
     # sending wrong duid identifier to lease6-del command
     cmd = {"command": "lease6-del", "arguments": {"subnet-id": 1, "identifier-type": "duid",
@@ -2177,21 +2177,21 @@ def test_v6_lease_cmds_del_negative():
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert "intValue() called on non-integer Element in" in resp["text"]
+    assert "'iaid' parameter is not integer." in resp["text"]
 
     # sending wrong iaid identifier to lease6-del command
     cmd = {"command": "lease6-del", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert "intValue() called on non-integer Element in" in resp["text"]
+    assert "'iaid' parameter is not integer." in resp["text"]
 
     # sending wrong iaid identifier to lease6-del command
     cmd = {"command": "lease6-del", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert "intValue() called on non-integer Element in" in resp["text"]
+    assert "'iaid' parameter is not integer." in resp["text"]
 
     # address
     # sending wrong address identifier to lease6-del command
@@ -2296,26 +2296,26 @@ def test_v6_lease_cmds_get_negative():
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
     assert resp["text"] == "Incorrect identifier type: xxx, the only supported values " \
-                           "are: address, hw-address, duid"
+                           "are: hw-address, duid, client-id"
 
     # duid
     # sending wrong duid identifier to lease6-get command
     cmd = {"command": "lease6-get", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "identifier is too short (0), at least 3 is required"
+    assert resp["text"] == "Bad 'duid' identifier: identifier is too short (0), at least 3 is required"
 
     # sending wrong duid identifier to lease6-get command
     cmd = {"command": "lease6-get", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "two consecutive separators (' ') specified in a decoded string ' '"
+    assert resp["text"] == "Bad 'duid' identifier: two consecutive separators (' ') specified in a decoded string ' '"
 
     # sending wrong duid identifier to lease6-get command
     cmd = {"command": "lease6-get", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": "xxx"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "'xxx' is not a valid string of hexadecimal digits"
+    assert resp["text"] == "Bad 'duid' identifier: 'xxx' is not a valid string of hexadecimal digits"
 
     # sending wrong duid identifier to lease6-get command
     cmd = {"command": "lease6-get", "arguments": {"subnet-id": 1, "identifier-type": "duid",
@@ -2330,21 +2330,21 @@ def test_v6_lease_cmds_get_negative():
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert "intValue() called on non-integer Element in" in resp["text"]
+    assert "'iaid' parameter is not integer." in resp["text"]
 
     # sending wrong iaid identifier to lease6-get command
     cmd = {"command": "lease6-get", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert "intValue() called on non-integer Element in" in resp["text"]
+    assert "'iaid' parameter is not integer." in resp["text"]
 
     # sending wrong iaid identifier to lease6-get command
     cmd = {"command": "lease6-get", "arguments": {"subnet-id": 1, "identifier-type": "duid",
                                                   "identifier": "00:03:00:01:66:55:44:33:22:11",
                                                   "iaid": True}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert "intValue() called on non-integer Element in" in resp["text"]
+    assert "'iaid' parameter is not integer." in resp["text"]
 
     # address
     # sending wrong address identifier to lease6-get command

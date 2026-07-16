@@ -375,12 +375,12 @@ def test_control_channel_lease4_get_by_negative():
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "identifier is too short (0), at least 2 is required"
+    assert resp["text"] == "bad 'client-id' parameter: identifier is too short (0), at least 2 is required"
 
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": "00"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "identifier is too short (1), at least 2 is required"
+    assert resp["text"] == "bad 'client-id' parameter: identifier is too short (1), at least 2 is required"
 
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": "0011"}}
@@ -408,17 +408,18 @@ def test_control_channel_lease4_get_by_negative():
         }
     }
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "identifier is too large (256), at most 255 is required"
+    assert resp["text"] == "bad 'client-id' parameter: identifier is too large (256), at most 255 is required"
 
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "two consecutive separators (' ') specified in a decoded string ' '"
+    assert resp["text"] == "bad 'client-id' parameter: two consecutive separators " \
+                           "(' ') specified in a decoded string ' '"
 
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": "xx"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "'xx' is not a valid string of hexadecimal digits"
+    assert resp["text"] == "bad 'client-id' parameter: 'xx' is not a valid string of hexadecimal digits"
 
     cmd = {"command": "lease4-get-by-client-id",
            "arguments": {"client-id": 0}}
@@ -463,12 +464,12 @@ def test_control_channel_lease4_get_by_negative():
     cmd = {"command": "lease4-get-by-hw-address",
            "arguments": {"hw-address": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "' ' is not a valid hexadecimal digit in decoded string ' '"
+    assert resp["text"] == "bad 'hw-address' parameter: ' ' is not a valid hexadecimal digit in decoded string ' '"
 
     cmd = {"command": "lease4-get-by-hw-address",
            "arguments": {"hw-address": "aaaaaaaaaaaaaaaaaaaaaaa"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid format of the decoded string 'aaaaaaaaaaaaaaaaaaaaaaa'"
+    assert resp["text"] == "bad 'hw-address' parameter: invalid format of the decoded string 'aaaaaaaaaaaaaaaaaaaaaaa'"
 
     cmd = {"command": "lease4-get-by-hw-address",
            "arguments": {"hw-address": 0}}
@@ -666,17 +667,17 @@ def test_v6_lease_get_by_negative():
     cmd = {"command": "lease6-get-by-duid",
            "arguments": {"duid": ""}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "identifier is too short (0), at least 3 is required"
+    assert resp["text"] == "bad 'duid' parameter: identifier is too short (0), at least 3 is required"
 
     cmd = {"command": "lease6-get-by-duid",
            "arguments": {"duid": "00"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "identifier is too short (1), at least 3 is required"
+    assert resp["text"] == "bad 'duid' parameter: identifier is too short (1), at least 3 is required"
 
     cmd = {"command": "lease6-get-by-duid",
            "arguments": {"duid": "0011"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "identifier is too short (2), at least 3 is required"
+    assert resp["text"] == "bad 'duid' parameter: identifier is too short (2), at least 3 is required"
 
     cmd = {"command": "lease6-get-by-duid",
            "arguments": {"duid": "001122"}}
@@ -704,17 +705,17 @@ def test_v6_lease_get_by_negative():
         }
     }
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "identifier is too large (131), at most 130 is required"
+    assert resp["text"] == "bad 'duid' parameter: identifier is too large (131), at most 130 is required"
 
     cmd = {"command": "lease6-get-by-duid",
            "arguments": {"duid": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "two consecutive separators (' ') specified in a decoded string ' '"
+    assert resp["text"] == "bad 'duid' parameter: two consecutive separators (' ') specified in a decoded string ' '"
 
     cmd = {"command": "lease6-get-by-duid",
            "arguments": {"duid": "xxx"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "'xxx' is not a valid string of hexadecimal digits"
+    assert resp["text"] == "bad 'duid' parameter: 'xxx' is not a valid string of hexadecimal digits"
 
     cmd = {"command": "lease6-get-by-duid",
            "arguments": {"duid": 2}}
@@ -769,7 +770,7 @@ def test_v6_lease_get_by_negative():
     cmd = {"command": "lease6-get-by-hw-address",
            "arguments": {"hw-address": "0011"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid format of the decoded string '0011'"
+    assert resp["text"] == "bad 'hw-address' parameter: invalid format of the decoded string '0011'"
 
     cmd = {
         "command": "lease6-get-by-hw-address",
@@ -779,17 +780,17 @@ def test_v6_lease_get_by_negative():
         }
     }
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "address vector size exceeds MAX_HWADDR_LEN"
+    assert resp["text"] == "bad 'hw-address' parameter: address vector size exceeds MAX_HWADDR_LEN"
 
     cmd = {"command": "lease6-get-by-hw-address",
            "arguments": {"hw-address": " "}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "' ' is not a valid hexadecimal digit in decoded string ' '"
+    assert resp["text"] == "bad 'hw-address' parameter: ' ' is not a valid hexadecimal digit in decoded string ' '"
 
     cmd = {"command": "lease6-get-by-hw-address",
            "arguments": {"hw-address": "xxx"}}
     resp = srv_msg.send_ctrl_cmd(cmd, exp_result=1)
-    assert resp["text"] == "invalid format of the decoded string 'xxx'"
+    assert resp["text"] == "bad 'hw-address' parameter: invalid format of the decoded string 'xxx'"
 
     cmd = {"command": "lease6-get-by-hw-address",
            "arguments": {"hw-address": 2}}
