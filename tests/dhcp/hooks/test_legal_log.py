@@ -1667,6 +1667,8 @@ def test_legal_log_path_config_set(dhcp_version, failure_mode):
     Test to check if Kea rejects invalid log path in config set.
     :param dhcp_version: The DHCP version to use.
     :type dhcp_version: str
+    :param failure_mode: The failure mode to use.
+    :type failure_mode: str
     """
 
     illegal_paths = [

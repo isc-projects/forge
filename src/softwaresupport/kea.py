@@ -2513,6 +2513,8 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address, parameters=None):
 
     :param destination_address:
     :type destination_address:
+    :param parameters: parameters to be passed to the kea server start command
+    :type parameters: string
     """
     if world.f_cfg.install_method == 'make':
         _stop_kea_with_keactrl(destination_address)

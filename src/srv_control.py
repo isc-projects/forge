@@ -1250,7 +1250,7 @@ def start_srv(name: str, action: str, config_set=None,
         elif name == "DNS":
             if config_set is not None:
                 use_dns_set_number(config_set)
-            dns.start_srv(should_succeed, destination_address=dests)
+            dns.start_srv(should_succeed, destination_address=dest)
     elif action == "stopped":
         assert should_succeed, 'should_succeed == false not implemented for stop action'
         if name == "DHCP":
@@ -1262,7 +1262,7 @@ def start_srv(name: str, action: str, config_set=None,
         if name == "DHCP":
             dhcp.restart_srv(destination_address=dest, parameters=parameters)
         elif name == "DNS":
-            dns.restart_srv(destination_address=dests)
+            dns.restart_srv(destination_address=dest)
     elif action == "reconfigured":
         if name == "DHCP":
             dhcp.reconfigure_srv(should_succeed, destination_address=dest)
