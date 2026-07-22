@@ -386,17 +386,6 @@ def test_start():
         if world.f_cfg.mgmt_address_3:
             kea.db_setup(dest=world.f_cfg.mgmt_address_3)
 
-    # Override restart for systemd services
-    if kea_under_test and world.f_cfg.install_method == 'native':
-        for service_name in _get_kea_service_names():
-            kea.modify_systemd_service(service_name=service_name, action='override-restart')
-            if world.f_cfg.mgmt_address_2:
-                kea.modify_systemd_service(service_name=service_name, action='override-restart',
-                                           destination_address=world.f_cfg.mgmt_address_2)
-            if world.f_cfg.mgmt_address_3:
-                kea.modify_systemd_service(service_name=service_name, action='override-restart',
-                                           destination_address=world.f_cfg.mgmt_address_3)
-
 
 def _clear_remainings():
     if not world.f_cfg.no_server_management:
@@ -503,6 +492,22 @@ def initialize(request):
     if world.f_cfg.tcpdump_on_remote_system:
         start_tcpdump(location=world.f_cfg.mgmt_address, file_name='remote.pcap')
 
+    # Override restart for systemd services if Kea is under test.
+    kea_under_test = False
+    if not world.f_cfg.no_server_management:
+        for sut_name in world.f_cfg.software_under_test:
+            if 'kea' in sut_name:
+                kea_under_test = True
+    if kea_under_test and world.f_cfg.install_method == 'native':
+        for service_name in _get_kea_service_names():
+            kea.modify_systemd_service(service_name=service_name, action='override-restart')
+            if world.f_cfg.mgmt_address_2:
+                kea.modify_systemd_service(service_name=service_name, action='override-restart',
+                                           destination_address=world.f_cfg.mgmt_address_2)
+            if world.f_cfg.mgmt_address_3:
+                kea.modify_systemd_service(service_name=service_name, action='override-restart',
+                                           destination_address=world.f_cfg.mgmt_address_3)
+
     _clear_remainings()
 
 
@@ -538,6 +543,22 @@ def cleanup(scenario):
                     # it's not bullet proof it won't download anything from second HA system
                     download_tcpdump_capture(location=remote_server, file_name='remote.pcap')
 
+    # Remove override restart from systemd services if Kea is under test.
+    kea_under_test = False
+    if not world.f_cfg.no_server_management:
+        for sut_name in world.f_cfg.software_under_test:
+            if 'kea' in sut_name:
+                kea_under_test = True
+    if kea_under_test and world.f_cfg.install_method == 'native':
+        for service_name in _get_kea_service_names():
+            kea.modify_systemd_service(service_name=service_name, action='remove-all-overrides')
+        if world.f_cfg.mgmt_address_2:
+            kea.modify_systemd_service(service_name=service_name, action='remove-all-overrides',
+                                       destination_address=world.f_cfg.mgmt_address_2)
+        if world.f_cfg.mgmt_address_3:
+            kea.modify_systemd_service(service_name=service_name, action='remove-all-overrides',
+                                       destination_address=world.f_cfg.mgmt_address_3)
+
     _clear_remainings()
 
 
@@ -550,17 +571,6 @@ def say_goodbye():
         for sut_name in world.f_cfg.software_under_test:
             if 'kea' in sut_name:
                 kea_under_test = True
-
-    # Remove override restart from systemd services
-    if kea_under_test and world.f_cfg.install_method == 'native':
-        for service_name in _get_kea_service_names():
-            kea.modify_systemd_service(service_name=service_name, action='remove-override')
-        if world.f_cfg.mgmt_address_2:
-            kea.modify_systemd_service(service_name=service_name, action='remove-override',
-                                       destination_address=world.f_cfg.mgmt_address_2)
-        if world.f_cfg.mgmt_address_3:
-            kea.modify_systemd_service(service_name=service_name, action='remove-override',
-                                       destination_address=world.f_cfg.mgmt_address_3)
 
     if world.f_cfg.history:
         result = open('result', 'w')

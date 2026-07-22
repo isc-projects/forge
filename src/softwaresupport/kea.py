@@ -2204,11 +2204,13 @@ def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
     return v4, v6
 
 
-def _restart_kea_with_systemctl(destination_address):
+def _restart_kea_with_systemctl(destination_address, parameters=None):
     """_restart_kea_with_systemctl.
 
     :param destination_address:
     :type destination_address:
+    :param parameters: parameters to add to the service
+    :type parameters: string
     """
     cmd_tpl = 'systemctl reset-failed {service} ;'  # prevent failing due to too many restarts
     cmd_tpl += ' systemctl restart {service} &&'  # restart service
@@ -2225,6 +2227,11 @@ def _restart_kea_with_systemctl(destination_address):
         service_name = f'kea-dhcp{world.proto[1]}'
     else:
         service_name = f'isc-kea-dhcp{world.proto[1]}-server'
+
+    # Add parameters to the service if provided.
+    modify_systemd_service(service_name, 'remove-parameter-overridess', destination_address)
+    if parameters is not None:
+        modify_systemd_service(service_name, 'override-parameters', destination_address, parameters)
 
     cmd = cmd_tpl.format(service=service_name)
     fabric_sudo_command(cmd, destination_host=destination_address)
@@ -2315,7 +2322,8 @@ def _reload_kea_with_openrc(destination_address):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
-def modify_systemd_service(service_name: str, action: str, destination_address: str = world.f_cfg.mgmt_address):
+def modify_systemd_service(service_name: str, action: str, destination_address: str = world.f_cfg.mgmt_address,
+                           parameters: str = None):
     """Modify a systemd service.
 
     :param destination_address: management address of server
@@ -2324,18 +2332,44 @@ def modify_systemd_service(service_name: str, action: str, destination_address: 
     :type service_name:
     :param action: action to perform on the service
     :type action:
+    :param parameters: parameters to add to the service
+    :type parameters: string
     :return: True if the service was modified, False otherwise
     :rtype: bool
     """
+    if world.server_system not in ['redhat', 'fedora', 'ubuntu', 'debian']:
+        return False
+
     if action == 'override-restart':
-        if world.server_system in ['redhat', 'fedora', 'ubuntu', 'debian']:
-            cmd = f'mkdir -p /etc/systemd/system/{service_name}.service.d'
-            fabric_sudo_command(cmd, destination_host=destination_address)
-            cmd = f'echo "[Service]\nRestart=no" > /etc/systemd/system/{service_name}.service.d/override.conf'
-            fabric_sudo_command(cmd, destination_host=destination_address)
-            fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
-            return True
-    elif action == 'remove-override':
+        # Override the restart behavior of the service to no restart.:
+        cmd = f'mkdir -p /etc/systemd/system/{service_name}.service.d'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        cmd = f'echo "[Service]\nRestart=no" > /etc/systemd/system/{service_name}.service.d/override.conf'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
+        return True
+    elif action == 'override-parameters':
+        # Add parameters to the service.
+        if parameters is None:
+            assert False, "Parameters are required for override-parameters action"
+
+        cmd = f'mkdir -p /etc/systemd/system/{service_name}.service.d'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        service_line = f"ExecStart=/usr/sbin/kea-dhcp{world.proto[1]} -c /etc/kea/kea-dhcp{world.proto[1]}.conf"
+        # Clear existing ExecStart line and add new one with parameters.
+        cmd = f'echo "[Service]\nExecStart=\n{service_line} {parameters}" >> ' \
+                f'/etc/systemd/system/{service_name}.service.d/parameters.conf'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
+        return True
+    elif action == 'remove-parameter-overrides':
+        # Remove parameters from the service.
+        cmd = f'rm -f /etc/systemd/system/{service_name}.service.d/parameters.conf'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
+        return True
+    elif action == 'remove-all-overrides':
+        # Remove all overrides from the service.
         cmd = f'systemctl revert {service_name}'
         fabric_sudo_command(cmd, destination_host=destination_address)
         fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
@@ -2371,7 +2405,7 @@ def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_
         if world.server_system == 'alpine':
             _restart_kea_with_openrc(destination_address)
         else:
-            _restart_kea_with_systemctl(destination_address)
+            _restart_kea_with_systemctl(destination_address, parameters=parameters)
 
 
 def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
