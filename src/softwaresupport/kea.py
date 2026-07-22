@@ -2344,7 +2344,7 @@ def modify_systemd_service(service_name: str, action: str, destination_address: 
     return False
 
 
-def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_address, process=""):
+def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_address, process="", parameters=None):
     """Start kea with generated config.
 
     :param should_succeed: whether the action is supposed to succeed or fail
@@ -2353,6 +2353,8 @@ def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_
     :type destination_address:
     :param process: name of the single process we want to start (using -s option of keactrl)
     :type process:
+    :param parameters: parameters to be passed to the server
+    :type parameters: string
     """
     if destination_address not in world.f_cfg.multiple_tested_servers:
         world.multiple_tested_servers.append(destination_address)
@@ -2363,7 +2365,7 @@ def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_
         if v4_running and world.proto == 'v4' or v6_running and world.proto == 'v6':
             _stop_kea_with_keactrl(destination_address)
 
-        result = _start_kea_with_keactrl(destination_address, specific_process=process)
+        result = _start_kea_with_keactrl(destination_address, specific_process=process, parameters=parameters)
         _check_kea_process_result(should_succeed, result, 'start')
     else:
         if world.server_system == 'alpine':
@@ -2421,13 +2423,15 @@ def _check_kea_process_result(succeed: bool, result: str, action: str):
             assert False, 'Server operation: ' + action + ' NOT failed!'
 
 
-def _start_kea_with_keactrl(destination_host, specific_process=""):
+def _start_kea_with_keactrl(destination_host, specific_process="", parameters=None):
     """_start_kea_with_keactrl.
 
     :param destination_host:
     :type destination_host:
     :param specific_process:
     :type specific_process:
+    :param parameters: parameters to be passed to the server
+    :type parameters: string
     """
     # Start kea services and check if they started ok.
     # - nohup to shield kea services from getting SIGHUP from SSH
@@ -2435,11 +2439,14 @@ def _start_kea_with_keactrl(destination_host, specific_process=""):
     #   repeat the loop only for 4 seconds
     # - sync to disk any logs traced by keactrl or kea services
     # - display these logs to screen using cat so forge can catch errors in the logs
+    parameters = "" if parameters is None else f"-- {parameters} "
     if specific_process != "":
         specific_process = f" -s {specific_process} "
     start_cmd = 'nohup ' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl')
-    start_cmd += f" start {specific_process}< /dev/null > /tmp/keactrl.log 2>&1; SECONDS=0; while (( SECONDS < 4 ));"
-    start_cmd += " do tail %s/var/log/kea/kea.log 2>/dev/null | grep 'server version .* started' 2>/dev/null;" % world.f_cfg.software_install_path
+    start_cmd += f" start {specific_process}< /dev/null > /tmp/keactrl.log {parameters}2>&1; " \
+        "SECONDS=0; while (( SECONDS < 4 ));"
+    start_cmd += " do tail %s/var/log/kea/kea.log 2>/dev/null | grep 'server version .* " \
+        "started' 2>/dev/null;" % world.f_cfg.software_install_path
     start_cmd += " if [ $? -eq 0 ]; then break; fi done;"
     start_cmd += " sync; cat /tmp/keactrl.log"
     return fabric_sudo_command(start_cmd, destination_host=destination_host)
@@ -2501,7 +2508,7 @@ def reconfigure_srv(should_succeed: bool = True,
     wait_for_message_in_log('dynamic server reconfiguration succeeded with file')
 
 
-def restart_srv(destination_address=world.f_cfg.mgmt_address):
+def restart_srv(destination_address=world.f_cfg.mgmt_address, parameters=None):
     """restart_srv.
 
     :param destination_address:
@@ -2517,7 +2524,7 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
         fabric_sudo_command('rm -f %s' % world.f_cfg.log_join('kea.log'),
                             destination_host=destination_address)
 
-        result = _start_kea_with_keactrl(destination_address)
+        result = _start_kea_with_keactrl(destination_address, parameters=parameters)
     else:
         if world.server_system == 'alpine':
             _restart_kea_with_openrc(destination_address)

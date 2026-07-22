@@ -2210,7 +2210,7 @@ def test_ddns6_hostname_invalid(hostname):
 @pytest.mark.forward_reverse_remove
 @pytest.mark.hostname_sanitization
 def test_ddns4_hostname_newline():
-
+    """ Test proper handling of newline in hostname. kea#4393 """
     misc.test_setup()
     # srv_control.define_lease_db_backend('memfile', persist=True, lfc_interval=10)
     srv_control.config_srv_subnet('192.168.50.0/24', '192.168.50.10-192.168.50.20')

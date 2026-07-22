@@ -1218,7 +1218,7 @@ def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address):
 
 
 def start_srv(name: str, action: str, config_set=None,
-              dest: str = world.f_cfg.mgmt_address, should_succeed: bool = True):
+              dest: str = world.f_cfg.mgmt_address, should_succeed: bool = True, parameters=None):
     """Start, stop, restart or reconfigure server.
 
     :param name: DHCP' | 'DNS'
@@ -1232,21 +1232,25 @@ def start_srv(name: str, action: str, config_set=None,
     :type dest:
     :param should_succeed: whether the action is supposed to succeed or fail (Default value = True)
     :type should_succeed: bool
+    :param parameters: parameters to be passed to the kea server start command
+    :type parameters: string
     """
     dest = test_define_value(dest)[0]
     check_remote_address(dest)
     if name not in ["DHCP", "DNS", "CA"]:
         assert False, "I don't think there is support for something else than DNS,  DHCP or CA"
+    if name != "DHCP" and parameters is not None:
+        assert False, "Parameters are only supported for DHCP server"
     log.info(f'---------------- {name} {action} {dest} ----------------')
     if action == "started":
         if name == "DHCP":
-            dhcp.start_srv(should_succeed, destination_address=dest)
+            dhcp.start_srv(should_succeed, destination_address=dest, parameters=parameters)
         elif name == "CA":
             dhcp.start_srv(should_succeed, destination_address=dest, process='ctrl_agent')
         elif name == "DNS":
             if config_set is not None:
                 use_dns_set_number(config_set)
-            dns.start_srv(should_succeed, destination_address=dest)
+            dns.start_srv(should_succeed, destination_address=dests)
     elif action == "stopped":
         assert should_succeed, 'should_succeed == false not implemented for stop action'
         if name == "DHCP":
@@ -1256,9 +1260,9 @@ def start_srv(name: str, action: str, config_set=None,
     elif action == "restarted":
         assert should_succeed, 'should_succeed == false not implemented for restart action'
         if name == "DHCP":
-            dhcp.restart_srv(destination_address=dest)
+            dhcp.restart_srv(destination_address=dest, parameters=parameters)
         elif name == "DNS":
-            dns.restart_srv(destination_address=dest)
+            dns.restart_srv(destination_address=dests)
     elif action == "reconfigured":
         if name == "DHCP":
             dhcp.reconfigure_srv(should_succeed, destination_address=dest)
