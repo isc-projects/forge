@@ -555,13 +555,13 @@ def cleanup(scenario):
         mgmt_addresses = [world.f_cfg.mgmt_address, world.f_cfg.mgmt_address_2, world.f_cfg.mgmt_address_3]
         for service_name in _get_kea_service_names():
             for mgmt_address in mgmt_addresses:
-                if mgmt_address != None and mgmt_address != '':
+                if mgmt_address not in [None, '']:
                     if world.server_system in ['alpine']:
                         kea.modify_openrc_service(service_name=service_name, action='remove-all-overrides',
-                                                    destination_address=mgmt_address)
+                                                  destination_address=mgmt_address)
                     else:
                         kea.modify_systemd_service(service_name=service_name, action='remove-all-overrides',
-                                                    destination_address=mgmt_address)
+                                                   destination_address=mgmt_address)
 
     _clear_remainings()
 
@@ -569,7 +569,6 @@ def cleanup(scenario):
 # @after.all
 def say_goodbye():
     """Clean up after all tests."""
-
     if world.f_cfg.history:
         result = open('result', 'w')
         for item in world.result:

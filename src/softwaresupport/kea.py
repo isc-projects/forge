@@ -2337,8 +2337,9 @@ def _reload_kea_with_openrc(destination_address):
         cmd = cmd_tpl.format(service=service_name, pid=pid)
         fabric_sudo_command(cmd, destination_host=destination_address)
 
+
 def modify_openrc_service(service_name: str, action: str, destination_address: str = world.f_cfg.mgmt_address,
-                           parameters: str = None):
+                          parameters: str = None):
     """Modify a openrc service.
 
     :param destination_address: management address of server
@@ -2360,12 +2361,12 @@ def modify_openrc_service(service_name: str, action: str, destination_address: s
         if parameters is None:
             assert False, "Parameters are required for override-parameters action"
         fabric_sudo_command(f'sed -i \'s|^command_args=.*|command_args="{parameters} -c $cfgfile"|\' /etc/init.d/{service_name}',
-         destination_host=destination_address)
+                          destination_host=destination_address)
         return True
     elif action == 'remove-parameter-overrides' or action == 'remove-all-overrides':
         # Remove parameters from the service.
         fabric_sudo_command(f'sed -i \'s|^command_args=.*|command_args="-c $cfgfile"|\' /etc/init.d/{service_name}',
-         destination_host=destination_address)
+                            destination_host=destination_address)
         return True
     print(f'Unknown action: {action}')
     return False
