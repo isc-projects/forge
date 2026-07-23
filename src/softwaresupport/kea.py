@@ -2361,7 +2361,7 @@ def modify_openrc_service(service_name: str, action: str, destination_address: s
         if parameters is None:
             assert False, "Parameters are required for override-parameters action"
         fabric_sudo_command(f'sed -i \'s|^command_args=.*|command_args="{parameters} -c $cfgfile"|\' /etc/init.d/{service_name}',
-                          destination_host=destination_address)
+                            destination_host=destination_address)
         return True
     elif action == 'remove-parameter-overrides' or action == 'remove-all-overrides':
         # Remove parameters from the service.
