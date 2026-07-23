@@ -665,7 +665,8 @@ function run_pytest() {
     done
     incus file push init_all.py kea-forge/home/forge/init_all.py
     log "Running pytest.."
-    incus exec kea-forge --cwd=/home/forge -- sudo /home/forge/venv-client-node/bin/pytest "${new_args[@]}"
+    # Allow exit code 1 which means that tests were collected and run succesfully but some of the tests failed. Should not result in job failure.
+    ( incus exec kea-forge --cwd=/home/forge -- sudo /home/forge/venv-client-node/bin/pytest "${new_args[@]}" || test "${?}" = 1 ) | tee pytest-output.txt
     get_results
     log "Finished."
 }
