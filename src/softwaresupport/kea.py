@@ -2229,7 +2229,7 @@ def _restart_kea_with_systemctl(destination_address, parameters=None):
         service_name = f'isc-kea-dhcp{world.proto[1]}-server'
 
     # Add parameters to the service if provided.
-    modify_systemd_service(service_name, 'remove-parameter-overridess', destination_address)
+    modify_systemd_service(service_name, 'remove-parameter-overrides', destination_address)
     if parameters is not None:
         modify_systemd_service(service_name, 'override-parameters', destination_address, parameters)
 
