@@ -2245,11 +2245,13 @@ def _restart_kea_with_systemctl(destination_address, parameters=None):
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
-def _restart_kea_with_openrc(destination_address):
+def _restart_kea_with_openrc(destination_address, parameters=None):
     """_restart_kea_with_openrc.
 
     :param destination_address:
     :type destination_address:
+    :param parameters: parameters to add to the service
+    :type parameters: string
     """
     cmd_tpl = 'rc-service {service} restart &&'  # reload service
     cmd_tpl += ' SECONDS=0; while (( SECONDS < 4 )); do'  # watch logs for max 4 seconds
@@ -2257,6 +2259,20 @@ def _restart_kea_with_openrc(destination_address):
     cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
 
     service_name = f'kea-dhcp{world.proto[1]}'
+
+    modify_openrc_service(
+            service_name=service_name,
+            action="remove-parameter-overrides",
+            destination_address=destination_address,
+        )
+    if parameters is not None:
+        modify_openrc_service(
+            service_name=service_name,
+            action="override-parameters",
+            destination_address=destination_address,
+            parameters=parameters,
+        )
+
     cmd = cmd_tpl.format(service=service_name)
     fabric_sudo_command(cmd, destination_host=destination_address)
 
@@ -2321,6 +2337,39 @@ def _reload_kea_with_openrc(destination_address):
         cmd = cmd_tpl.format(service=service_name, pid=pid)
         fabric_sudo_command(cmd, destination_host=destination_address)
 
+def modify_openrc_service(service_name: str, action: str, destination_address: str = world.f_cfg.mgmt_address,
+                           parameters: str = None):
+    """Modify a openrc service.
+
+    :param destination_address: management address of server
+    :type destination_address:
+    :param service_name: name of the service to modify
+    :type service_name:
+    :param action: action to perform on the service
+    :type action:
+    :param parameters: parameters to add to the service
+    :type parameters: string
+    :return: True if the service was modified, False otherwise
+    :rtype: bool
+    """
+    if world.server_system not in ['alpine']:
+        assert False, "This function is only supported for alpine"
+
+    if action == 'override-parameters':
+        # Add parameters to the service.
+        if parameters is None:
+            assert False, "Parameters are required for override-parameters action"
+        fabric_sudo_command(f'sed -i \'s|^command_args=.*|command_args="{parameters} -c $cfgfile"|\' /etc/init.d/{service_name}',
+         destination_host=destination_address)
+        return True
+    elif action == 'remove-parameter-overrides' or action == 'remove-all-overrides':
+        # Remove parameters from the service.
+        fabric_sudo_command(f'sed -i \'s|^command_args=.*|command_args="-c $cfgfile"|\' /etc/init.d/{service_name}',
+         destination_host=destination_address)
+        return True
+    print(f'Unknown action: {action}')
+    return False
+
 
 def modify_systemd_service(service_name: str, action: str, destination_address: str = world.f_cfg.mgmt_address,
                            parameters: str = None):
@@ -2358,7 +2407,7 @@ def modify_systemd_service(service_name: str, action: str, destination_address: 
         service_line = f"ExecStart=/usr/sbin/kea-dhcp{world.proto[1]} -c /etc/kea/kea-dhcp{world.proto[1]}.conf"
         # Clear existing ExecStart line and add new one with parameters.
         cmd = f'echo "[Service]\nExecStart=\n{service_line} {parameters}" >> ' \
-                f'/etc/systemd/system/{service_name}.service.d/parameters.conf'
+              f'/etc/systemd/system/{service_name}.service.d/parameters.conf'
         fabric_sudo_command(cmd, destination_host=destination_address)
         fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
         return True
@@ -2403,7 +2452,7 @@ def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_
         _check_kea_process_result(should_succeed, result, 'start')
     else:
         if world.server_system == 'alpine':
-            _restart_kea_with_openrc(destination_address)
+            _restart_kea_with_openrc(destination_address, parameters=parameters)
         else:
             _restart_kea_with_systemctl(destination_address, parameters=parameters)
 
