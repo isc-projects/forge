@@ -2353,13 +2353,11 @@ def modify_openrc_service(service_name: str, action: str, destination_address: s
     :return: True if the service was modified, False otherwise
     :rtype: bool
     """
-    if world.server_system not in ['alpine']:
-        assert False, "This function is only supported for alpine"
+    assert world.server_system == 'alpine', 'This function is only supported for alpine'
 
     if action == 'override-parameters':
         # Add parameters to the service.
-        if parameters is None:
-            assert False, "Parameters are required for override-parameters action"
+        assert parameters is not None, "Parameters are required for override-parameters action"
         fabric_sudo_command(f'sed -i \'s|^command_args=.*|command_args="{parameters} -c $cfgfile"|\' /etc/init.d/{service_name}',
                             destination_host=destination_address)
         return True
@@ -2400,8 +2398,7 @@ def modify_systemd_service(service_name: str, action: str, destination_address: 
         return True
     elif action == 'override-parameters':
         # Add parameters to the service.
-        if parameters is None:
-            assert False, "Parameters are required for override-parameters action"
+        assert parameters is not None, "Parameters are required for override-parameters action"
 
         cmd = f'mkdir -p /etc/systemd/system/{service_name}.service.d'
         fabric_sudo_command(cmd, destination_host=destination_address)
@@ -2526,13 +2523,13 @@ def _start_kea_with_keactrl(destination_host, specific_process="", parameters=No
     parameters = "" if parameters is None else f"-- {parameters} "
     if specific_process != "":
         specific_process = f" -s {specific_process} "
-    start_cmd = 'nohup ' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl')
-    start_cmd += f" start {specific_process}< /dev/null > /tmp/keactrl.log {parameters}2>&1; " \
-        "SECONDS=0; while (( SECONDS < 4 ));"
-    start_cmd += " do tail %s/var/log/kea/kea.log 2>/dev/null | grep 'server version .* " \
-        "started' 2>/dev/null;" % world.f_cfg.software_install_path
-    start_cmd += " if [ $? -eq 0 ]; then break; fi done;"
-    start_cmd += " sync; cat /tmp/keactrl.log"
+    full_keactrl_path = os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl')
+    start_cmd = (f'nohup {full_keactrl_path} start {specific_process} < /dev/null > /tmp/keactrl.log {parameters}2>&1; '
+                 "SECONDS=0; while (( SECONDS < 4 )); do "
+                 f"tail {world.f_cfg.software_install_path}/var/log/kea/kea.log 2>/dev/null | "
+                 "grep 'server version .* started' 2>/dev/null; "
+                 "if [ $? -eq 0 ]; then break; fi; done; "
+                 "sync; cat /tmp/keactrl.log")
     return fabric_sudo_command(start_cmd, destination_host=destination_host)
 
 
