@@ -2382,11 +2382,9 @@ def modify_systemd_service(service_name: str, action: str, destination_address: 
     :type action:
     :param parameters: parameters to add to the service
     :type parameters: string
-    :return: True if the service was modified, False otherwise
-    :rtype: bool
     """
-    if world.server_system not in ['redhat', 'fedora', 'ubuntu', 'debian']:
-        return False
+    assert world.server_system in ['redhat', 'fedora', 'ubuntu', 'debian'], \
+        "This function is only supported for systemd-based systems (redhat, fedora, ubuntu, debian)"
 
     if action == 'override-restart':
         # Override the restart behavior of the service to no restart.:
@@ -2395,7 +2393,7 @@ def modify_systemd_service(service_name: str, action: str, destination_address: 
         cmd = f'echo "[Service]\nRestart=no" > /etc/systemd/system/{service_name}.service.d/override.conf'
         fabric_sudo_command(cmd, destination_host=destination_address)
         fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
-        return True
+        return
     elif action == 'override-parameters':
         # Add parameters to the service.
         assert parameters is not None, "Parameters are required for override-parameters action"
@@ -2408,21 +2406,20 @@ def modify_systemd_service(service_name: str, action: str, destination_address: 
               f'/etc/systemd/system/{service_name}.service.d/parameters.conf'
         fabric_sudo_command(cmd, destination_host=destination_address)
         fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
-        return True
+        return
     elif action == 'remove-parameter-overrides':
         # Remove parameters from the service.
         cmd = f'rm -f /etc/systemd/system/{service_name}.service.d/parameters.conf'
         fabric_sudo_command(cmd, destination_host=destination_address)
         fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
-        return True
+        return
     elif action == 'remove-all-overrides':
         # Remove all overrides from the service.
         cmd = f'systemctl revert {service_name}'
         fabric_sudo_command(cmd, destination_host=destination_address)
         fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
-        return True
-    print(f'Unknown action: {action}')
-    return False
+        return
+    assert False, f'Unknown action: {action}'
 
 
 def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_address, process="", parameters=None):
