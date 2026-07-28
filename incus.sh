@@ -588,7 +588,7 @@ function install_kea_tarball() {
         log "Installing kea from the source code on node kea-$node - $usedSystem $osVersion"
         incus exec kea-"$node" -- rm -rf /tmp/kea
         incus file push -r -q "$2" kea-"$node"/tmp/.
-        incus exec kea-"$node" --cwd=/tmp/kea -- python3 /tmp/hammer.py build -p local -w ccache,forge,install,mysql,pgsql,shell,gssapi,netconf -x docs,perfdhcp,unittest --ccache-dir /ccache #
+        incus exec kea-"$node" --cwd=/tmp/kea -- python3 /tmp/hammer.py build -p local -w ccache,forge,install,mysql,pgsql,shell,gssapi -x docs,perfdhcp,unittest --ccache-dir /ccache #
     done
     printf '\nINSTALL_METHOD="make"\n' >> install_method
 }
