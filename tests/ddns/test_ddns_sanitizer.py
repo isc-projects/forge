@@ -272,7 +272,7 @@ def test_ddns4_hostname_sanitization_replace_2():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.response_check_include_option(12)
-    srv_msg.response_check_option_content(12, 'value', 'xaxxxxxxxxx')
+    srv_msg.response_check_option_content(12, 'value', 'xaxxxxxxxxx.example.com')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
@@ -989,7 +989,7 @@ def test_ddns4_hostname_sanitization_omit_2():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_option_content(1, 'value', '255.255.255.0')
     srv_msg.response_check_include_option(12)
-    srv_msg.response_check_option_content(12, 'value', 'a')
+    srv_msg.response_check_option_content(12, 'value', 'a.example.com')
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:11')
