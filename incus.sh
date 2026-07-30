@@ -729,12 +729,12 @@ MULTI_THREADING_ENABLED = True
 FORGE_VERBOSE = 0
 DISABLE_DB_SETUP = False
 EOF
-    version_info=$(incus exec kea-1 -- kea-dhcp6 -V)
+    version_info=$(incus exec kea-1 -- kea-dhcp6 -V | head -n 1)
     if  test -z "${version_info-}"; then
         log_error "Kea does not seem to be installed."
         exit 1
     fi
-    if echo "${version_info}" | grep tarball > /dev/null 2>&1; then
+    if echo "${version_info}" | grep -E 'git|tarball' > /dev/null 2>&1; then
         printf 'INSTALL_METHOD = "make"\n' >> init_all.py
     else
         printf 'INSTALL_METHOD = "native"\n' >> init_all.py
