@@ -121,13 +121,15 @@ def test_control_channel_http_headers_multiple(dhcp_version, socket_protocol):
     assert headers['LongCat'] == long_string
 
 
+@pytest.mark.disabled  # requests module is not able to handle the response from Kea when the HTTP header is so long.
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.controlchannel
 @pytest.mark.parametrize('socket_protocol', ['http_v4', 'http_v6'])
 def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
     """Test too long http header.
-    Kea#4051 Kea is not fixed yet and error message is not decided yet.
+
+    Kea#4051 Awaiting decision on altering the behavior of the HTTP headers.
 
     :param dhcp_version: DHCP version
     :type dhcp_version: str
@@ -149,21 +151,20 @@ def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(server_address)
 
+    long_string = '1234567890' * 10000
     headers_config = [
         {
             "name": "TooLongCat",
-                    "value": '1234567890' * 10000
+                    "value": long_string
         }
     ]
-
     world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
-
     srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
 
-    srv_control.start_srv('DHCP', 'started', should_succeed=False)
-
-    if world.f_cfg.install_method == 'make':
-        log_contains("Some error message in logs", '/tmp/keactrl.log')  # TODO: add more specific error message
+    headers = srv_msg.send_ctrl_cmd_via_http({"command": "config-get", "service": [f'dhcp{dhcp_version[1]}'],
+                                             "arguments": {}}, server_address, return_headers=True)
+    assert headers['TooLongCat'] == long_string
 
 
 @pytest.mark.v4
