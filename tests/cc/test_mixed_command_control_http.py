@@ -8,6 +8,8 @@
 
 # pylint: disable=line-too-long
 
+import http
+
 import pytest
 
 from src import misc
@@ -16,6 +18,21 @@ from src import srv_control
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import log_contains, get_line_count_in_log
 from src.softwaresupport.multi_server_functions import fabric_is_file, fabric_remove_file_command
+
+
+class LargeHttpHeaders:
+    def __init__(self, max_line_size):
+        self._old_maxline = None
+        self._max_line_size = max_line_size
+
+    def __enter__(self):
+        self._old_maxline = http.client._MAXLINE
+        http.client._MAXLINE = self._max_line_size
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        http.client._MAXLINE = self._old_maxline
+        return False  # propagate exceptions
 
 
 @pytest.mark.v4
@@ -121,7 +138,6 @@ def test_control_channel_http_headers_multiple(dhcp_version, socket_protocol):
     assert headers['LongCat'] == long_string
 
 
-@pytest.mark.disabled  # requests module is not able to handle the response from Kea when the HTTP header is so long.
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.controlchannel
@@ -162,9 +178,10 @@ def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
-    headers = srv_msg.send_ctrl_cmd_via_http({"command": "config-get", "service": [f'dhcp{dhcp_version[1]}'],
-                                             "arguments": {}}, server_address, return_headers=True)
-    assert headers['TooLongCat'] == long_string
+    with LargeHttpHeaders(1024 * 1024):
+        headers = srv_msg.send_ctrl_cmd_via_http({"command": "config-get", "service": [f'dhcp{dhcp_version[1]}'],
+                                                "arguments": {}}, server_address, return_headers=True)
+        assert headers['TooLongCat'] == long_string
 
 
 @pytest.mark.v4
