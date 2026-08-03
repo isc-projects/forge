@@ -155,7 +155,7 @@ def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
     headers_config = [
         {
             "name": "TooLongCat",
-                    "value": long_string
+            "value": long_string
         }
     ]
     world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
