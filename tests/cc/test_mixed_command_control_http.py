@@ -14,7 +14,7 @@ from src import misc
 from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
-from src.protosupport.multi_protocol_functions import log_contains
+from src.protosupport.multi_protocol_functions import log_contains, get_line_count_in_log
 from src.softwaresupport.multi_server_functions import fabric_is_file, fabric_remove_file_command
 
 
@@ -292,4 +292,14 @@ def test_control_channel_http_headers_negative(dhcp_version, socket_protocol):
         if world.f_cfg.install_method == 'make':
             log_contains(test_case["error_message"], '/tmp/keactrl.log')
         else:
-            log_contains(test_case["error_message"])
+            if world.server_system == 'alpine':
+                # Alpine packages should log to .err file if kea did not start,
+                # but it could also log to standard log file.
+                log_logfile = get_line_count_in_log(test_case["error_message"])
+                log_errfile = get_line_count_in_log(test_case["error_message"],
+                                                    f'/var/log/kea/kea-dhcp{dhcp_version[1]}.err')
+                assert log_errfile == 1 or log_logfile == 1,    \
+                    f'Expected {test_case["error_message"]} to appear 1 time in the log, ' \
+                    f'but it appeared {log_errfile} times in the .err file and {log_logfile} times in the log file.'
+            else:
+                log_contains(test_case["error_message"])
