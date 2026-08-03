@@ -17,6 +17,7 @@ from src.softwaresupport.database import (
     clear_database,
     restart_database,
 )
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src import srv_control
 from src import srv_msg
 
@@ -106,7 +107,7 @@ def _get_sflq_lease_4(
 @pytest.mark.parametrize("backend", ["postgresql", "mysql"])
 @pytest.mark.parametrize("scope", ["subnets", "shared-networks"])
 @pytest.mark.parametrize("servers", ["single", "dual"])
-def test_v4_allocators_sflq_ramdomness(backend, scope, servers):
+def test_v4_allocators_sflq_randomness(backend, scope, servers):
     """Get 10 addresses from each subnet, check if:
     - sflq should select random pool from subnet.
     - check if all leases are correctly saved in the lease file/database
@@ -156,6 +157,12 @@ def test_v4_allocators_sflq_ramdomness(backend, scope, servers):
         world.dhcp_cfg["interfaces-config"]["interfaces"] = []
         srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
         srv_control.start_srv("DHCP", "started", dest=world.f_cfg.mgmt_address_2)
+
+    # Open RC service reports start of service before it is operational.
+    if world.server_system == "alpine" and world.f_cfg.install_method == "native":
+        wait_for_message_in_log("DHCP4_STARTED", count=1, timeout=30)
+        if servers == "dual":
+            wait_for_message_in_log("DHCP4_STARTED", count=1, timeout=30, destination=world.f_cfg.mgmt_address_2)
 
     leases_subnet1 = []
     for i in range(10, 20):
