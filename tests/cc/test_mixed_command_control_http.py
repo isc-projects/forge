@@ -180,7 +180,7 @@ def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
 
     with LargeHttpHeaders(1024 * 1024):
         headers = srv_msg.send_ctrl_cmd_via_http({"command": "config-get", "service": [f'dhcp{dhcp_version[1]}'],
-                                                "arguments": {}}, server_address, return_headers=True)
+                                                 "arguments": {}}, server_address, return_headers=True)
         assert headers['TooLongCat'] == long_string
 
 
