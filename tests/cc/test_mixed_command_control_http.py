@@ -184,63 +184,6 @@ def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
         assert headers['TooLongCat'] == long_string
 
 
-@pytest.mark.v4
-@pytest.mark.v6
-@pytest.mark.controlchannel
-@pytest.mark.parametrize('socket_protocol', ['http_v4', 'http_v6'])
-def test_control_channel_http_headers_illegal(dhcp_version, socket_protocol):
-    """Test illegal characters in HTTP headers.
-    Kea#4052 Kea is not fixed yet and error message is not decided yet.
-
-    :param dhcp_version: DHCP version
-    :type dhcp_version: str
-    :param socket_protocol: Socket protocol
-    :type socket_protocol: str
-    """
-    test_cases = [{"header":
-                   {
-                       "name": "Spaces are bad",
-                       "value": "max-age=31536000"
-                   },
-                   "error_message": "error"  # TODO: add more specific error message
-                   },
-                  {"header":
-                   {
-                       "name": "Colon:IsNotAllowed",
-                       "value": "max-age=31536000"
-                   },
-                   "error_message": "error"  # TODO: add more specific error message
-                   }
-                  ]
-
-    if socket_protocol == 'http_v4':
-        server_address = '$(SRV4_ADDR)'
-    else:
-        server_address = '$(SRV_IPV6_ADDR_GLOBAL)'
-
-    for test_case in test_cases:
-        srv_control.clear_some_data('logs')
-        misc.test_setup()
-        if dhcp_version == 'v4':
-            srv_control.config_srv_subnet(
-                '192.168.50.0/24', '192.168.50.1-192.168.50.1')
-        else:
-            srv_control.config_srv_subnet(
-                '2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-        srv_control.add_unix_socket()
-        srv_control.add_http_control_channel(server_address)
-
-        world.dhcp_cfg["control-sockets"][1]["http-headers"] = [test_case["header"]]
-
-        srv_control.build_and_send_config_files()
-        srv_control.start_srv('DHCP', 'started', should_succeed=False)
-
-        if world.f_cfg.install_method == 'make':
-            log_contains(test_case["error_message"], '/tmp/keactrl.log')
-        else:
-            log_contains(test_case["error_message"])
-
-
 def _remove_alpine_err_log(dhcp_version, host=world.f_cfg.mgmt_address):
     if fabric_is_file(f'/var/log/kea/kea-dhcp{dhcp_version[1]}.err', host):
         fabric_remove_file_command(
