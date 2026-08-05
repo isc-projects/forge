@@ -885,15 +885,15 @@ def test_v4_lease_cmds_write(file):
                          backend='memfile')
 
     if file == 'overwrite':
-       # Check if backup file is created
-       cmd = {"command": "status-get", "arguments": {}}
-       response = srv_msg.send_ctrl_cmd(cmd)
-       pid = response['arguments']['pid']
-       file_contains_line(f'{write_path}.bak{pid}', 'Empty_File')
+        # Check if backup file is created
+        cmd = {"command": "status-get", "arguments": {}}
+        response = srv_msg.send_ctrl_cmd(cmd)
+        pid = response['arguments']['pid']
+        file_contains_line(f'{write_path}.bak{pid}', 'Empty_File')
     elif file == 'new':
-       # Verify that new file contains lease
-       file_contains_line(write_path, '192.168.50.5,1a:1b:1c:1d:1e:1f,aa:bb:cc:dd:11:22,7777')
-       fabric_sudo_command(f'cp -p {write_path} {world.f_cfg.get_leases_path()}')
+        # Verify that new file contains lease
+        file_contains_line(write_path, '192.168.50.5,1a:1b:1c:1d:1e:1f,aa:bb:cc:dd:11:22,7777')
+        fabric_sudo_command(f'cp -p {write_path} {world.f_cfg.get_leases_path()}')
 
     srv_control.start_srv('DHCP', 'restarted')
 
