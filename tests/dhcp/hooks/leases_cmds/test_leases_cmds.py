@@ -862,16 +862,17 @@ def test_v4_lease_cmds_write(file):
     assert sort_container(user_context) == sort_container(resp["user-context"])
     del resp["user-context"]  # already checked
 
-    assert resp == {"fqdn-fwd": True,
-                    "fqdn-rev": True,
-                    "client-id": "aa:bb:cc:dd:11:22",
-                    "hostname": "my.host.some.name",
-                    "hw-address": "1a:1b:1c:1d:1e:1f",
-                    "ip-address": "192.168.50.5",
-                    # "pool-id": 0, if id is 0 it's no longer returned
-                    "state": 1,
-                    "subnet-id": 1,
-                    "valid-lft": 7777}
+    expected_lease = {"fqdn-fwd": True,
+                      "fqdn-rev": True,
+                      "client-id": "aa:bb:cc:dd:11:22",
+                      "hostname": "my.host.some.name",
+                      "hw-address": "1a:1b:1c:1d:1e:1f",
+                      "ip-address": "192.168.50.5",
+                      # "pool-id": 0, if id is 0 it's no longer returned
+                      "state": 1,
+                      "subnet-id": 1,
+                      "valid-lft": 7777}
+    assert resp == expected_lease
 
     # Execute lease4-write
     cmd = {"command": "lease4-write",
@@ -884,26 +885,32 @@ def test_v4_lease_cmds_write(file):
                          backend='memfile')
 
     if file == 'overwrite':
-        # Check if backup file is created
-        cmd = {"command": "status-get", "arguments": {}}
-        response = srv_msg.send_ctrl_cmd(cmd)
-        pid = response['arguments']['pid']
-        file_contains_line(f'{write_path}.bak{pid}', 'Empty_File')
+       # Check if backup file is created
+       cmd = {"command": "status-get", "arguments": {}}
+       response = srv_msg.send_ctrl_cmd(cmd)
+       pid = response['arguments']['pid']
+       file_contains_line(f'{write_path}.bak{pid}', 'Empty_File')
     elif file == 'new':
-        # Verify that new file contains lease
-        file_contains_line(write_path, '192.168.50.5,1a:1b:1c:1d:1e:1f,aa:bb:cc:dd:11:22,7777')
-        fabric_sudo_command(f'cp {write_path} {world.f_cfg.get_leases_path()}')
+       # Verify that new file contains lease
+       file_contains_line(write_path, '192.168.50.5,1a:1b:1c:1d:1e:1f,aa:bb:cc:dd:11:22,7777')
+       fabric_sudo_command(f'cp -p {write_path} {world.f_cfg.get_leases_path()}')
 
     srv_control.start_srv('DHCP', 'restarted')
 
-    # Verify that lease is in memory
+    # Verify that lease is in memory after restart
     cmd = {"command": "lease4-get",
            "arguments": {"identifier-type": "client-id", "identifier": "aa:bb:cc:dd:11:22", "subnet-id": 1}}
     resp = srv_msg.send_ctrl_cmd(cmd)
     resp = resp["arguments"]  # drop unnecessary info for comparison
-
+    del resp["cltt"]  # this value is dynamic
     # compare sorted JSON prepared on start with sorted returned one
     assert sort_container(user_context) == sort_container(resp["user-context"])
+    del resp["user-context"]  # already checked
+    assert resp == expected_lease
+
+    # Verify that lease is in memfile after restart
+    srv_msg.check_leases({"hwaddr": "1a:1b:1c:1d:1e:1f", "address": "192.168.50.5", "valid_lifetime": 7777},
+                         backend='memfile')
 
 
 @pytest.mark.v4

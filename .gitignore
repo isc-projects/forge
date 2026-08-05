@@ -1,6 +1,8 @@
 *.pyc
 *.pyo
 /init_all.py
+/.dev_scripts/
+.vscode/
 
 # Packages
 *.egg
