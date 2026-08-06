@@ -2635,7 +2635,7 @@ def test_v6_lease_cmds_write(file):
     elif file == 'new':
         # Verify that new file contains lease
         file_contains_line(write_path, '2001:db8:1::1,1a:1b:1c:1d:1e:1f:20:21:22:23:24,11111')
-        fabric_sudo_command(f'cp {write_path} {world.f_cfg.get_leases_path()}')
+        fabric_sudo_command(f'cp -p {write_path} {world.f_cfg.get_leases_path()}')
 
     srv_control.start_srv('DHCP', 'restarted')
 
