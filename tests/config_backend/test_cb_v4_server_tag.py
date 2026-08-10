@@ -355,6 +355,7 @@ def test_server_tag_global_map4(backend):
 
     srv_control.start_srv('DHCP', 'stopped')
     cfg = setup_server_for_config_backend_cmds(server_tag="xyz", backend_type=backend)
+    srv_msg.forge_sleep(2, "seconds")
 
     cfg.add_subnet(backend=backend, server_tags=["xyz"], subnet="192.168.52.0/24", id=3,
                    pools=[{'pool': "192.168.52.1-192.168.52.100"}])
