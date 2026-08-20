@@ -20,6 +20,7 @@ import tarfile
 import warnings
 # [B404:blacklist] Consider possible security implications associated with the subprocess module.
 import subprocess  # nosec B404
+
 from shutil import copy
 
 from fabric.api import get, settings, put, sudo, run, hide
@@ -328,8 +329,7 @@ def verify_file_permissions(remote_path, required_permissions='640', destination
     :type ignore_errors: bool, optional
     """
     permissions = fabric_file_permissions(remote_path, destination_host, ignore_errors)
-    if len(permissions) != len(required_permissions):
-        return False
+    assert len(permissions) == len(required_permissions), "len(permissions) != len(required_permissions)"
     for required, current in zip(required_permissions, permissions):
         if required != '*':
             assert required == current, \
@@ -621,6 +621,8 @@ def remove_line_if_exists(file_path, line_to_remove, host=world.f_cfg.mgmt_addre
     :param host: Machine where file exists
     :type host: str
     """
+    if os.path.exists('tmp.txt'):
+        os.remove('tmp.txt')
     if fabric_is_file(file_path, destination_host=host):
         fabric_download_file(file_path, 'tmp.txt', destination_host=host)
     try:
@@ -652,6 +654,8 @@ def write_to_file(file_path, content, host=world.f_cfg.mgmt_address):
     """
     # Edit file locally, then upload with sudo. Works around the case where the file is not editable because the user
     # does not have permissions e.g. user non-root and file owned by root.
+    if os.path.exists('tmp.txt'):
+        os.remove('tmp.txt')
     with open('tmp.txt', 'w', encoding='utf-8') as file:
         file.write(content)
     fabric_send_file('tmp.txt', file_path, destination_host=host)

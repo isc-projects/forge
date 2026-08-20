@@ -303,6 +303,43 @@ class ForgeConfiguration:
         else:
             return os.path.join('/var/log/kea', sub_path)
 
+    def log_path(self, hint=None):
+        """log_path Get path to the log file.
+
+        :param hint: Service name ('kea-dhcp-ddns' or 'kea-dhcp4' or 'kea-dhcp6') or log file name
+        :type hint: str
+        :return: path to the log file
+        :rtype: str
+        """
+        log_file_name = hint
+        if hint is None or hint in ['kea-dhcp4', 'kea-dhcp6', 'kea-dhcp-ddns']:
+            service_name = self.service_name(hint)
+            log_file_name = f'{service_name}.log'
+        if self.install_method == 'make':
+            return os.path.join(self.software_install_path, 'var/log/kea', log_file_name)
+        else:
+            return os.path.join('/var/log/kea', log_file_name)
+
+    def log_output(self, hint=None):
+        """log_output Get value to be configured in Kea's logging.
+
+        :param hint: Service name ('kea-dhcp-ddns' or 'kea-dhcp4' or 'kea-dhcp6') or log file name or special values
+        :type hint: str
+        :return: value for log output
+        :rtype: str
+        """
+        if hint is None:
+            if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
+                result = world.f_cfg.log_path()
+            else:
+                result = 'stdout'
+        elif any(hint.startswith(i) for i in ['stdout', 'stderr', 'syslog']):
+            result = hint
+        else:
+            result = world.f_cfg.log_path(hint)
+
+        return result
+
     def etc_join(self, sub_path):
         """etc_join Get path to etc/kea directory.
 
@@ -444,6 +481,20 @@ class ForgeConfiguration:
             proto = world.proto
 
         return self.data_join('kea-leases%s.csv' % proto[1])
+
+    def service_name(self, service_name=None):
+        """Get the name of the service as it appears in systemd or OpenRC.
+
+        :param service_name: hinted service name (either 'kea-dhcp4', 'kea-dhcp6', or 'kea-dhcp-ddns')
+        :type service_name: str
+        :return: actual service name
+        :rtype: str
+        """
+        if service_name is None:
+            service_name = f'kea-dhcp{world.proto[1]}'
+        if world.f_cfg.install_method == 'native' and world.server_system in ['debian', 'ubuntu']:
+            service_name = f'isc-{service_name}-server'
+        return service_name
 
 
 def get_test_progress():

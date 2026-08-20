@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -299,7 +299,7 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     addr = "192.168.50.21" if world.proto == 'v4' else "2001:db8:1::51"
     _get_lease(addr, f"name1.{my_domain}.", "01:01:01:01:01:11", suffix=my_domain)
 
-    # wait_for_message_in_log(r'FQDN: \[name1\.example\.com\.\]', log_file='kea-dhcp-ddns.log')
+    # wait_for_message_in_log(r'FQDN: [name1.example.com.]', log_file=world.f_cfg.log_path("kea-dhcp-ddns"))
     srv_msg.forge_sleep(1)
     _check_dns_record(f"name1.{my_domain}.", rdata=addr, dns_addr=dns_addr, iface=iface)
 
@@ -583,7 +583,10 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     _check_dns_record(f"abcfqdn.{my_domain}.", dns_addr=dns_addr, iface=iface)
 
     # check also logs
-    log_contains("KEY_LOOKUP_NONE hooks library lookup for a key: found no usable key", log_file="kea-dhcp-ddns.log")
+    log_contains(
+        'KEY_LOOKUP_NONE hooks library lookup for a key: found no usable key',
+        log_file=world.f_cfg.log_path("kea-dhcp-ddns"),
+    )
 
     # get list of all keys, check if we got back one key with correct name
     cmd = dict(command="gss-tsig-list", arguments={})

@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -663,6 +663,22 @@ def test_control_channel_keashell_write_config():
         "host-reservation-identifiers": ["hw-address", "duid"],
         "interfaces-config": {"interfaces": ["$(SERVER_IFACE)"], "re-detect": True},
         "lease-database": {"type": "memfile"},
+        "loggers": [
+            {
+                "debuglevel": 99,
+                "name": "kea-dhcp6",
+                "output-options": [
+                    {
+                        'flush': True,
+                        'maxsize': 10240000,
+                        'maxver': 1,
+                        'output': world.f_cfg.log_output(),
+                        'pattern': '',
+                    }
+                ],
+                "severity": "DEBUG"
+            }
+        ],
         "mac-sources": ["any"],
         "option-data": [],
         "option-def": [],

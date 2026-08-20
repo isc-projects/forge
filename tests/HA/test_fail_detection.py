@@ -126,10 +126,10 @@ def test_HA_hot_standby_fail_detected(dhcp_version, backend):
 
     # Wait for sync.
     if world.proto == 'v4':
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "IPv4 lease added\." } \]', leases_count)
+        wait_for_message_in_log('[ { "result": 0, "text": "IPv4 lease added." } ]', leases_count)
     else:
         # 4 IPv6 leases == 2 IA_NA + 2 IA_PD in each response
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 4 IPv6 leases completed\." } \]', leases_count)
+        wait_for_message_in_log('[ { "result": 0, "text": "Bulk apply of 4 IPv6 leases completed." } ]', leases_count)
 
     # check if primary has all assigned addresses
     srv_msg.check_leases(set_of_leases_1, backend=backend)
@@ -250,10 +250,10 @@ def test_HA_hot_standby_shared_networks_fail_detected(dhcp_version, backend):
 
     # Wait for sync.
     if world.proto == 'v4':
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "IPv4 lease added\." } \]', leases_count)
+        wait_for_message_in_log('[ { "result": 0, "text": "IPv4 lease added." } ]', leases_count)
     else:
         # 2 IPv6 leases == 1 IA_NA + 1 IA_PD in each response, enabled by default in generate_leases().
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 2 IPv6 leases completed\." } \]', leases_count)
+        wait_for_message_in_log('[ { "result": 0, "text": "Bulk apply of 2 IPv6 leases completed." } ]', leases_count)
 
     # check if primary has all assigned addresses
     srv_msg.check_leases(set_of_leases_1, backend=backend)

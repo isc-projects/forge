@@ -436,10 +436,10 @@ def test_HA_passive_backup_sync(dhcp_version: str, backend: str, hook_order: str
 
     # Wait for sync.
     if world.proto == 'v4':
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "IPv4 lease added\." } \]', leases_count)
+        wait_for_message_in_log('[ { "result": 0, "text": "IPv4 lease added." } ]', leases_count)
     else:
         # 5 IPv6 leases == 3 IA_NA + 2 IA_PD in each response
-        wait_for_message_in_log(r'\[ { "result": 0, "text": "Bulk apply of 5 IPv6 leases completed\." } \]', leases_count)
+        wait_for_message_in_log('[ { "result": 0, "text": "Bulk apply of 5 IPv6 leases completed." } ]', leases_count)
 
     if trigger == 'ha_sync':
         # Clear leases on primary
@@ -859,6 +859,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
 
     # Configure the backend.
     srv_control.define_lease_db_backend(backend)
+
     # Load necessary hook libraries.
     load_hook_libraries(dhcp_version, hook_order)
 
@@ -889,7 +890,7 @@ def test_HA_and_RADIUS(dhcp_version: str,
 
     # Start Kea.
     srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.start_srv('DHCP', 'restarted')
 
     # ---- HA server2 ----
     misc.test_setup()
@@ -953,9 +954,9 @@ def test_HA_and_RADIUS(dhcp_version: str,
 
     # Start Kea.
     srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
-    srv_control.start_srv('DHCP', 'started', dest=world.f_cfg.mgmt_address_2)
+    srv_control.start_srv('DHCP', 'restarted', dest=world.f_cfg.mgmt_address_2)
 
-    # Settle was the HA state should be for server2 in normal functioning mode.
+    # Settle what the HA state should be for server2 in normal functioning mode.
     ha_mode_2 = ha_mode
     if ha_mode == 'passive-backup':
         ha_mode_2 = 'backup'

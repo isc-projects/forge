@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2018-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,6 +20,8 @@
 # pylint: disable=trailing-comma-tuple
 # pylint: disable=unused-import
 
+"""Kea configuration classes used to build and send DHCP server configuration (JSON, XML/YANG, database) for Forge tests."""
+
 import os
 
 from src.forge_cfg import world
@@ -32,7 +34,10 @@ from .multi_server_functions import (fabric_send_file, copy_configuration_file)
 # CONFIGURATION WILL BBE GENERATED EVERY TIME, BUT UPLOADED ONLY ON DEMAND
 
 class KeaConfiguration:
+    """Aggregate all configuration elements (subnets, pools, options, etc.) and build/send Kea configuration scripts."""
+
     def __init__(self):
+        """Initialize an empty Kea configuration with default lists and global parameters."""
         self.config_type_default = "yang"  # define which config will used as default for all tests
         self.config_type_temporary = "yang"  # used in tests where multiple config backends will be used
         self.final_config_script = ""
@@ -49,99 +54,268 @@ class KeaConfiguration:
         self.globalparameterList = [ConfigurationGlobalParameters('def', 'def')]
 
     def addpool(self, pool):
+        """Add a pool to the configuration.
+
+        :param pool: pool to add
+        :type pool: ConfigurationPool
+        """
         self.poolList.append(pool)
 
     def addreservation(self, host):
+        """Add a host reservation to the configuration.
+
+        :param host: reservation to add
+        :type host: ConfigurationReservation
+        """
         self.reservationList.append(host)
 
     def addsubnet(self, subnet):
+        """Add a subnet to the configuration.
+
+        :param subnet: subnet to add
+        :type subnet: ConfigurationSubnet
+        """
         self.subnetList.append(subnet)
 
     def addsharednetwork(self, network):
+        """Add a shared network to the configuration.
+
+        :param network: shared network to add
+        :type network: ConfigurationSharedNetworks
+        """
         self.sharednetworkList.append(network)
 
     def addoption(self, option):
+        """Add an option to the configuration.
+
+        :param option: option to add
+        :type option: ConfigurationOption
+        """
         self.optionList.append(option)
 
     def addoptiondef(self, optiondef):
+        """Add an option definition to the configuration.
+
+        :param optiondef: option definition to add
+        :type optiondef: ConfigurationOptionDef
+        """
         self.optiondefList.append(optiondef)
 
     def addglobalparameter(self, param):
+        """Add a global parameter set to the configuration.
+
+        :param param: global parameters to add
+        :type param: ConfigurationGlobalParameters
+        """
         self.globalparameterList.append(param)
 
     def addclass(self, cls):
+        """Add a client class to the configuration.
+
+        :param cls: client class to add
+        :type cls: ConfigurationClass
+        """
         self.classList.append(cls)
 
     def getsubnetlength(self):
+        """Get the number of configured subnets.
+
+        :return: number of subnets
+        :rtype: int
+        """
         return len(self.subnetList)
 
     def getreservationlength(self):
+        """Get the number of configured host reservations.
+
+        :return: number of reservations
+        :rtype: int
+        """
         return len(self.reservationList)
 
     def getoptionlength(self):
+        """Get the number of configured options.
+
+        :return: number of options
+        :rtype: int
+        """
         return len(self.optionList)
 
     def getoptiondeflength(self):
+        """Get the number of configured option definitions.
+
+        :return: number of option definitions
+        :rtype: int
+        """
         return len(self.optiondefList)
 
     def getpoollength(self):
+        """Get the number of configured pools.
+
+        :return: number of pools
+        :rtype: int
+        """
         return len(self.poolList)
 
     def getsharednetworklength(self):
+        """Get the number of configured shared networks.
+
+        :return: number of shared networks
+        :rtype: int
+        """
         return len(self.sharednetworkList)
 
     def getglobalparamlength(self):
+        """Get the number of configured global parameter sets.
+
+        :return: number of global parameter sets
+        :rtype: int
+        """
         return len(self.globalparameterList)
 
     def getloggerlength(self):
+        """Get the number of configured loggers.
+
+        :return: number of loggers
+        :rtype: int
+        """
         return len(self.loggerList)
 
     def getclasslenght(self):
+        """Get the number of configured client classes.
+
+        :return: number of client classes
+        :rtype: int
+        """
         return len(self.classList)
 
     def inner_getattr(self, list_name, list_id, item):
+        """Get an attribute value from an item stored in one of the configuration lists.
+
+        :param list_name: name of the configuration list attribute, e.g. "subnetList"
+        :type list_name: str
+        :param list_id: index of the item in the list
+        :type list_id: int
+        :param item: name of the attribute to retrieve
+        :type item: str
+        :return: value of the requested attribute
+        :rtype: any
+        """
         return getattr(getattr(self, list_name)[list_id], item)
 
     def updatevaluesubnet(self, value_name, value, list_id):
+        """Update a value of a subnet already added to the configuration.
+
+        :param value_name: name of the parameter to update (dashes are converted to underscores)
+        :type value_name: str
+        :param value: new value to set
+        :type value: any
+        :param list_id: index of the subnet in subnetList
+        :type list_id: int
+        """
         # TODO what if parameter is a list
         # if type(self.inner_getattr('subnetList', list_id, value_name)) is list:
         #     getattr(self.subnetList[list_id], value_name).append(value)
         setattr(self.subnetList[list_id], value_name.replace("-", "_"), value)
 
     def updatevalueoption(self, value_name, value, list_id):
+        """Update a value of an option already added to the configuration.
+
+        :param value_name: name of the parameter to update (dashes are converted to underscores)
+        :type value_name: str
+        :param value: new value to set
+        :type value: any
+        :param list_id: index of the option in optionList
+        :type list_id: int
+        """
         setattr(self.optionList[list_id], value_name.replace("-", "_"), value)
 
     def updatevaluereservation(self, value_name, value, list_id):
+        """Update a value of a reservation already added to the configuration.
+
+        :param value_name: name of the parameter to update (dashes are converted to underscores)
+        :type value_name: str
+        :param value: new value to set
+        :type value: any
+        :param list_id: index of the reservation in reservationList
+        :type list_id: int
+        """
         setattr(self.reservationList[list_id], value_name.replace("-", "_"), value)
 
     def updatevaluenetwork(self, value_name, value, list_id):
+        """Update a value of a shared network already added to the configuration.
+
+        :param value_name: name of the parameter to update (dashes are converted to underscores)
+        :type value_name: str
+        :param value: new value to set
+        :type value: any
+        :param list_id: index of the shared network in sharednetworkList
+        :type list_id: int
+        """
         setattr(self.sharednetworkList[list_id], value_name.replace("-", "_"), value)
 
     def updatevaluepool(self, value_name, value, list_id):
+        """Update a value of a pool already added to the configuration.
+
+        :param value_name: name of the parameter to update (dashes are converted to underscores)
+        :type value_name: str
+        :param value: new value to set
+        :type value: any
+        :param list_id: index of the pool in poolList
+        :type list_id: int
+        """
         setattr(self.poolList[list_id], value_name.replace("-", "_"), value)
 
     def updatevalueglobalparam(self, value_name, value, list_id=0):
+        """Update a value of a global parameter set already added to the configuration.
+
+        :param value_name: name of the parameter to update (dashes are converted to underscores)
+        :type value_name: str
+        :param value: new value to set
+        :type value: any
+        :param list_id: index of the global parameter set in globalparameterList
+        :type list_id: int
+        """
         setattr(self.globalparameterList[list_id], value_name.replace("-", "_"), value)
 
     def updatevalueclass(self, value_name, value, list_id):
+        """Update a value of a client class already added to the configuration.
+
+        :param value_name: name of the parameter to update (dashes are converted to underscores)
+        :type value_name: str
+        :param value: new value to set
+        :type value: any
+        :param list_id: index of the client class in classList
+        :type list_id: int
+        """
         setattr(self.classList[list_id], value_name.replace("-", "_"), value)
 
     # def ifemptyglobalparameterlist(self):
     #     return 1 if self.getglobalparamlength() == 0 else 0
 
     def build_mysql_script(self):
-        pass
-        # TODO implement this
+        """Build the MySQL configuration script. Not implemented yet."""
+        # TODO: implement this
+        return
 
     def build_pgsql_script(self):
-        pass
-        # TODO implement this
+        """Build the PostgreSQL configuration script. Not implemented yet."""
+        # TODO: implement this
+        return
 
     def build_json_script(self):
-        pass
-        # TODO implement this
+        """Build the JSON configuration script. Not implemented yet."""
+        # TODO: implement this
+        return
 
     def add_to_xml_script(self, leaf_name, part=None):
+        """Append an XML element to the final configuration script.
+
+        :param leaf_name: name of the XML leaf/element to add
+        :type leaf_name: str
+        :param part: value of the element; if None, only the opening tag is added; if empty, nothing is added
+        :type part: any
+        """
         # todo could be local function in build_xml_script()
         if len(str(part)) > 0:
             if part is None:
@@ -150,8 +324,14 @@ class KeaConfiguration:
                 self.final_config_script += '<' + leaf_name + '>' + str(part) + '</' + leaf_name + '>'
 
     def build_xml_script(self):
+        """Build the full YANG/XML configuration script from all configuration lists and store it in final_config_script."""
         # functions to save coding lines while creating xml file:
         def add_option_def(option):
+            """Append the XML representation of an option to the final configuration script.
+
+            :param option: option to add
+            :type option: ConfigurationOption
+            """
             self.add_to_xml_script('code', option.code)
             self.add_to_xml_script('space', option.space)
             self.add_to_xml_script('data', option.value)
@@ -375,14 +555,14 @@ class KeaConfiguration:
         # assert False, self.optionList[0].__dict__
 
     def build_yang_script(self):
-        pass
+        """Build the YANG configuration script. Not implemented yet."""
 
     def sendconfiguration(self):
-        # pass
+        """Send the generated XML/JSON configuration files to the remote management host."""
         from kea6_server.functions import set_kea_ctrl_config, start_srv
 
         # set_kea_ctrl_config()
-        # cfg4 = '{"Dhcp4":{"control-socket":{"socket-type":"unix","socket-name":"'+world.f_cfg.software_install_path+'etc/kea/control_socket"}},"Logging":{"loggers":[{"name":"kea-dhcp4","output_options":[{"output":"'+world.f_cfg.software_install_path+'var/log/kea.log"}],"debuglevel":99,"severity":"DEBUG"}]}}'
+        # cfg4 = '{"Dhcp4":{"control-socket":{"socket-type":"unix","socket-name":"'+world.f_cfg.software_install_path+'etc/kea/control_socket"}},"Logging":{"loggers":[{"name":"kea-dhcp4","output_options":[{"output":"'+world.f_cfg.log_output()}],"debuglevel":99,"severity":"DEBUG"}]}}'
         # netconfdaemoncfg = '{"Dhcp4":{"control-socket":{"socket-type":"unix","socket-name":"'+world.f_cfg.software_install_path+'etc/kea/control_socket"}}}'
         # config = open(world.cfg["cfg_file"], 'w')
         # config.write(cfg4)
@@ -412,17 +592,25 @@ class KeaConfiguration:
         # start_srv(True, "DHCP")
 
     def updateconfiguration(self):
-        pass
+        """Update the configuration on the remote host. Not implemented yet."""
 
     def clearconfiguration(self):
-        pass
+        """Clear the configuration on the remote host. Not implemented yet."""
 
     def add_to_script(self, part):
+        """Append a raw part to the final configuration script.
+
+        :param part: text to append
+        :type part: str
+        """
         self.final_config_script += part
 
 
 class ConfigurationClass:
+    """Represent a single Kea client class configuration entry."""
+
     def __init__(self):
+        """Initialize a client class with default empty values."""
         self.boot_file_name = ""
         self.name = ""
         self.next_server = ""
@@ -431,11 +619,27 @@ class ConfigurationClass:
         self.class_id = world.configClass.getclasslength()
 
     def __getitem__(self, item):
+        """Get an attribute value by name.
+
+        :param item: attribute name
+        :type item: str
+        :return: attribute value
+        :rtype: any
+        """
         return getattr(self, item)
 
 
 class ConfigurationPool:
+    """Represent a single address pool configuration entry."""
+
     def __init__(self, address, subnet_id=None):
+        """Initialize a pool from a "start-end" address range.
+
+        :param address: address range in "start-end" format
+        :type address: str
+        :param subnet_id: id of the subnet the pool belongs to; defaults to the last added subnet
+        :type subnet_id: int
+        """
         self.start_address = address.split("-")[0]
         self.end_address = address.split("-")[1]
         self.pool_client_class = ""
@@ -446,12 +650,42 @@ class ConfigurationPool:
         self.pool_id = world.configClass.getpoollength()
 
     def __getitem__(self, item):
+        """Get an attribute value by name.
+
+        :param item: attribute name
+        :type item: str
+        :return: attribute value
+        :rtype: any
+        """
         return getattr(self, item)
 
 
 class ConfigurationOption:
+    """Represent a single DHCP option configuration entry."""
+
     def __init__(self, option_name, value, space, custom_code=None, client_class=None,
                  subnet_id=None, shared_id=None, pool_id=None, reservation_id=None):
+        """Initialize an option and its relation to other configuration elements.
+
+        :param option_name: name of the option
+        :type option_name: str
+        :param value: value of the option
+        :type value: any
+        :param space: option space, e.g. "dhcp4"
+        :type space: str
+        :param custom_code: custom option code; if None, the code is looked up from option_name
+        :type custom_code: int
+        :param client_class: id of the client class the option is scoped to
+        :type client_class: int
+        :param subnet_id: id of the subnet the option is scoped to
+        :type subnet_id: int
+        :param shared_id: name/id of the shared network the option is scoped to
+        :type shared_id: int
+        :param pool_id: id of the pool the option is scoped to
+        :type pool_id: int
+        :param reservation_id: id of the reservation the option is scoped to
+        :type reservation_id: int
+        """
         self.option_id = 1
         self.name = option_name
         self.code = self.translate_name_to_code(option_name, custom_code)
@@ -471,9 +705,25 @@ class ConfigurationOption:
         self.reservation_id = int(reservation_id) if reservation_id is not None else reservation_id
 
     def __getitem__(self, item):
+        """Get an attribute value by name.
+
+        :param item: attribute name
+        :type item: str
+        :return: attribute value
+        :rtype: any
+        """
         return getattr(self, item)
 
     def translate_name_to_code(self, option_name, custom_code):
+        """Translate an option name into its numeric code.
+
+        :param option_name: name of the option
+        :type option_name: str
+        :param custom_code: custom option code to use instead of the looked up value
+        :type custom_code: int
+        :return: option code
+        :rtype: int
+        """
         if custom_code is None:
             if world.proto == "v6":
                 return world.kea_options6.get(option_name)
@@ -484,7 +734,22 @@ class ConfigurationOption:
 
 
 class ConfigurationOptionDef:
+    """Represent a single DHCP option definition configuration entry."""
+
     def __init__(self, option_name, opt_code, opt_type, value, space):
+        """Initialize an option definition and add its corresponding option to the configuration.
+
+        :param option_name: name of the option
+        :type option_name: str
+        :param opt_code: code of the option
+        :type opt_code: int
+        :param opt_type: record type(s) of the option
+        :type opt_type: str
+        :param value: value of the option to configure alongside the definition
+        :type value: any
+        :param space: option space, e.g. "dhcp4"
+        :type space: str
+        """
         self.code = opt_code
         self.name = option_name
         self.space = space
@@ -497,14 +762,41 @@ class ConfigurationOptionDef:
         self.add_option(option_name, value, space, opt_code)
 
     def __getitem__(self, item):
+        """Get an attribute value by name.
+
+        :param item: attribute name
+        :type item: str
+        :return: attribute value
+        :rtype: any
+        """
         return getattr(self, item)
 
     def add_option(self, option_name, value, space, opt_code):
+        """Add the option corresponding to this option definition to the configuration.
+
+        :param option_name: name of the option
+        :type option_name: str
+        :param value: value of the option
+        :type value: any
+        :param space: option space, e.g. "dhcp4"
+        :type space: str
+        :param opt_code: code of the option
+        :type opt_code: int
+        """
         world.configClass.addoption(ConfigurationOption(option_name, value, space, custom_code=opt_code))
 
 
 class ConfigurationSubnet:
+    """Represent a single subnet configuration entry."""
+
     def __init__(self, subnet, interface=world.f_cfg.server_iface):
+        """Initialize a subnet with default values.
+
+        :param subnet: subnet prefix, e.g. "192.168.0.0/24"
+        :type subnet: str
+        :param interface: interface the subnet is bound to
+        :type interface: str
+        """
         self.subnet_prefix = subnet
         self.interface_4o6 = ""
         self.interface_id_4o6 = ""
@@ -526,10 +818,24 @@ class ConfigurationSubnet:
         self.subnet_id = world.configClass.getsubnetlength()
 
     def __getitem__(self, item):
+        """Get an attribute value by name.
+
+        :param item: attribute name
+        :type item: str
+        :return: attribute value
+        :rtype: any
+        """
         return getattr(self, item)
 
         # validation
     def interface_validation(self, value):
+        """Normalize an interface value into the "iface/prefix" format expected by Kea.
+
+        :param value: interface value, possibly a list of [interface, prefix]
+        :type value: list or str
+        :return: normalized interface value
+        :rtype: str
+        """
         # if value passed is [eth89, 123:123::0] have to bbe changed to eth89/123:123::0
         if value is list:
             return "/".join(value)
@@ -538,7 +844,10 @@ class ConfigurationSubnet:
 
 
 class ConfigurationSharedNetworks:
+    """Represent a single shared network configuration entry."""
+
     def __init__(self):
+        """Initialize a shared network with default empty values."""
         self.interface = ""
         self.match_clientid = 1  # only v4
         self.rebind_timer = ""
@@ -552,13 +861,31 @@ class ConfigurationSharedNetworks:
         self.client_class = ""
 
     def __getitem__(self, item):
+        """Get an attribute value by name.
+
+        :param item: attribute name
+        :type item: str
+        :return: attribute value
+        :rtype: any
+        """
         return getattr(self, item)
 
 
 class ConfigurationGlobalParameters:
+    """Represent the set of global Kea configuration parameters (control socket, leases database, timers, etc.)."""
+
     # this is completely bullshit, I make copy of that class for each new parameter
     # created by "value_name + value" and take default values form first instance of this class
     def __init__(self, value_name, value, interface=world.f_cfg.server_iface):
+        """Initialize global parameters with default values.
+
+        :param value_name: name of the initial parameter being set
+        :type value_name: str
+        :param value: value of the initial parameter being set
+        :type value: any
+        :param interface: interface used by the server
+        :type interface: str
+        """
         self.value_name = value_name
         self.value = value
         # maybe this won't be needed:
@@ -602,11 +929,21 @@ class ConfigurationGlobalParameters:
         self.db_tcp_nodelay = ""  # not yet used
 
     def __getitem__(self, item):
+        """Get an attribute value by name.
+
+        :param item: attribute name
+        :type item: str
+        :return: attribute value
+        :rtype: any
+        """
         return getattr(self, item)
 
 
 class ConfigurationDDNS:
+    """Represent the DDNS (dynamic DNS) configuration entry."""
+
     def __init__(self):
+        """Initialize DDNS configuration with default values."""
         self.always_include_fqdn = False,
         self.enable_updates = False,
         self.generated_prefix = "myhost",
@@ -625,25 +962,57 @@ class ConfigurationDDNS:
         self.server_port = 53001
 
     def __getitem__(self, item):
+        """Get an attribute value by name.
+
+        :param item: attribute name
+        :type item: str
+        :return: attribute value
+        :rtype: any
+        """
         return getattr(self, item)
 
 
 class ConfigurationLogging:
+    """Represent a single logger configuration entry."""
+
     def __init__(self):
+        """Initialize a logger with default values."""
         self.debuglevel = 99
         self.name = "kea-dhcp4"
         self.severity = "DEBUG"
         self.flush = "true"
         self.maxsize = ""
         self.maxver = ""
-        self.output = os.path.join(world.f_cfg.software_install_path, "var/log/kea.log")
+        self.output = world.f_cfg.log_output()
 
     def __getitem__(self, item):
+        """Get an attribute value by name.
+
+        :param item: attribute name
+        :type item: str
+        :return: attribute value
+        :rtype: any
+        """
         return getattr(self, item)
 
 
 class ConfigurationReservation:
+    """Represent a single host reservation configuration entry."""
+
     def __init__(self, host_identifier_type="", host_identifier="", reservation_type="", reservation_value="", subnetid=""):
+        """Initialize a host reservation.
+
+        :param host_identifier_type: type of the host identifier, e.g. "hw-address"
+        :type host_identifier_type: str
+        :param host_identifier: value of the host identifier
+        :type host_identifier: str
+        :param reservation_type: type of the reserved value, e.g. "address", "prefix", "hostname"
+        :type reservation_type: str
+        :param reservation_value: value being reserved
+        :type reservation_value: str
+        :param subnetid: id of the subnet the reservation belongs to; defaults to the last added subnet
+        :type subnetid: int
+        """
         self.reservation_id = world.configClass.getreservationlength()
         self.host_identifier_type = host_identifier_type
         self.hw_address = host_identifier if host_identifier_type == "hw-address" else ""  # TODO in v6 can be multiple options
@@ -657,14 +1026,30 @@ class ConfigurationReservation:
         self.host_client_class = ""
 
     def __getitem__(self, item):
+        """Get an attribute value by name.
+
+        :param item: attribute name
+        :type item: str
+        :return: attribute value
+        :rtype: any
+        """
         return getattr(self, item)
 
 
 class ConfigurationHooks:
+    """Represent hooks configuration entry."""
+
     def __init__(self):
-        pass
+        """Initialize hooks configuration."""
 
     def __getitem__(self, item):
+        """Get an attribute value by name.
+
+        :param item: attribute name
+        :type item: str
+        :return: attribute value
+        :rtype: any
+        """
         return getattr(self, item)
 
 

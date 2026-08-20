@@ -324,16 +324,13 @@ class ConfigModel(ConfigElem):
             for net in self.shared_networks.values():
                 cfg['shared-networks'].append(net.get_dict())
 
-        if world.f_cfg.install_method == 'make':
-            loggers = {"output": world.f_cfg.log_join('kea.log'),
-                       "flush": True,
-                       "maxsize": 10240000,
-                       "maxver": 1,
-                       "pattern": ""}
-        else:
-            loggers = {"output": "stdout",
-                       "flush": True,
-                       "pattern": ""}
+        loggers = {
+            'flush': True,
+            'maxsize': 10240000,
+            'maxver': 1,
+            'output': world.f_cfg.log_output(),
+            'pattern': '',
+        }
 
         # loggers config
         cfg["loggers"] = [{"name": "kea-dhcp" + proto,
@@ -913,7 +910,7 @@ def _compare_dicts(rcvd_dict, exp_dict):
                  # let's ignore it for now since we don't have procedure to check it
                  # qa-dhcp #287
                  'max-valid-lifetime', 'min-valid-lifetime', 'max-preferred-lifetime', 'min-preferred-lifetime',
-                 'allocator', 'pd-allocator',
+                 'allocator', 'pd-allocator', 'loggers',
                  ]:
             # TODO: for now ignore these fields
             continue
@@ -989,7 +986,7 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
                                     ]}
 
     init_cfg["control-sockets"].append({"socket-type": "http",
-                                        "socket-address": world.f_cfg.mgmt_address,
+                                        "socket-address": destination,
                                         "socket-port": 8000,
                                         "authentication": {
                                             "type": "basic",
@@ -998,6 +995,7 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
                                                 {"password-file": "hiddens"}
                                             ]
                                         }})
+    srv_control.create_user_and_password_file()
 
     for param, val in kwargs.items():
         if val is None or param == 'check-config':
@@ -1012,10 +1010,9 @@ def setup_server(destination: str = world.f_cfg.mgmt_address,
 
     cfg = ConfigModel(init_cfg, **config_model_args)
 
-    # it's needed to fulfill check_if_http_socket_is_used in src/softwaresupport/kea.py
     srv_control.add_http_control_channel(host_address=destination)
     srv_control.build_and_send_config_files(cfg=cfg.get_dict(), dest=destination)
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.start_srv('DHCP', 'restarted', dest=destination)
 
     # check actual configuration if requested
     if 'check-config' in kwargs and kwargs['check-config']:
@@ -1034,9 +1031,27 @@ def setup_server_for_config_backend_cmds(**kwargs):
         variable: the configuration retrieved through "config-get"
     :rtype: tuple
     """
-    default_cfg = {"hooks-libraries": [{"library": "libdhcp_cb_cmds.so"}],
-                   "server-tag": "abc",
-                   "parked-packet-limit": 256}
+    default_cfg = {
+        'hooks-libraries': [{'library': 'libdhcp_cb_cmds.so'}],
+        'loggers': [
+            {
+                'debuglevel': 99,
+                'name': 'kea-dhcp4',
+                'output-options': [
+                    {
+                        'flush': True,
+                        'maxsize': 10240000,
+                        'maxver': 1,
+                        'output': world.f_cfg.log_output(),
+                        'pattern': '',
+                    }
+                ],
+                'severity': 'DEBUG',
+            }
+        ],
+        'server-tag': 'abc',
+        'parked-packet-limit': 256,
+    }
     db = {"config-control": {"config-databases": [{"user": "$(DB_USER)",
                                                    "password": "$(DB_PASSWD)",
                                                    "name": "$(DB_NAME)",
