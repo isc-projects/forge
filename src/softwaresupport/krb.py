@@ -21,6 +21,32 @@ from src.forge_cfg import world
 from .multi_server_functions import fabric_sudo_command, send_content, fabric_download_file, fabric_send_file
 
 
+def _is_rhel_family():
+    """Return True for Fedora/RHEL-like systems."""
+    return world.server_system in ['redhat', 'fedora']
+
+
+def _kdc_dir():
+    """Return the KDC state directory for the current OS."""
+    return '/var/kerberos/krb5kdc' if _is_rhel_family() else '/etc/krb5kdc'
+
+
+def _principal_path():
+    """Return the Kerberos DB principal file path for the current OS."""
+    if _is_rhel_family():
+        return '/var/kerberos/krb5kdc/principal'
+    return '/var/lib/krb5kdc/principal'
+
+
+def _native_kea_user():
+    """Return the user native Kea packages run as, or None for source installs."""
+    if world.f_cfg.install_method != 'native':
+        return None
+    if world.server_system in ['debian', 'ubuntu']:
+        return '_kea'
+    return 'kea'
+
+
 def kinit(my_domain):
     """Execute kinit on debian/redhat based systems in various configurations.
 
@@ -28,18 +54,17 @@ def kinit(my_domain):
     :type my_domain: str
     """
     fabric_sudo_command('cat /etc/krb5.conf')
-    if world.server_system in ['debian', 'ubuntu']:
-        fabric_sudo_command('cat /etc/krb5kdc/kdc.conf')
+    fabric_sudo_command(f'cat {_kdc_dir()}/kdc.conf', ignore_errors=True)
 
     manage_kerb(procedure='restart')
-    if world.server_system in ['debian', 'ubuntu'] and world.f_cfg.install_method == 'native':
-        # kea is running using user _kea this is for now only one distinction
-        # all the rest is divided between windows and linux
+    kea_user = _native_kea_user()
+    if kea_user:
+        # native packages run kea-dhcp-ddns as _kea (Debian/Ubuntu) or kea (Fedora/RHEL)
         if 'win' in my_domain:
-            fabric_sudo_command(f'bash -c "sudo -u _kea kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
+            fabric_sudo_command(f'bash -c "sudo -u {kea_user} kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
         else:
-            fabric_sudo_command(f'bash -c "sudo -u _kea kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
-        fabric_sudo_command('sudo -u _kea klist', ignore_errors=True)
+            fabric_sudo_command(f'bash -c "sudo -u {kea_user} kinit -k -t /tmp/dhcp.keytab DHCP/admin.{my_domain}"')
+        fabric_sudo_command(f'sudo -u {kea_user} klist', ignore_errors=True)
     elif 'win' in my_domain:
         fabric_sudo_command(f'bash -c "kinit -k -t /tmp/forge{my_domain[3:7]}.keytab DHCP/forge.{my_domain}"')
         fabric_sudo_command('klist')
@@ -95,6 +120,8 @@ def install_krb(dns_addr, domain, key_life=2):
     krb_destroy()
     manage_kerb()
     realm = domain.upper()
+    kdc_dir = _kdc_dir()
+    principal = _principal_path()
     if world.server_system in ['debian', 'ubuntu']:
         manage_kerb(ignore=True)  # stop all, do not care about error
         fabric_sudo_command('apt-get purge -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user', ignore_errors=True)
@@ -102,34 +129,41 @@ def install_krb(dns_addr, domain, key_life=2):
         fabric_sudo_command('sudo DEBIAN_FRONTEND=noninteractive apt install -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user')
         fabric_sudo_command('rm -rf /tmp/krb5cc_0 /tmp/krb5* /etc/krb5.conf /etc/krb5kdc/kdc.conf')
         fabric_sudo_command('mkdir -p /etc/krb5kdc /var/lib/krb5kdc')
-        # extra_addresses / default_ccache_name do not belong in kdc.conf. An empty
-        # extra_addresses value is parsed as a subsection and kdb5_util fails with
-        # "Improper format of Kerberos configuration file".
-        kdc_conf = f"""[kdcdefaults]
+    elif _is_rhel_family():
+        manage_kerb(ignore=True)
+        fabric_sudo_command('dnf install -y krb5-server krb5-workstation', ignore_errors=True)
+        # Wipe the previous realm. Unlike Ubuntu this path never purged packages, so a leftover
+        # EXAMPLE.COM database would make kdb5_util create a no-op and leave kdc.conf stale.
+        fabric_sudo_command(f'rm -rf {kdc_dir}/principal* {kdc_dir}/.k5.* {kdc_dir}/kadm5.keytab '
+                            f'/tmp/krb5cc_0 /tmp/krb5* /tmp/*.keytab')
+        fabric_sudo_command(f'mkdir -p {kdc_dir}')
+
+    kdc_conf = f"""[kdcdefaults]
     kdc_ports = 750,88
 
 [realms]
     {realm} = {{
-        database_name = /var/lib/krb5kdc/principal
-        admin_keytab = FILE:/etc/krb5kdc/kadm5.keytab
-        acl_file = /etc/krb5kdc/kadm5.acl
-        key_stash_file = /etc/krb5kdc/stash
+        database_name = {principal}
+        admin_keytab = FILE:{kdc_dir}/kadm5.keytab
+        acl_file = {kdc_dir}/kadm5.acl
+        key_stash_file = {kdc_dir}/stash
         kdc_ports = 750,88
         max_life = 0h {key_life}m 0s
         max_renewable_life = 0d 0h {key_life}m 0s
         default_principal_flags = +preauth
     }}
 """
-        send_content('kdc.conf', '/etc/krb5kdc/kdc.conf', kdc_conf, 'krb')
+    send_content('kdc.conf', f'{kdc_dir}/kdc.conf', kdc_conf, 'krb')
 
     fabric_sudo_command('rm -rf /tmp/*.keytab')
-    # /etc/krb5.conf
+    # Fedora crypto-policies DEFAULT forbids des3-hmac-sha1.
     krb5_conf = f"""[libdefaults]
     default_realm = {realm}
     kdc_timesync = 1
     ccache_type = 4
     forwardable = true
     proxiable = true
+    default_ccache_name = FILE:/tmp/krb5cc_%{{uid}}
 [realms]
     {realm} = {{
         kdc = {dns_addr}
@@ -140,15 +174,20 @@ def install_krb(dns_addr, domain, key_life=2):
     kdc = FILE:/var/log/krb5kdc.log
     admin_server = FILE:/var/log/kadmind.log
 """
+    if _is_rhel_family():
+        # includedir last so our FILE ccache wins over any KEYRING/KCM snippet in krb5.conf.d
+        krb5_conf = f"""{krb5_conf}
+includedir /etc/krb5.conf.d/
+"""
 
     send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
     fabric_sudo_command('cat /etc/krb5.conf')
-    if world.server_system in ['debian', 'ubuntu']:
-        fabric_sudo_command('cat /etc/krb5kdc/kdc.conf')
+    fabric_sudo_command(f'cat {kdc_dir}/kdc.conf')
 
-    cmd = "sudo test -e /var/lib/krb5kdc/principal || printf '123\\n123' | sudo krb5_newrealm"
-    if world.server_system in ['redhat', 'fedora']:
-        cmd = "sudo test -e /var/kerberos/krb5kdc/principal || printf '123\\n123' | sudo kdb5_util create -s"
+    if _is_rhel_family():
+        cmd = f"kdb5_util create -s -P 123 -r {realm}"
+    else:
+        cmd = f"sudo test -e {principal} || printf '123\\n123' | sudo krb5_newrealm"
     fabric_sudo_command(cmd)
 
 
@@ -181,9 +220,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
         admin_server = {dns_addr}
     }}
 """
-    fedora_krb5_conf = f"""includedir /etc/krb5.conf.d/
-
-[logging]
+    fedora_krb5_conf = f"""[logging]
     default = FILE:/var/log/krb5libs.log
     kdc = FILE:/var/log/krb5kdc.log
     admin_server = FILE:/var/log/kadmind.log
@@ -195,18 +232,19 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
     forwardable = true
     rdns = false
     pkinit_anchors = FILE:/etc/pki/tls/certs/ca-bundle.crt
-    master_key_type = des3-hmac-sha1
     spake_preauth_groups = edwards25519
     dns_canonicalize_hostname = fallback
     qualify_shortname = ""
     default_realm = {domain.upper()}
-    default_ccache_name = KEYRING:persistent:%{{uid}}
+    default_ccache_name = FILE:/tmp/krb5cc_%{{uid}}
 
 [realms]
     {domain.upper()} = {{
         kdc = {dns_addr}
         admin_server = {dns_addr}
     }}
+
+includedir /etc/krb5.conf.d/
 """
     krb5_conf = ubuntu_krb5_conf
     if world.server_system in ['redhat', 'fedora']:
@@ -214,7 +252,7 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
 
     send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
 
-    kadm5_path = '/etc/krb5kdc/kadm5.acl' if world.server_system in ['debian', 'ubuntu'] else '/var/kerberos/krb5kdc/kadm5.acl'
+    kadm5_path = os.path.join(_kdc_dir(), 'kadm5.acl')
     if 'win' in domain:
         # on each configured windows system there is keytab generated, e.g command used:
         # PS C:\Users\Administrator> ktpass -out /Users/forge/forge.keytab -mapUser forge +rndPass -mapOp set +DumpSalt -crypto AES256-SHA1 -ptype KRB5_NT_PRINCIPAL -princ DHCP/forge.win2019ad.aws.isc.org@WIN2019AD.AWS.ISC.ORG
@@ -248,26 +286,34 @@ def init_and_start_krb(dns_addr, domain, key_life=2):
 
     if 'win' not in domain:
         # we don't use dns.keytab with AD
+        namedb_keytab = os.path.join(world.f_cfg.dns_data_path, 'namedb', 'dns.keytab')
+        fabric_sudo_command(f'mkdir -p {os.path.dirname(namedb_keytab)}')
+        fabric_sudo_command(f'cp /tmp/dns.keytab {namedb_keytab}')
+        fabric_sudo_command('chmod 440 /tmp/dns.keytab')
+        fabric_sudo_command(f'chmod 440 {namedb_keytab}')
         if world.f_cfg.dns_data_path.startswith('/etc'):
             # when installed from pkg
-            fabric_sudo_command('chmod 440 /tmp/dns.keytab')
-            if world.server_system in ['redhat', 'fedora']:
+            if _is_rhel_family():
                 fabric_sudo_command('chown named:named /tmp/dns.keytab')
+                fabric_sudo_command(f'chown named:named {namedb_keytab}')
                 fabric_sudo_command(f'chown root:named {kadm5_path}')
                 fabric_sudo_command('chown root:named /etc/krb5.conf')
+                fabric_sudo_command(f'restorecon -v {namedb_keytab}', ignore_errors=True)
             else:
                 fabric_sudo_command('chown root:bind /tmp/dns.keytab')
+                fabric_sudo_command(f'chown root:bind {namedb_keytab}')
                 fabric_sudo_command(f'chown root:bind {kadm5_path}')
         else:
             # when compiled and installed from sources
-            fabric_sudo_command('chmod 440 /tmp/dns.keytab')
             fabric_sudo_command('chown root:root /tmp/dns.keytab')
+            fabric_sudo_command(f'chown root:root {namedb_keytab}')
             fabric_sudo_command(f'chown root:root {kadm5_path}')
 
     keytab_file = "/tmp/dhcp.keytab" if "win" not in domain else f"/tmp/forge{domain[3:7]}.keytab"
 
     fabric_sudo_command(f'chmod 440 {keytab_file}')
-    if world.server_system in ['debian', 'ubuntu'] and world.f_cfg.install_method == 'native':
-        fabric_sudo_command(f'chown root:_kea {keytab_file}')
+    kea_user = _native_kea_user()
+    if kea_user:
+        fabric_sudo_command(f'chown root:{kea_user} {keytab_file}')
     else:
         fabric_sudo_command(f'chown root:root {keytab_file}')

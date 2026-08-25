@@ -2030,8 +2030,7 @@ options {
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
     dnssec-validation no;
-    tkey-gssapi-keytab "/tmp/dns.keytab"; // DNS principal keytab
-    # tkey-gssapi-keytab "${data_path}/dns.keytab"; // DNS principal keytab
+    tkey-gssapi-keytab "${data_path}/dns.keytab"; // DNS principal keytab
 };
 
 zone "50.168.192.in-addr.arpa." {
@@ -2134,8 +2133,7 @@ options {
     allow-query { any; };              // This is the default
     recursion no;                      // Do not provide recursive service
     dnssec-validation no;
-    tkey-gssapi-keytab "/tmp/dns.keytab"; // DNS principal keytab
-    # tkey-gssapi-keytab "${data_path}/dns.keytab"; // DNS principal keytab
+    tkey-gssapi-keytab "${data_path}/dns.keytab"; // DNS principal keytab
 };
 
 zone "1.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
