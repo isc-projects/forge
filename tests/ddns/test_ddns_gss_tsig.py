@@ -188,6 +188,30 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
         srv_msg.forge_sleep(1)
     assert False, "After 5 seconds we don't have valid key, it might be environment issue, please debug this."
 
+
+def _windows_dns_addr(my_domain):
+    """Return the Windows DNS/KDC address for this AD domain, or skip the test.
+
+    Kerberos config generation treats an empty ``kdc =`` / ``admin_server =``
+    value as a subsection, so krb5_newrealm fails with "Improper format of
+    Kerberos configuration file" if WIN_DNS_ADDR_2016/2019 is unset.
+
+    :param my_domain: windows AD domain, e.g. win2019ad.aws.isc.org
+    :type my_domain: str
+    :return: IPv4 address of the Windows DNS/KDC
+    :rtype: str
+    """
+    if "2016" in my_domain:
+        dns_addr = world.f_cfg.win_dns_addr_2016
+        setting = "WIN_DNS_ADDR_2016"
+    else:
+        dns_addr = world.f_cfg.win_dns_addr_2019
+        setting = "WIN_DNS_ADDR_2019"
+    if not str(dns_addr).strip():
+        pytest.skip(f"{setting} is not configured")
+    return dns_addr
+
+
 # IMPORTANT NOTE
 # HOW TO MANUALLY DEBUG THOSE TESTS WITHOUT LOCAL WINDOWS SERVER
 # connect to VPN
@@ -250,9 +274,7 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
         iface = 'eth0'
         start_tcpdump('gss.pcap', iface=iface, port_filter='', auto_start_dns=False)
         my_domain = f"win{my_domain}ad.aws.isc.org"
-        dns_addr = world.f_cfg.win_dns_addr_2016
-        if "2019" in my_domain:
-            dns_addr = world.f_cfg.win_dns_addr_2019
+        dns_addr = _windows_dns_addr(my_domain)
         world.cfg["dns4_addr"] = dns_addr  # world.cfg["dns4_addr"] is based on world.f_cfg.dns4_addr
         # and it's reset between each test
         krb.init_and_start_krb(dns_addr, my_domain)
@@ -461,9 +483,7 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     if dns_system == 'windows':
         iface = 'eth0'
         start_tcpdump('gss.pcap', iface=iface, port_filter='', auto_start_dns=False)
-        dns_addr = world.f_cfg.win_dns_addr_2019
-        if "2016" in my_domain:
-            dns_addr = world.f_cfg.win_dns_addr_2016
+        dns_addr = _windows_dns_addr(my_domain)
         world.cfg["dns4_addr"] = dns_addr
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.kinit(my_domain)

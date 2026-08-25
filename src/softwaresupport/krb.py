@@ -88,57 +88,63 @@ def install_krb(dns_addr, domain, key_life=2):
     :param key_life: int, lifetime of a key in seconds
     :type key_life: int
     """
+    if not dns_addr:
+        raise ValueError('dns_addr is required to initialize Kerberos; empty values make krb5.conf/kdc.conf unparseable')
+
     clean_principals()
     krb_destroy()
     manage_kerb()
+    realm = domain.upper()
     if world.server_system in ['debian', 'ubuntu']:
         manage_kerb(ignore=True)  # stop all, do not care about error
         fabric_sudo_command('apt-get purge -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user', ignore_errors=True)
         fabric_sudo_command('rm -rf /var/lib/krb5kdc /etc/krb5kdc /etc/krb5kdc/kadm5.acl /var/tmp/DNS_0 /var/tmp/kadmin_0 /tmp/krb5cc_0 /tmp/krb5*')
         fabric_sudo_command('sudo DEBIAN_FRONTEND=noninteractive apt install -y krb5-kdc krb5-admin-server libkrb5-dev dnsutils krb5-user')
         fabric_sudo_command('rm -rf /tmp/krb5cc_0 /tmp/krb5* /etc/krb5.conf /etc/krb5kdc/kdc.conf')
+        fabric_sudo_command('mkdir -p /etc/krb5kdc /var/lib/krb5kdc')
+        # extra_addresses / default_ccache_name do not belong in kdc.conf. An empty
+        # extra_addresses value is parsed as a subsection and kdb5_util fails with
+        # "Improper format of Kerberos configuration file".
         kdc_conf = f"""[kdcdefaults]
-            kdc_ports = 750,88
-            extra_addresses = {dns_addr}
+    kdc_ports = 750,88
 
-        [realms]
-            {domain.upper()} = {{
-                database_name = /var/lib/krb5kdc/principal
-                default_ccache_name = FILE:/tmp/krb5cc_%{{uid}}
-                admin_keytab = FILE:/etc/krb5kdc/kadm5.keytab
-                acl_file = /etc/krb5kdc/kadm5.acl
-                key_stash_file = /etc/krb5kdc/stash
-                kdc_ports = 750,88
-                max_life = 0h {key_life}m 0s
-                max_renewable_life = 0d 0h {key_life}m 0s
-                master_key_type = des3-hmac-sha1
-                # supported_enctypes = aes256-cts:normal aes128-cts:normal
-                default_principal_flags = +preauth
-            }}
-
-                """
+[realms]
+    {realm} = {{
+        database_name = /var/lib/krb5kdc/principal
+        admin_keytab = FILE:/etc/krb5kdc/kadm5.keytab
+        acl_file = /etc/krb5kdc/kadm5.acl
+        key_stash_file = /etc/krb5kdc/stash
+        kdc_ports = 750,88
+        max_life = 0h {key_life}m 0s
+        max_renewable_life = 0d 0h {key_life}m 0s
+        default_principal_flags = +preauth
+    }}
+"""
         send_content('kdc.conf', '/etc/krb5kdc/kdc.conf', kdc_conf, 'krb')
 
     fabric_sudo_command('rm -rf /tmp/*.keytab')
     # /etc/krb5.conf
     krb5_conf = f"""[libdefaults]
-            default_realm = {domain.upper()}
-            kdc_timesync = 1
-            ccache_type = 4
-            forwardable = true
-            proxiable = true
-    [realms]
-            {domain.upper()} = {{
-                kdc = {dns_addr}
-                admin_server = {dns_addr}
-            }}
-    [logging]
-        default = FILE:/var/log/krb5libs.log
-        kdc = FILE:/var/log/krb5kdc.log
-        admin_server = FILE:/var/log/kadmind.log
-    """
+    default_realm = {realm}
+    kdc_timesync = 1
+    ccache_type = 4
+    forwardable = true
+    proxiable = true
+[realms]
+    {realm} = {{
+        kdc = {dns_addr}
+        admin_server = {dns_addr}
+    }}
+[logging]
+    default = FILE:/var/log/krb5libs.log
+    kdc = FILE:/var/log/krb5kdc.log
+    admin_server = FILE:/var/log/kadmind.log
+"""
 
     send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
+    fabric_sudo_command('cat /etc/krb5.conf')
+    if world.server_system in ['debian', 'ubuntu']:
+        fabric_sudo_command('cat /etc/krb5kdc/kdc.conf')
 
     cmd = "sudo test -e /var/lib/krb5kdc/principal || printf '123\\n123' | sudo krb5_newrealm"
     if world.server_system in ['redhat', 'fedora']:
