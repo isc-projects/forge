@@ -30,6 +30,7 @@
 # pylint: disable=unused-argument
 # pylint: disable=unused-variable
 # pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
 
 """Functions used in building or transmitting messages/packets."""
 
@@ -857,7 +858,7 @@ def send_over_tcp(msg: bytes, address: str = None, port: int = None, timeout: in
 
 def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
                           protocol: str = 'UDP', address: str = None, port: int = None, iface=None,
-                          ignore_response: bool = False):
+                          ignore_response: bool = False, timeout=None):
     """Send message and wait for response.
 
     :param requirement_level:
@@ -876,6 +877,8 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     :type iface:
     :param ignore_response: (Default value = False)
     :type ignore_response: bool
+    :param timeout: timeout
+    :type timeout: int or None
     :return:
     :rtype:
     """
@@ -889,6 +892,8 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     apply_message_fields_changes()
 
     factor = 1
+    if timeout is None:
+        timeout = factor * world.cfg['wait_interval']
     world.srvmsg = []
     world.tcpmsg = []
     received_name = ""
@@ -906,7 +911,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     if protocol == 'UDP':
         ans, unans = sr(world.climsg,
                         # iface=iface, deprecated
-                        timeout=factor * world.cfg['wait_interval'],
+                        timeout=timeout,
                         nofilter=1,
                         verbose=world.f_cfg.forge_verbose)
         if world.f_cfg.forge_verbose == 0:

@@ -106,7 +106,7 @@ def test_v4_decline_success_short_decline_period():
     srv_msg.client_send_msg('DECLINE')
 
     misc.pass_criteria()
-    srv_msg.send_dont_wait_for_message()
+    srv_msg.send_dont_wait_for_message(timeout=1)
 
     misc.test_procedure()
     srv_msg.client_sets_value('Client', 'chaddr', '00:00:00:00:00:11')

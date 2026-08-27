@@ -621,7 +621,7 @@ def tcp_get_message(**kwargs):
 
 def send_wait_for_message(requirement_level: str, presence: bool, exp_message: str,
                           protocol: str = 'UDP', address: str = None, port: int = None, iface=None,
-                          ignore_response: bool = False):
+                          ignore_response: bool = False, timeout=None):
     """Send a message and wait for a response.
 
     :param requirement_level: requirement level
@@ -640,12 +640,16 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     :type iface: str or None
     :param ignore_response: ignore response
     :type ignore_response: bool
+    :param timeout: timeout
+    :type timeout: int or None
     :return: message
     :rtype: scapy.layers.ethernet.Ether
     """
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # We need to use srp() here (send and receive on layer 2)
     factor = 1
+    if timeout is None:
+        timeout = factor * world.cfg['wait_interval']
     pytest_current_test = os.environ.get('PYTEST_CURRENT_TEST')
     if 'HA' in pytest_current_test.split('/'):
         factor = max(factor, world.f_cfg.ha_packet_wait_interval_factor)
@@ -664,7 +668,7 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     if protocol == 'UDP':
         ans, unans = srp(world.climsg,
                          iface=iface,
-                         timeout=factor * world.cfg['wait_interval'],
+                         timeout=timeout,
                          multi=False,
                          verbose=world.f_cfg.forge_verbose)
         if world.f_cfg.forge_verbose == 0:
