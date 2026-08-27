@@ -2490,10 +2490,6 @@ def _check_kea_process_result(succeed: bool, result: str, action: str):
         if not succeed:
             if not any(error_message in result for error_message in errors):
                 assert False, 'Server operation: ' + action + ' NOT failed!'
-    # TODO: This assert results in a few dozen failures. Investigate, fix, and then uncomment.
-    # if succeed:
-    #     for error in errors:
-    #         assert 0 == get_line_count_in_log(error), f'Found error in logs: {error}'
 
 
 def _start_kea_with_keactrl(destination_host, specific_process="", parameters=None):
@@ -2562,8 +2558,7 @@ def _reload_kea_with_keactrl(destination_host):
     return fabric_sudo_command(stop_cmd, destination_host=destination_host)
 
 
-def reconfigure_srv(should_succeed: bool = True,
-                    destination_address: str = world.f_cfg.mgmt_address):
+def reconfigure_srv(should_succeed: bool = True, destination_address: str = world.f_cfg.mgmt_address):
     """Send signal to Kea server to reconfigure itself.
 
     :param should_succeed: whether the reconfiguration is supposed to succeed or fail
@@ -2571,6 +2566,7 @@ def reconfigure_srv(should_succeed: bool = True,
     :param destination_address: management address of server
     :type destination_address:
     """
+    c = get_line_count_in_log('dynamic server reconfiguration suceeded with file', destination=destination_address)
     if world.f_cfg.install_method == 'make':
         result = _reload_kea_with_keactrl(destination_address)
         _check_kea_process_result(should_succeed, result, 'reconfigure')
@@ -2579,7 +2575,7 @@ def reconfigure_srv(should_succeed: bool = True,
             _reload_kea_with_openrc(destination_address)
         else:
             _reload_kea_with_systemctl(destination_address)
-    wait_for_message_in_log('dynamic server reconfiguration succeeded with file')
+    wait_for_message_in_log('dynamic server reconfiguration succeeded with file', c + 1, destination=destination_address)
 
 
 def restart_srv(destination_address=world.f_cfg.mgmt_address, parameters=None):
@@ -2598,18 +2594,17 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address, parameters=None):
         # (start checks in the log if there is expected pattern)
         if world.f_cfg.save_logs:
             save_logs(destination_address=destination_address)
-        fabric_sudo_command(f'rm -f {world.f_cfg.log_path()}',
-                            destination_host=destination_address)
+        fabric_sudo_command(f'rm -f {world.f_cfg.log_path()}', destination_host=destination_address)
+        c = 0  # Log was just removed on the line above so it's safe to say the number of f'DHCP{v}_STARTED' lines are 0.
 
         _start_kea_with_keactrl(destination_address, parameters=parameters)
-        wait_for_message_in_log(f'DHCP{v}_STARTED', destination=destination_address)
     else:
         c = get_line_count_in_log(f'DHCP{v}_STARTED', destination=destination_address)
         if world.server_system == 'alpine':
             _restart_kea_with_openrc(destination_address)
         else:
             _restart_kea_with_systemctl(destination_address)
-        wait_for_message_in_log(f'DHCP{v}_STARTED', c + 1, destination=destination_address)
+    wait_for_message_in_log(f'DHCP{v}_STARTED', c + 1, destination=destination_address)
 
 
 def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
