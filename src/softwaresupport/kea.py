@@ -52,7 +52,6 @@ from src.softwaresupport.multi_server_functions import (
     fabric_is_file,
     fabric_remove_file_command,
     fabric_sudo_command,
-    write_to_file,
 )
 
 from . import database

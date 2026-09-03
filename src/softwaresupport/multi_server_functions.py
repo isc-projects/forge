@@ -694,20 +694,14 @@ def write_to_file(file_path, content, host=world.f_cfg.mgmt_address, overwrite=F
                         orig_owner = owner_str
                     if group_str.isdigit():
                         orig_group = group_str
-    except Exception:
-        pass  # Swallow any error, fallback to default
+    except FileNotFoundError:
+        pass  # File doesn't exist, no permissions to worry about.
 
     fabric_send_file('tmp.txt', file_path, destination_host=host)
     # Restore original owner, group, and permissions if available
     if orig_owner and orig_group:
-        try:
-            # chown with numeric uid:gid
-            fabric_sudo_command(f'chown {orig_owner}:{orig_group} {file_path}', destination_host=host)
-        except Exception:
-            pass  # Ignore chown errors
+        # chown with numeric uid:gid
+        fabric_sudo_command(f'chown {orig_owner}:{orig_group} {file_path}', destination_host=host)
     if orig_perms:
-        try:
-            fabric_sudo_command(f"chmod {orig_perms} {file_path}", destination_host=host)
-        except Exception:
-            pass  # Ignore chmod errors
+        fabric_sudo_command(f"chmod {orig_perms} {file_path}", destination_host=host)
     os.remove('tmp.txt')
