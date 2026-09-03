@@ -648,13 +648,13 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     world.cliopts = []  # clear options, always build new message, also possible make it in client_send_msg
     # We need to use srp() here (send and receive on layer 2)
     factor = 1
-    if timeout is None:
-        timeout = factor * world.cfg['wait_interval']
     pytest_current_test = os.environ.get('PYTEST_CURRENT_TEST')
     if 'HA' in pytest_current_test.split('/'):
         factor = max(factor, world.f_cfg.ha_packet_wait_interval_factor)
     if '_radius' in pytest_current_test.lower():
         factor = max(factor, world.f_cfg.radius_packet_wait_interval_factor)
+    if timeout is None:
+        timeout = factor * world.cfg['wait_interval']
     apply_message_fields_changes()
     world.srvmsg = []
     world.tcpmsg = []

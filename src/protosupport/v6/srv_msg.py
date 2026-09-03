@@ -891,20 +891,19 @@ def send_wait_for_message(requirement_level: str, presence: bool, exp_message: s
     conf.checkIPsrc = False
     apply_message_fields_changes()
 
-    factor = 1
-    if timeout is None:
-        timeout = factor * world.cfg['wait_interval']
     world.srvmsg = []
     world.tcpmsg = []
     received_name = ""
     iface = world.cfg["iface"] if iface is None else iface
 
+    factor = 1
     pytest_current_test = os.environ.get('PYTEST_CURRENT_TEST')
     if 'HA' in pytest_current_test.split('/'):
         factor = max(factor, world.f_cfg.ha_packet_wait_interval_factor)
     if '_radius' in pytest_current_test.lower():
         factor = max(factor, world.f_cfg.radius_packet_wait_interval_factor)
-
+    if timeout is None:
+        timeout = factor * world.cfg['wait_interval']
     if world.f_cfg.show_packets_from in ['both', 'client']:
         world.climsg[0].show()
 
