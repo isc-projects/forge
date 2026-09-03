@@ -293,24 +293,31 @@ def fabric_is_dir(remote_path, host=world.f_cfg.mgmt_address):
     return result.succeeded
 
 
-def fabric_file_permissions(remote_path, destination_host=world.f_cfg.mgmt_address, ignore_errors=False):
+def fabric_file_permissions(remote_path, destination_host=world.f_cfg.mgmt_address, ignore_errors=False, full=False):
     """Get file permissions on a remote node.
 
     :param remote_path: remote file path
     :type remote_path: str
     :param destination_host: destination host
     :type destination_host: str, optional
+    :param full: get full file permissions with owner and
+    :type full: bool, optional
     :return: file permissions
     :rtype: str
     :param ignore_errors: ignore errors
     :type ignore_errors: bool, optional
     """
-    result = fabric_sudo_command(
-        f'stat -c %a {remote_path}',
+    if full:
+        return fabric_sudo_command(
+            f'stat -c "%a,%u,%g" {remote_path}',
+            destination_host=destination_host,
+            ignore_errors=ignore_errors
+        )
+    return fabric_sudo_command(
+        f'stat -c "%a" {remote_path}',
         destination_host=destination_host,
         ignore_errors=ignore_errors
     )
-    return result
 
 
 def verify_file_permissions(remote_path, required_permissions='640', destination_host=world.f_cfg.mgmt_address,
@@ -642,7 +649,7 @@ def remove_line_if_exists(file_path, line_to_remove, host=world.f_cfg.mgmt_addre
     os.remove('tmp.txt')
 
 
-def write_to_file(file_path, content, host=world.f_cfg.mgmt_address):
+def write_to_file(file_path, content, host=world.f_cfg.mgmt_address, overwrite=False):
     """Add a line to the file if the line does not already exist in the file.
 
     :param file_path: path to file
@@ -651,12 +658,56 @@ def write_to_file(file_path, content, host=world.f_cfg.mgmt_address):
     :type content: str
     :param host: Machine where file exists
     :type host: str
+    :param overwrite: overwrite the file if it exists
+    :type overwrite: bool
     """
     # Edit file locally, then upload with sudo. Works around the case where the file is not editable because the user
     # does not have permissions e.g. user non-root and file owned by root.
     if os.path.exists('tmp.txt'):
         os.remove('tmp.txt')
-    with open('tmp.txt', 'w', encoding='utf-8') as file:
-        file.write(content)
+    if not overwrite and fabric_is_file(file_path, destination_host=host):
+        fabric_download_file(file_path, 'tmp.txt', destination_host=host)
+    try:
+        with open('tmp.txt', 'a', encoding='utf-8') as file:
+            file.write(content.rstrip('\n') + '\n')
+    except FileNotFoundError:
+        # File doesn't exist, create it and add the line.
+        with open('tmp.txt', 'w', encoding='utf-8') as file:
+            file.write(content.rstrip('\n') + '\n')
+
+    # Preserve original file permissions, owner, and group when uploading the edited file back to remote host.
+    orig_perms = None
+    orig_owner = None
+    orig_group = None
+    try:
+        if fabric_is_file(file_path, destination_host=host):
+            # Get permissions, owner, and group with a single command
+            # stat -c "%a,%u,%g" gives e.g. "644,1000,1000"
+            result = fabric_file_permissions(file_path, destination_host=host, full=True)
+            if result.succeeded:
+                stat_out = result.stdout.strip()
+                if stat_out and ',' in stat_out:
+                    perms_str, owner_str, group_str = stat_out.split(',', 2)
+                    if perms_str.isdigit():
+                        orig_perms = perms_str
+                    if owner_str.isdigit():
+                        orig_owner = owner_str
+                    if group_str.isdigit():
+                        orig_group = group_str
+    except Exception:
+        pass  # Swallow any error, fallback to default
+
     fabric_send_file('tmp.txt', file_path, destination_host=host)
+    # Restore original owner, group, and permissions if available
+    if orig_owner and orig_group:
+        try:
+            # chown with numeric uid:gid
+            fabric_sudo_command(f'chown {orig_owner}:{orig_group} {file_path}', destination_host=host)
+        except Exception:
+            pass  # Ignore chown errors
+    if orig_perms:
+        try:
+            fabric_sudo_command(f"chmod {orig_perms} {file_path}", destination_host=host)
+        except Exception:
+            pass  # Ignore chmod errors
     os.remove('tmp.txt')

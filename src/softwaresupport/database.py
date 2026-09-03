@@ -55,7 +55,7 @@ def configure_listening_addresses_on_the_database_server(backend, host=world.f_c
 [mysqld]
 bind-address = 0.0.0.0
 """
-        write_to_file(f'{my_cnf_d}/forge_listening_addresses.cnf', content, host=host)
+        write_to_file(f'{my_cnf_d}/forge_listening_addresses.cnf', content, host=host, overwrite=True)
     elif backend == 'postgresql':
         conf = postgresql_conf(host=host)
         pgsql_conf_d = postgresql_conf_d(host=host)
@@ -67,7 +67,7 @@ bind-address = 0.0.0.0
         content = """\
 listen_addresses = '*'
 """
-        write_to_file(f'{pgsql_conf_d}/forge_listening_addresses.conf', content, host=host)
+        write_to_file(f'{pgsql_conf_d}/forge_listening_addresses.conf', content, host=host, overwrite=True)
 
         # Add host to pg_hba.conf to allow all users to connect from the same network
         # Many still supported postgres versions do not support includes for pg_hba.conf
@@ -123,7 +123,7 @@ ssl_ca = {certs['ca_cert']}
 ssl_cert = {certs['client_cert']}
 ssl_key = {certs['client_key']}
 """
-        write_to_file(os.path.join(my_cnf_d, 'forge-tls.cnf'), content, host=host)
+        write_to_file(os.path.join(my_cnf_d, 'forge-tls.cnf'), content, host=host, overwrite=True)
 
     elif backend == 'postgresql':
         conf = postgresql_conf(host=host)
@@ -142,7 +142,7 @@ ssl_ca_file = '/var/lib/postgres/tls/ca_cert.pem'
 ssl_cert_file = '/var/lib/postgres/tls/server_cert.pem'
 ssl_key_file = '/var/lib/postgres/tls/server_key.pem'
 """
-        write_to_file(f'{pgsql_conf_d}/forge-tls.conf', content, host=host)
+        write_to_file(f'{pgsql_conf_d}/forge-tls.conf', content, host=host, overwrite=True)
         fabric_sudo_command(f'chown -R postgres:postgres {conf} {pgsql_conf_d}')
         fabric_sudo_command(f'chmod 600 {conf} {pgsql_conf_d}/forge-tls.conf')
         fabric_sudo_command(f'chmod 700 {pgsql_conf_d}')

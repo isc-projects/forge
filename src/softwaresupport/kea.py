@@ -2910,7 +2910,11 @@ def insert_message_in_server_logs(message: str):
 
     # Log.
     for host in hosts:
-        write_to_file(world.f_cfg.log_path(), message, host)
+        # Append log message remotely.
+        # If file would be deleted and new one created, Kea will stop logging to it.
+        # Use shell echo and sudo tee -a to avoid file truncation.
+        cmd = f"echo '{message}' | sudo tee -a '{world.f_cfg.log_path()}' > /dev/null"
+        fabric_sudo_command(cmd, destination_host=host)
 
 
 def run_test_config(config_path: str = None, strict_security: bool = True, should_fail: bool = False, syntax_only: bool = False):
