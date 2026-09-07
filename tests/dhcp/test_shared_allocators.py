@@ -121,7 +121,7 @@ def test_v4_allocators_sflq_randomness(backend, scope, servers):
     """
     misc.test_setup()
     srv_control.config_srv_subnet("192.0.0.0/8", "192.0.0.0/32", allocator="shared-flq")
-    for i in range(0, 5):
+    for i in range(0, 20):
         for j in range(1, 250):
             srv_control.new_pool(f"192.{i}.{j}.0/32", 0)
 
@@ -145,7 +145,7 @@ def test_v4_allocators_sflq_randomness(backend, scope, servers):
         misc.test_setup()
         srv_control.clear_some_data("all", dest=world.f_cfg.mgmt_address_2)
         srv_control.config_srv_subnet("192.0.0.0/8", "192.0.0.0/32", allocator="shared-flq")
-        for i in range(0, 5):
+        for i in range(0, 20):
             for j in range(1, 250):
                 srv_control.new_pool(f"192.{i}.{j}.0/32", 0)
 
@@ -158,11 +158,10 @@ def test_v4_allocators_sflq_randomness(backend, scope, servers):
         srv_control.build_and_send_config_files(dest=world.f_cfg.mgmt_address_2)
         srv_control.start_srv("DHCP", "started", dest=world.f_cfg.mgmt_address_2)
 
-    # Open RC service reports start of service before it is operational.
-    if world.server_system == "alpine" and world.f_cfg.install_method == "native":
-        wait_for_message_in_log("DHCP4_STARTED", count=1, timeout=30)
-        if servers == "dual":
-            wait_for_message_in_log("DHCP4_STARTED", count=1, timeout=30, destination=world.f_cfg.mgmt_address_2)
+    # With almost 5000 pools, we need to wait for a while for the service to start.
+    wait_for_message_in_log("DHCP4_STARTED", count=1, timeout=30)
+    if servers == "dual":
+        wait_for_message_in_log("DHCP4_STARTED", count=1, timeout=30, destination=world.f_cfg.mgmt_address_2)
 
     leases_subnet1 = []
     for i in range(10, 20):

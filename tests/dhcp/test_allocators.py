@@ -15,6 +15,7 @@ import pytest
 from src import misc
 from src import srv_control
 from src import srv_msg
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 
 log = logging.getLogger('forge')
 
@@ -524,7 +525,7 @@ def test_v6_allocator_randomness(backend, prefix_allocator):
     :type prefix_allocator:
     """
     misc.test_setup()
-    netmask = 112
+    netmask = 104
     srv_control.config_srv_subnet('2001:db8:1::/64', f'2001:db8:1::/{netmask}',
                                   allocator='random', pd_allocator=prefix_allocator)
 
@@ -534,11 +535,13 @@ def test_v6_allocator_randomness(backend, prefix_allocator):
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+    # Populating so many prefixes takes a while.
+    wait_for_message_in_log("DHCP6_STARTED", count=1, timeout=60)
 
     before_restart = []
 
     for i in range(10, 30):
-        before_restart += _get_lease_6('random', iaid=3, iapd=3, relay='2001:db8:1::1',
+        before_restart += _get_lease_6('random', iaid=3, iapd=3, relay='2001:db8:1::1', netmask=netmask,
                                        mac=f'11:f5:f4:f3:f2:{i}', all_leases=before_restart)
     srv_msg.check_leases(before_restart, backend=backend)
 
@@ -555,12 +558,14 @@ def test_v6_allocator_randomness(backend, prefix_allocator):
 
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
+    # Loading prefixes should be way faster than populating them.
+    wait_for_message_in_log("DHCP6_STARTED", count=1, timeout=15)
 
     # get the same number of leases with the same duids
     after_restart = []
     for i in range(10, 30):
         after_restart += _get_lease_6('random', iaid=3, iapd=3, relay='2001:db8:1::1',
-                                      mac=f'11:f5:f4:f3:f2:{i}', all_leases=after_restart)
+                                      mac=f'11:f5:f4:f3:f2:{i}', all_leases=after_restart, netmask=netmask)
     srv_msg.check_leases(after_restart, backend=backend)
 
     addresses_before_restart = [x for x in before_restart if x['prefix_len'] == 0]
