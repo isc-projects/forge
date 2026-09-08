@@ -23,6 +23,22 @@ from tests.HA.steps import increase_mac
 # pylint: disable=cell-var-from-loop
 
 
+def _generate_random_id(used_up_ids_list: list):
+    """Generate random ID that is not used yet. and add it to the list of used up IDs.
+
+    :param used_up_ids_list: list of used up IDs
+    :type used_up_ids_list: list
+    :return: random ID
+    :rtype: int
+    """
+    while True:
+        random_id = secrets.randbelow(9000) + 1
+        if random_id not in used_up_ids_list:
+            used_up_ids_list.append(random_id)
+            break
+    return random_id
+
+
 def _get_lease(mac: str = "01:02:0c:03:0a:00", leases_count: int = 10, remote_id: str = None,
                relay_id: str = None, addr_count: int = 1, pd_count: int = 1, relay: bool = True,
                link_addr: str = '2001:db8:1::1000', v4: bool = False):
@@ -100,6 +116,7 @@ def _get_lease(mac: str = "01:02:0c:03:0a:00", leases_count: int = 10, remote_id
             mac = increase_mac(mac)
         return leases
 
+    used_up_ids = []
     for _ in range(leases_count):
         mac = increase_mac(mac)
         duid = "00:03:00:01:" + mac
@@ -115,11 +132,11 @@ def _get_lease(mac: str = "01:02:0c:03:0a:00", leases_count: int = 10, remote_id
         srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
         for _ in range(addr_count):
-            srv_msg.client_sets_value('Client', 'ia_id', secrets.randbelow(9000) + 1)
+            srv_msg.client_sets_value('Client', 'ia_id', _generate_random_id(used_up_ids))
             srv_msg.client_does_include('Client', 'IA-NA')
 
         for _ in range(pd_count):
-            srv_msg.client_sets_value('Client', 'ia_pd', secrets.randbelow(9000) + 1)
+            srv_msg.client_sets_value('Client', 'ia_pd', _generate_random_id(used_up_ids))
             srv_msg.client_does_include('Client', 'IA-PD')
 
         srv_msg.client_copy_option('server-id')
