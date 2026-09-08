@@ -19,7 +19,7 @@ from src import srv_control
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
 from src.softwaresupport import krb
-from src.softwaresupport.multi_server_functions import start_tcpdump
+from src.softwaresupport.multi_server_functions import start_tcpdump, fabric_is_file, fabric_sudo_command
 
 
 def _send_through_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_socket'), exp_result=0, exp_failed=False):
@@ -442,10 +442,17 @@ def test_ddns4_gss_tsig_fallback(fallback):
     # update will fail no matter of fallback value
     _check_dns_record("thiswontbeindns.example.com.", dns_addr=dns_addr, iface=world.cfg["dns_iface"])
     # but logs will differ
+
+    log_file = "/tmp/dns.log"
+    # Fedora uses systemd's "PrivateTmp" to isolate the DNS process, so the log file can be in a different location.
+    if world.server_system == 'fedora' and not fabric_is_file("/tmp/dns.log"):
+        bind_dir = fabric_sudo_command('find /tmp -maxdepth 1 -type d -name "systemd-private-*-named.service-*" -print')
+        log_file = f"{bind_dir}/tmp/dns.log"
+
     if fallback:
-        log_contains("update 'example.com/IN' denied", log_file="/tmp/dns.log")
+        log_contains("update 'example.com/IN' denied", log_file=log_file)
     else:
-        log_doesnt_contain("update 'example.com/IN' denied", log_file="/tmp/dns.log")
+        log_doesnt_contain("update 'example.com/IN' denied", log_file=log_file)
 
 
 @pytest.mark.v4

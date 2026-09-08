@@ -25,7 +25,7 @@ from src.forge_cfg import world
 from src.softwaresupport.bind9_server.bind_configs import config_file_set
 # from src.softwaresupport.bind9_server.bind_configs import keys  # those are needed for managed-keys.bind
 from src.softwaresupport.multi_server_functions import fabric_sudo_command, fabric_download_file
-from src.softwaresupport.multi_server_functions import fabric_remove_file_command
+from src.softwaresupport.multi_server_functions import fabric_remove_file_command, fabric_is_file
 from src.softwaresupport.multi_server_functions import check_local_path_for_downloaded_files, send_content
 
 
@@ -341,7 +341,13 @@ def save_logs(destination_address=world.f_cfg.mgmt_address):
     :param destination_address: management address of server
     :type destination_address: str
     """
-    fabric_download_file('/tmp/dns.log',
+    # Fedora uses systemd's "PrivateTmp" to isolate the DNS process, so the log file can be in a different location.
+    log_file = "/tmp/dns.log"
+    if world.server_system == 'fedora' and not fabric_is_file(log_file):
+        bind_dir = fabric_sudo_command('find /tmp -maxdepth 1 -type d -name "systemd-private-*-named.service-*" -print')
+        log_file = f"{bind_dir}/tmp/dns.log"
+
+    fabric_download_file(log_file,
                          check_local_path_for_downloaded_files(world.cfg["test_result_dir"],
                                                                'dns/dns_log_file',
                                                                destination_address),
