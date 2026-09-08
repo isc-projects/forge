@@ -25,6 +25,7 @@ disable=
         broad-exception-raised,
         duplicate-code,
         fixme,
+        invalid-name,
         len-as-condition,
         missing-docstring,
         no-member,

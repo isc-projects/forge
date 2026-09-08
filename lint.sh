@@ -30,7 +30,7 @@ while test ${#} -gt 0; do
     # Check only the files that were changed in this branch.
     files_to_search="$(git diff --name-only "$(git merge-base origin/master "$(git rev-parse --abbrev-ref HEAD)")")"
     shift
-  elif echo "${1-}" | grep -E '^--'; then
+  elif echo "${1-}" | grep -E '^--' > /dev/null; then
     # Run linter.
     linter=$(echo "${1}" | sed 's/^--//')
     linters="${linters} ${linter}"
@@ -75,10 +75,8 @@ run_pycodestyle() {
 
 run_pydoctor() {
   # __init__.py files are required by pydoctor.
-  files=$(add_init_py)
   pydoctor --docformat restructuredtext --html-output pydoctor-html --warnings-as-errors . || FAILURE=true
   echo  # pydoctor does not add a trailing new line. Add it ourselves.
-  rm ${files}
   rm -rf pydoctor-html
 }
 
