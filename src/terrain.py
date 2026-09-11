@@ -508,6 +508,9 @@ def initialize(request):
                 kea.modify_systemd_service(service_name=service_name, action='override-restart',
                                            destination_address=world.f_cfg.mgmt_address_3)
 
+    # Specify if Kea was started at least once this test run.
+    world.kea_started_this_test = False
+
     _clear_remainings()
 
 
