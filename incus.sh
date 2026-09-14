@@ -109,11 +109,26 @@ function prepare_node() {
     if ! is_instance_created "kea-${2}"; then
         log "Creating kea-$2 node - $1"
         incus launch images:"$1" kea-"$2"
-        sleep 5
-        if [ "$1" = "fedora/41" ]; then
-            log "Some jobs listed as running, should be killed"
-            incus exec kea-"$2" -- systemctl list-jobs
-            incus exec kea-"$2" -- bash -c 'systemctl list-jobs | awk "NR>1 && \$4==\"running\" {print \$2}" | xargs -r systemctl stop'
+
+        if test "${usedSystem}" = 'alpine'; then
+          # Wait for the instance to finish booting.
+          while ! incus exec "kea-${2}" -- getent hosts alpinelinux.org > /dev/null; do
+            sleep 1
+          done
+        else
+          # Wait for the instance to finish booting.
+          while ! incus exec "kea-${2}" -- systemctl is-system-running --wait | grep -qxE 'running|degraded' > /dev/null; do
+            sleep 1
+          done
+
+          # Rate limiting in systemd can suppress messages that are expected by Forge tests. So disable rate limiting.
+          incus exec "kea-${2}" -- sh -c '
+            mkdir -p /etc/systemd/journald.conf.d
+            echo "[Journal]" > /etc/systemd/journald.conf.d/99-forge-tests.conf
+            echo "RateLimitBurst=0" >> /etc/systemd/journald.conf.d/99-forge-tests.conf
+            echo "RateLimitIntervalSec=0" >> /etc/systemd/journald.conf.d/99-forge-tests.conf
+          '
+          incus exec "kea-${2}" -- systemctl restart systemd-journald
         fi
     fi
 }
