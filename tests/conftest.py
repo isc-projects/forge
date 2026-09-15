@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2019-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -57,6 +57,9 @@ def pytest_runtest_teardown(item, nextitem):
     """
     from src import terrain
     item.failed = None
+    if world.f_cfg.max_test_count > 0 and world.f_cfg.max_test_count <= world.current_test_index:
+        s = '' if world.f_cfg.max_test_count == 1 else 's'
+        pytest.exit(f'Exiting after {world.f_cfg.max_test_count} test{s} due to MAX_TEST_COUNT.')
     terrain.cleanup(item)
 
 

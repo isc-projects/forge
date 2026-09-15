@@ -37,6 +37,7 @@ SETTINGS = {
     'SOFTWARE_INSTALL_PATH': '/usr/local',
     'INSTALL_METHOD': 'make',
     'LOGLEVEL': 'info',
+    'MAX_TEST_COUNT': 0,
     'SOFTWARE_UNDER_TEST': ('kea4_server', 'bind9_server'),
     'SHOW_PACKETS_FROM': 'both',
     'SRV4_ADDR': None,

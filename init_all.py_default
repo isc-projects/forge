@@ -26,6 +26,9 @@
 # case insensitive.
 # LOGLEVEL = 'info'
 
+# How many tests to run. 0 means infinite.
+# MAX_TEST_COUNT = 0
+
 # OUTPUT_WAIT_INTERVAL = 1
 
 # OUTPUT_WAIT_MAX_INTERVALS = 2
