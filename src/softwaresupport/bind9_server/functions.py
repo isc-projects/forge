@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -188,30 +188,54 @@ def use_config_set(number, override_dns=None):
     fabric_sudo_command('mkdir -p %s' % namedb_dir)
     fabric_sudo_command('chmod a+w %s' % namedb_dir)
 
-    send_content('named.conf', os.path.join(world.f_cfg.dns_data_path, 'named.conf'),
-                 _patch_config(config_file_set[number][0], override_dns), 'dns')
+    send_content(
+        _patch_config(config_file_set[number][0], override_dns),
+        os.path.join(world.f_cfg.dns_data_path, 'named.conf'),
+        'dns',
+    )
 
-    send_content('rndc.conf', os.path.join(world.f_cfg.dns_data_path, 'rndc.conf'),
-                 config_file_set[number][1], 'dns')
+    send_content(
+        config_file_set[number][1],
+        os.path.join(world.f_cfg.dns_data_path, 'rndc.conf'),
+        'dns',
+    )
 
-    send_content('fwd.db', os.path.join(namedb_dir, 'fwd.db'),
-                 config_file_set[number][2], 'dns')
+    send_content(
+        config_file_set[number][2],
+        os.path.join(namedb_dir, 'fwd.db'),
+        'dns',
+    )
 
-    send_content('rev.db', os.path.join(namedb_dir, 'rev.db'),
-                 config_file_set[number][3], 'dns')
+    send_content(
+        config_file_set[number][3],
+        os.path.join(namedb_dir, 'rev.db'),
+        'dns',
+    )
 
     if len(config_file_set[number]) == 8:
-        send_content('fwd2.db', os.path.join(namedb_dir, 'fwd2.db'),
-                     config_file_set[number][4], 'dns')
+        send_content(
+            config_file_set[number][4],
+            os.path.join(namedb_dir, 'fwd2.db'),
+            'dns',
+        )
 
-        send_content('rev2.db', os.path.join(namedb_dir, 'rev2.db'),
-                     config_file_set[number][5], 'dns')
+        send_content(
+            config_file_set[number][5],
+            os.path.join(namedb_dir, 'rev2.db'),
+            'dns',
+        )
 
-        send_content('fwd3.db', os.path.join(namedb_dir, 'fwd3.db'),
-                     config_file_set[number][6], 'dns')
+        send_content(
+            config_file_set[number][6],
+            os.path.join(namedb_dir, 'fwd3.db'),
+            'dns',
+        )
 
-        send_content('rev3.db', os.path.join(namedb_dir, 'rev3.db'),
-                     config_file_set[number][7], 'dns')
+        send_content(
+            config_file_set[number][7],
+            os.path.join(namedb_dir, 'rev3.db'),
+            'dns',
+        )
 
     # needed for dns sec validation
     # send_content('managed-keys.bind', os.path.join(world.f_cfg.dns_data_path, 'managed-keys.bind'),
@@ -229,7 +253,7 @@ def upload_dns_keytab(dns_keytab):
     namedb_dir = os.path.join(world.f_cfg.dns_data_path, 'namedb')
     p = os.path.join(namedb_dir, 'dns.keytab')
     fabric_sudo_command("cp /tmp/dns.keytab %s" % p)
-    send_content('dns.keytab', p, content, 'dns')
+    send_content(content, p, 'dns')
     if world.f_cfg.dns_data_path.startswith('/etc'):
         # when installed from pkg
         fabric_sudo_command('chmod 440 %s' % p)

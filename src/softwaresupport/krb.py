@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -153,7 +153,7 @@ def install_krb(dns_addr, domain, key_life=2):
         default_principal_flags = +preauth
     }}
 """
-    send_content('kdc.conf', f'{kdc_dir}/kdc.conf', kdc_conf, 'krb')
+    send_content(kdc_conf, f'{kdc_dir}/kdc.conf', 'krb')
 
     fabric_sudo_command('rm -rf /tmp/*.keytab')
     # Fedora crypto-policies DEFAULT forbids des3-hmac-sha1.
@@ -180,9 +180,7 @@ def install_krb(dns_addr, domain, key_life=2):
 includedir /etc/krb5.conf.d/
 """
 
-    send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
-    fabric_sudo_command('cat /etc/krb5.conf')
-    fabric_sudo_command(f'cat {kdc_dir}/kdc.conf')
+    send_content(krb5_conf, '/etc/krb5.conf', 'krb')
 
     if _is_rhel_family():
         cmd = f"kdb5_util create -s -P 123 -r {realm}"
@@ -250,7 +248,7 @@ includedir /etc/krb5.conf.d/
     if world.server_system in ['redhat', 'fedora']:
         krb5_conf = fedora_krb5_conf
 
-    send_content('krb5.conf', '/etc/krb5.conf', krb5_conf, 'krb')
+    send_content(krb5_conf, '/etc/krb5.conf', 'krb')
 
     kadm5_path = os.path.join(_kdc_dir(), 'kadm5.acl')
     if 'win' in domain:
@@ -277,7 +275,7 @@ includedir /etc/krb5.conf.d/
     else:
         clean_principals()
         kadm5 = f"DHCP/admin.{domain}@{domain.upper()}      *\n"
-        send_content('kadm5.acl', kadm5_path, kadm5, 'krb')
+        send_content(kadm5, kadm5_path, 'krb')
 
         fabric_sudo_command('kadmin.local -q "addprinc -randkey DNS/server.example.com"')
         fabric_sudo_command('kadmin.local -q "addprinc -pw 123 DHCP/admin.example.com"')

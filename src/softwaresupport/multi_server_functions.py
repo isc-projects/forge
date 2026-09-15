@@ -20,6 +20,7 @@ import tarfile
 import warnings
 # [B404:blacklist] Consider possible security implications associated with the subprocess module.
 import subprocess  # nosec B404
+import tempfile
 
 from shutil import copy
 
@@ -463,28 +464,28 @@ def copy_configuration_file(local_file, file_name='configuration_file', destinat
 class TemporaryFile(object):
     """Create a temporary file, write content to it and delete it at the end of the context."""
 
-    def __init__(self, file_name, content):
+    def __init__(self, content=None):
         """Initialize a temporary file.
 
-        :param file_name: file name
-        :type file_name: str
         :param content: content
         :type content: str
         """
-        self.file_name = file_name
         self.content = content
+        self.file = None
 
     def __enter__(self):
         """Enter the context.
 
-        :return: self
-        :rtype: TemporaryFile
+        :return: file name
+        :rtype: str
         """
+        self.file = tempfile.NamedTemporaryFile()
         mode = 'w'
         if isinstance(self.content, bytes):
             mode = 'wb'
-        with open(self.file_name, mode) as f:
+        with open(self.file.name, mode) as f:
             f.write(self.content)
+        return self.file.name
 
     def __exit__(self, exception_type, exception_value, traceback):
         """Exit the context.
@@ -494,24 +495,24 @@ class TemporaryFile(object):
         :param exception_value: exception value
         :type exception_value: Exception
         """
-        os.unlink(self.file_name)
+        self.file.close()
 
 
-def send_content(local_path, remote_path, content, subdir):
+def send_content(content, remote_path, subdir='', host=world.f_cfg.mgmt_address):
     """Send content to a remote path.
 
-    :param local_path: local path
-    :type local_path: str
-    :param remote_path: remote path
-    :type remote_path: str
     :param content: content
     :type content: str
+    :param remote_path: remote path
+    :type remote_path: str
     :param subdir: subdirectory
     :type subdir: str
+    :param host: host where file should be sent to
+    :type host: str
     """
-    with TemporaryFile(local_path, content):
-        fabric_send_file(local_path, remote_path)
-        copy_configuration_file(local_path, os.path.join(subdir, local_path))
+    with TemporaryFile(content) as local_file:
+        fabric_send_file(local_file, remote_path, destination_host=host)
+        copy_configuration_file(local_file, os.path.join(subdir, os.path.basename(remote_path)), destination_host=host)
 
 
 def start_tcpdump(file_name: str = "capture.pcap", iface: str = None, port_filter: str = None,
@@ -593,7 +594,7 @@ def add_line_if_not_exists(file_path, line_to_add, host=world.f_cfg.mgmt_address
     :type file_path: str
     :param line_to_add: content to add
     :type line_to_add: str
-    :param host: Machine where file exists
+    :param host: host of file that should be updated
     :type host: str
     """
     # Download file, edit, then upload with sudo. Works around the case where the file is not editable because the user
@@ -625,7 +626,7 @@ def remove_line_if_exists(file_path, line_to_remove, host=world.f_cfg.mgmt_addre
     :type file_path: str
     :param line_to_remove: content to remove
     :type line_to_remove: str
-    :param host: Machine where file exists
+    :param host: host of file that should be updated
     :type host: str
     """
     if os.path.exists('tmp.txt'):
@@ -656,7 +657,7 @@ def write_to_file(file_path, content, host=world.f_cfg.mgmt_address, overwrite=F
     :type file_path: str
     :param content: content to add
     :type content: str
-    :param host: Machine where file exists
+    :param host: host of file that should be updated
     :type host: str
     :param overwrite: overwrite the file if it exists
     :type overwrite: bool
