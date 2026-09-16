@@ -91,7 +91,7 @@ version() {
 # Call the linters.
 printf 'Checking %s files...\n' "$(printf '%s\n' "${PY_FILES}" | wc -w)"
 for linter in ${linters}; do
-  printf '======== %s (%s)\n' "${linter}" "`version ${linter}`"
+  printf '======== %s (%s)\n' "${linter}" "$(version ${linter})"
    "run_${linter}"
 done
 
