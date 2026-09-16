@@ -301,6 +301,7 @@ def declare_all(dhcp_version=None):
     world.radius_authorize_file = None
     world.radius_clients_file = None
     world.radius_config = None
+    world.radius_dir = None
     world.radius_log = None
 
 

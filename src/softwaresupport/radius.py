@@ -12,13 +12,13 @@
 """Functions that help with testing RADIUS functionality in Kea."""
 
 import re
-import os
 
 from src import srv_msg
-
+from src.misc import merge_containers
 from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES, get_address4, get_address6, send_discover_with_no_answer
+from src.protosupport.multi_protocol_functions import sort_dict_with_scalars_first
 from src.forge_cfg import world
-from .multi_server_functions import fabric_download_file, fabric_is_file, fabric_sudo_command, fabric_send_file, send_content
+from .multi_server_functions import fabric_is_dir, fabric_is_file, fabric_sudo_command, get_content, send_content
 
 AUTHORIZE_CONTENT = ''
 
@@ -252,11 +252,13 @@ def configurations(interface: str = world.f_cfg.server_iface):
                 'id': 1,
                 'pools': [
                     {
-                        'client-class': 'gold',
-                        'pool': '192.168.50.5 - 192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5 - 2001:db8:50::5'
+                        'client-classes': ['gold'],
+                        'pool': '192.168.50.5 - 192.168.50.5'
+                        if world.proto == 'v4'
+                        else '2001:db8:50::5 - 2001:db8:50::5',
                     }
                 ],
-                'subnet': '192.168.50.0/24' if world.proto == 'v4' else '2001:db8:50::/64'
+                'subnet': '192.168.50.0/24' if world.proto == 'v4' else '2001:db8:50::/64',
             }
         ]
     }
@@ -274,15 +276,17 @@ def configurations(interface: str = world.f_cfg.server_iface):
                         'id': 2,
                         'pools': [
                             {
-                                'client-class': 'gold',
-                                'pool': '192.168.50.5 - 192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5 - 2001:db8:50::5'
+                                'client-classes': ['gold'],
+                                'pool': '192.168.50.5 - 192.168.50.5'
+                                if world.proto == 'v4'
+                                else '2001:db8:50::5 - 2001:db8:50::5',
                             }
                         ],
-                        'subnet': '192.168.50.0/24' if world.proto == 'v4' else '2001:db8:50::/64'
+                        'subnet': '192.168.50.0/24' if world.proto == 'v4' else '2001:db8:50::/64',
                     }
-                ]
+                ],
             }
-        ]
+        ],
     }
 
     configs['multiple-subnets'] = {
@@ -298,125 +302,72 @@ def configurations(interface: str = world.f_cfg.server_iface):
                         'id': 3,
                         'pools': [
                             {
-                                'client-class': 'gold',
-                                'pool': '192.168.50.5 - 192.168.50.5' if world.proto == 'v4' else '2001:db8:50::5 - 2001:db8:50::5'
+                                'client-classes': ['gold'],
+                                'pool': '192.168.50.5 - 192.168.50.5'
+                                if world.proto == 'v4'
+                                else '2001:db8:50::5 - 2001:db8:50::5',
                             },
                             {
-                                'client-class': 'silver',
-                                'pool': '192.168.50.6 - 192.168.50.6' if world.proto == 'v4' else '2001:db8:50::6 - 2001:db8:50::6'
+                                'client-classes': ['silver'],
+                                'pool': '192.168.50.6 - 192.168.50.6'
+                                if world.proto == 'v4'
+                                else '2001:db8:50::6 - 2001:db8:50::6',
                             },
                             {
-                                'client-class': 'bronze',
-                                'pool': '192.168.50.7 - 192.168.50.7' if world.proto == 'v4' else '2001:db8:50::7 - 2001:db8:50::7'
-                            }
+                                'client-classes': ['bronze'],
+                                'pool': '192.168.50.7 - 192.168.50.7'
+                                if world.proto == 'v4'
+                                else '2001:db8:50::7 - 2001:db8:50::7',
+                            },
                         ],
-                        'subnet': '192.168.50.0/24' if world.proto == 'v4' else '2001:db8:50::/64'
+                        'subnet': '192.168.50.0/24' if world.proto == 'v4' else '2001:db8:50::/64',
                     },
                     {
                         'interface': interface,
                         'id': 4,
                         'pools': [
                             {
-                                'client-class': 'gold',
-                                'pool': '192.168.60.5 - 192.168.60.5' if world.proto == 'v4' else '2001:db8:60::5 - 2001:db8:60::5'
+                                'client-classes': ['gold'],
+                                'pool': '192.168.60.5 - 192.168.60.5'
+                                if world.proto == 'v4'
+                                else '2001:db8:60::5 - 2001:db8:60::5',
                             },
                             {
-                                'client-class': 'silver',
-                                'pool': '192.168.60.6 - 192.168.60.6' if world.proto == 'v4' else '2001:db8:60::6 - 2001:db8:60::6'
-                            }
+                                'client-classes': ['silver'],
+                                'pool': '192.168.60.6 - 192.168.60.6'
+                                if world.proto == 'v4'
+                                else '2001:db8:60::6 - 2001:db8:60::6',
+                            },
                         ],
-                        'subnet': '192.168.60.0/24' if world.proto == 'v4' else '2001:db8:60::/64'
+                        'subnet': '192.168.60.0/24' if world.proto == 'v4' else '2001:db8:60::/64',
                     },
                     {
-                        'client-class': 'platinum',
+                        'client-classes': ['platinum'],
                         'interface': interface,
                         'id': 5,
                         'pools': [
                             {
-                                'pool': '192.168.70.5 - 192.168.70.5' if world.proto == 'v4' else '2001:db8:70::5 - 2001:db8:70::5'
+                                'pool': '192.168.70.5 - 192.168.70.5'
+                                if world.proto == 'v4'
+                                else '2001:db8:70::5 - 2001:db8:70::5'
                             },
                             {
-                                'pool': '192.168.70.20 - 192.168.70.30' if world.proto == 'v4' else '2001:db8:70::20 - 2001:db8:70::30'
-                            }
+                                'pool': '192.168.70.20 - 192.168.70.30'
+                                if world.proto == 'v4'
+                                else '2001:db8:70::20 - 2001:db8:70::30'
+                            },
                         ],
-                        'subnet': '192.168.70.0/24' if world.proto == 'v4' else '2001:db8:70::/64'
-                    }
-                ]
+                        'subnet': '192.168.70.0/24' if world.proto == 'v4' else '2001:db8:70::/64',
+                    },
+                ],
             }
-        ]
+        ],
     }
 
     return configs
 
 
-def _tweak_radius_config(destination: str = world.f_cfg.mgmt_address):
-    """Remove comments and empty lines, and enable auth logs.
-
-    :param destination: (Default value = world.f_cfg.mgmt_address)
-    :type destination: str
-
-    """
-    for file in [
-        '/etc/raddb/radiusd.conf',
-        '/etc/freeradius/3.0/radiusd.conf',
-    ]:
-        if fabric_is_file(file, destination):
-            world.radius_config = file
-            break
-
-    # If config file was not found, let us create one.
-    if world.radius_config is None:
-        if fabric_is_file('/etc/raddb.default/radiusd.conf', destination):
-            fabric_sudo_command('sudo cp /etc/raddb.default/radiusd.conf /etc/raddb/radiusd.conf', destination)
-            fabric_sudo_command('sudo mkdir -p /etc/raddb/mods-config', destination)
-            fabric_sudo_command('sudo mkdir -p /etc/raddb/mods-enabled', destination)
-            fabric_sudo_command('sudo mkdir -p /etc/raddb/policy.d', destination)
-            fabric_sudo_command('sudo mkdir -p /etc/raddb/sites-enabled', destination)
-            fabric_sudo_command('sudo touch /etc/raddb/clients.conf', destination)
-            fabric_sudo_command('sudo touch /etc/raddb/proxy.conf', destination)
-            world.radius_config = '/etc/raddb/radiusd.conf'
-
-    assert world.radius_config is not None, "radius config file not found"
-
-    # remove local file if exists
-    local_radius_conf = '/tmp/radiusd.conf'
-    if os.path.exists(local_radius_conf):
-        os.remove(local_radius_conf)
-
-    # Download config.
-    fabric_download_file(world.radius_config, local_radius_conf, destination_host=destination, hide_all=world.f_cfg.forge_verbose == 0)
-
-    # Read config.
-    with open(local_radius_conf, 'r', encoding='utf-8') as file:
-        content = file.read()
-
-    # Remove comments and empty lines.
-    content = ''.join([line for line in content.splitlines(True)
-                       if not re.search(r'^\s*#.*', line) and not re.search(r'^$', line)])
-
-    # Make sure logging is verbose.
-    if 'level = debug' not in content:
-        content = content.replace('log {', 'log {\n  level = debug')
-    content = content.replace('auth = no', 'auth = yes')
-    content = content.replace('auth_badpass = no', 'auth_badpass = yes')
-    content = content.replace('auth_goodpass = no', 'auth_goodpass = yes')
-
-    # Temporary disabling of security. Revert when TLS is implemented.
-    content = content.replace('require_message_authenticator = auto', 'require_message_authenticator = false')
-    content = content.replace('limit_proxy_state = auto', 'limit_proxy_state = false')
-
-    # Write config back.
-    with open(local_radius_conf, 'w', encoding='utf-8') as file:
-        file.write(content)
-
-    # Send config back.
-    fabric_send_file(local_radius_conf, world.radius_config, destination_host=destination)
-
-
-def get_address(mac: str,
-                giaddr: str = None,
-                expected_lease: str = None,
-                server_id: str = world.f_cfg.srv4_addr):
+def get_address(mac: str, giaddr: str = None, expected_lease: str = None, server_id: str = world.f_cfg.srv4_addr):
     """Make a full exchange, check that the expected lease is received and, finally, return the received leases.
 
     :param mac: the client's MAC address
@@ -432,15 +383,17 @@ def get_address(mac: str,
     """
     if world.proto == 'v4':
         client_id = '11' + mac.replace(':', '')
-        address = get_address4(chaddr=mac,
-                               client_id=client_id,
-                               giaddr=giaddr,
-                               exp_yiaddr=expected_lease,
-                               server_id=server_id)
+        address = get_address4(
+            chaddr=mac,
+            client_id=client_id,
+            giaddr=giaddr,
+            exp_yiaddr=expected_lease,
+            server_id=server_id,
+        )
         return {
             'address': address,
             'client_id': client_id,
-            'hwaddr': mac
+            'hwaddr': mac,
         }
     if world.proto == 'v6':
         duid = '00:03:00:01:' + mac
@@ -448,7 +401,7 @@ def get_address(mac: str,
         # Tests check only one address, so return the first.
         return {
             'address': addresses[0] if len(addresses) > 0 else None,
-            'duid': duid
+            'duid': duid,
         }
     assert False, f'unknown proto {world.proto}'
 
@@ -467,9 +420,7 @@ def init_and_start_radius(destination: str = world.f_cfg.mgmt_address):
     AUTHORIZE_CONTENT = ''
 
 
-def send_and_receive(config_type: str,
-                     radius_reservation_in_pool: str,
-                     ha_mode: str = None):
+def send_and_receive(config_type: str, radius_reservation_in_pool: str, ha_mode: str = None):
     """Exchange messages and check that the proper leases were returned according to Kea's configuration.
 
     :param config_type: different configurations used in testing
@@ -607,31 +558,52 @@ def _init_radius(destination: str = world.f_cfg.mgmt_address):
     :type destination:
     """
     global AUTHORIZE_CONTENT
-    for file in [
-        '/etc/raddb/mods-config/files/authorize',  # freeradius 3.x usualy on RPM distros
-        '/etc/freeradius/3.0/mods-config/files/authorize',  # freeradius 3.x usually on deb distros
-        '/etc/freeradius/users',  # freeradius 2.x
-    ]:
-        if fabric_is_file(file, destination):
-            send_content(AUTHORIZE_CONTENT, file, 'radius', destination)
-            world.radius_authorize_file = file
-            break
+
+    if world.radius_dir is None:
+        for d in [
+            '/etc/raddb',
+            '/etc/freeradius/3.0',
+        ]:
+            if fabric_is_dir(d, destination):
+                world.radius_dir = d
+                if fabric_is_file(f'{d}/radiusd.conf', destination):
+                    world.radius_config = f'{d}/radiusd.conf'
+                    break
+        assert world.radius_dir is not None, f'RADIUS dir not found: {world.radius_dir}'
+
+    # If config file was not found, let us create one.
+    if world.radius_config is None:
+        if fabric_is_file('/etc/raddb.default/radiusd.conf', destination):
+            fabric_sudo_command('sudo cp /etc/raddb.default/radiusd.conf /etc/raddb/radiusd.conf', destination)
+            fabric_sudo_command('sudo mkdir -p /etc/raddb/mods-config', destination)
+            fabric_sudo_command('sudo mkdir -p /etc/raddb/mods-enabled', destination)
+            fabric_sudo_command('sudo mkdir -p /etc/raddb/policy.d', destination)
+            fabric_sudo_command('sudo mkdir -p /etc/raddb/sites-enabled', destination)
+            fabric_sudo_command('sudo touch /etc/raddb/clients.conf', destination)
+            fabric_sudo_command('sudo touch /etc/raddb/proxy.conf', destination)
+            world.radius_config = '/etc/raddb/radiusd.conf'
+
+    assert world.radius_config is not None, f'RADIUS config file not found: {world.radius_config}'
+
+    world.radius_authorize_file = f'{world.radius_dir}/mods-config/files/authorize'
+    assert fabric_is_file(world.radius_authorize_file, destination), f'RADIUS authorize file not found: {world.radius_authorize_file}'
+
+    send_content(AUTHORIZE_CONTENT, world.radius_authorize_file, 'radius', destination)
 
     # clients.conf file
-    clients_conf_content = '''
+    clients_conf_content = """
 client {mgmt_address} {{
-   ipaddr = {mgmt_address}
-   require_message_authenticator = no
-   secret = testing123
-   proto = *
-   nas_type = other
-   limit {{
-      max_connections = 16
-      lifetime = 0
-      idle_timeout = 30
-   }}
+    ipaddr = {mgmt_address}
+    secret = testing123
+    proto = *
+    nas_type = other
+    limit {{
+        max_connections = 16
+        lifetime = 0
+        idle_timeout = 30
+    }}
 }}
-'''
+"""
     clients_conf_content = clients_conf_content.strip()
     clients_conf_content = clients_conf_content.format(mgmt_address=destination)
     for file in [
@@ -640,9 +612,169 @@ client {mgmt_address} {{
         '/etc/freeradius/clients.conf',  # freeradius 2.x
     ]:
         if fabric_is_file(file, destination):
-            send_content(clients_conf_content, file, 'radius', destination)
             world.radius_clients_file = file
+            send_content(clients_conf_content, world.radius_clients_file, 'radius', destination)
             break
+
+
+def _parse_radius_config(host=world.f_cfg.mgmt_address, lines=None):
+    """Read the RADIUS config from a file and parse it into a dict.
+
+    :param host: the host where the RADIUS config file exists
+    :type host: str
+    :param lines: the list of lines that need to be processed further; only used to help with the recursive calls
+    :type lines: list[str]
+    :return: the RADIUS config
+    :rtype: dict
+    """
+    if lines is None:
+        content = get_content(world.radius_config, host)
+
+        # Remove comments and empty lines.
+        lines = [
+            line
+            for line in content.splitlines()
+            if not re.search(r'^\s*#.*', line) and line.strip() != ''
+        ]
+
+    config = {}
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        i += 1
+
+        if not line:
+            continue
+
+        if '$INCLUDE' in line:
+            config[line] = True
+
+        if line.endswith('{'):
+            name = line[:-1].strip()
+
+            body_lines = []
+            depth = 1
+            while i < len(lines) and depth > 0:
+                inner = lines[i]
+                i += 1
+                stripped = inner.strip()
+                if stripped.endswith('{'):
+                    depth += 1
+                elif stripped == '}':
+                    depth -= 1
+                    if depth == 0:
+                        break
+                body_lines.append(inner)
+
+            section = _parse_radius_config(host, body_lines)
+
+            if name not in config:
+                config[name] = {}
+            if isinstance(config[name], dict) and isinstance(section, dict):
+                config[name].update(section)
+            else:
+                config[name] = section
+            continue
+
+        # Ignore stray closing braces at top level
+        if line == '}':
+            continue
+
+        # key = value
+        if '=' in line:
+            key, _, val = line.partition('=')
+            key = key.strip()
+            val = val.strip()
+            config[key] = val
+
+    for k in list(config.keys()):
+        v = config[k]
+        if isinstance(v, (dict, list)) and len(v) == 0:
+            del config[k]
+
+    return config
+
+
+def _write_radius_config(config: str, host: str = world.f_cfg.mgmt_address, indent: int = 0):
+    """Serialize the RADIUS config from a dict and write it in a file.
+
+    :param config: the RADIUS config
+    :type config: dict
+    :param host: the host where the RADIUS config should be written
+    :type host: str
+    :param indent: level of indent; used to determine how many spaces to indent the current line,
+        and if this is the first call or a recursive call
+    :type indent: int
+    :return: the list of lines that were processed so far; only used to help with the recursive calls
+    :rtype: list[str]
+    """
+    pad = indent * ' '
+    lines = []
+
+    for key, value in config.items():
+        if '$INCLUDE' in key:
+            lines.append(f'{pad}{key}')
+        elif isinstance(value, dict):
+            lines.append(f'{pad}{key} {{')
+            lines.extend(_write_radius_config(value, host, indent + 4))
+            lines.append(f'{pad}}}')
+        else:
+            lines.append(f'{pad}{key} = {str(value)}')
+
+    if indent > 0:
+        return lines
+
+    serialized_config = '\n'.join(lines) + '\n'
+    send_content(serialized_config, world.radius_config, 'radius', host)
+    return lines
+
+
+def _tweak_radius_config(destination: str = world.f_cfg.mgmt_address):
+    """Remove comments and empty lines, and enable auth logs.
+
+    :param destination: (Default value = world.f_cfg.mgmt_address)
+    :type destination: str
+    """
+    config = _parse_radius_config(destination)
+
+    # Make sure logging is verbose.
+    merge_containers(
+        config,
+        {
+            'log': {
+                'level': 'debug',
+                'auth': 'yes',
+                'auth_badpass': 'yes',
+                'auth_goodpass': 'yes',
+            }
+        },
+    )
+
+    # Zero delay makes tests potentially faster.
+    merge_containers(
+        config,
+        {
+            'security': {
+                'reject_delay': '0',
+            }
+        },
+    )
+
+    # Temporary disabling of security. Revert when TLS is implemented.
+    merge_containers(
+        config,
+        {
+            'security': {
+                'limit_proxy_state': 'no',
+                'require_message_authenticator': 'no',
+            }
+        },
+    )
+
+    # Leave scalars first. They are used in the dicts that follow.
+    config = sort_dict_with_scalars_first(config)
+
+    _write_radius_config(config, destination)
 
 
 def _start_radius(destination: str = world.f_cfg.mgmt_address):
@@ -651,14 +783,6 @@ def _start_radius(destination: str = world.f_cfg.mgmt_address):
     :param destination: address of the server that hosts the RADIUS service
     :type destination:
     """
-    for file in [
-        '/var/log/radius/radius.log',
-        '/var/log/freeradius/radius.log',
-    ]:
-        if fabric_is_file(file, destination):
-            world.radius_log = file
-            break
-
     fabric_sudo_command(f'truncate -s 0 {world.radius_log}', destination_host=destination, ignore_errors=True)
     _tweak_radius_config(destination)
     if world.server_system in ['redhat', 'fedora']:
@@ -669,3 +793,14 @@ def _start_radius(destination: str = world.f_cfg.mgmt_address):
     else:
         cmd = 'sudo systemctl restart freeradius'
     fabric_sudo_command(cmd, destination_host=destination)
+
+    if world.radius_log is None:
+        for file in [
+            '/var/log/radius/radius.log',
+            '/var/log/freeradius/radius.log',
+        ]:
+            if fabric_is_file(file, destination):
+                world.radius_log = file
+                break
+
+    assert world.radius_log is not None, f'RADIUS log file not found: {world.radius_log}'

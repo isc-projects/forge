@@ -480,6 +480,8 @@ class TemporaryFile(object):
         :rtype: str
         """
         self.file = tempfile.NamedTemporaryFile()
+        if self.content is None:
+            return self.file.name
         mode = 'w'
         if isinstance(self.content, bytes):
             mode = 'wb'
@@ -496,6 +498,28 @@ class TemporaryFile(object):
         :type exception_value: Exception
         """
         self.file.close()
+
+
+def get_content(remote_path, host=world.f_cfg.mgmt_address):
+    """Get content from a remote path.
+
+    :param remote_path: remote path
+    :type remote_path: str
+    :param host: host where file exists
+    :type host: str
+    :return: content of remote file
+    :rtype: str
+    """
+    with TemporaryFile() as local_file:
+        # Download file.
+        fabric_sudo_command(f'rm -f {local_file}', destination_host=host)
+        fabric_download_file(remote_path, local_file, destination_host=host, hide_all=world.f_cfg.forge_verbose == 0)
+
+        # Read content.
+        with open(local_file, 'r', encoding='utf-8') as file:
+            content = file.read()
+
+    return content
 
 
 def send_content(content, remote_path, subdir='', host=world.f_cfg.mgmt_address):

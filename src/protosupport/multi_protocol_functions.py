@@ -168,6 +168,33 @@ def sort_container(obj):
     return obj
 
 
+def sort_dict_with_scalars_first(d: dict) -> dict:
+    """Sort a dict so that scalar keys come first, and dict/list keys come after.
+
+    :param d: dictionary to sort
+    :type d: dict
+    :return: sorted dict
+    :rtype: dict
+    """
+    scalars = {}
+    containers = {}
+
+    for k, v in d.items():
+        if isinstance(v, (dict, list)):
+            containers[k] = v
+        else:
+            scalars[k] = v
+
+    sorted_container_keys = sorted(containers.keys())
+
+    sorted_containers = {
+        k: sort_container(containers[k])
+        for k in sorted_container_keys
+    }
+
+    return {**scalars, **sorted_containers}
+
+
 def add_variable(variable_name, variable_val, val_type):
     """Define variable and add it to temporary list or to init_all.py file.
 
