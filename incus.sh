@@ -167,7 +167,7 @@ function update_node() {
         incus exec kea-"$1" -- curl -s -L "https://gitlab.isc.org/isc-projects/kea/-/raw/$hammerBranch/hammer.py" -o /tmp/hammer.py
         log "Running hammer, output in /tmp/kea-$1-hammer.log"
         # This is a neat trick, commands executed by hammer are still printed to stdout
-        incus exec kea-"$1" -- python3 /tmp/hammer.py prepare-system -p local -w mysql pgsql forge shell gssapi netconf > /tmp/kea-"$1"-hammer.log
+        incus exec kea-"$1" -- python3 /tmp/hammer.py prepare-system -w mysql pgsql forge shell gssapi netconf > /tmp/kea-"$1"-hammer.log
     fi
 }
 
@@ -602,7 +602,7 @@ function install_kea_tarball() {
         log "Installing kea from the source code on node kea-$node - $usedSystem $osVersion"
         incus exec kea-"$node" -- rm -rf /tmp/kea
         incus file push -r -q "$2" kea-"$node"/tmp/.
-        incus exec kea-"$node" --cwd=/tmp/kea -- python3 /tmp/hammer.py build -p local -w ccache,forge,install,mysql,pgsql,shell,gssapi,netconf -x docs,perfdhcp,unittest --ccache-dir /ccache #
+        incus exec kea-"$node" --cwd=/tmp/kea -- python3 /tmp/hammer.py build -w ccache,forge,install,mysql,pgsql,shell,gssapi,netconf -x docs,perfdhcp,unittest --ccache-dir /ccache #
     done
 }
 
