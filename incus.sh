@@ -526,8 +526,6 @@ function install_kea_pkgs() {
             "isc-kea-mysql"
             "isc-kea-pgsql"
             "isc-kea-gss-tsig"
-            "isc-kea-subscriber-cb-cmds"
-            "isc-kea-subscriber-rbac"
         )
         case "$usedSystem" in
             "ubuntu"|"debian")
