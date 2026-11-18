@@ -125,11 +125,11 @@ def test_HA_basic_authentication(dhcp_version: str, backend: str, mode: str, aut
                                           "this-server-name": "server2"})
     if auth_location == 'config':
         srv_control.add_parameter_to_ha_hook("peers", {"basic-auth-user": "superAdmin_HA",
-                                                       "basic-auth-password": "aaaaaaaa"},
+                                                       "basic-auth-password": "difficultPassword_HA"},
                                              relationship=0)
     elif auth_location == 'file':
         user_file = os.path.join(world.f_cfg.get_share_path(), "kea-creds", "superAdmin_HA")
-        password_file = os.path.join(world.f_cfg.get_share_path(), "kea-creds", "aaaaaaaa")
+        password_file = os.path.join(world.f_cfg.get_share_path(), "kea-creds", "superAdmin_HA_password")
         srv_control.create_user_and_password_file("superAdmin_HA", "difficultPassword_HA", dest=world.f_cfg.mgmt_address_2)
         srv_control.add_parameter_to_ha_hook("peers", {"basic-auth-user-file": user_file,
                                                        "basic-auth-password-file": password_file},
@@ -156,11 +156,11 @@ def test_HA_basic_authentication(dhcp_version: str, backend: str, mode: str, aut
     srv_msg.check_leases(set_of_leases_1, dest=world.f_cfg.mgmt_address_2, backend=backend)
 
     # let's send heartbeats to both servers with missing or incorrect credentials
-    send_heartbeat(dest=world.f_cfg.mgmt_address, port=8003, exp_failed=True, auth="a:b")
-    send_heartbeat(dest=world.f_cfg.mgmt_address_2, port=8003, exp_failed=True, auth="c:d")
+    send_heartbeat(dest=world.f_cfg.mgmt_address, port=8003, exp_result=401, auth="a:b")
+    send_heartbeat(dest=world.f_cfg.mgmt_address_2, port=8003, exp_result=401, auth="c:d")
 
-    send_heartbeat(dest=world.f_cfg.mgmt_address, port=8003, exp_failed=True)
-    send_heartbeat(dest=world.f_cfg.mgmt_address_2, port=8003, exp_failed=True)
+    send_heartbeat(dest=world.f_cfg.mgmt_address, port=8003, exp_result=401)
+    send_heartbeat(dest=world.f_cfg.mgmt_address_2, port=8003, exp_result=401)
 
     # and now send correct credentials to both servers to not finish the test with an error.
     send_heartbeat(dest=world.f_cfg.mgmt_address, port=8003, auth="superAdmin_HA:difficultPassword_HA")
