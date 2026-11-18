@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -290,8 +290,6 @@ def declare_all(dhcp_version=None):
         world.cfg['leases'] = os.path.join(world.f_cfg.software_install_path,
                                            f'var/lib/kea/kea-leases{world.proto[1]}.csv')
 
-    world.cfg['kea_log_file'] = os.path.join(world.f_cfg.software_install_path + '/var/log/kea/kea.log')
-
     world.loops = {"active": False,
                    "save_leases_details": False}
 
@@ -316,6 +314,8 @@ def _get_kea_service_names():
         if world.server_system in ['ubuntu', 'debian']:
             return ['isc-kea-dhcp4-server', 'isc-kea-dhcp6-server', 'isc-kea-dhcp-ddns-server']
         if world.server_system in ['redhat', 'fedora']:
+            return ['kea-dhcp4', 'kea-dhcp6', 'kea-dhcp-ddns']
+        if world.server_system in ['alpine']:
             return ['kea-dhcp4', 'kea-dhcp6', 'kea-dhcp-ddns']
     return []
 
@@ -385,17 +385,6 @@ def test_start():
             kea.db_setup(dest=world.f_cfg.mgmt_address_2)
         if world.f_cfg.mgmt_address_3:
             kea.db_setup(dest=world.f_cfg.mgmt_address_3)
-
-    # Override restart for systemd services
-    if kea_under_test and world.f_cfg.install_method == 'native':
-        for service_name in _get_kea_service_names():
-            kea.modify_systemd_service(service_name=service_name, action='override-restart')
-            if world.f_cfg.mgmt_address_2:
-                kea.modify_systemd_service(service_name=service_name, action='override-restart',
-                                           destination_address=world.f_cfg.mgmt_address_2)
-            if world.f_cfg.mgmt_address_3:
-                kea.modify_systemd_service(service_name=service_name, action='override-restart',
-                                           destination_address=world.f_cfg.mgmt_address_3)
 
 
 def _clear_remainings():
@@ -503,6 +492,25 @@ def initialize(request):
     if world.f_cfg.tcpdump_on_remote_system:
         start_tcpdump(location=world.f_cfg.mgmt_address, file_name='remote.pcap')
 
+    # Override restart for systemd services if Kea is under test.
+    kea_under_test = False
+    if not world.f_cfg.no_server_management:
+        for sut_name in world.f_cfg.software_under_test:
+            if 'kea' in sut_name:
+                kea_under_test = True
+    if kea_under_test and world.f_cfg.install_method == 'native' and world.server_system not in ['alpine']:
+        for service_name in _get_kea_service_names():
+            kea.modify_systemd_service(service_name=service_name, action='override-restart')
+            if world.f_cfg.mgmt_address_2:
+                kea.modify_systemd_service(service_name=service_name, action='override-restart',
+                                           destination_address=world.f_cfg.mgmt_address_2)
+            if world.f_cfg.mgmt_address_3:
+                kea.modify_systemd_service(service_name=service_name, action='override-restart',
+                                           destination_address=world.f_cfg.mgmt_address_3)
+
+    # Specify if Kea was started at least once this test run.
+    world.kea_started_this_test = False
+
     _clear_remainings()
 
 
@@ -538,30 +546,30 @@ def cleanup(scenario):
                     # it's not bullet proof it won't download anything from second HA system
                     download_tcpdump_capture(location=remote_server, file_name='remote.pcap')
 
+    # Remove all overrides from services if Kea is under test.
+    kea_under_test = False
+    if not world.f_cfg.no_server_management:
+        for sut_name in world.f_cfg.software_under_test:
+            if 'kea' in sut_name:
+                kea_under_test = True
+    if kea_under_test and world.f_cfg.install_method == 'native':
+        mgmt_addresses = [world.f_cfg.mgmt_address, world.f_cfg.mgmt_address_2, world.f_cfg.mgmt_address_3]
+        for service_name in _get_kea_service_names():
+            for mgmt_address in mgmt_addresses:
+                if mgmt_address not in [None, '']:
+                    if world.server_system in ['alpine']:
+                        kea.modify_openrc_service(service_name=service_name, action='remove-all-overrides',
+                                                  destination_address=mgmt_address)
+                    else:
+                        kea.modify_systemd_service(service_name=service_name, action='remove-all-overrides',
+                                                   destination_address=mgmt_address)
+
     _clear_remainings()
 
 
 # @after.all
 def say_goodbye():
     """Clean up after all tests."""
-    # Check if Kea is under test
-    kea_under_test = False
-    if not world.f_cfg.no_server_management:
-        for sut_name in world.f_cfg.software_under_test:
-            if 'kea' in sut_name:
-                kea_under_test = True
-
-    # Remove override restart from systemd services
-    if kea_under_test and world.f_cfg.install_method == 'native':
-        for service_name in _get_kea_service_names():
-            kea.modify_systemd_service(service_name=service_name, action='remove-override')
-        if world.f_cfg.mgmt_address_2:
-            kea.modify_systemd_service(service_name=service_name, action='remove-override',
-                                       destination_address=world.f_cfg.mgmt_address_2)
-        if world.f_cfg.mgmt_address_3:
-            kea.modify_systemd_service(service_name=service_name, action='remove-override',
-                                       destination_address=world.f_cfg.mgmt_address_3)
-
     if world.f_cfg.history:
         result = open('result', 'w')
         for item in world.result:

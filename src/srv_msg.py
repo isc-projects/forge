@@ -349,7 +349,7 @@ def change_message_filed(message_filed, value, value_type):
 
 # checking DHCP respond
 @step(r'Server MUST NOT respond.')
-def send_dont_wait_for_message(iface=None, ignore_response=False):
+def send_dont_wait_for_message(iface=None, ignore_response=False, timeout=None):
     """Send message in cases when we don't expect any response.
 
     Step used only for v4 testing
@@ -358,14 +358,16 @@ def send_dont_wait_for_message(iface=None, ignore_response=False):
     :type iface:
     :param ignore_response: (Default value = False)
     :type ignore_response:
+    :param timeout: (Default value = None)
+    :type timeout:
     """
-    dhcpmsg.send_wait_for_message("MUST", False, None, iface=iface, ignore_response=ignore_response)
+    dhcpmsg.send_wait_for_message("MUST", False, None, iface=iface, ignore_response=ignore_response, timeout=timeout)
 
 
 @step(r'Server (\S+) (NOT )?respond with (\w+) message.')
 def send_wait_for_message(requirement_level: str, message: str, expect_response: bool = True,
                           protocol: str = 'UDP', address: str = None, port: int = None,
-                          iface: str = None):
+                          iface: str = None, timeout=None):
     """Send messages to server either TCP or UDP, check if response is received.
 
     :param requirement_level: not used. RFC-grade requirement level e.g. 'MAY', 'MUST'
@@ -382,11 +384,13 @@ def send_wait_for_message(requirement_level: str, message: str, expect_response:
     :type port: int
     :param iface: (Default value = None)
     :type iface: str:
+    :param timeout: timeout
+    :type timeout: int or None
     :return: list of replies from server
     :rtype:
     """
     return dhcpmsg.send_wait_for_message(requirement_level, expect_response, message, protocol,
-                                         address=address, port=port, iface=iface)
+                                         address=address, port=port, iface=iface, timeout=timeout)
 
 
 @step(r'(Response|Relayed Message) MUST (NOT )?include option (\d+).')

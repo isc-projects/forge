@@ -17,6 +17,7 @@ from src import srv_msg
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import file_contains_line_n_times, file_doesnt_contain_line
 from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain, log_contains_n_times
+from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from src.protosupport.multi_protocol_functions import get_journal_logs
 from src.softwaresupport.multi_server_functions import fabric_sudo_command, verify_file_permissions
 
@@ -1616,25 +1617,67 @@ def test_legal_log_path_configfile(dhcp_version):
         log_contains(message)
 
 
+def _check_kea_is_down(dhcp_version, mode='stoponfailure'):
+    """
+    Check if Kea is down or not responding to commands.
+    :param dhcp_version: The DHCP version to use.
+    :type dhcp_version: str
+    :param mode: The mode to use.
+    :type mode: str
+    """
+    if mode == 'stoponfailure':
+        shutdown_message_count = 1
+        command_response = False
+    else:
+        shutdown_message_count = 0
+        command_response = True
+
+    # Check if kea had shut down.
+    wait_for_message_in_log(f'DHCP{dhcp_version[1]}_SHUTDOWN server shutdown', count=shutdown_message_count,
+                            timeout=1)
+
+    # Check if kea is responding to commands.
+    cmd = {"command": "status-get", "arguments": {}}
+    srv_msg.send_ctrl_cmd(cmd, 'http', exp_failed=not command_response)
+
+    # Verify that kea is not responding to traffic.
+    if dhcp_version == 'v4':
+        srv_msg.client_sets_value('Client', 'chaddr', '00:1F:D0:00:00:22')
+        srv_msg.client_requests_option(1)
+        srv_msg.client_send_msg('DISCOVER')
+
+        misc.pass_criteria()
+        srv_msg.send_wait_for_message('MUST', 'OFFER', expect_response=False)
+    else:
+        srv_msg.client_sets_value('Client', 'DUID', '00:03:00:01:f6:f5:f4:f3:f2:04')
+        srv_msg.client_does_include('Client', 'client-id')
+        srv_msg.client_does_include('Client', 'IA-NA')
+        srv_msg.client_send_msg('SOLICIT')
+
+        misc.pass_criteria()
+        srv_msg.send_wait_for_message('MUST', 'ADVERTISE', expect_response=False)
+
+
 @pytest.mark.v4
 @pytest.mark.v6
 @pytest.mark.legal_logging
-def test_legal_log_path_config_set(dhcp_version):
+@pytest.mark.parametrize('failure_mode', ['stoponfailure', 'waitonfailure'])
+def test_legal_log_path_config_set(dhcp_version, failure_mode):
     """
-    Test to check if Kea makes log file in custom path.
+    Test to check if Kea rejects invalid log path in config set.
     :param dhcp_version: The DHCP version to use.
     :type dhcp_version: str
+    :param failure_mode: The failure mode to use.
+    :type failure_mode: str
     """
 
     illegal_paths = [
-        ['/tmp/', 1, 'One or more hook libraries failed to load'],
-        ['~/', 1, 'One or more hook libraries failed to load'],
-        ['/var/', 1, 'One or more hook libraries failed to load'],
-        ['/srv/', 1, 'One or more hook libraries failed to load'],
-        ['/etc/kea/', 1, 'One or more hook libraries failed to load'],
+        ['/tmp/', 5, 'One or more hook libraries failed to load'],
+        ['~/', 5, 'One or more hook libraries failed to load'],
+        ['/var/', 5, 'One or more hook libraries failed to load'],
+        ['/srv/', 5, 'One or more hook libraries failed to load'],
+        ['/etc/kea/', 5, 'One or more hook libraries failed to load'],
     ]
-
-    misc.test_procedure()
 
     misc.test_setup()
     srv_control.set_time('renew-timer', 100)
@@ -1653,20 +1696,48 @@ def test_legal_log_path_config_set(dhcp_version):
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel()
     srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
 
-    # Get current config
-    cmd = {"command": "config-get", "arguments": {}}
-    response = srv_msg.send_ctrl_cmd(cmd, 'http')
-    config_set = response['arguments']
-    del config_set['hash']
-
+    misc.test_procedure()
     for path, exp_result, message in illegal_paths:
+        # Remove old custom legal log files.
         srv_msg.remove_file_from_server(path + 'custom-log*.txt')
+        srv_control.clear_some_data('logs')
+
+        parameters = '-F' if failure_mode == 'stoponfailure' else None
+        srv_control.start_srv('DHCP', 'started', parameters=parameters)
+
+        # Check if kea is running
+        if dhcp_version == 'v4':
+            _send_client_requests4(1)
+        else:
+            _send_client_requests(1)
+
+        # Get current config
+        cmd = {"command": "config-get", "arguments": {}}
+        response = srv_msg.send_ctrl_cmd(cmd, 'http')
+        config_set = response['arguments']
+        del config_set['hash']
+
+        # Send config set with wrong path and check kea response.
         config_set[f"Dhcp{dhcp_version[1]}"]['hooks-libraries'][0]['parameters']['path'] = path
         cmd = {"command": "config-set", "arguments": config_set}
         resp = srv_msg.send_ctrl_cmd(cmd, 'http', exp_result=exp_result)
         assert message in resp['text']
+
+        wait_for_message_in_log(f'DHCP{dhcp_version[1]}_CONFIG_UNRECOVERABLE_ERROR', count=1, timeout=10)
+
+        # Check if kea had stopped responding after config set with wrong path.
+        _check_kea_is_down(dhcp_version, failure_mode)
+
+    srv_msg.remove_file_from_server(path + 'custom-log*.txt')
+    srv_control.clear_some_data('logs')
+    srv_control.start_srv('DHCP', 'started')
+
+    # Check if kea is running after fresh start
+    if dhcp_version == 'v4':
+        _send_client_requests4(1)
+    else:
+        _send_client_requests(1)
 
 
 # v4 disabled for time saving:

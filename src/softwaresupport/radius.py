@@ -18,7 +18,7 @@ from src import srv_msg
 
 from src.protosupport.dhcp4_scen import DHCPv6_STATUS_CODES, get_address4, get_address6, send_discover_with_no_answer
 from src.forge_cfg import world
-from .multi_server_functions import fabric_download_file, fabric_is_file, fabric_sudo_command, fabric_send_file, TemporaryFile
+from .multi_server_functions import fabric_download_file, fabric_is_file, fabric_sudo_command, fabric_send_file, send_content
 
 AUTHORIZE_CONTENT = ''
 
@@ -607,17 +607,15 @@ def _init_radius(destination: str = world.f_cfg.mgmt_address):
     :type destination:
     """
     global AUTHORIZE_CONTENT
-    authorize_file = 'authorize.txt'
-    with TemporaryFile(authorize_file, AUTHORIZE_CONTENT):
-        for file in [
-                '/etc/raddb/mods-config/files/authorize',  # freeradius 3.x usualy on RPM distros
-                '/etc/freeradius/3.0/mods-config/files/authorize',  # freeradius 3.x usually on deb distros
-                '/etc/freeradius/users',  # freeradius 2.x
-        ]:
-            if fabric_is_file(file, destination):
-                fabric_send_file(authorize_file, file, destination_host=destination)
-                world.radius_authorize_file = file
-                break
+    for file in [
+        '/etc/raddb/mods-config/files/authorize',  # freeradius 3.x usualy on RPM distros
+        '/etc/freeradius/3.0/mods-config/files/authorize',  # freeradius 3.x usually on deb distros
+        '/etc/freeradius/users',  # freeradius 2.x
+    ]:
+        if fabric_is_file(file, destination):
+            send_content(AUTHORIZE_CONTENT, file, 'radius', destination)
+            world.radius_authorize_file = file
+            break
 
     # clients.conf file
     clients_conf_content = '''
@@ -636,17 +634,15 @@ client {mgmt_address} {{
 '''
     clients_conf_content = clients_conf_content.strip()
     clients_conf_content = clients_conf_content.format(mgmt_address=destination)
-    clients_conf_file = 'clients.conf'
-    with TemporaryFile(clients_conf_file, clients_conf_content):
-        for file in [
-                '/etc/raddb/clients.conf',  # freeradius 3.x usualy on RPM distros
-                '/etc/freeradius/3.0/clients.conf',  # freeradius 3.x usually on deb distros
-                '/etc/freeradius/clients.conf',  # freeradius 2.x
-        ]:
-            if fabric_is_file(file, destination):
-                fabric_send_file(clients_conf_file, file, destination_host=destination)
-                world.radius_clients_file = file
-                break
+    for file in [
+        '/etc/raddb/clients.conf',  # freeradius 3.x usualy on RPM distros
+        '/etc/freeradius/3.0/clients.conf',  # freeradius 3.x usually on deb distros
+        '/etc/freeradius/clients.conf',  # freeradius 2.x
+    ]:
+        if fabric_is_file(file, destination):
+            send_content(clients_conf_content, file, 'radius', destination)
+            world.radius_clients_file = file
+            break
 
 
 def _start_radius(destination: str = world.f_cfg.mgmt_address):

@@ -31,14 +31,28 @@ from src import srv_msg
 
 from src.forge_cfg import world
 from src.misc import merge_containers, text_color
-from src.protosupport.multi_protocol_functions import add_variable, substitute_vars
-from src.protosupport.multi_protocol_functions import remove_file_from_server, copy_file_from_server
-from src.protosupport.multi_protocol_functions import sort_container
-from src.protosupport.multi_protocol_functions import wait_for_message_in_log
-from src.softwaresupport.multi_server_functions import fabric_run_command, fabric_send_file, remove_local_file
-from src.softwaresupport.multi_server_functions import copy_configuration_file, fabric_is_dir, fabric_is_file, fabric_sudo_command
-from src.softwaresupport.multi_server_functions import fabric_remove_file_command, fabric_download_file
-from src.softwaresupport.multi_server_functions import check_local_path_for_downloaded_files
+from src.softwaresupport.database import start_database_if_not_running
+from src.protosupport.multi_protocol_functions import (
+    add_variable,
+    copy_file_from_server,
+    get_line_count_in_log,
+    remove_file_from_server,
+    sort_container,
+    substitute_vars,
+    wait_for_message_in_log,
+)
+from src.softwaresupport.multi_server_functions import (
+    check_local_path_for_downloaded_files,
+    copy_configuration_file,
+    fabric_run_command,
+    fabric_send_file,
+    remove_local_file,
+    fabric_download_file,
+    fabric_is_dir,
+    fabric_is_file,
+    fabric_remove_file_command,
+    fabric_sudo_command,
+)
 
 from . import database
 
@@ -242,7 +256,7 @@ class Certificates:
         if isinstance(p, list):
             p = " ".join(p)
         fabric_sudo_command(f'chmod {mode} {p}')
-        # set_ownership_of_a_file(p) it shouldn't be needed.
+        set_ownership_of_a_file(p)
 
     def clear(self, name: str = None):
         """Remove all default keys and certs or just one singled out by name.
@@ -584,34 +598,34 @@ def add_logger(log_type, severity, severity_level, logging_file=None, merge_by_n
     """Add a logger with specified values to the Kea configuration.
 
     :param log_type: name of the logger (e.g. 'kea-dhcp6', 'kea-dhcp6.options')
-    :type log_type:
+    :type log_type: str
     :param severity: logger severity (e.g. 'DEBUG', 'INFO')
-    :type severity:
+    :type severity: str
     :param severity_level: debug level
-    :type severity_level:
-    :param logging_file: the output for the log messages ('stdout', 'syslog', or file name)
-    :type logging_file:
+    :type severity_level: int
+    :param logging_file: the output for the log messages ('stdout', 'syslog', or base file name)
+    :type logging_file: str
     :param merge_by_name: whether to merge into other existing loggers if the name is matched.
     :type merge_by_name: True by default. If False, the logger is simply added without any checks.
     """
-    if logging_file is not None and 'syslog' in logging_file:
-        logging_file_path = logging_file
-    elif world.f_cfg.install_method == 'make':
-        if logging_file is None:
-            logging_file = 'kea.log'
-        logging_file_path = world.f_cfg.log_join(logging_file)
-    else:
-        if logging_file is None or logging_file == 'stdout':
-            logging_file_path = 'syslog'
-            if world.server_system == 'alpine':
-                logging_file = f'kea-dhcp{world.proto[1]}.log'
-                logging_file_path = world.f_cfg.log_join(logging_file)
-        else:
-            logging_file_path = world.f_cfg.log_join(logging_file)
-
-    logger = {"name": log_type,
-              "output-options": [{"output": logging_file_path}],
-              "severity": severity}
+    log_output = logging_file
+    if logging_file is None:
+        log_output = world.f_cfg.log_output()
+    elif not logging_file.startswith('syslog'):
+        log_output = world.f_cfg.log_join(logging_file)
+    logger = {
+        'name': log_type,
+        'output-options': [
+            {
+                'flush': True,
+                'maxsize': 10240000,
+                'maxver': 1,
+                'output': log_output,
+                'pattern': '',
+            }
+        ],
+        'severity': severity,
+    }
     if severity_level != "None":
         logger["debuglevel"] = int(severity_level)
 
@@ -1616,6 +1630,7 @@ def add_http_control_channel(host_address: str, host_port: int, socket_name: str
                         }
                     ]
                 }}
+        create_user_and_password_file()
 
     if "control-sockets" not in world.dhcp_cfg:
         world.dhcp_cfg["control-sockets"] = []
@@ -1835,12 +1850,7 @@ def _cfg_write():
     with open(world.cfg["cfg_file_2"], 'w') as cfg_file:
         cfg_file.write(world.cfg["keactrl"])
 
-    if world.f_cfg.install_method == 'make':
-        logging_file = world.f_cfg.log_join('kea.log')
-    else:
-        logging_file = 'stdout'
-
-    add_logger(f'kea-dhcp{world.proto[1]}', "DEBUG", 99, logging_file)
+    add_logger(f'kea-dhcp{world.proto[1]}', "DEBUG", 99)
 
     _add_default_memfile_lease_db()
 
@@ -1869,6 +1879,7 @@ def _write_cfg2(cfg):
     :param cfg:
     :type cfg:
     """
+    cfg = sort_container(cfg)
     if f'Dhcp{world.proto[1]}' in cfg:
         cfg = disable_mt_if_required(cfg)
         with open(f'kea-dhcp{world.proto[1]}.conf', 'w') as cfg_file:
@@ -1881,19 +1892,6 @@ def _write_cfg2(cfg):
 
     with open(world.cfg["cfg_file_2"], 'w') as cfg_file:
         cfg_file.write(world.cfg["keactrl"])
-
-
-def check_if_http_socket_is_used():
-    """check_if_http_socket_is_used Check if http socket is used in configuration (control-sockets).
-
-    :return: True if http socket is used, False otherwise
-    :rtype: boolean
-    """
-    if "control-sockets" in world.dhcp_cfg:
-        for socket in world.dhcp_cfg["control-sockets"]:
-            if socket["socket-type"] in ["http", "https"] and socket["socket-address"] != "":
-                return True
-    return False
 
 
 def build_config_files(cfg=None):
@@ -1955,7 +1953,7 @@ def create_password_files(user=world.f_cfg.auth_user, passwd=world.f_cfg.auth_pa
                         destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
     fabric_sudo_command(f'echo "{user}:{passwd}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds", filename)}',
                         destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
-    if world.f_cfg.install_method != 'make':
+    if world.f_cfg.install_method == 'native':
         if world.server_system in ['alpine', 'redhat', 'fedora']:
             fabric_sudo_command(f'chown -R kea:kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
                                 destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
@@ -1988,7 +1986,7 @@ def create_user_and_password_file(user=world.f_cfg.auth_user, password=world.f_c
     fabric_sudo_command(f'echo "{password}" > {user_password_file}', destination_host=destination_address,
                         hide_all=world.f_cfg.forge_verbose == 0)
 
-    if world.f_cfg.install_method != 'make':
+    if world.f_cfg.install_method == 'native':
         if world.server_system in ['alpine', 'redhat', 'fedora']:
             fabric_sudo_command(f'chown -R kea:kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
                                 destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
@@ -2058,7 +2056,7 @@ def clear_logs(destination_address=world.f_cfg.mgmt_address, force_syslog=False)
     fabric_remove_file_command(world.f_cfg.log_join('kea*'),
                                destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
     fabric_remove_file_command(
-        os.path.join(world.f_cfg.software_install_path, "var/log/kea.log"),
+        world.f_cfg.log_path(),
         destination_host=destination_address,
         hide_all=world.f_cfg.forge_verbose == 0,
     )
@@ -2067,7 +2065,7 @@ def clear_logs(destination_address=world.f_cfg.mgmt_address, force_syslog=False)
             "/tmp/keactrl.log", destination_address, hide_all=world.f_cfg.forge_verbose
         )
     # clear kea logs in journald (actually all logs)
-    if world.f_cfg.install_method != 'make' or force_syslog:
+    if world.f_cfg.install_method == 'native' or force_syslog:
         if world.server_system == 'alpine':
             cmd = 'truncate /var/log/messages -s0'
             fabric_sudo_command(cmd, destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
@@ -2157,6 +2155,7 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
     fabric_remove_file_command(world.f_cfg.run_join('*'), destination_host=destination_address,
                                hide_all=world.f_cfg.forge_verbose == 0)
 
+    start_database_if_not_running('mysql', host=destination_address)
     # use kea script for cleaning mysql
     cmd = 'bash {software_install_path}/share/kea/scripts/mysql/wipe_data.sh '
     cmd += ' `mysql -u{db_user} -p{db_passwd} {db_name} -N -B'
@@ -2168,6 +2167,7 @@ def clear_all(destination_address=world.f_cfg.mgmt_address,
                      db_name=db_name)
     fabric_sudo_command(cmd, destination_host=destination_address, hide_all=world.f_cfg.forge_verbose == 0)
 
+    start_database_if_not_running('postgresql', host=destination_address)
     # use kea script for cleaning pgsql
     cmd = 'PGPASSWORD={db_passwd} bash {software_install_path}/share/kea/scripts/pgsql/wipe_data.sh '
     cmd += ' `PGPASSWORD={db_passwd} psql --set ON_ERROR_STOP=1 -A -t -h "localhost" '
@@ -2202,11 +2202,13 @@ def _check_kea_status(destination_address=world.f_cfg.mgmt_address):
     return v4, v6
 
 
-def _restart_kea_with_systemctl(destination_address):
+def _restart_kea_with_systemctl(destination_address, parameters=None):
     """_restart_kea_with_systemctl.
 
     :param destination_address:
     :type destination_address:
+    :param parameters: parameters to add to the service
+    :type parameters: string
     """
     cmd_tpl = 'systemctl reset-failed {service} ;'  # prevent failing due to too many restarts
     cmd_tpl += ' systemctl restart {service} &&'  # restart service
@@ -2219,40 +2221,55 @@ def _restart_kea_with_systemctl(destination_address):
     cmd_tpl += ' grep "server version .* started" 2>/dev/null;'  # if in the logs there is given sequence then ok
     cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
 
-    if world.server_system in ['redhat', 'fedora']:
-        service_name = f'kea-dhcp{world.proto[1]}'
-    else:
-        service_name = f'isc-kea-dhcp{world.proto[1]}-server'
+    service_name = world.f_cfg.service_name()
+
+    # Add parameters to the service if provided.
+    modify_systemd_service(service_name, 'remove-parameter-overrides', destination_address)
+    if parameters is not None:
+        modify_systemd_service(service_name, 'override-parameters', destination_address, parameters)
 
     cmd = cmd_tpl.format(service=service_name)
     fabric_sudo_command(cmd, destination_host=destination_address)
 
     if world.ddns_enable:
-        if world.server_system in ['redhat', 'fedora']:
-            service_name = 'kea-dhcp-ddns'
-        else:
-            service_name = 'isc-kea-dhcp-ddns-server'
+        service_name = world.f_cfg.service_name('kea-dhcp-ddns')
         cmd = cmd_tpl.format(service=service_name)
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
-def _restart_kea_with_openrc(destination_address):
+def _restart_kea_with_openrc(destination_address, parameters=None):
     """_restart_kea_with_openrc.
 
     :param destination_address:
     :type destination_address:
+    :param parameters: parameters to add to the service
+    :type parameters: string
     """
     cmd_tpl = 'rc-service {service} restart &&'  # reload service
     cmd_tpl += ' SECONDS=0; while (( SECONDS < 4 )); do'  # watch logs for max 4 seconds
     cmd_tpl += ' rc-status -f ini | grep "{service} =  started" 2>/dev/null;'
     cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
 
-    service_name = f'kea-dhcp{world.proto[1]}'
+    service_name = world.f_cfg.service_name()
+
+    modify_openrc_service(
+            service_name=service_name,
+            action="remove-parameter-overrides",
+            destination_address=destination_address,
+        )
+    if parameters is not None:
+        modify_openrc_service(
+            service_name=service_name,
+            action="override-parameters",
+            destination_address=destination_address,
+            parameters=parameters,
+        )
+
     cmd = cmd_tpl.format(service=service_name)
     fabric_sudo_command(cmd, destination_host=destination_address)
 
     if world.ddns_enable:
-        service_name = 'kea-dhcp-ddns'
+        service_name = world.f_cfg.service_name('kea-dhcp-ddns')
         cmd = cmd_tpl.format(service=service_name)
         fabric_sudo_command(cmd, destination_host=destination_address)
 
@@ -2273,19 +2290,13 @@ def _reload_kea_with_systemctl(destination_address):
     cmd_tpl += ' grep "{sentence}" 2>/dev/null;'  # if in the logs there is given sequence then ok
     cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
 
-    if world.server_system in ['redhat', 'fedora']:
-        service_name = f'kea-dhcp{world.proto[1]}'
-    else:
-        service_name = f'isc-kea-dhcp{world.proto[1]}-server'
+    service_name = world.f_cfg.service_name()
 
     cmd = cmd_tpl.format(service=service_name, sentence='initiate server reconfiguration')
     fabric_sudo_command(cmd, destination_host=destination_address)
 
     if world.ddns_enable:
-        if world.server_system in ['redhat', 'fedora']:
-            service_name = 'kea-dhcp-ddns'
-        else:
-            service_name = 'isc-kea-dhcp-ddns-server'
+        service_name = world.f_cfg.service_name('kea-dhcp-ddns')
         cmd = cmd_tpl.format(service=service_name, sentence='reloading configuration')
         fabric_sudo_command(cmd, destination_host=destination_address)
 
@@ -2302,18 +2313,52 @@ def _reload_kea_with_openrc(destination_address):
     cmd_tpl += ' rc-status -f ini | grep "{service} =  started" 2>/dev/null;'
     cmd_tpl += ' if [ $? -eq 0 ]; then break; fi done'
 
-    service_name = f'kea-dhcp{world.proto[1]}'
+    service_name = world.f_cfg.service_name()
     pid = fabric_sudo_command(f'pidof {service_name}', destination_host=destination_address)
     cmd = cmd_tpl.format(service=service_name, pid=pid)
     fabric_sudo_command(cmd, destination_host=destination_address)
 
     if world.ddns_enable:
+        service_name = world.f_cfg.service_name('kea-dhcp-ddns')
         pid = fabric_sudo_command(f'pidof {service_name}', destination_host=destination_address)
         cmd = cmd_tpl.format(service=service_name, pid=pid)
         fabric_sudo_command(cmd, destination_host=destination_address)
 
 
-def modify_systemd_service(service_name: str, action: str, destination_address: str = world.f_cfg.mgmt_address):
+def modify_openrc_service(service_name: str, action: str, destination_address: str = world.f_cfg.mgmt_address,
+                          parameters: str = None):
+    """Modify a openrc service.
+
+    :param destination_address: management address of server
+    :type destination_address:
+    :param service_name: name of the service to modify
+    :type service_name:
+    :param action: action to perform on the service
+    :type action:
+    :param parameters: parameters to add to the service
+    :type parameters: string
+    :return: True if the service was modified, False otherwise
+    :rtype: bool
+    """
+    assert world.server_system == 'alpine', 'This function is only supported for alpine'
+
+    if action == 'override-parameters':
+        # Add parameters to the service.
+        assert parameters is not None, "Parameters are required for override-parameters action"
+        fabric_sudo_command(f'sed -i \'s|^command_args=.*|command_args="{parameters} -c $cfgfile"|\' /etc/init.d/{service_name}',
+                            destination_host=destination_address)
+        return True
+    elif action == 'remove-parameter-overrides' or action == 'remove-all-overrides':
+        # Remove parameters from the service.
+        fabric_sudo_command(f'sed -i \'s|^command_args=.*|command_args="-c $cfgfile"|\' /etc/init.d/{service_name}',
+                            destination_host=destination_address)
+        return True
+    print(f'Unknown action: {action}')
+    return False
+
+
+def modify_systemd_service(service_name: str, action: str, destination_address: str = world.f_cfg.mgmt_address,
+                           parameters: str = None):
     """Modify a systemd service.
 
     :param destination_address: management address of server
@@ -2322,27 +2367,49 @@ def modify_systemd_service(service_name: str, action: str, destination_address: 
     :type service_name:
     :param action: action to perform on the service
     :type action:
-    :return: True if the service was modified, False otherwise
-    :rtype: bool
+    :param parameters: parameters to add to the service
+    :type parameters: string
     """
+    assert world.server_system in ['redhat', 'fedora', 'ubuntu', 'debian'], \
+        "This function is only supported for systemd-based systems (redhat, fedora, ubuntu, debian)"
+
     if action == 'override-restart':
-        if world.server_system in ['redhat', 'fedora', 'ubuntu', 'debian']:
-            cmd = f'mkdir -p /etc/systemd/system/{service_name}.service.d'
-            fabric_sudo_command(cmd, destination_host=destination_address)
-            cmd = f'echo "[Service]\nRestart=no" > /etc/systemd/system/{service_name}.service.d/override.conf'
-            fabric_sudo_command(cmd, destination_host=destination_address)
-            fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
-            return True
-    elif action == 'remove-override':
+        # Override the restart behavior of the service to no restart.:
+        cmd = f'mkdir -p /etc/systemd/system/{service_name}.service.d'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        cmd = f'echo "[Service]\nRestart=no" > /etc/systemd/system/{service_name}.service.d/override.conf'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
+        return
+    elif action == 'override-parameters':
+        # Add parameters to the service.
+        assert parameters is not None, "Parameters are required for override-parameters action"
+
+        cmd = f'mkdir -p /etc/systemd/system/{service_name}.service.d'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        service_line = f"ExecStart=/usr/sbin/kea-dhcp{world.proto[1]} -c /etc/kea/kea-dhcp{world.proto[1]}.conf"
+        # Clear existing ExecStart line and add new one with parameters.
+        cmd = f'echo "[Service]\nExecStart=\n{service_line} {parameters}" >> ' \
+              f'/etc/systemd/system/{service_name}.service.d/parameters.conf'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
+        return
+    elif action == 'remove-parameter-overrides':
+        # Remove parameters from the service.
+        cmd = f'rm -f /etc/systemd/system/{service_name}.service.d/parameters.conf'
+        fabric_sudo_command(cmd, destination_host=destination_address)
+        fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
+        return
+    elif action == 'remove-all-overrides':
+        # Remove all overrides from the service.
         cmd = f'systemctl revert {service_name}'
         fabric_sudo_command(cmd, destination_host=destination_address)
         fabric_sudo_command('systemctl daemon-reload', destination_host=destination_address)
-        return True
-    print(f'Unknown action: {action}')
-    return False
+        return
+    assert False, f'Unknown action: {action}'
 
 
-def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_address, process=""):
+def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_address, process="", parameters=None):
     """Start kea with generated config.
 
     :param should_succeed: whether the action is supposed to succeed or fail
@@ -2351,6 +2418,8 @@ def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_
     :type destination_address:
     :param process: name of the single process we want to start (using -s option of keactrl)
     :type process:
+    :param parameters: parameters to be passed to the server
+    :type parameters: string
     """
     if destination_address not in world.f_cfg.multiple_tested_servers:
         world.multiple_tested_servers.append(destination_address)
@@ -2361,13 +2430,13 @@ def start_srv(should_succeed: bool, destination_address: str = world.f_cfg.mgmt_
         if v4_running and world.proto == 'v4' or v6_running and world.proto == 'v6':
             _stop_kea_with_keactrl(destination_address)
 
-        result = _start_kea_with_keactrl(destination_address, specific_process=process)
+        result = _start_kea_with_keactrl(destination_address, specific_process=process, parameters=parameters)
         _check_kea_process_result(should_succeed, result, 'start')
     else:
         if world.server_system == 'alpine':
-            _restart_kea_with_openrc(destination_address)
+            _restart_kea_with_openrc(destination_address, parameters=parameters)
         else:
-            _restart_kea_with_systemctl(destination_address)
+            _restart_kea_with_systemctl(destination_address, parameters=parameters)
 
 
 def stop_srv(value=False, destination_address=world.f_cfg.mgmt_address):
@@ -2409,23 +2478,30 @@ def _check_kea_process_result(succeed: bool, result: str, action: str):
     :param action: one-word description of the action done on the server
     :type action:
     """
-    errors = ["Failed to apply configuration", "Failed to initialize server",
-              "Service failed", "failed to initialize Kea"]
-    if succeed:
-        if any(error_message in result for error_message in errors):
-            assert False, 'Server operation: ' + action + ' failed! '
-    if not succeed:
-        if not any(error_message in result for error_message in errors):
-            assert False, 'Server operation: ' + action + ' NOT failed!'
+    errors = [
+        'Failed to apply configuration',
+        'Failed to initialize server',
+        'Service failed',
+        'failed to initialize Kea',
+    ]
+    if world.f_cfg.install_method == 'make':
+        if succeed:
+            if any(error_message in result for error_message in errors):
+                assert False, 'Server operation: ' + action + ' failed! '
+        if not succeed:
+            if not any(error_message in result for error_message in errors):
+                assert False, 'Server operation: ' + action + ' NOT failed!'
 
 
-def _start_kea_with_keactrl(destination_host, specific_process=""):
+def _start_kea_with_keactrl(destination_host, specific_process="", parameters=None):
     """_start_kea_with_keactrl.
 
     :param destination_host:
     :type destination_host:
     :param specific_process:
     :type specific_process:
+    :param parameters: parameters to be passed to the server
+    :type parameters: string
     """
     # Start kea services and check if they started ok.
     # - nohup to shield kea services from getting SIGHUP from SSH
@@ -2433,13 +2509,16 @@ def _start_kea_with_keactrl(destination_host, specific_process=""):
     #   repeat the loop only for 4 seconds
     # - sync to disk any logs traced by keactrl or kea services
     # - display these logs to screen using cat so forge can catch errors in the logs
+    parameters = "" if parameters is None else f"-- {parameters} "
     if specific_process != "":
         specific_process = f" -s {specific_process} "
-    start_cmd = 'nohup ' + os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl')
-    start_cmd += f" start {specific_process}< /dev/null > /tmp/keactrl.log 2>&1; SECONDS=0; while (( SECONDS < 4 ));"
-    start_cmd += " do tail %s/var/log/kea/kea.log 2>/dev/null | grep 'server version .* started' 2>/dev/null;" % world.f_cfg.software_install_path
-    start_cmd += " if [ $? -eq 0 ]; then break; fi done;"
-    start_cmd += " sync; cat /tmp/keactrl.log"
+    full_keactrl_path = os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl')
+    start_cmd = (f'nohup {full_keactrl_path} start {specific_process} < /dev/null > /tmp/keactrl.log {parameters}2>&1; '
+                 "SECONDS=0; while (( SECONDS < 4 )); do "
+                 f"tail {world.f_cfg.log_path()} 2>/dev/null | "
+                 "grep 'server version .* started' 2>/dev/null; "
+                 "if [ $? -eq 0 ]; then break; fi; done; "
+                 "sync; cat /tmp/keactrl.log")
     return fabric_sudo_command(start_cmd, destination_host=destination_host)
 
 
@@ -2451,17 +2530,18 @@ def _stop_kea_with_keactrl(destination_host):
     """
     stop_cmd = os.path.join(world.f_cfg.software_install_path, 'sbin/keactrl') + ' stop'
     started_at = datetime.datetime.now()
-    should_finish_by = started_at + datetime.timedelta(seconds=8)
+    timeout_seconds = 8
+    should_finish_by = started_at + datetime.timedelta(seconds=timeout_seconds)
     fabric_sudo_command(stop_cmd, destination_host=destination_host)
 
     while True:
-        kea_dhcp4, kea_dhcp6 = _check_kea_status()
+        kea_dhcp4, kea_dhcp6 = _check_kea_status(destination_host)
         if not kea_dhcp4 and not kea_dhcp6:
             break
 
         # Assert that the timeout hasn't passed yet.
         assert datetime.datetime.now() < should_finish_by, \
-            'Timeout 8s exceeded while waiting for Kea to stop after "keactrl stop".\n' \
+            f'Timeout {timeout_seconds}s exceeded while waiting for Kea to stop after "keactrl stop".\n' \
             'kea-dhcp4: ' + ('active' if kea_dhcp4 else 'inactive') + '\n' \
             'kea-dhcp6: ' + ('active' if kea_dhcp6 else 'inactive')
 
@@ -2479,8 +2559,7 @@ def _reload_kea_with_keactrl(destination_host):
     return fabric_sudo_command(stop_cmd, destination_host=destination_host)
 
 
-def reconfigure_srv(should_succeed: bool = True,
-                    destination_address: str = world.f_cfg.mgmt_address):
+def reconfigure_srv(should_succeed: bool = True, destination_address: str = world.f_cfg.mgmt_address):
     """Send signal to Kea server to reconfigure itself.
 
     :param should_succeed: whether the reconfiguration is supposed to succeed or fail
@@ -2488,6 +2567,7 @@ def reconfigure_srv(should_succeed: bool = True,
     :param destination_address: management address of server
     :type destination_address:
     """
+    c = get_line_count_in_log('dynamic server reconfiguration suceeded with file', destination=destination_address)
     if world.f_cfg.install_method == 'make':
         result = _reload_kea_with_keactrl(destination_address)
         _check_kea_process_result(should_succeed, result, 'reconfigure')
@@ -2496,15 +2576,18 @@ def reconfigure_srv(should_succeed: bool = True,
             _reload_kea_with_openrc(destination_address)
         else:
             _reload_kea_with_systemctl(destination_address)
-    wait_for_message_in_log('dynamic server reconfiguration succeeded with file')
+    wait_for_message_in_log('dynamic server reconfiguration succeeded with file', c + 1, destination=destination_address)
 
 
-def restart_srv(destination_address=world.f_cfg.mgmt_address):
+def restart_srv(destination_address=world.f_cfg.mgmt_address, parameters=None):
     """restart_srv.
 
     :param destination_address:
     :type destination_address:
+    :param parameters: parameters to be passed to the kea server start command
+    :type parameters: string
     """
+    v = world.proto[1]
     if world.f_cfg.install_method == 'make':
         _stop_kea_with_keactrl(destination_address)
 
@@ -2512,15 +2595,17 @@ def restart_srv(destination_address=world.f_cfg.mgmt_address):
         # (start checks in the log if there is expected pattern)
         if world.f_cfg.save_logs:
             save_logs(destination_address=destination_address)
-        fabric_sudo_command('rm -f %s' % world.f_cfg.log_join('kea.log'),
-                            destination_host=destination_address)
+        fabric_sudo_command(f'rm -f {world.f_cfg.log_path()}', destination_host=destination_address)
+        c = 0  # Log was just removed on the line above so it's safe to say the number of f'DHCP{v}_STARTED' lines are 0.
 
-        result = _start_kea_with_keactrl(destination_address)
+        _start_kea_with_keactrl(destination_address, parameters=parameters)
     else:
+        c = get_line_count_in_log(f'DHCP{v}_STARTED', destination=destination_address)
         if world.server_system == 'alpine':
             _restart_kea_with_openrc(destination_address)
         else:
             _restart_kea_with_systemctl(destination_address)
+    wait_for_message_in_log(f'DHCP{v}_STARTED', c + 1, destination=destination_address)
 
 
 def save_leases(tmp_db_type=None, destination_address=world.f_cfg.mgmt_address):
@@ -2559,38 +2644,34 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
     :param destination_address: ip address of a remote system
     :type destination_address:
     """
-    if world.f_cfg.install_method == 'make':
-        # Logs are copied to temp directory because fabric has problems with listing non world readable folders.
-        cmd = 'rm -rf /tmp/kealogs/'
-        fabric_sudo_command(cmd, destination_host=destination_address)
-        cmd = 'mkdir -m 777 -p /tmp/kealogs/'
-        fabric_sudo_command(cmd, destination_host=destination_address)
+    # Logs are copied to temp directory because fabric has problems with listing non world readable folders.
+    cmd = 'rm -rf /tmp/kealogs/'
+    fabric_sudo_command(cmd, destination_host=destination_address)
+    cmd = 'mkdir -m 777 -p /tmp/kealogs/'
+    fabric_sudo_command(cmd, destination_host=destination_address)
 
-        # Get list of logs.
-        log_dir = world.f_cfg.log_join('')
-        glob_expression = 'kea.log*'
-        result = fabric_sudo_command(
-            f'find "{log_dir}" -mindepth 1 -maxdepth 1 -name "{glob_expression}"', destination_host=destination_address
-        )
-        log_files = result.stdout.strip().split('\n')
-        log_files = [file for file in log_files if file != '']
+    # Get list of logs.
+    log_dir = world.f_cfg.log_join('')
+    glob_expression = '*kea*.log*'
+    result = fabric_sudo_command(
+        f'find "{log_dir}" -mindepth 1 -maxdepth 1 -name "{glob_expression}"', destination_host=destination_address
+    )
+    log_files = result.stdout.strip().split('\n')
+    log_files = [file for file in log_files if file != '']
 
-        # Move logs to temp directory.
-        for file in log_files:
-            fabric_sudo_command(f'cp "{file}" "/tmp/kealogs/"', destination_host=destination_address)
+    # Move logs to temp directory.
+    for file in log_files:
+        fabric_sudo_command(f'cp "{file}" "/tmp/kealogs/"', destination_host=destination_address)
 
-        # Get list of logs from temp directory.
-        result = fabric_sudo_command(
-            f'find "/tmp/kealogs" -mindepth 1 -maxdepth 1 -name "{glob_expression}"',
-            destination_host=destination_address,
-        )
-        log_files = result.stdout.strip().split('\n')
-        log_files = [file for file in log_files if file != '']
-    else:
-        if world.server_system in ['redhat', 'fedora', 'alpine']:
-            service_name = f'kea-dhcp{world.proto[1]}'
-        else:
-            service_name = f'isc-kea-dhcp{world.proto[1]}-server'
+    # Get list of logs from temp directory.
+    result = fabric_sudo_command(
+        f'find "/tmp/kealogs" -mindepth 1 -maxdepth 1 -name "{glob_expression}"',
+        destination_host=destination_address,
+    )
+    log_files = result.stdout.strip().split('\n')
+    log_files = [file for file in log_files if file != '']
+    if world.f_cfg.install_method == 'native':
+        service_name = world.f_cfg.service_name()
         if world.server_system == 'alpine':
             logging_file_path = world.f_cfg.log_join(f'{service_name}.log')
             cmd = f'cat {logging_file_path} > '  # get logs of kea service
@@ -2599,7 +2680,7 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
             cmd = 'journalctl -u %s > ' % service_name  # get logs of kea service
             cmd += ' /tmp/kea.log'
         fabric_sudo_command(cmd, destination_host=destination_address, ignore_errors=True)
-        log_files = ['/tmp/kea.log']
+        log_files.append('/tmp/kea.log')
 
     # If there are already saved logs then the next ones save in separate folder.
     # For subsequent logs create folder kea-logs-1. If it exists then kea-logs-2,
@@ -2620,7 +2701,7 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
     for file in log_files:
         fabric_download_file(
             file,
-            local_dest_dir,
+            os.path.join(local_dest_dir, os.path.basename(file)),
             destination_host=destination_address,
             hide_all=world.f_cfg.forge_verbose == 0,
         )
@@ -2628,13 +2709,13 @@ def save_dhcp_logs(local_dest_dir: str, destination_address: str = world.f_cfg.m
     if fabric_is_file('/tmp/keactrl.log', destination_address):
         fabric_download_file(
             "/tmp/keactrl.log",
-            local_dest_dir,
+            os.path.join(local_dest_dir, "keactrl.log"),
             destination_host=destination_address,
             hide_all=world.f_cfg.forge_verbose == 0,
         )
-    if fabric_is_file(os.path.join(world.f_cfg.software_install_path, "var/log/kea.log"), destination_address):
+    if fabric_is_file(world.f_cfg.log_path(), destination_address):
         fabric_download_file(
-            os.path.join(world.f_cfg.software_install_path, "var/log/kea.log"),
+            world.f_cfg.log_path(),
             os.path.join(local_dest_dir, "kea-initial.log"),
             destination_host=destination_address,
             hide_all=world.f_cfg.forge_verbose == 0,
@@ -2652,10 +2733,7 @@ def save_ddns_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_address)
     if world.f_cfg.install_method == 'make':
         log_path = world.f_cfg.log_join('kea-dhcp-ddns.log')
     else:
-        if world.server_system in ['redhat', 'fedora', 'alpine']:
-            service_name = 'kea-dhcp-ddns'
-        else:
-            service_name = 'isc-kea-dhcp-ddns'
+        service_name = world.f_cfg.service_name('kea-dhcp-ddns')
         if world.server_system == 'alpine':
             logging_file_path = world.f_cfg.log_join('kea-dhcp-ddns.log')
             cmd = f'cat {logging_file_path} > '  # get logs of kea service
@@ -2678,7 +2756,8 @@ def save_radius_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_addres
     :param destination_address:
     :type destination_address:
     """
-    radius_dir = os.path.join(local_dest_dir, 'radius')
+    radius_dir = os.path.join(os.path.normpath(local_dest_dir), 'radius')
+    os.makedirs(radius_dir, exist_ok=True)
 
     for i in [
         world.radius_authorize_file,
@@ -2687,7 +2766,6 @@ def save_radius_logs(local_dest_dir, destination_address=world.f_cfg.mgmt_addres
         world.radius_log,
     ]:
         if i is not None:
-            os.makedirs(radius_dir, exist_ok=True)
             fabric_download_file(i, radius_dir, destination_host=destination_address,
                                  ignore_errors=True, hide_all=world.f_cfg.forge_verbose == 0)
 
@@ -2699,6 +2777,7 @@ def save_logs(destination_address: str = world.f_cfg.mgmt_address):
     :type destination_address:
     """
     local_dest_dir = check_local_path_for_downloaded_files(world.cfg["test_result_dir"], '.', destination_address)
+    os.makedirs(local_dest_dir, exist_ok=True)
 
     save_dhcp_logs(local_dest_dir, destination_address)
 
@@ -2710,7 +2789,7 @@ def save_logs(destination_address: str = world.f_cfg.mgmt_address):
 
 def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
              db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-             init_db=True, disable=world.f_cfg.disable_db_setup):
+             init_db=True, disable=world.f_cfg.disable_db_setup, create_clauses=''):
     """db_setup.
 
     :param dest:
@@ -2725,6 +2804,8 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     :type init_db:
     :param disable:
     :type disable:
+    :param create_clauses: additional clauses passed to CREATE DATABASE
+    :type create_clauses: str
     """
     if disable:
         return
@@ -2733,7 +2814,7 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     database.clear_database(host=dest)
     database.restart_all_databases(host=dest)
 
-    if world.f_cfg.install_method != 'make':
+    if world.f_cfg.install_method == 'native':
         if world.server_system in ['redhat', 'fedora']:
             fabric_run_command("rpm -qa '*kea*'", destination_host=dest)
         elif world.server_system == 'alpine':
@@ -2750,17 +2831,24 @@ def db_setup(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     cmd = "mysql -u root -N -B -e \"DROP USER IF EXISTS '{db_user}'@'localhost';\"".format(**locals())
     result = fabric_sudo_command(cmd, destination_host=dest)
     assert result.succeeded
+    cmd = "mysql -u root -N -B -e \"DROP USER IF EXISTS '{db_user}'@'%';\"".format(**locals())
+    result = fabric_sudo_command(cmd, destination_host=dest)
+    assert result.succeeded
     cmd = "mysql -u root -N -B -e \"FLUSH PRIVILEGES;\"".format(**locals())
     result = fabric_sudo_command(cmd, destination_host=dest)
     assert result.succeeded
 
-    cmd = "mysql -u root -e 'CREATE DATABASE {db_name};'".format(**locals())
+    cmd = "mysql -u root -e 'CREATE DATABASE {db_name} {create_clauses};'".format(**locals())
     fabric_sudo_command(cmd, destination_host=dest)
     cmd = "mysql -u root -e \"CREATE USER '{db_user}'@'localhost' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
+    fabric_sudo_command(cmd, ignore_errors=True, destination_host=dest)
+    cmd = "mysql -u root -e \"CREATE USER '{db_user}'@'%' IDENTIFIED BY '{db_passwd}';\"".format(**locals())
     fabric_sudo_command(cmd, ignore_errors=True, destination_host=dest)
     cmd = "mysql -u root -e \"SET GLOBAL log_bin_trust_function_creators=1;\""
     fabric_sudo_command(cmd, ignore_errors=True, destination_host=dest)
     cmd = "mysql -u root -e 'GRANT ALL ON {db_name}.* TO {db_user}@localhost;'".format(**locals())
+    fabric_sudo_command(cmd, destination_host=dest)
+    cmd = "mysql -u root -e \"GRANT ALL ON {db_name}.* TO {db_user}@'%';\"".format(**locals())
     fabric_sudo_command(cmd, destination_host=dest)
     if init_db:
         cmd = "{kea_admin} db-init mysql -u {db_user} -p {db_passwd} -n {db_name}".format(**locals())
@@ -2807,7 +2895,7 @@ def insert_message_in_server_logs(message: str):
     :param message: the message to be logged
     :type message: str
     """
-    if world.f_cfg.install_method != 'make':
+    if world.f_cfg.install_method == 'native':
         return
     # Get only the hosts that are configured in forge.
     hosts = [host for host in [world.f_cfg.mgmt_address, world.f_cfg.mgmt_address_2] if len(host)]
@@ -2817,9 +2905,11 @@ def insert_message_in_server_logs(message: str):
 
     # Log.
     for host in hosts:
-        for file in [world.cfg["kea_log_file"]]:
-            result = fabric_sudo_command(f'echo {message} >> {file}', destination_host=host)
-            assert result.succeeded
+        # Append log message remotely.
+        # If file would be deleted and new one created, Kea will stop logging to it.
+        # Use shell echo and sudo tee -a to avoid file truncation.
+        cmd = f"echo '{message}' | sudo tee -a '{world.f_cfg.log_path()}' > /dev/null"
+        fabric_sudo_command(cmd, destination_host=host)
 
 
 def run_test_config(config_path: str = None, strict_security: bool = True, should_fail: bool = False, syntax_only: bool = False):

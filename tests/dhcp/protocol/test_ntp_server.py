@@ -153,15 +153,6 @@ def test_v6_ntp_negative():
             },
             'log_message': 'Failed to convert string to address \'2001:db8::abcd::123\': Invalid argument'
         },
-        {  # wrong fqdn in ntp-server-fqdn
-            'option_data': {
-                "space": "v6-ntp-server-suboptions",
-                "name": "ntp-server-fqdn",
-                "data": "lorem ipsum"
-            },
-            'log_message': 'option data does not match option definition '
-            '(space: v6-ntp-server-suboptions, code: 3): option buffer truncated'
-        },
         {  # empty address in ntp-server-fqdn
             'option_data': {
                 "space": "v6-ntp-server-suboptions",

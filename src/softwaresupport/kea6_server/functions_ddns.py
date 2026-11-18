@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2013-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,27 +29,25 @@ def add_ddns_server(address, port):
     if port == "default":
         port = 53001
 
-    if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
-        logging_file = 'kea-dhcp-ddns.log'
-        logging_file_path = world.f_cfg.log_join(logging_file)
-    else:
-        logging_file_path = 'stdout'
-
-    world.ddns_cfg = {"ip-address": address,
-                      "port": int(port),  # this value is passed as string
-                      "dns-server-timeout": 2000,
-                      "reverse-ddns": {'ddns-domains': []},
-                      "forward-ddns": {'ddns-domains': []},
-                      "hooks-libraries": [],
-                      "tsig-keys": [],
-                      "ncr-format": "JSON",  # default value
-                      "ncr-protocol": "UDP",
-                      "loggers": [
-                          {"debuglevel": 99, "name": "kea-dhcp-ddns",
-                           "output-options": [{
-                               "output": logging_file_path}],
-                           "severity": "DEBUG"}]
-                      }  # default value
+    world.ddns_cfg = {
+        'ip-address': address,
+        'port': int(port),  # this value is passed as string
+        'dns-server-timeout': 2000,
+        'reverse-ddns': {'ddns-domains': []},
+        'forward-ddns': {'ddns-domains': []},
+        'hooks-libraries': [],
+        'tsig-keys': [],
+        'ncr-format': 'JSON',  # default value
+        'ncr-protocol': 'UDP',
+        'loggers': [
+            {
+                'debuglevel': 99,
+                'name': 'kea-dhcp-ddns',
+                'output-options': [{'output': world.f_cfg.log_output('kea-dhcp-ddns')}],
+                'severity': 'DEBUG',
+            }
+        ],
+    }
 
     add_ddns_server_connectivity_options("server-ip", address)
     add_ddns_server_connectivity_options("server-port", int(port))
@@ -208,7 +206,7 @@ def add_keys(secret, name, algorithm):
                         hide_all=world.f_cfg.forge_verbose == 0)
     fabric_sudo_command(f'echo "{secret}" > {os.path.join(world.f_cfg.get_share_path(), "kea-creds", name)}',
                         hide_all=world.f_cfg.forge_verbose == 0)
-    if world.f_cfg.install_method != 'make':
+    if world.f_cfg.install_method == 'native':
         if world.server_system in ['alpine', 'redhat', 'fedora']:
             fabric_sudo_command(f'chown -R kea:kea {os.path.join(world.f_cfg.get_share_path(), "kea-creds")}',
                                 hide_all=world.f_cfg.forge_verbose == 0)

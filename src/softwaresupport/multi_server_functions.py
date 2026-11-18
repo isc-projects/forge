@@ -20,6 +20,8 @@ import tarfile
 import warnings
 # [B404:blacklist] Consider possible security implications associated with the subprocess module.
 import subprocess  # nosec B404
+import tempfile
+
 from shutil import copy
 
 from fabric.api import get, settings, put, sudo, run, hide
@@ -292,24 +294,31 @@ def fabric_is_dir(remote_path, host=world.f_cfg.mgmt_address):
     return result.succeeded
 
 
-def fabric_file_permissions(remote_path, destination_host=world.f_cfg.mgmt_address, ignore_errors=False):
+def fabric_file_permissions(remote_path, destination_host=world.f_cfg.mgmt_address, ignore_errors=False, full=False):
     """Get file permissions on a remote node.
 
     :param remote_path: remote file path
     :type remote_path: str
     :param destination_host: destination host
     :type destination_host: str, optional
+    :param full: get full file permissions with owner and
+    :type full: bool, optional
     :return: file permissions
     :rtype: str
     :param ignore_errors: ignore errors
     :type ignore_errors: bool, optional
     """
-    result = fabric_sudo_command(
-        f'stat -c %a {remote_path}',
+    if full:
+        return fabric_sudo_command(
+            f'stat -c "%a,%u,%g" {remote_path}',
+            destination_host=destination_host,
+            ignore_errors=ignore_errors
+        )
+    return fabric_sudo_command(
+        f'stat -c "%a" {remote_path}',
         destination_host=destination_host,
         ignore_errors=ignore_errors
     )
-    return result
 
 
 def verify_file_permissions(remote_path, required_permissions='640', destination_host=world.f_cfg.mgmt_address,
@@ -328,8 +337,7 @@ def verify_file_permissions(remote_path, required_permissions='640', destination
     :type ignore_errors: bool, optional
     """
     permissions = fabric_file_permissions(remote_path, destination_host, ignore_errors)
-    if len(permissions) != len(required_permissions):
-        return False
+    assert len(permissions) == len(required_permissions), "len(permissions) != len(required_permissions)"
     for required, current in zip(required_permissions, permissions):
         if required != '*':
             assert required == current, \
@@ -456,28 +464,28 @@ def copy_configuration_file(local_file, file_name='configuration_file', destinat
 class TemporaryFile(object):
     """Create a temporary file, write content to it and delete it at the end of the context."""
 
-    def __init__(self, file_name, content):
+    def __init__(self, content=None):
         """Initialize a temporary file.
 
-        :param file_name: file name
-        :type file_name: str
         :param content: content
         :type content: str
         """
-        self.file_name = file_name
         self.content = content
+        self.file = None
 
     def __enter__(self):
         """Enter the context.
 
-        :return: self
-        :rtype: TemporaryFile
+        :return: file name
+        :rtype: str
         """
+        self.file = tempfile.NamedTemporaryFile()
         mode = 'w'
         if isinstance(self.content, bytes):
             mode = 'wb'
-        with open(self.file_name, mode) as f:
+        with open(self.file.name, mode) as f:
             f.write(self.content)
+        return self.file.name
 
     def __exit__(self, exception_type, exception_value, traceback):
         """Exit the context.
@@ -487,24 +495,24 @@ class TemporaryFile(object):
         :param exception_value: exception value
         :type exception_value: Exception
         """
-        os.unlink(self.file_name)
+        self.file.close()
 
 
-def send_content(local_path, remote_path, content, subdir):
+def send_content(content, remote_path, subdir='', host=world.f_cfg.mgmt_address):
     """Send content to a remote path.
 
-    :param local_path: local path
-    :type local_path: str
-    :param remote_path: remote path
-    :type remote_path: str
     :param content: content
     :type content: str
+    :param remote_path: remote path
+    :type remote_path: str
     :param subdir: subdirectory
     :type subdir: str
+    :param host: host where file should be sent to
+    :type host: str
     """
-    with TemporaryFile(local_path, content):
-        fabric_send_file(local_path, remote_path)
-        copy_configuration_file(local_path, os.path.join(subdir, local_path))
+    with TemporaryFile(content) as local_file:
+        fabric_send_file(local_file, remote_path, destination_host=host)
+        copy_configuration_file(local_file, os.path.join(subdir, os.path.basename(remote_path)), destination_host=host)
 
 
 def start_tcpdump(file_name: str = "capture.pcap", iface: str = None, port_filter: str = None,
@@ -586,7 +594,7 @@ def add_line_if_not_exists(file_path, line_to_add, host=world.f_cfg.mgmt_address
     :type file_path: str
     :param line_to_add: content to add
     :type line_to_add: str
-    :param host: Machine where file exists
+    :param host: host of file that should be updated
     :type host: str
     """
     # Download file, edit, then upload with sudo. Works around the case where the file is not editable because the user
@@ -594,12 +602,14 @@ def add_line_if_not_exists(file_path, line_to_add, host=world.f_cfg.mgmt_address
     if fabric_is_file(file_path, destination_host=host):
         fabric_download_file(file_path, 'tmp.txt', destination_host=host)
     try:
-        with open('tmp.txt', 'r+', encoding='utf-8') as file:
+        with open('tmp.txt', 'r', encoding='utf-8') as file:
             lines = file.readlines()
             # Check if line already exists.
-            if any(line.strip() == line_to_add.strip() for line in lines):
-                return
-            # Add the line.
+        if any(line.strip() == line_to_add.strip() for line in lines):
+            os.remove('tmp.txt')
+            return
+        # Add the line.
+        with open('tmp.txt', 'a', encoding='utf-8') as file:
             file.write(line_to_add.rstrip('\n') + '\n')
     except FileNotFoundError:
         # File doesn't exist, create it and add the line.
@@ -609,19 +619,90 @@ def add_line_if_not_exists(file_path, line_to_add, host=world.f_cfg.mgmt_address
     os.remove('tmp.txt')
 
 
-def write_to_file(file_path, content, host=world.f_cfg.mgmt_address):
+def remove_line_if_exists(file_path, line_to_remove, host=world.f_cfg.mgmt_address):
+    """Remove a line from the file if the line exists in the file.
+
+    :param file_path: path to file
+    :type file_path: str
+    :param line_to_remove: content to remove
+    :type line_to_remove: str
+    :param host: host of file that should be updated
+    :type host: str
+    """
+    if os.path.exists('tmp.txt'):
+        os.remove('tmp.txt')
+    if fabric_is_file(file_path, destination_host=host):
+        fabric_download_file(file_path, 'tmp.txt', destination_host=host)
+    try:
+        with open('tmp.txt', 'r+', encoding='utf-8') as file:
+            lines = file.readlines()
+            # Check if line already exists.
+            if any(line.strip() == line_to_remove.strip() for line in lines):
+                os.remove('tmp.txt')
+                return
+    except FileNotFoundError:
+        # File doesn't exist, do nothing.
+        os.remove('tmp.txt')
+        return
+    with open('tmp.txt', 'w', encoding='utf-8') as file:
+        file.write(''.join(line for line in lines if line.strip() != line_to_remove.strip()))
+    fabric_send_file('tmp.txt', file_path, destination_host=host)
+    os.remove('tmp.txt')
+
+
+def write_to_file(file_path, content, host=world.f_cfg.mgmt_address, overwrite=False):
     """Add a line to the file if the line does not already exist in the file.
 
     :param file_path: path to file
     :type file_path: str
     :param content: content to add
     :type content: str
-    :param host: Machine where file exists
+    :param host: host of file that should be updated
     :type host: str
+    :param overwrite: overwrite the file if it exists
+    :type overwrite: bool
     """
     # Edit file locally, then upload with sudo. Works around the case where the file is not editable because the user
     # does not have permissions e.g. user non-root and file owned by root.
-    with open('tmp.txt', 'w', encoding='utf-8') as file:
-        file.write(content)
+    if os.path.exists('tmp.txt'):
+        os.remove('tmp.txt')
+    if not overwrite and fabric_is_file(file_path, destination_host=host):
+        fabric_download_file(file_path, 'tmp.txt', destination_host=host)
+    try:
+        with open('tmp.txt', 'a', encoding='utf-8') as file:
+            file.write(content.rstrip('\n') + '\n')
+    except FileNotFoundError:
+        # File doesn't exist, create it and add the line.
+        with open('tmp.txt', 'w', encoding='utf-8') as file:
+            file.write(content.rstrip('\n') + '\n')
+
+    # Preserve original file permissions, owner, and group when uploading the edited file back to remote host.
+    orig_perms = None
+    orig_owner = None
+    orig_group = None
+    try:
+        if fabric_is_file(file_path, destination_host=host):
+            # Get permissions, owner, and group with a single command
+            # stat -c "%a,%u,%g" gives e.g. "644,1000,1000"
+            result = fabric_file_permissions(file_path, destination_host=host, full=True)
+            if result.succeeded:
+                stat_out = result.stdout.strip()
+                if stat_out and ',' in stat_out:
+                    perms_str, owner_str, group_str = stat_out.split(',', 2)
+                    if perms_str.isdigit():
+                        orig_perms = perms_str
+                    if owner_str.isdigit():
+                        orig_owner = owner_str
+                    if group_str.isdigit():
+                        orig_group = group_str
+    except FileNotFoundError:
+        pass  # File doesn't exist, no permissions to worry about.
+
     fabric_send_file('tmp.txt', file_path, destination_host=host)
+    # Restore original owner, group, and permissions if available
+    if orig_owner and orig_group:
+        # chown with numeric uid:gid
+        fabric_sudo_command(f'chown {orig_owner}:{orig_group} {file_path}', destination_host=host)
+    if orig_perms:
+        fabric_sudo_command(f"chmod {orig_perms} {file_path}", destination_host=host)
     os.remove('tmp.txt')

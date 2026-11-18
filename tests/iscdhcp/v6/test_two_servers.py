@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,15 +7,6 @@
 """ISC_DHCP DHCPv6 two server setup test"""
 # This is example file to how write test that are using two virtual systems.
 # Both of those systems have to have installed isc-dhcp and bind (for ddns tests)
-# If forge + vagrant is used isc-dhcp and bind are installed:
-# ./forge config kea-dirs /home/ubuntu/
-# ./forge config ccache-dir /tmp
-# ./forge --lxc --sid all -s ubuntu-20.04 setup --dhcpd
-# ./forge --lxc --sid all -s ubuntu-20.04 install-dhcpd <path-to-sources>
-# Both systems are accessible by world.f_cfg.mgmt_address and world.f_cfg.mgmt_address_2 inside test
-# To access systems directly:
-# list all created systems: vagrant global-status
-# vagrant ssh <system-id> -c "bash"
 
 import pytest
 from src import misc
@@ -80,7 +71,7 @@ def _get_address(duid, address):
 @pytest.mark.dhcpd
 def test_dhcpd_two_servers():
     """
-    This is example test, how to use forge + vagrant setup to execute tests using both virtual systems
+    This is example test, how to use forge to execute tests using both virtual systems
     """
     # start first server
     misc.test_setup()

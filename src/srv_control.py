@@ -26,7 +26,7 @@ from . import misc
 from .forge_cfg import world, step
 
 from .softwaresupport.bind9_server import functions as dns
-from .protosupport.multi_protocol_functions import test_define_value
+from .protosupport.multi_protocol_functions import test_define_value, forge_sleep
 
 log = logging.getLogger('forge')
 
@@ -485,9 +485,15 @@ def update_ha_hook_parameter(param, relationship=0):
     dhcp.update_ha_hook_parameter(param, relationship)
 
 
-def build_database(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
-                   db_user=world.f_cfg.db_user, db_passwd=world.f_cfg.db_passwd,
-                   init_db=True, disable=False):
+def build_database(
+    dest=world.f_cfg.mgmt_address,
+    db_name=world.f_cfg.db_name,
+    db_user=world.f_cfg.db_user,
+    db_passwd=world.f_cfg.db_passwd,
+    init_db=True,
+    disable=False,
+    create_clauses='',
+):
     """Build database.
 
     :param dest: (Default value = world.f_cfg.mgmt_address)
@@ -502,9 +508,19 @@ def build_database(dest=world.f_cfg.mgmt_address, db_name=world.f_cfg.db_name,
     :type init_db:
     :param disable: (Default value = False)
     :type disable:
+    :param create_clauses: additional clauses passed to CREATE DATABASE
+    :type create_clauses: str
     """
     dest, db_name, db_user, db_passwd = test_define_value(dest, db_name, db_user, db_passwd)
-    dhcp.db_setup(dest=dest, db_name=db_name, db_user=db_user, db_passwd=db_passwd, init_db=init_db, disable=disable)
+    dhcp.db_setup(
+        dest=dest,
+        db_name=db_name,
+        db_user=db_user,
+        db_passwd=db_passwd,
+        init_db=init_db,
+        disable=disable,
+        create_clauses=create_clauses,
+    )
 
 
 @step(r'Use (\S+) as lease database backend.')
@@ -1201,7 +1217,8 @@ def build_and_send_config_files(cfg=None, dest=world.f_cfg.mgmt_address):
 
 
 def start_srv(name: str, action: str, config_set=None,
-              dest: str = world.f_cfg.mgmt_address, should_succeed: bool = True):
+              dest: str = world.f_cfg.mgmt_address, should_succeed: bool = True, parameters=None,
+              wait_after_kea_pkg: float = 0.3):
     """Start, stop, restart or reconfigure server.
 
     :param name: DHCP' | 'DNS'
@@ -1215,15 +1232,22 @@ def start_srv(name: str, action: str, config_set=None,
     :type dest:
     :param should_succeed: whether the action is supposed to succeed or fail (Default value = True)
     :type should_succeed: bool
+    :param parameters: parameters to be passed to the kea server start command
+    :type parameters: string
+    :param wait_after_kea_pkg: wait after Kea package is started, in seconds (Default value = 0.3).
+       This do NOT apply to the first time Kea is started in this test run.
+    :type wait_after_kea_pkg: float
     """
     dest = test_define_value(dest)[0]
     check_remote_address(dest)
     if name not in ["DHCP", "DNS", "CA"]:
         assert False, "I don't think there is support for something else than DNS,  DHCP or CA"
+    if name != "DHCP" and parameters is not None:
+        assert False, "Parameters are only supported for DHCP server"
     log.info(f'---------------- {name} {action} {dest} ----------------')
     if action == "started":
         if name == "DHCP":
-            dhcp.start_srv(should_succeed, destination_address=dest)
+            dhcp.start_srv(should_succeed, destination_address=dest, parameters=parameters)
         elif name == "CA":
             dhcp.start_srv(should_succeed, destination_address=dest, process='ctrl_agent')
         elif name == "DNS":
@@ -1239,7 +1263,7 @@ def start_srv(name: str, action: str, config_set=None,
     elif action == "restarted":
         assert should_succeed, 'should_succeed == false not implemented for restart action'
         if name == "DHCP":
-            dhcp.restart_srv(destination_address=dest)
+            dhcp.restart_srv(destination_address=dest, parameters=parameters)
         elif name == "DNS":
             dns.restart_srv(destination_address=dest)
     elif action == "reconfigured":
@@ -1249,6 +1273,16 @@ def start_srv(name: str, action: str, config_set=None,
             dns.reconfigure_srv(should_succeed, destination_address=dest)
     else:
         assert False, "we don't support '%s' action." % str(action)
+
+    # When Kea is started for the second time or restarted during the same test run,
+    # it may have trouble receiving DHCP messages or control commands immediately after startup.
+    if wait_after_kea_pkg > 0.0 and world.f_cfg.install_method == 'native' and world.kea_started_this_test:
+        log.info(f'Sleeping for {wait_after_kea_pkg} seconds after {name} {action} {dest}')
+        forge_sleep(wait_after_kea_pkg, "seconds")
+
+    # Specify if Kea was started at least once this test run.
+    if name == "DHCP" and action in ["started", "restarted"]:
+        world.kea_started_this_test = True
 
 
 def check_remote_address(remote_address):

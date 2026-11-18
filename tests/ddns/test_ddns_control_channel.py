@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -426,7 +426,7 @@ def test_ddns6_control_channel_build_report():
     assert "Valgrind" in response["text"]
     assert "CXX_VERSION" in response["text"]
     assert "MySQL" in response["text"]
-    assert "Premium hooks" in response["text"]
+    assert "Hooks directory" in response["text"]
 
 
 @pytest.mark.v6

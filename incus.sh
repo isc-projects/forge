@@ -109,11 +109,26 @@ function prepare_node() {
     if ! is_instance_created "kea-${2}"; then
         log "Creating kea-$2 node - $1"
         incus launch images:"$1" kea-"$2"
-        sleep 5
-        if [ "$1" = "fedora/41" ]; then
-            log "Some jobs listed as running, should be killed"
-            incus exec kea-"$2" -- systemctl list-jobs
-            incus exec kea-"$2" -- bash -c 'systemctl list-jobs | awk "NR>1 && \$4==\"running\" {print \$2}" | xargs -r systemctl stop'
+
+        if test "${usedSystem}" = 'alpine'; then
+          # Wait for the instance to finish booting.
+          while ! incus exec "kea-${2}" -- getent hosts alpinelinux.org > /dev/null; do
+            sleep 1
+          done
+        else
+          # Wait for the instance to finish booting.
+          while ! incus exec "kea-${2}" -- systemctl is-system-running --wait | grep -qxE 'running|degraded' > /dev/null; do
+            sleep 1
+          done
+
+          # Rate limiting in systemd can suppress messages that are expected by Forge tests. So disable rate limiting.
+          incus exec "kea-${2}" -- sh -c '
+            mkdir -p /etc/systemd/journald.conf.d
+            echo "[Journal]" > /etc/systemd/journald.conf.d/99-forge-tests.conf
+            echo "RateLimitBurst=0" >> /etc/systemd/journald.conf.d/99-forge-tests.conf
+            echo "RateLimitIntervalSec=0" >> /etc/systemd/journald.conf.d/99-forge-tests.conf
+          '
+          incus exec "kea-${2}" -- systemctl restart systemd-journald
         fi
     fi
 }
@@ -152,7 +167,7 @@ function update_node() {
         incus exec kea-"$1" -- curl -s -L "https://gitlab.isc.org/isc-projects/kea/-/raw/$hammerBranch/hammer.py" -o /tmp/hammer.py
         log "Running hammer, output in /tmp/kea-$1-hammer.log"
         # This is a neat trick, commands executed by hammer are still printed to stdout
-        incus exec kea-"$1" -- python3 /tmp/hammer.py prepare-system -p local -w mysql pgsql forge shell gssapi netconf > /tmp/kea-"$1"-hammer.log
+        incus exec kea-"$1" -- python3 /tmp/hammer.py prepare-system -w mysql pgsql forge shell gssapi netconf > /tmp/kea-"$1"-hammer.log
     fi
 }
 
@@ -227,7 +242,7 @@ function install_kerberos() {
             install_pkgs "$1" krb5-server krb5-workstation krb5-libs
             ;;
         *)
-            log_error "Not implemented yet"
+            log "Not implemented yet"
             ;;
     esac
 }
@@ -443,7 +458,9 @@ function install_nexus_repo() {
     case "$usedSystem" in
             "ubuntu"|"debian")
                 incus exec kea-"$node" -- curl https://packages.aws.isc.org/repository/repo-keys/repo-key.gpg -o repo-key.gpg
+                incus exec kea-"$node" -- rm -f /usr/share/keyrings/packages-aws-isc-org.gpg
                 incus exec kea-"$node" -- gpg --dearmor -o /usr/share/keyrings/packages-aws-isc-org.gpg repo-key.gpg
+                incus exec kea-"$node" -- rm repo-key.gpg
                 printf "deb [signed-by=/usr/share/keyrings/packages-aws-isc-org.gpg] https://packages.aws.isc.org/repository/kea-%s/ kea main\n" "${usedSystem}-${osVersion}" > kea-nexus.list
                 incus file push kea-nexus.list "$1"/etc/apt/sources.list.d/kea-nexus.list
                 update kea-"$node"
@@ -464,7 +481,7 @@ EOF
                 update kea-"$node"
                 ;;
             "alpine")
-                log_error "Alpine repo in Nexus is not supported, packages will be downloaded and installed locally"
+                log "Alpine repo in Nexus is not supported, packages will be downloaded and installed locally"
                 ;;
             *)
             printf "Not in the list"
@@ -475,6 +492,7 @@ EOF
 function install_cloudsmith_repo() {
     log "Installing Cloudsmith repository on node $1"
     log_error "Not implemented yet"
+    exit 1
 }
 
 function install_kea_pkgs() {
@@ -508,8 +526,6 @@ function install_kea_pkgs() {
             "isc-kea-mysql"
             "isc-kea-pgsql"
             "isc-kea-gss-tsig"
-            "isc-kea-subscriber-cb-cmds"
-            "isc-kea-subscriber-rbac"
         )
         case "$usedSystem" in
             "ubuntu"|"debian")
@@ -547,7 +563,6 @@ function install_kea_pkgs() {
             ;;
         esac
     done
-    printf '\nINSTALL_METHOD="native"\n' >> init_all.py
 }
 
 function remove_kea_pkgs() {
@@ -585,9 +600,8 @@ function install_kea_tarball() {
         log "Installing kea from the source code on node kea-$node - $usedSystem $osVersion"
         incus exec kea-"$node" -- rm -rf /tmp/kea
         incus file push -r -q "$2" kea-"$node"/tmp/.
-        incus exec kea-"$node" --cwd=/tmp/kea -- python3 /tmp/hammer.py build -p local -w ccache,forge,install,mysql,pgsql,shell,gssapi,netconf -x docs,perfdhcp,unittest --ccache-dir /ccache #
+        incus exec kea-"$node" --cwd=/tmp/kea -- python3 /tmp/hammer.py build -w ccache,forge,install,mysql,pgsql,shell,gssapi,netconf -x docs,perfdhcp,unittest --ccache-dir /ccache #
     done
-    printf '\nINSTALL_METHOD="make"\n' >> init_all.py
 }
 
 function print_summary() {
@@ -636,6 +650,12 @@ function setup_forge() {
     upload_pytest
     incus exec kea-forge -- sudo -u forge python3 -m venv /home/forge/venv-client-node
     incus exec kea-forge -- sudo -u forge /home/forge/venv-client-node/bin/pip install -r /home/forge/requirements.txt
+    generate_init_all
+}
+
+function generate_init_all() {
+    # no arguments needed
+    log "Generating init_all.py"
     populate_forge_init
     python3 modify_init_all.py
 }
@@ -657,8 +677,10 @@ function run_pytest() {
     done
     incus file push init_all.py kea-forge/home/forge/init_all.py
     log "Running pytest.."
-    incus exec kea-forge --cwd=/home/forge -- sudo /home/forge/venv-client-node/bin/pytest "${new_args[@]}"
+    # Allow exit code 1 which means that tests were collected and run succesfully but some of the tests failed. Should not result in job failure.
+    ( incus exec kea-forge --cwd=/home/forge -- sudo /home/forge/venv-client-node/bin/pytest "${new_args[@]}" || test "${?}" = 1 ) | tee pytest-output.txt
     get_results
+    log "Finished."
 }
 
 function get_results() {
@@ -676,7 +698,7 @@ function get_from_kea_forge() {
 function populate_forge_init() {
     log "Updating forge init script"
 
-cat << EOF >> init_all.py
+cat << EOF > init_all.py
 LOGLEVEL = "info"
 IFACE = "eth1"
 SERVER_IFACE = "eth1"
@@ -720,12 +742,22 @@ MULTI_THREADING_ENABLED = True
 FORGE_VERBOSE = 0
 DISABLE_DB_SETUP = False
 EOF
+    version_info=$(incus exec kea-1 -- kea-dhcp6 -V | head -n 1)
+    if  test -z "${version_info-}"; then
+        log_error "Kea does not seem to be installed."
+        exit 1
+    fi
+    if echo "${version_info}" | grep -E 'git|tarball' > /dev/null 2>&1; then
+        printf 'INSTALL_METHOD = "make"\n' >> init_all.py
+    else
+        printf 'INSTALL_METHOD = "native"\n' >> init_all.py
+    fi
 
-if [ "$usedSystem" = "fedora" ] || [ "$usedSystem" = "rockylinux" ]; then
-    printf 'DNS_DATA_PATH = "/etc/"\n' >> init_all.py
-else
-    printf 'DNS_DATA_PATH = "/etc/bind/"\n' >> init_all.py
-fi
+    if [ "$usedSystem" = "fedora" ] || [ "$usedSystem" = "rockylinux" ]; then
+        printf 'DNS_DATA_PATH = "/etc/"\n' >> init_all.py
+    else
+        printf 'DNS_DATA_PATH = "/etc/bind/"\n' >> init_all.py
+    fi
 }
 
 function help() {
@@ -779,7 +811,7 @@ case "$command" in
         # let's download images to cache it locally
         incus image copy images:ubuntu/26.04 local:
         incus image copy images:fedora/44 local:
-        incus image copy images:alpine/3.23 local:
+        incus image copy images:alpine/3.24 local:
         incus image copy images:rockylinux/10 local:
         incus image list
         ;;
@@ -919,6 +951,9 @@ case "$command" in
     check-ssh)
         check_ssh "$@"
         ;;
+    connect-to-node)
+        incus exec "$@" -- bash
+        ;;
     check-kea)
         check_installed_kea "$@"
         ;;
@@ -936,6 +971,9 @@ case "$command" in
         ;;
     print-summary)
         print_summary
+        ;;
+    generate-init-all)
+        generate_init_all
         ;;
     update-pytest)
         upload_pytest

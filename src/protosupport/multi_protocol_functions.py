@@ -50,9 +50,17 @@ import requests
 
 from src.forge_cfg import world
 from src.misc import text_color
-from src.softwaresupport.multi_server_functions import fabric_send_file, fabric_download_file, \
-        fabric_remove_file_command, remove_local_file, fabric_sudo_command, generate_file_name, \
-        save_local_file, fabric_run_command
+from src.softwaresupport.multi_server_functions import (
+    fabric_download_file,
+    fabric_is_file,
+    fabric_remove_file_command,
+    fabric_run_command,
+    fabric_send_file,
+    fabric_sudo_command,
+    generate_file_name,
+    remove_local_file,
+    save_local_file,
+)
 
 
 log = logging.getLogger('forge')
@@ -241,89 +249,84 @@ def get_line_count_in_file(line, file, destination=world.f_cfg.mgmt_address):
     """Retrieve the number of lines contained in a file.
 
     :param line: line (or part of file or glob pattern) being checked
-    :type line:
+    :type line: str
     :param file: name of file being checked, or glob pattern potentially matching multiple files
-    :type file:
+    :type file: str
     :param destination: address of server hosting the file (Default value = world.f_cfg.mgmt_address)
     :type destination:
-    :return:
-    :rtype:
+    :return: number of matched lines
+    :rtype: int
     """
-    command = 'grep "$(cat <<EOF\n'
-    command += f'{line}\n'
-    command += 'EOF\n'
-    command += f')" {file} | wc -l'
-    result = fabric_sudo_command(command, destination_host=destination, ignore_errors=True)
-    assert result.succeeded, f'Command in get_line_count_in_file failed:\n{command}'
-    get_line_count_in_file.file = file
-    return int(result)
+    if not fabric_is_file(file, destination_host=destination):
+        # It can happen that the file does not exist e.g. when checking a log file and the server has not started yet.
+        # Return 0 count in that case.
+        return 0
+    # Try both literal match and regex match.
+    for flag in ['F', 'E']:
+        process = fabric_sudo_command(
+            f'grep -{flag}c "$(cat <<EOF\n{line}\nEOF\n)" {file}',
+            destination_host=destination,
+            hide_all=world.f_cfg.forge_verbose == 0,
+            ignore_errors=True,
+        )
+        count = int(process.stdout)
+        if count != 0:
+            return count
+    return 0
 
 
 def get_line_count_in_log(line, log_file=None, destination=world.f_cfg.mgmt_address):
     """Retrieve the number of lines contained in a log file.
 
     :param line: line (or part of file or glob pattern) being checked
-    :type line:
+    :type line: str
     :param log_file: name of the log file being checked. If None, default values
-    :type log_file:
                      representing Kea logs are used.
+    :type log_file: str
     :param destination: address of server hosting the file (Default value = world.f_cfg.mgmt_address)
-    :type destination:
-    :return:
-    :rtype:
+    :type destination: str
+    :return: number of matched lines
+    :rtype: int
     """
-    if log_file is not None and 'syslog' in log_file:
+    cmd = None
+    file = log_file
+    get_line_count_in_log.cmd_or_file = file
+
+    if log_file is None:
+        service_name = world.f_cfg.service_name()
+        if world.f_cfg.install_method == 'native' and world.server_system != 'alpine':
+            file = '/tmp/log.txt'
+            cmd = f'journalctl -u {service_name} --no-pager > {file}'
+            get_line_count_in_log.cmd_or_file = cmd
+        else:
+            file = world.f_cfg.log_path(service_name)
+    elif log_file.startswith('syslog'):
+        file = '/tmp/log.txt'
+        get_line_count_in_log.cmd_or_file = file
         if log_file == 'syslog':
-            cmd = 'journalctl -u syslog |'
-            cmd += ' grep "$(cat <<EOF\n'
-            cmd += f'{line}\n'
-            cmd += 'EOF\n'
-            cmd += ')" | wc -l'
-            result = fabric_sudo_command(cmd, destination_host=destination, ignore_errors=True)
+            cmd = f'journalctl -u syslog --no-pager > {file}'
+            get_line_count_in_log.cmd_or_file = cmd
         else:
             assert 'syslog:local' in log_file, f'Invalid syslog facility: {log_file}, forge supports only syslog:local0-local7'
             assert log_file[-1].isdigit(), f'Invalid syslog facility: {log_file}, forge supports only syslog:local0-local7'
             facility = int(log_file[-1]) + 16
             assert 16 <= facility <= 23, f'Invalid syslog facility: {log_file}, forge supports only syslog:local0-local7'
-            cmd = f'journalctl SYSLOG_FACILITY={facility} |'
-            cmd += ' grep "$(cat <<EOF\n'
-            cmd += f'{line}\n'
-            cmd += 'EOF\n'
-            cmd += ')" | wc -l'
-            result = fabric_sudo_command(cmd, destination_host=destination, ignore_errors=True)
-    elif world.f_cfg.install_method == 'make':
-        if log_file is None:
-            log_file = 'kea.log'
-        log_file = world.f_cfg.log_join(log_file)
-        result = get_line_count_in_file(line, log_file, destination)
-    else:
-        if log_file is None or log_file == 'kea-dhcp-ddns.log':
-            if log_file == 'kea-dhcp-ddns.log':
-                if world.server_system in ['redhat', 'fedora', 'alpine']:
-                    service_name = 'kea-dhcp-ddns'
-                else:
-                    service_name = 'isc-kea-dhcp-ddns-server'
-            else:
-                if world.server_system in ['redhat', 'fedora', 'alpine']:
-                    service_name = f'kea-dhcp{world.proto[1]}'
-                else:
-                    service_name = f'isc-kea-dhcp{world.proto[1]}-server'
-            if world.server_system == 'alpine':
-                log_file = world.f_cfg.log_join(f'{service_name}.log')
-                cmd = f'cat {log_file} |'
-            else:
-                log_file = "journalctl"
-                cmd = f'journalctl -u {service_name} |'  # get logs of kea service
-            cmd += ' grep "$(cat <<EOF\n'
-            cmd += f'{line}\n'
-            cmd += 'EOF\n'
-            cmd += ')" | wc -l'
-            result = fabric_sudo_command(cmd, destination_host=destination, ignore_errors=True)
-        else:
-            log_file = world.f_cfg.log_join(log_file)
-            result = get_line_count_in_file(line, log_file, destination)
-    get_line_count_in_log.file = log_file
-    return int(result)
+            cmd = f'journalctl SYSLOG_FACILITY={facility} --no-pager > {file}'
+            get_line_count_in_log.cmd_or_file = cmd
+    elif not log_file.startswith('/'):
+        file = world.f_cfg.log_join(log_file)
+        get_line_count_in_log.cmd_or_file = file
+
+    # If we need a command to fetch the logs, run it.
+    if cmd is not None:
+        process = fabric_sudo_command(
+            cmd, destination_host=destination, hide_all=world.f_cfg.forge_verbose == 0, ignore_errors=True
+        )
+        # It can happen that the command fails e.g. when the server has not started yet. Return 0 count in that case.
+        if process.failed:
+            return 0
+
+    return get_line_count_in_file(line, file, destination)
 
 
 def file_contains_line(file, line, destination=world.f_cfg.mgmt_address):
@@ -337,7 +340,7 @@ def file_contains_line(file, line, destination=world.f_cfg.mgmt_address):
     :type destination:
     """
     result = get_line_count_in_file(line, file, destination=destination)
-    assert result > 0, f'Expected file "{get_line_count_in_file.file}" to contain line "{line}", but it does not.'
+    assert result > 0, f'Expected file "{file}" to contain line "{line}", but it does not.'
 
 
 def file_contains_line_n_times(file, n, line, destination=world.f_cfg.mgmt_address):
@@ -353,7 +356,7 @@ def file_contains_line_n_times(file, n, line, destination=world.f_cfg.mgmt_addre
     :type destination:
     """
     result = get_line_count_in_file(line, file, destination=destination)
-    assert result == n, f'Expected file {get_line_count_in_file.file} to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
+    assert result == n, f'Expected file {file} to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
 
 
@@ -368,7 +371,7 @@ def file_doesnt_contain_line(file, line, destination=world.f_cfg.mgmt_address):
     :type destination:
     """
     result = get_line_count_in_file(line, file, destination=destination)
-    assert result == 0, f'Expected file "{get_line_count_in_file.file}" to not contain line "{line}".' \
+    assert result == 0, f'Expected file "{file}" to not contain line "{line}".' \
                         f'Found {result} time{"" if result == 1 else "s"}.'
 
 
@@ -405,7 +408,9 @@ def log_contains(line, log_file=None, destination=world.f_cfg.mgmt_address):
     :type destination:
     """
     result = get_line_count_in_log(line, log_file, destination=destination)
-    assert result > 0, f'Expected log file {get_line_count_in_log.file} to contain line "{line}", but it does not.'
+    assert result > 0, (
+        f'Expected log file "{get_line_count_in_log.cmd_or_file}" to contain line "{line}", but it does not.'
+    )
 
 
 def log_contains_n_times(line, n, log_file=None, destination=world.f_cfg.mgmt_address):
@@ -421,8 +426,11 @@ def log_contains_n_times(line, n, log_file=None, destination=world.f_cfg.mgmt_ad
     :type destination:
     """
     result = get_line_count_in_log(line, log_file, destination=destination)
-    assert result == n, f'Expected log file {get_line_count_in_log.file} to contain line "{line}" a number of {n} time{"" if n == 1 else "s"}. ' \
-                        f'Found {result} time{"" if result == 1 else "s"}.'
+    assert result == n, (
+        f'Expected log file "{get_line_count_in_log.cmd_or_file}" to contain line "{line}" '
+        f'a number of {n} time{"" if n == 1 else "s"}. '
+        f'Found {result} time{"" if result == 1 else "s"}.'
+    )
 
 
 def log_doesnt_contain(line, log_file=None, destination=world.f_cfg.mgmt_address):
@@ -436,8 +444,10 @@ def log_doesnt_contain(line, log_file=None, destination=world.f_cfg.mgmt_address
     :type destination:
     """
     result = get_line_count_in_log(line, log_file, destination=destination)
-    assert result == 0, f'Expected log file {get_line_count_in_log.file} to not contain line "{line}".' \
-                        f'Found {result} time{"" if result == 1 else "s"}.'
+    assert result == 0, (
+        f'Expected log file "{get_line_count_in_log.cmd_or_file}" to not contain line "{line}". '
+        f'Found {result} time{"" if result == 1 else "s"}.'
+    )
 
 
 def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination=world.f_cfg.mgmt_address):
@@ -467,10 +477,11 @@ def wait_for_message_in_log(line, count=1, timeout=4, log_file=None, destination
             break
 
         # Assert that the timeout hasn't passed yet.
-        assert datetime.datetime.now() < should_finish_by, \
-            f'Timeout {timeout}s exceeded while waiting for {count} ' \
-            f'line{"" if count == 1 else "s"} of "{line}" in log file {log_file}. ' \
+        assert datetime.datetime.now() < should_finish_by, (
+            f'Timeout {timeout}s exceeded while waiting for {count} '
+            f'line{"" if count == 1 else "s"} of "{line}" in log file "{get_line_count_in_log.cmd_or_file}". '
             f'Instead got {result} lines.'
+        )
 
         # Sleep a bit to avoid busy waiting.
         forge_sleep(100, 'milliseconds')

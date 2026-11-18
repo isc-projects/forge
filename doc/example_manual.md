@@ -119,7 +119,7 @@ run hammer.py script which will prepare all requirements for build process.
 We use some predefined settings for basic server. This can take a while depending on machine speed and internet connection. (5-20 minutes)
 
 ```shell
-./hammer.py prepare-system -p local -s ubuntu -r 24.04 -w all
+./hammer.py prepare-system -w all
 ```
 
 ### 7. Building and installing Kea.

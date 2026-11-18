@@ -17,13 +17,15 @@ from src import srv_control
 from src.forge_cfg import world
 
 
-def basic_configuration(version, lft) -> None:
+def basic_configuration(version, lft, second_subnet_lft_addition: int = 20) -> None:
     """basic_configuration Configure basic DHCPv4 server with DDNS and 4 subnets.
 
     :param version: DHCP version
     :type version: int
     :param lft: global lease lifetime
     :type lft: int
+    :param second_subnet_lft_addition: additional lease time for second subnet, defaults to 20
+    :type second_subnet_lft_addition: int, optional
     """
     # control channel
     srv_control.add_unix_socket()
@@ -39,11 +41,11 @@ def basic_configuration(version, lft) -> None:
         srv_control.config_client_classification(i, f"VENDOR_CLASS_subnet{i}")
 
     # last subnet will have longer lease time
-    srv_control.set_conf_parameter_subnet("renew-timer", 40, 2)
-    srv_control.set_conf_parameter_subnet("rebind-timer", 41, 2)
+    srv_control.set_conf_parameter_subnet("renew-timer", lft + second_subnet_lft_addition, 2)
+    srv_control.set_conf_parameter_subnet("rebind-timer", lft + second_subnet_lft_addition + 1, 2)
     if version == 6:
         srv_control.set_conf_parameter_subnet("preferred-lifetime", 42, 2)
-    srv_control.set_conf_parameter_subnet("valid-lifetime", 50, 2)
+    srv_control.set_conf_parameter_subnet("valid-lifetime", lft + second_subnet_lft_addition + 10, 2)
 
     # shared networks
     if version == 4:
@@ -314,7 +316,7 @@ def test_ddns4_conflict_resolution_check_with_dhcid(level):
     :type level:
     """
     # basic config
-    main_valid_lifetime = 25
+    main_valid_lifetime = 60
     misc.test_setup()
     # subnets
     srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.10-192.168.50.15", id=1)
@@ -485,7 +487,7 @@ def test_ddns4_conflict_resolution_no_check_with_dhcid(level):
     """
 
     # basic config
-    main_valid_lifetime = 10
+    main_valid_lifetime = 20
     misc.test_setup()
     # subnets
     srv_control.config_srv_subnet("192.168.50.0/24", "192.168.50.10-192.168.50.15", id=1)

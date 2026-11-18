@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -66,7 +66,7 @@ def test_RADIUS(dhcp_version: str,
         srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-address', False)
         srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-pool', False)
     srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.start_srv('DHCP', 'restarted')
 
     # Check the leases.
     leases = radius.send_and_receive(config_type, radius_reservation_in_pool)
@@ -111,7 +111,7 @@ def test_RADIUS_framed_pool(dhcp_version: str, attribute_cardinality: str):
     if dhcp_version == 'v4_bootp':
         srv_control.add_hooks('libdhcp_bootp.so')
     srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.start_srv('DHCP', 'restarted')
 
     if attribute_cardinality == 'double-attributes-bogus-last':
         # Whether Kea takes only the first pool into consideration, as it happens at
@@ -163,7 +163,7 @@ def test_RADIUS_no_attributes(dhcp_version: str):
     if dhcp_version == 'v4_bootp':
         srv_control.add_hooks('libdhcp_bootp.so')
     srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.start_srv('DHCP', 'restarted')
 
     # The client should get a lease from the configured pool.
     lease = radius.get_address(mac='08:00:27:b0:c1:41',
@@ -243,7 +243,7 @@ def test_RADIUS_giaddr(dhcp_version: str,
     if leading_subnet == 'leading_subnet':
         radius.add_leading_subnet('192.168.22.0/24', '192.168.22.0 - 192.168.22.255')
     srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.start_srv('DHCP', 'restarted')
 
     # Set giaddr.
     if giaddr == 'in-subnet':
@@ -395,7 +395,7 @@ def test_RADIUS_Delegated_IPv6_Prefix_simple(dhcp_version: str):
     if dhcp_version == 'v4_bootp':
         srv_control.add_hooks('libdhcp_bootp.so')
     srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.start_srv('DHCP', 'restarted')
 
     # Check that Delegated-IPv6-Prefix has no effect on v4.
     if dhcp_version.startswith('v4'):
@@ -471,7 +471,7 @@ def test_RADIUS_Delegated_IPv6_Prefix(dhcp_version: str,
         srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-address', False)
         srv_control.add_parameter_to_hook('libdhcp_radius.so', 'reselect-subnet-pool', False)
     srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
+    srv_control.start_srv('DHCP', 'restarted')
 
     # All the following should get the delegated prefixes and framed ipv6 addresses configured in RADIUS or otherwise
     # addresses from the dynamic pool.
@@ -547,6 +547,8 @@ def test_RADIUS_Delegated_IPv6_Prefix(dhcp_version: str,
 
 @pytest.mark.v6
 @pytest.mark.radius
+@pytest.mark.awaiting_fix  # kea#3423
+@pytest.mark.disabled
 def test_RADIUS_Delegated_IPv6_Prefix_same_prefix(dhcp_version: str):
     """
     Check that the Delegated-IPv6-Prefix RADIUS attribute alongside a Framed-IPv6-Address with the same prefix result in
@@ -574,8 +576,6 @@ def test_RADIUS_Delegated_IPv6_Prefix_same_prefix(dhcp_version: str):
             }
         ]
     })
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
 
     srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:05',
                  address='2001:db8:0:0:5::', delegated_prefix='2001:db8:0:0:5::/96')
@@ -591,6 +591,8 @@ def test_RADIUS_Delegated_IPv6_Prefix_same_prefix(dhcp_version: str):
 
 @pytest.mark.v6
 @pytest.mark.radius
+@pytest.mark.awaiting_fix  # kea#3423
+@pytest.mark.disabled
 def test_RADIUS_Delegated_IPv6_Prefix_same_prefix_and_prefix_length(dhcp_version: str):
     """
     Check that the Delegated-IPv6-Prefix RADIUS attribute alongside a Framed-IPv6-Address with the same prefix and the
@@ -618,8 +620,6 @@ def test_RADIUS_Delegated_IPv6_Prefix_same_prefix_and_prefix_length(dhcp_version
             }
         ]
     })
-    srv_control.build_and_send_config_files()
-    srv_control.start_srv('DHCP', 'started')
 
     srv_msg.SARR(duid='00:03:00:01:08:ff:ee:dd:cc:06',
                  address='2001:db8:0:0:6::', delegated_prefix='2001:db8:0:0:6::/128')

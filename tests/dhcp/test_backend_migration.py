@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium.
+# Copyright (C) 2022-2026 Internet Systems Consortium.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -526,8 +526,8 @@ def test_v6_lease_dump(backend):
     # Check CSV file for subnet 2 acquired lease
     line = f'2001:db8:2::1,00:03:00:01:f6:f5:f4:f3:f2:01,4000,{cltt2+4000}' \
            f',2,3000,0,5678,128,0,0,,f6:f5:f4:f3:f2:01,0,{{ "ISC": ' \
-           f'{{ "relay-info": \\[ {{ "hop": 0&#x2c "link": "2001:db8:2::1000"&#x2c "options": ' \
-           f'"0x00120008706F727431323334"&#x2c "peer": "fe80::1" }} \\] }} }},1,2'
+           f'{{ "relay-info": [ {{ "hop": 0&#x2c "link": "2001:db8:2::1000"&#x2c "options": ' \
+           f'"0x00120008706F727431323334"&#x2c "peer": "fe80::1" }} ] }} }},1,2'
     file_contains_line(dump_file_path, line)
 
     # delete subnet 1 leases

@@ -1,4 +1,4 @@
-# Copyright (C) 2025 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2025-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -36,4 +36,4 @@ def test_pid_file_permissions(dhcp_version):
     srv_control.start_srv('DHCP', 'started')
     misc.test_procedure()
 
-    assert verify_file_permissions(world.f_cfg.run_join(f'*dhcp{dhcp_version[1]}.pid'))
+    verify_file_permissions(world.f_cfg.run_join(f'*dhcp{dhcp_version[1]}.pid'))

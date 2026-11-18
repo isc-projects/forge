@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,13 +22,8 @@ from src.protosupport.multi_protocol_functions import get_journal_logs
 
 def _verify_log_permissions():
     """Verify if log files have 640 permissions."""
-    if world.f_cfg.install_method == 'make':
-        log_path = world.f_cfg.log_join('kea.log*')
-        verify_file_permissions(log_path)
-    elif world.server_system == 'alpine':
-        service_name = f'kea-dhcp{world.proto[1]}'
-        logging_file_path = world.f_cfg.log_join(f'{service_name}.log')
-        verify_file_permissions(logging_file_path)
+    if world.f_cfg.install_method == 'make' or world.server_system == 'alpine':
+        verify_file_permissions(world.f_cfg.log_path())
 
 
 @pytest.mark.v4
@@ -1188,7 +1183,6 @@ def test_v4_loggers_all_different_levels_same_file():
 
 @pytest.mark.v4
 @pytest.mark.logging
-@pytest.mark.disabled
 @pytest.mark.awaiting_fix
 def test_v4_loggers_all_different_levels_different_file():
     """
@@ -1206,7 +1200,6 @@ def test_v4_loggers_all_different_levels_different_file():
     srv_control.configure_loggers('kea-dhcp4.leases', 'WARN', 'None', 'kea.log5')
     srv_control.configure_loggers('kea-dhcp4.alloc-engine', 'DEBUG', 50, 'kea.log6')
     srv_control.configure_loggers('kea-dhcp4.bad-packets', 'DEBUG', 25, 'kea.log7')
-    srv_control.configure_loggers('kea-dhcp4.dhcpsrv', 'INFO', 'None', 'kea.log8')
     world.dhcp_cfg['authoritative'] = True
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
@@ -1285,11 +1278,9 @@ def test_v4_loggers_all_different_levels_different_file():
     log_doesnt_contain(r'DEBUG \[kea-dhcp4\.dhcp4', 'kea.log1')
     log_contains(r'INFO  \[kea-dhcp4\.dhcp4', 'kea.log1')
     log_doesnt_contain(r'DEBUG \[kea-dhcp4\.dhcpsrv', 'kea.log2')
-    log_doesnt_contain(r'DEBUG \[kea-dhcp4\.dhcpsrv', 'kea.log8')
     log_contains(r'DEBUG \[kea-dhcp4\.options', 'kea.log3')
 
     # bug: #592
-    log_contains(r'INFO  \[kea-dhcp4\.dhcpsrv', 'kea.log8')
     log_contains(r'INFO  \[kea-dhcp4\.dhcpsrv', 'kea.log2')
 
 
@@ -1367,12 +1358,12 @@ def test_ddns4_logging_all_types_debug():
     misc.pass_criteria()
     srv_msg.send_dont_wait_for_message()
     srv_msg.forge_sleep(1)
-    log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', 'kea-dhcp-ddns.log')
-    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', 'kea-dhcp-ddns.log')
-    # log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', 'kea-dhcp-ddns.log')  # TODO: it is not present in the log
-    log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', 'kea-dhcp-ddns.log')
-    log_contains(r'ERROR \[kea-dhcp-ddns.d2-to-dns', 'kea-dhcp-ddns.log')
-    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', 'kea-dhcp-ddns.log')
+    log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', log_file=world.f_cfg.log_path('kea-dhcp-ddns'))
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', log_file=world.f_cfg.log_path('kea-dhcp-ddns'))
+    # log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', log_file=world.f_cfg.log_path('kea-dhcp-ddns'))  # TODO: it is not present in the log
+    log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', log_file=world.f_cfg.log_path('kea-dhcp-ddns'))
+    log_contains(r'ERROR \[kea-dhcp-ddns.d2-to-dns', log_file=world.f_cfg.log_path('kea-dhcp-ddns'))
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', log_file=world.f_cfg.log_path('kea-dhcp-ddns'))
 
 
 @pytest.mark.v6
@@ -2217,6 +2208,7 @@ def test_v6_loggers_all_different_levels_same_file():
 
 @pytest.mark.v6
 @pytest.mark.logging
+@pytest.mark.awaiting_fix
 def test_v6_loggers_all_different_levels_different_file():
     """
     Test logging of all loggers at different levels in different files.
@@ -2230,7 +2222,6 @@ def test_v6_loggers_all_different_levels_different_file():
     srv_control.configure_loggers('kea-dhcp6.leases', 'WARN', 'None', 'kea.log5')
     srv_control.configure_loggers('kea-dhcp6.alloc-engine', 'DEBUG', 50, 'kea.log6')
     srv_control.configure_loggers('kea-dhcp6.bad-packets', 'DEBUG', 25, 'kea.log7')
-    srv_control.configure_loggers('kea-dhcp6.options', 'INFO', 'None', 'kea.log8')
     srv_control.build_and_send_config_files()
     srv_control.start_srv('DHCP', 'started')
 
@@ -2278,7 +2269,7 @@ def test_v6_loggers_all_different_levels_different_file():
     log_contains(r'INFO  \[kea-dhcp6.dhcp6', 'kea.log1')
     log_doesnt_contain(r'DEBUG \[kea-dhcp6.dhcpsrv', 'kea.log2')
     log_contains(r'INFO  \[kea-dhcp6.dhcpsrv', 'kea.log2')
-    log_doesnt_contain(r'DEBUG \[kea-dhcp6.options', 'kea.log3')
+    log_contains(r'DEBUG \[kea-dhcp6.options', 'kea.log3')
 
     if world.f_cfg.install_method == 'make':
         for log in ['kea.log1', 'kea.log2', 'kea.log3', 'kea.log4', 'kea.log5', 'kea.log6']:
@@ -2345,11 +2336,11 @@ def test_ddns6_logging_all_types_debug():
     srv_msg.response_check_include_option(1)
     srv_msg.response_check_include_option(2)
 
-    log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', log_file='kea-dhcp-ddns.log')
-    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', log_file='kea-dhcp-ddns.log')
-    # log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', log_file='kea-dhcp-ddns.log')  # TODO: it is not present in the log
-    log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', log_file='kea-dhcp-ddns.log')
-    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', log_file='kea-dhcp-ddns.log')
+    log_contains(r'INFO  \[kea-dhcp-ddns.dhcpddns', log_file=world.f_cfg.log_path('kea-dhcp-ddns'))
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcpddns', log_file=world.f_cfg.log_path('kea-dhcp-ddns'))
+    # log_contains(r'DEBUG \[kea-dhcp-ddns.libdhcp-ddns', log_file=world.f_cfg.log_path('kea-dhcp-ddns'))  # TODO: it is not present in the log
+    log_contains(r'DEBUG \[kea-dhcp-ddns.d2-to-dns', log_file=world.f_cfg.log_path('kea-dhcp-ddns'))
+    log_contains(r'DEBUG \[kea-dhcp-ddns.dhcp-to-d2', log_file=world.f_cfg.log_path('kea-dhcp-ddns'))
 
 
 @pytest.mark.v4

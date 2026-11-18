@@ -35,9 +35,6 @@ def test_kea_4268_crash_big_pdexclude_prefix(channel):
         }
     )
 
-    # Using commands makes this test fail on the SARR step until kea#4389 is fixed.
-    # So let's have this plain-config parametrization that tests that the config is rejected.
-    # TODO: when kea#4389 is merged, remove the plain-config parametrization.
     if channel == 'plain-config':
         world.dhcp_cfg = world.dhcp_cfg['Dhcp6']  # Otherwise, Dhcp6 ends up duplicated.
         srv_control.start_srv('DHCP', 'stopped')

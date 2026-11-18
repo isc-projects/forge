@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Internet Systems Consortium.
+# Copyright (C) 2023-2026 Internet Systems Consortium.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,6 +21,22 @@ from src.protosupport.multi_protocol_functions import wait_for_message_in_log
 from tests.HA.steps import increase_mac
 # pylint: disable=invalid-name
 # pylint: disable=cell-var-from-loop
+
+
+def _generate_random_id(used_up_ids_list: list):
+    """Generate random ID that is not used yet. and add it to the list of used up IDs.
+
+    :param used_up_ids_list: list of used up IDs
+    :type used_up_ids_list: list
+    :return: random ID
+    :rtype: int
+    """
+    while True:
+        random_id = secrets.randbelow(9000) + 1
+        if random_id not in used_up_ids_list:
+            used_up_ids_list.append(random_id)
+            break
+    return random_id
 
 
 def _get_lease(mac: str = "01:02:0c:03:0a:00", leases_count: int = 10, remote_id: str = None,
@@ -100,6 +116,7 @@ def _get_lease(mac: str = "01:02:0c:03:0a:00", leases_count: int = 10, remote_id
             mac = increase_mac(mac)
         return leases
 
+    used_up_ids = []
     for _ in range(leases_count):
         mac = increase_mac(mac)
         duid = "00:03:00:01:" + mac
@@ -115,11 +132,11 @@ def _get_lease(mac: str = "01:02:0c:03:0a:00", leases_count: int = 10, remote_id
         srv_msg.send_wait_for_message('MUST', 'ADVERTISE')
 
         for _ in range(addr_count):
-            srv_msg.client_sets_value('Client', 'ia_id', secrets.randbelow(9000) + 1)
+            srv_msg.client_sets_value('Client', 'ia_id', _generate_random_id(used_up_ids))
             srv_msg.client_does_include('Client', 'IA-NA')
 
         for _ in range(pd_count):
-            srv_msg.client_sets_value('Client', 'ia_pd', secrets.randbelow(9000) + 1)
+            srv_msg.client_sets_value('Client', 'ia_pd', _generate_random_id(used_up_ids))
             srv_msg.client_does_include('Client', 'IA-PD')
 
         srv_msg.client_copy_option('server-id')

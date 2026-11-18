@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,7 +19,7 @@ from src import srv_control
 from src.forge_cfg import world
 from src.protosupport.multi_protocol_functions import log_contains, log_doesnt_contain
 from src.softwaresupport import krb
-from src.softwaresupport.multi_server_functions import start_tcpdump
+from src.softwaresupport.multi_server_functions import start_tcpdump, fabric_is_file, fabric_sudo_command
 
 
 def _send_through_socket(cmd, socket_name=world.f_cfg.run_join('ddns_control_socket'), exp_result=0, exp_failed=False):
@@ -188,6 +188,30 @@ def _do_we_have_usable_key(index=0, server_id='server1'):
         srv_msg.forge_sleep(1)
     assert False, "After 5 seconds we don't have valid key, it might be environment issue, please debug this."
 
+
+def _windows_dns_addr(my_domain):
+    """Return the Windows DNS/KDC address for this AD domain, or skip the test.
+
+    Kerberos config generation treats an empty ``kdc =`` / ``admin_server =``
+    value as a subsection, so krb5_newrealm fails with "Improper format of
+    Kerberos configuration file" if WIN_DNS_ADDR_2016/2019 is unset.
+
+    :param my_domain: windows AD domain, e.g. win2019ad.aws.isc.org
+    :type my_domain: str
+    :return: IPv4 address of the Windows DNS/KDC
+    :rtype: str
+    """
+    if "2016" in my_domain:
+        dns_addr = world.f_cfg.win_dns_addr_2016
+        setting = "WIN_DNS_ADDR_2016"
+    else:
+        dns_addr = world.f_cfg.win_dns_addr_2019
+        setting = "WIN_DNS_ADDR_2019"
+    if not str(dns_addr).strip():
+        pytest.skip(f"{setting} is not configured")
+    return dns_addr
+
+
 # IMPORTANT NOTE
 # HOW TO MANUALLY DEBUG THOSE TESTS WITHOUT LOCAL WINDOWS SERVER
 # connect to VPN
@@ -232,9 +256,8 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     :type system_and_domain: tuple
     """
     dns_system, my_domain = system_and_domain
-    if world.proto == 'v6' and dns_system == 'windows' or world.server_system in ['redhat', 'fedora']:
+    if world.proto == 'v6' and dns_system == 'windows':
         # TODO figure out why dns pkts with AAAA are dropped by windows
-        # TODO we are running tests on fedora but kerberos is failing with this configuration
         pytest.skip("Windows DNS do not respond to AAAA question, manually checked - it worked nice")
 
     tkey_lifetime = 60
@@ -250,9 +273,7 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
         iface = 'eth0'
         start_tcpdump('gss.pcap', iface=iface, port_filter='', auto_start_dns=False)
         my_domain = f"win{my_domain}ad.aws.isc.org"
-        dns_addr = world.f_cfg.win_dns_addr_2016
-        if "2019" in my_domain:
-            dns_addr = world.f_cfg.win_dns_addr_2019
+        dns_addr = _windows_dns_addr(my_domain)
         world.cfg["dns4_addr"] = dns_addr  # world.cfg["dns4_addr"] is based on world.f_cfg.dns4_addr
         # and it's reset between each test
         krb.init_and_start_krb(dns_addr, my_domain)
@@ -299,7 +320,7 @@ def test_ddns_gss_tsig_manual_expiration(dhcp_version, system_and_domain):
     addr = "192.168.50.21" if world.proto == 'v4' else "2001:db8:1::51"
     _get_lease(addr, f"name1.{my_domain}.", "01:01:01:01:01:11", suffix=my_domain)
 
-    # wait_for_message_in_log(r'FQDN: \[name1\.example\.com\.\]', log_file='kea-dhcp-ddns.log')
+    # wait_for_message_in_log(r'FQDN: [name1.example.com.]', log_file=world.f_cfg.log_path("kea-dhcp-ddns"))
     srv_msg.forge_sleep(1)
     _check_dns_record(f"name1.{my_domain}.", rdata=addr, dns_addr=dns_addr, iface=iface)
 
@@ -363,9 +384,6 @@ def test_ddns4_gss_tsig_fallback(fallback):
     :param fallback: bool, fallback value to use for testing
     :type fallback: bool
     """
-    if world.server_system in ['redhat', 'fedora']:
-        # TODO we are running tests on fedora but kerberos is failing with this configuration
-        pytest.skip("Work out why kerberos is failing to start on fedora")
     dns_addr = world.cfg["dns4_addr"]
     krb.init_and_start_krb(dns_addr, 'example.com')
     krb.kinit('example.com')
@@ -424,10 +442,17 @@ def test_ddns4_gss_tsig_fallback(fallback):
     # update will fail no matter of fallback value
     _check_dns_record("thiswontbeindns.example.com.", dns_addr=dns_addr, iface=world.cfg["dns_iface"])
     # but logs will differ
+
+    log_file = "/tmp/dns.log"
+    # Fedora uses systemd's "PrivateTmp" to isolate the DNS process, so the log file can be in a different location.
+    if world.server_system == 'fedora' and not fabric_is_file("/tmp/dns.log"):
+        bind_dir = fabric_sudo_command('find /tmp -maxdepth 1 -type d -name "systemd-private-*-named.service-*" -print')
+        log_file = f"{bind_dir}/tmp/dns.log"
+
     if fallback:
-        log_contains("update 'example.com/IN' denied", log_file="/tmp/dns.log")
+        log_contains("update 'example.com/IN' denied", log_file=log_file)
     else:
-        log_doesnt_contain("update 'example.com/IN' denied", log_file="/tmp/dns.log")
+        log_doesnt_contain("update 'example.com/IN' denied", log_file=log_file)
 
 
 @pytest.mark.v4
@@ -449,10 +474,6 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     :param system_domain: tuple, system and domain to use for testing
     :type system_domain: tuple
     """
-    if world.server_system in ['redhat', 'fedora']:
-        # TODO we are running tests on fedora but kerberos is failing with this configuration
-        pytest.skip("Work out why kerberos is failing to start on fedora")
-
     dns_system, my_domain = system_domain
     if dns_system == 'windows':
         my_domain = f"win{my_domain}ad.aws.isc.org"
@@ -461,9 +482,7 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     if dns_system == 'windows':
         iface = 'eth0'
         start_tcpdump('gss.pcap', iface=iface, port_filter='', auto_start_dns=False)
-        dns_addr = world.f_cfg.win_dns_addr_2019
-        if "2016" in my_domain:
-            dns_addr = world.f_cfg.win_dns_addr_2016
+        dns_addr = _windows_dns_addr(my_domain)
         world.cfg["dns4_addr"] = dns_addr
         krb.init_and_start_krb(dns_addr, my_domain)
         krb.kinit(my_domain)
@@ -583,7 +602,10 @@ def test_ddns4_gss_tsig_complex_scenario(system_domain):
     _check_dns_record(f"abcfqdn.{my_domain}.", dns_addr=dns_addr, iface=iface)
 
     # check also logs
-    log_contains("KEY_LOOKUP_NONE hooks library lookup for a key: found no usable key", log_file="kea-dhcp-ddns.log")
+    log_contains(
+        'KEY_LOOKUP_NONE hooks library lookup for a key: found no usable key',
+        log_file=world.f_cfg.log_path("kea-dhcp-ddns"),
+    )
 
     # get list of all keys, check if we got back one key with correct name
     cmd = dict(command="gss-tsig-list", arguments={})

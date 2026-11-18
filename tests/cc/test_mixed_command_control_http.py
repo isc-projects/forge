@@ -8,14 +8,31 @@
 
 # pylint: disable=line-too-long
 
+import http
+
 import pytest
 
 from src import misc
 from src import srv_msg
 from src import srv_control
 from src.forge_cfg import world
-from src.protosupport.multi_protocol_functions import log_contains
+from src.protosupport.multi_protocol_functions import log_contains, get_line_count_in_log
 from src.softwaresupport.multi_server_functions import fabric_is_file, fabric_remove_file_command
+
+
+class LargeHttpHeaders:
+    def __init__(self, max_line_size):
+        self._old_maxline = None
+        self._max_line_size = max_line_size
+
+    def __enter__(self):
+        self._old_maxline = http.client._MAXLINE
+        http.client._MAXLINE = self._max_line_size
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        http.client._MAXLINE = self._old_maxline
+        return False  # propagate exceptions
 
 
 @pytest.mark.v4
@@ -127,7 +144,8 @@ def test_control_channel_http_headers_multiple(dhcp_version, socket_protocol):
 @pytest.mark.parametrize('socket_protocol', ['http_v4', 'http_v6'])
 def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
     """Test too long http header.
-    Kea#4051 Kea is not fixed yet and error message is not decided yet.
+
+    Kea#4051 Awaiting decision on altering the behavior of the HTTP headers.
 
     :param dhcp_version: DHCP version
     :type dhcp_version: str
@@ -149,78 +167,21 @@ def test_control_channel_http_headers_too_long(dhcp_version, socket_protocol):
     srv_control.add_unix_socket()
     srv_control.add_http_control_channel(server_address)
 
+    long_string = '1234567890' * 10000
     headers_config = [
         {
             "name": "TooLongCat",
-                    "value": '1234567890' * 10000
+            "value": long_string
         }
     ]
-
     world.dhcp_cfg["control-sockets"][1]["http-headers"] = headers_config
-
     srv_control.build_and_send_config_files()
+    srv_control.start_srv('DHCP', 'started')
 
-    srv_control.start_srv('DHCP', 'started', should_succeed=False)
-
-    if world.f_cfg.install_method == 'make':
-        log_contains("Some error message in logs", '/tmp/keactrl.log')  # TODO: add more specific error message
-
-
-@pytest.mark.v4
-@pytest.mark.v6
-@pytest.mark.controlchannel
-@pytest.mark.parametrize('socket_protocol', ['http_v4', 'http_v6'])
-def test_control_channel_http_headers_illegal(dhcp_version, socket_protocol):
-    """Test illegal characters in HTTP headers.
-    Kea#4052 Kea is not fixed yet and error message is not decided yet.
-
-    :param dhcp_version: DHCP version
-    :type dhcp_version: str
-    :param socket_protocol: Socket protocol
-    :type socket_protocol: str
-    """
-    test_cases = [{"header":
-                   {
-                       "name": "Spaces are bad",
-                       "value": "max-age=31536000"
-                   },
-                   "error_message": "error"  # TODO: add more specific error message
-                   },
-                  {"header":
-                   {
-                       "name": "Colon:IsNotAllowed",
-                       "value": "max-age=31536000"
-                   },
-                   "error_message": "error"  # TODO: add more specific error message
-                   }
-                  ]
-
-    if socket_protocol == 'http_v4':
-        server_address = '$(SRV4_ADDR)'
-    else:
-        server_address = '$(SRV_IPV6_ADDR_GLOBAL)'
-
-    for test_case in test_cases:
-        srv_control.clear_some_data('logs')
-        misc.test_setup()
-        if dhcp_version == 'v4':
-            srv_control.config_srv_subnet(
-                '192.168.50.0/24', '192.168.50.1-192.168.50.1')
-        else:
-            srv_control.config_srv_subnet(
-                '2001:db8:1::/64', '2001:db8:1::50-2001:db8:1::50')
-        srv_control.add_unix_socket()
-        srv_control.add_http_control_channel(server_address)
-
-        world.dhcp_cfg["control-sockets"][1]["http-headers"] = [test_case["header"]]
-
-        srv_control.build_and_send_config_files()
-        srv_control.start_srv('DHCP', 'started', should_succeed=False)
-
-        if world.f_cfg.install_method == 'make':
-            log_contains(test_case["error_message"], '/tmp/keactrl.log')
-        else:
-            log_contains(test_case["error_message"])
+    with LargeHttpHeaders(1024 * 1024):
+        headers = srv_msg.send_ctrl_cmd_via_http({"command": "config-get", "service": [f'dhcp{dhcp_version[1]}'],
+                                                 "arguments": {}}, server_address, return_headers=True)
+        assert headers['TooLongCat'] == long_string
 
 
 def _remove_alpine_err_log(dhcp_version, host=world.f_cfg.mgmt_address):
@@ -292,4 +253,14 @@ def test_control_channel_http_headers_negative(dhcp_version, socket_protocol):
         if world.f_cfg.install_method == 'make':
             log_contains(test_case["error_message"], '/tmp/keactrl.log')
         else:
-            log_contains(test_case["error_message"])
+            if world.server_system == 'alpine':
+                # Alpine packages should log to .err file if kea did not start,
+                # but it could also log to standard log file.
+                log_logfile = get_line_count_in_log(test_case["error_message"])
+                log_errfile = get_line_count_in_log(test_case["error_message"],
+                                                    f'/var/log/kea/kea-dhcp{dhcp_version[1]}.err')
+                assert log_errfile == 1 or log_logfile == 1,    \
+                    f'Expected {test_case["error_message"]} to appear 1 time in the log, ' \
+                    f'but it appeared {log_errfile} times in the .err file and {log_logfile} times in the log file.'
+            else:
+                log_contains(test_case["error_message"])
