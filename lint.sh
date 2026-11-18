@@ -77,9 +77,6 @@ run_pydoctor() {
   # __init__.py files are required by pydoctor.
   pydoctor --docformat restructuredtext --html-output pydoctor-html --warnings-as-errors . || FAILURE=true
   echo  # pydoctor does not add a trailing new line. Add it ourselves.
-  if test -n "${files}"; then
-    rm -f ${files}
-  fi
   rm -rf pydoctor-html
 }
 
