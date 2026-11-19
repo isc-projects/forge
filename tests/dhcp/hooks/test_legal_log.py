@@ -1756,9 +1756,9 @@ def test_legal_log_rotate_actions(dhcp_version):
     srv_msg.remove_file_from_server(world.f_cfg.scripts_join('actions*.txt'))
 
     # Prepare action scripts executed by kea to log rotation filenames
-    script_pre = f'#!/bin/bash \n' \
+    script_pre = f'#!/bin/sh \n' \
                  f'echo $1 >> {world.f_cfg.log_join("actions_pre.txt")}'
-    script_post = f'#!/bin/bash \n' \
+    script_post = f'#!/bin/sh \n' \
                   f'echo $1 >> {world.f_cfg.log_join("actions_post.txt")}'
 
     # transfer scripts to server and make them executable

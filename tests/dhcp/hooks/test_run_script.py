@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Internet Systems Consortium, Inc. ("ISC")
+# Copyright (C) 2022-2026 Internet Systems Consortium, Inc. ("ISC")
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -191,7 +191,7 @@ def test_run_script_leases4_committed():
     }
 
     # Prepare script to send to Kea
-    script_content = f'#!/bin/bash \n' \
+    script_content = f'#!/bin/sh \n' \
                      f'echo "parameter" $1 >> {world.f_cfg.data_join("output.txt")} \n'
     for name in parameters:
         script_content += f'echo "{name}" ${name} >> {world.f_cfg.data_join("output.txt")} \n'

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -eu
 
@@ -55,15 +55,15 @@ else
     NC=''
 fi
 
-function log() {
+log() {
     printf "${BLUE}[INCUS] %s >>>> $*${NC}\n" "$(date +'%Y-%m-%d %H:%M:%S')"
 }
 
-function log_error() {
+log_error() {
     printf "${RED}[INCUS] %s >>>> $*${NC}\n" "$(date +'%Y-%m-%d %H:%M:%S')"
 }
 
-function install_base_pkgs() {
+install_base_pkgs() {
     # pkgs names may differ between systems like rockylinux and fedora
     # let's check it when we gonna need it
     case "$usedSystem" in
@@ -85,7 +85,7 @@ function install_base_pkgs() {
     esac
 }
 
-function prepare_freeradius() {
+prepare_freeradius() {
     node=$1
     if [ "$usedSystem" = "fedora" ]; then
         log "Preparing FreeRadius Certificates on $node - $usedSystem $osVersion"
@@ -94,13 +94,13 @@ function prepare_freeradius() {
     fi
 }
 
-function get_os() {
+get_os() {
     # The first argument is OS name/OS version
     usedSystem=$(echo "${1}" | cut -d '/' -f 1)
     osVersion=$(echo "${1}" | cut -d '/' -f 2)
 }
 
-function prepare_node() {
+prepare_node() {
     # The first argument is the OS name/OS version
     # The second argument is the number of kea nodes
     if [ "$2" != "forge" ]; then
@@ -133,7 +133,7 @@ function prepare_node() {
     fi
 }
 
-function copy_node() {
+copy_node() {
     # The first argument is number of all nodes required
     # There is already one node created
     for i in $(seq 2 "$1"); do
@@ -144,7 +144,7 @@ function copy_node() {
     done
 }
 
-function update_node() {
+update_node() {
     # The first argument is the number of the kea node or "forge"
     # The second argument is the branch name of a Kea repository from which hammer will be downloaded. Optional.
     hammerBranch="master"
@@ -171,7 +171,7 @@ function update_node() {
     fi
 }
 
-function create_networks() {
+create_networks() {
     # The first argument is the number of internal networks
     for i in $(seq 1 ${1}); do
         if ! is_network_created "internal-net-${i}"; then
@@ -190,7 +190,7 @@ function create_networks() {
     incus network list
 }
 
-function install_pkgs() {
+install_pkgs() {
     # The first argument is a node name
     node=$1
     shift
@@ -211,7 +211,7 @@ function install_pkgs() {
     esac
 }
 
-function update() {
+update() {
     # The first argument is a node name
     log "Updating $1 - $usedSystem $osVersion"
     case "$usedSystem" in
@@ -233,7 +233,7 @@ function update() {
 }
 
 
-function install_kerberos() {
+install_kerberos() {
     case "$usedSystem" in
         "ubuntu"|"debian")
             install_pkgs "$1" krb5-kdc krb5-admin-server libkrb5-dev dnsutils
@@ -247,7 +247,7 @@ function install_kerberos() {
     esac
 }
 
-function remove_pkg() {
+remove_pkg() {
     # The first argument is a node name
     node=$1
     shift
@@ -268,7 +268,7 @@ function remove_pkg() {
     esac
 }
 
-function attach_node_to_network() {
+attach_node_to_network() {
     # The first argument is network name
     # The second argument is node name
     # The third argument is interface name
@@ -278,17 +278,17 @@ function attach_node_to_network() {
     fi
 }
 
-function is_instance_created() {
-  # The first argument is the instance name.
-  incus info "${1}" > /dev/null 2>&1
+is_instance_created() {
+    # The first argument is the instance name.
+    incus info "${1}" > /dev/null 2>&1
 }
 
-function is_network_created() {
-  # The first argument is the network name.
-  incus network info "${1}" > /dev/null 2>&1
+is_network_created() {
+    # The first argument is the network name.
+    incus network info "${1}" > /dev/null 2>&1
 }
 
-function remove_incus_containers() {
+remove_incus_containers() {
     # The first argument is the number of kea nodes
     log "Deleting containers"
     for i in $(seq 1 "$1"); do
@@ -301,7 +301,7 @@ function remove_incus_containers() {
     fi
 }
 
-function remove_incus_network() {
+remove_incus_network() {
     # The first argument is the number of internal networks
     for i in $(seq 1 "${1}"); do
         log "Deleting network internal-net-$i"
@@ -311,7 +311,7 @@ function remove_incus_network() {
     done
 }
 
-function enable_ssh() {
+enable_ssh() {
     # The first argument is a node name
     if [ "$1" = "kea-forge" ]; then
         incus exec "$1" -- systemctl enable ssh
@@ -340,7 +340,7 @@ function enable_ssh() {
     fi
 }
 
-function create_user() {
+create_user() {
     # The first argument is a node name
     # The second argument is the OS name/OS version, if not provided $usedSystem will be used. Optional.
     local system=$usedSystem
@@ -350,7 +350,7 @@ function create_user() {
     log "Creating user forge in $1 - $system"
     if ! incus exec "$1" -- id forge > /dev/null; then
         if [ "$system" = "fedora" ] || [ "$system" = "rockylinux" ]; then
-            incus exec "$1" -- useradd -m -s /bin/bash forge
+            incus exec "$1" -- useradd -m -s /bin/sh forge
             (printf "test0test1") | incus exec "$1" -- passwd --stdin forge
         else
             incus exec "$1" -- adduser --disabled-password --gecos "" forge
@@ -365,7 +365,7 @@ function create_user() {
     incus exec "$1" -- chown root:root /etc/sudoers.d/forge
 }
 
-function generate_rsa_key() {
+generate_rsa_key() {
     # no arguments needed
     log "Generating RSA key for kea-forge"
     # we need this just in kea-forge, it will ssh into other nodes
@@ -375,12 +375,12 @@ function generate_rsa_key() {
     cat kea-forge.pub
 }
 
-function check_ssh() {
+check_ssh() {
     log "Checking SSH connection from kea-forge to IP: $1"
     incus exec kea-forge -- sudo -u forge ssh -o StrictHostKeyChecking=accept-new forge@"$1"
 }
 
-function migrate_rsa_key() {
+migrate_rsa_key() {
     # The first argument is a node name
     log "Migrating RSA key to kea-$1"
     incus exec "$1" -- mkdir -p /home/forge/.ssh
@@ -391,11 +391,11 @@ function migrate_rsa_key() {
     incus exec "$1" -- chmod 600 /home/forge/.ssh/authorized_keys
 }
 
-function delete_rsa_key() {
+delete_rsa_key() {
     rm -f kea-forge.pub
 }
 
-function set_address() {
+set_address() {
     # The first argument is an address
     # The second argument is an interface name
     # The third argument is a node name
@@ -427,7 +427,7 @@ function set_address() {
     fi
 }
 
-function configure_internal_network(){
+configure_internal_network(){
     # The first argument is the number of kea nodes
     # The second argument is the number of internal networks
 
@@ -453,7 +453,7 @@ function configure_internal_network(){
     done
 }
 
-function install_nexus_repo() {
+install_nexus_repo() {
     log "Installing Nexus repository on node $1"
     case "$usedSystem" in
             "ubuntu"|"debian")
@@ -489,15 +489,15 @@ EOF
     esac
 }
 
-function install_cloudsmith_repo() {
+install_cloudsmith_repo() {
     log "Installing Cloudsmith repository on node $1"
     log_error "Not implemented yet"
     exit 1
 }
 
-function install_kea_pkgs() {
-    # The first argument is the number of nodes
-    # The second argument is the OS name/OS version
+install_kea_pkgs() {
+    # The first argument is the OS name/OS version
+    # The second argument is the number of nodes
     # The third argument is the kea pkgs version
 
     # Check if the third argument ($3) is empty
@@ -513,32 +513,32 @@ function install_kea_pkgs() {
     fi
 
     get_os "$1"
-    for node in $(seq 1 "$2"); do
+    node_count=${2}
+    for node in $(seq 1 "${node_count}"); do
         install_nexus_repo kea-"$node"
         log "Installing kea packages version $pkg_version on node kea-$node on system $usedSystem version $osVersion"
-        pkgs=(
-            "isc-kea-dhcp4"
-            "isc-kea-dhcp6"
-            "isc-kea-dhcp-ddns"
-            "isc-kea-hooks"
-            "isc-kea-admin"
-            "isc-kea-common"
-            "isc-kea-mysql"
-            "isc-kea-pgsql"
+        set -- \
+            "isc-kea-dhcp4" \
+            "isc-kea-dhcp6" \
+            "isc-kea-dhcp-ddns" \
+            "isc-kea-hooks" \
+            "isc-kea-admin" \
+            "isc-kea-common" \
+            "isc-kea-mysql" \
+            "isc-kea-pgsql" \
             "isc-kea-gss-tsig"
-        )
         case "$usedSystem" in
             "ubuntu"|"debian")
                 # normal way apt install isc-kea-*=$pkg_version works just for the newest packages in the repo
                 # so we need to build exact list of packages to install
-                incus exec kea-"$node" -- apt install "${pkgs[@]/%/=$pkg_version}" -y
+                incus exec kea-"$node" -- apt install -y "${@/%/=$pkg_version}"
                 ;;
             "rockylinux"|"fedora")
                 local suffix="fc${osVersion}"
                 if [ "$usedSystem" = "rockylinux" ]; then
                     suffix="el${osVersion}"
                 fi
-                incus exec kea-"$node" -- dnf install isc-kea-*-"$pkg_version"."$suffix" -y
+                incus exec kea-"$node" -- dnf install -y "${@/%/-${pkg_version}.${suffix}}"
                 ;;
             "alpine")
                 # this is bad, nexus do not provide alpine repo, just raw, we need to first download all pkgs and than install them
@@ -550,13 +550,7 @@ function install_kea_pkgs() {
                     wget -P alpine_pkgs https://packages.aws.isc.org/repository/kea-"$usedSystem"-"$osVersion"/isc"${pkg_version: -14}"/v"$osVersion"/"$arch"/"$pkg"-"$pkg_version".apk
                 done
                 incus file push -q -p -r alpine_pkgs kea-"$node"/tmp/.
-                for i in "${!pkgs[@]}"; do
-                    pkgs[i]="${pkgs[$i]}-${pkg_version}.apk"
-                done
-                all_pkgs=$(printf "%s " "${pkgs[@]}")
-                # this interesting
-                # I can't put $all_pkgs in quotes because than command fails
-                incus exec kea-"$node" --cwd=/tmp/alpine_pkgs -- apk add $all_pkgs --allow-untrusted
+                incus exec kea-"$node" --cwd=/tmp/alpine_pkgs -- apk add --allow-untrusted "${@/%/-${pkg_version}.apk}"
                 ;;
             *)
             printf "Not in the list"
@@ -565,7 +559,7 @@ function install_kea_pkgs() {
     done
 }
 
-function remove_kea_pkgs() {
+remove_kea_pkgs() {
     # The first argument the number of nodes
     for node in $(seq 1 "$1"); do
         log "Removing kea packages on node kea-$node"
@@ -573,7 +567,7 @@ function remove_kea_pkgs() {
     done
 }
 
-function mount_ccache() {
+mount_ccache() {
     # The first argument is a node name
     log "Mounting ccache on node $1 using path /mnt/ccache/${usedSystem}/${osVersion}"
     #TODO change amd64 to $arch but make sure it either arm64 or aarch64
@@ -592,7 +586,7 @@ EOF
     incus file push -q ccache.conf "$1"/root/.ccache/ccache.conf
 }
 
-function install_kea_tarball() {
+install_kea_tarball() {
     # The first argument is the number of nodes
     # The second argument is the path to directory with kea source code - jenkins is providing kea source code in ~/kea with hammer.
     # it's just needs to be copied to the kea nodes and installed
@@ -604,7 +598,7 @@ function install_kea_tarball() {
     done
 }
 
-function print_summary() {
+print_summary() {
     log "Testing setup summary:"
     incus image list
     incus list -cns46tSDM
@@ -617,7 +611,7 @@ function print_summary() {
     fi
 }
 
-function check_installed_kea() {
+check_installed_kea() {
     # The first argument is a node name
     for node in $(seq 1 "$1"); do
         log "Checking kea-dhcp4 on kea-$node"
@@ -629,14 +623,14 @@ function check_installed_kea() {
     done
 }
 
-function get_kea_pkg_version() {
+get_kea_pkg_version() {
     # TODO detect version from a file or just use major versioning e.g. 2.6.1; 2.7.8
     # use: pkg_version=$(get_kea_pkg_version)
     # printf head -n1 ubuntu-22.04-amd64-pkgs.txt | perl -nle 'm/([0-9\\.]+-isc[0-9]+)/; print \$1'
     printf ''
 }
 
-function upload_pytest() {
+upload_pytest() {
     # no arguments needed
     rm -rf tests_results
     incus file push -r -q . kea-forge/home/forge/.
@@ -644,7 +638,7 @@ function upload_pytest() {
     incus exec kea-forge -- sudo chown forge:forge /home/forge
 }
 
-function setup_forge() {
+setup_forge() {
     # no arguments needed
     log "Setting up forge in kea-forge - ubuntu"
     upload_pytest
@@ -653,49 +647,46 @@ function setup_forge() {
     generate_init_all
 }
 
-function generate_init_all() {
+generate_init_all() {
     # no arguments needed
     log "Generating init_all.py"
     populate_forge_init
     python3 modify_init_all.py
 }
 
-function run_pytest() {
+run_pytest() {
     # Check arguments, if --upload-pytest is present, upload the pytest files to kea-forge
     # than run pytest with the rest of the arguments
-
-    local args=("$@")
-    local new_args=()
-
-    for arg in "${args[@]}"; do
-        if [ "$arg" = "--upload-pytest" ]; then
+    for param do
+        if test "${param}" = '--upload-pytest'; then
             log "Uploading forge source code to kea-forge"
             upload_pytest
         else
-            new_args+=("$arg")
+            set -- "${@}" "${param}"
         fi
+        shift
     done
     incus file push init_all.py kea-forge/home/forge/init_all.py
     log "Running pytest.."
     # Allow exit code 1 which means that tests were collected and run succesfully but some of the tests failed. Should not result in job failure.
-    ( incus exec kea-forge --cwd=/home/forge -- sudo /home/forge/venv-client-node/bin/pytest "${new_args[@]}" || test "${?}" = 1 ) | tee pytest-output.txt
+    ( incus exec kea-forge --cwd=/home/forge -- sudo /home/forge/venv-client-node/bin/pytest "${@}" || test "${?}" = 1 ) | tee pytest-output.txt
     get_results
     log "Finished."
 }
 
-function get_results() {
+get_results() {
     log "Downloading results from kea-forge"
     rm -rf tests_results
     incus file pull -r kea-forge/home/forge/tests_results .
 }
 
-function get_from_kea_forge() {
+get_from_kea_forge() {
     log "Downloading $1 from kea-forge"
     rm -rf "$1"
     incus file pull -r kea-forge/home/forge/"$1" .
 }
 
-function populate_forge_init() {
+populate_forge_init() {
     log "Updating forge init script"
 
 cat << EOF > init_all.py
@@ -760,7 +751,7 @@ EOF
     fi
 }
 
-function help() {
+help() {
     printf "Usage: %s {prepare-env|delete|stop} [arguments...]\n" "$0"
     printf "       %s prepare-env <OS-name/OS-version> <number-of-kea-nodes> <number-of-internal-networks> <hammer-branch>\n" "$0"
     printf "            %s prepare-env ubuntu/24.04 2 2 master\n" "$0"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # This script is used to install the Incus application on a fresh debian 12 instance
 
 set -eu

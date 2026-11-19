@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # This script needs to be sourced to work.
 # . ./activate-venv.sh
