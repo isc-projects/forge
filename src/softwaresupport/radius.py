@@ -551,6 +551,17 @@ def send_message_and_expect_no_more_leases(mac: str, giaddr: str = None):
         assert False, f'unknown proto {world.proto}'
 
 
+def _determine_radius_log():
+    """Search for a log file in some locations, settle for the first one found."""
+    for file in [
+        '/var/log/radius/radius.log',
+        '/var/log/freeradius/radius.log',
+    ]:
+        if fabric_is_file(file):
+            world.radius_log = file
+            break
+
+
 def _init_radius(destination: str = world.f_cfg.mgmt_address):
     """Create authorize file and clients.conf needed by RADIUS and send them to {destination}.
 
@@ -783,7 +794,14 @@ def _start_radius(destination: str = world.f_cfg.mgmt_address):
     :param destination: address of the server that hosts the RADIUS service
     :type destination:
     """
-    fabric_sudo_command(f'truncate -s 0 {world.radius_log}', destination_host=destination, ignore_errors=True)
+    # Do a best effort approach to determine location of RADIUS log from previous runs of the RADIUS server so we can
+    # clear the RADIUS log before starting the server so we have log messages only from the current run in tests_results.
+    if world.radius_log is None:
+        _determine_radius_log()
+    if world.radius_log is not None:
+        fabric_sudo_command(f'truncate -s 0 {world.radius_log}', destination_host=destination)
+
+    # Make changes to the RADIUS config according to what our tests expect and restart the RADIUS server.
     _tweak_radius_config(destination)
     if world.server_system in ['redhat', 'fedora']:
         cmd = 'sudo systemctl restart radiusd'
@@ -794,13 +812,8 @@ def _start_radius(destination: str = world.f_cfg.mgmt_address):
         cmd = 'sudo systemctl restart freeradius'
     fabric_sudo_command(cmd, destination_host=destination)
 
-    if world.radius_log is None:
-        for file in [
-            '/var/log/radius/radius.log',
-            '/var/log/freeradius/radius.log',
-        ]:
-            if fabric_is_file(file, destination):
-                world.radius_log = file
-                break
+    # Now that the server is restarted, the server may have created a RADIUS log.
+    # Let us try to determine the location of the log again.
+    _determine_radius_log()
 
     assert world.radius_log is not None, f'RADIUS log file not found: {world.radius_log}'
