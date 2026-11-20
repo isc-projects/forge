@@ -7,7 +7,7 @@
 
 """DHCPv6 bulk leasequery tests"""
 
-from multiprocessing import Pool
+from multiprocessing import get_context
 from time import time
 import secrets
 import string
@@ -684,7 +684,9 @@ def test_v6_assign_and_reply_simultaneously(backend):
     # open two processes one for triggering BLQ and second for assigning the leases
     # forge may be bit slow to get it 100% right this is why proper test is in performance setup
     # so let's just check addresses and prefixes before and after simultaneous work
-    with Pool() as pool:
+    # Python 3.14 defaults to forkserver (https://github.com/python/cpython/issues/84559),
+    # which starts a fresh interpreter. These workers use world, so they still need fork.
+    with get_context("fork").Pool() as pool:
         process_to_get_leases = pool.apply_async(_get_lease, kwds={"leases_count": 15, "pd_count": 1, "addr_count": 2,
                                                                    "remote_id": "0a0027000001"})
         pool.apply_async(_send_leasequery, args=(5,), kwds={"sleep": 3, "remote_id": "0a0027000001"})
@@ -1689,7 +1691,9 @@ def test_v4_assign_and_reply_simultaneously(backend):
     # open two processes one for triggering BLQ and second for assigning the leases
     # forge may be bit slow to get it 100% right this is why proper test is in performance setup
     # so let's just check addresses and prefixes before and after simultaneous work
-    with Pool() as pool:
+    # Python 3.14 defaults to forkserver (https://github.com/python/cpython/issues/84559),
+    # which starts a fresh interpreter. These workers use world, so they still need fork.
+    with get_context("fork").Pool() as pool:
         process_to_get_leases = pool.apply_async(_get_lease, kwds={"v4": True, "leases_count": 30,
                                                                    "mac": "04:05:0f:07:0d:03",
                                                                    "relay_id": '0c0601020c330a11'})

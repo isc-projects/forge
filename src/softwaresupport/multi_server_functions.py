@@ -24,13 +24,22 @@ import tempfile
 
 from shutil import copy
 
-from fabric.api import get, settings, put, sudo, run, hide
+from fabric.api import get, settings, put, sudo, run, hide, env
 from fabric.exceptions import NetworkError
 import fabric.state
 
 from src.forge_cfg import world
 
 log = logging.getLogger('forge')
+
+# Workaround for fabric not using pty by default in Python 3.14+
+# Fabric allocates a PTY by default and sizes it with TIOCGWINSZ using a 4-byte
+# buffer. Python 3.14's fcntl.ioctl raises SystemError on that undersized
+# buffer, so run/sudo crash. Turn the default PTY off until Fabric is fixed.
+# Same bug as Invoke, which already patched it:
+# https://github.com/python/cpython/issues/132915
+# https://github.com/pyinvoke/invoke/issues/1038
+env.always_use_pty = False
 
 
 def fabric_run_command(
@@ -96,19 +105,22 @@ def fabric_sudo_command(cmd, destination_host=world.f_cfg.mgmt_address,
     :rtype: fabric.result.Result
     """
     # print("Executing command: %s" % cmd, "at %s" % destination_host)
-    with settings(host_string=destination_host, user=user_loc, password=password_loc,
-                  sudo_user=sudo_user, warn_only=ignore_errors):
-        try:
-            if ignore_errors:
-                fabric.state.output.warnings = False
-            if hide_all:
-                with hide('running', 'stdout', 'stderr'):
+    # Suppress deprecation warning for setDaemon
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="setDaemon", category=DeprecationWarning)
+        with settings(host_string=destination_host, user=user_loc, password=password_loc,
+                      sudo_user=sudo_user, warn_only=ignore_errors):
+            try:
+                if ignore_errors:
+                    fabric.state.output.warnings = False
+                if hide_all:
+                    with hide('running', 'stdout', 'stderr'):
+                        result = sudo(cmd, pty=world.f_cfg.fabric_pty)
+                else:
                     result = sudo(cmd, pty=world.f_cfg.fabric_pty)
-            else:
-                result = sudo(cmd, pty=world.f_cfg.fabric_pty)
-        except NetworkError:
-            fabric.state.output.warnings = True
-            assert False, "Network connection failed"
+            except NetworkError:
+                fabric.state.output.warnings = True
+                assert False, "Network connection failed"
     fabric.state.output.warnings = True
     return result
 

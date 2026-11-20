@@ -843,7 +843,7 @@ case "$command" in
         get_os "$osName"
         copy_node "$numberOfNodes"
         # start forge node
-        prepare_node "ubuntu/24.04" "forge"
+        prepare_node "ubuntu/26.04" "forge"
         create_networks "$numberOfNetworks"
         # connect kea-forge to all networks
         for i in $(seq 1 "$numberOfNetworks"); do
@@ -892,7 +892,7 @@ case "$command" in
             prepare_node "$osName" "$i"
         done
         # start forge node
-        prepare_node "ubuntu/24.04" "forge"
+        prepare_node "ubuntu/26.04" "forge"
         create_networks "$numberOfNetworks"
         # connect kea-forge to all networks
         for i in $(seq 1 "$numberOfNetworks"); do

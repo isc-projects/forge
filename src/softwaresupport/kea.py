@@ -313,7 +313,8 @@ class Certificates:
                       f'-newkey rsa:4096 ' \
                       f'-keyout {key} ' \
                       f'-out {cert} ' \
-                      f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={ca_name}"'
+                      f'-subj "/C=US/ST=Acme State/L=Acme City/O=Acme Inc./CN={ca_name}" ' \
+                      f'-addext "keyUsage=critical,keyCertSign,cRLSign"'
         fabric_sudo_command(generate_ca)
         self.change_access([cert, key])
 
@@ -733,7 +734,7 @@ def config_client_classification(subnet, option_value):
     :type option_value:
     """
     sub = f'subnet{world.proto[1]}'
-    world.dhcp_cfg[sub][int(subnet)]["client-class"] = option_value
+    world.dhcp_cfg[sub][int(subnet)]["client-classes"] = [option_value]
 
 
 def config_pool_client_classification(subnet, pool, option_value):
@@ -747,7 +748,7 @@ def config_pool_client_classification(subnet, pool, option_value):
     :type option_value:
     """
     sub = f'subnet{world.proto[1]}'
-    world.dhcp_cfg[sub][int(subnet)]['pools'][int(pool)]["client-class"] = option_value
+    world.dhcp_cfg[sub][int(subnet)]['pools'][int(pool)]["client-classes"] = [option_value]
 
 
 def config_require_client_classification(subnet, option_value):
@@ -1524,10 +1525,8 @@ def ha_add_parameter_to_hook(parameter_name, parameter_value, relationship=0):
                 for i in range(len(hook["parameters"]["high-availability"][relationship]["peers"])):
                     hook["parameters"]["high-availability"][relationship]["peers"][i].update(parameter_value)
             else:
-                if parameter_value.isdigit():
-                    parameter_value = int(parameter_value)
-                else:
-                    parameter_value = parameter_value.strip("\"")
+                if isinstance(parameter_value, str):
+                    parameter_value = int(parameter_value) if parameter_value.isdigit() else parameter_value.strip("\"")
                 hook["parameters"]["high-availability"][relationship][parameter_name] = parameter_value
 
 

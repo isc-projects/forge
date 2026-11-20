@@ -802,14 +802,14 @@ class ConfigurationSubnet:
         self.interface_id_4o6 = ""
         self.subnet_4o6 = ""
         self.boot_file_name = ""
-        self.client_class = ""
+        self.client_classes = []
+        self.evaluate_additional_classes = []
         self.interface = interface
         self.match_clientid = ""
         self.next_server = ""
         self.rebind_timer = world.cfg["server_times"]["rebind-timer"]
         self.relay = ""
         self.renew_timer = world.cfg["server_times"]["renew-timer"]
-        self.require_client_class = ""
         self.server_hostname = ""
         self.user_context = ""
         self.valid_lifetime = world.cfg["server_times"]["valid-lifetime"]
@@ -853,12 +853,12 @@ class ConfigurationSharedNetworks:
         self.rebind_timer = ""
         self.relay = ""
         self.renew_timer = ""
-        self.require_client_class = ""
         self.server_hostname = ""
         self.user_context = ""
         self.valid_lifetime = ""
         # relations
-        self.client_class = ""
+        self.client_classes = []
+        self.evaluate_additional_classes = []
 
     def __getitem__(self, item):
         """Get an attribute value by name.
