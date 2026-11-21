@@ -88,20 +88,14 @@ def _get_lease_by_state_edge_cases(v6=False):
     assert resp["text"] == "\'state\' parameter must be a number or a string"
     resp = _send_cmd(command, extra_param={"state": 3.14}, exp_result=1)
     assert resp["text"] == "\'state\' parameter must be a number or a string"
-
-    # Inconsistent cases:
-    # For strings wrong value is treated as error 1
+    resp = _send_cmd(command, extra_param={"state": 9}, exp_result=1)
+    assert resp["text"] == "'state' parameter value (9) is out of range"
+    resp = _send_cmd(command, extra_param={"state": -1}, exp_result=1)
+    assert resp["text"] == "'state' parameter value (-1) is out of range"
     resp = _send_cmd(command, extra_param={"state": "not_a_state"}, exp_result=1)
     assert resp["text"] == "'state' parameter value (not_a_state) is not recognized"
 
-    # For ints wrong value is treated as error 3 (no leases found)
-    resp = _send_cmd(command, extra_param={"state": 9}, exp_result=3)
-    assert resp["text"] == f"0 IPv{v} lease(s) found with state 9."
-
-    # Wrong type, treated as wrong value due to overflow => error 3 (no leases found)
-    resp = _send_cmd(command, extra_param={"state": -1}, exp_result=3)
-    assert resp["text"] == f"0 IPv{v} lease(s) found with state 4294967295."
-
+    # Inconsistent cases:
     # Wrong type, uint32 max + 1 treated as correct value due to overflow => error 3 (no leases found)
     resp = _send_cmd(command, extra_param={"state": 4294967296}, exp_result=3)
     assert resp["text"] == f"0 IPv{v} lease(s) found with state default (0)."
