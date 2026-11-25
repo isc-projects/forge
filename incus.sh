@@ -180,7 +180,7 @@ create_networks() {
                 # If this is "Error: Failed generating auto config: Failed to automatically find an unused IPv6 subnet, manual configuration required":
                 # v6 address needs to be from the same subnet as on the host so let us determine that automatically.
                 internet_facing_interface=$(ip route | grep -E '^default' | grep -Eo 'dev [a-z0-9]*' | cut -d ' ' -f 2)
-                v6_network=$(ip a s "${internet_facing_interface}" | grep -E ' inet6 .* global ' | tr -s ' ' | cut -d ' ' -f 3)
+                v6_network=$(ip a s "${internet_facing_interface}" | grep -E ' inet6 .*/64 scope global ' | tr -s ' ' | cut -d ' ' -f 3)
                 different_v6_address="$(echo "${v6_network}" | sed 's#:[0-9a-f]*/#:ffff/#')"
 
                 incus network create internal-net-"$i" "ipv6.address=${different_v6_address}" ipv4.nat=false ipv6.nat=false ipv4.dhcp=false ipv6.dhcp=false ipv4.firewall=false ipv6.firewall=false
@@ -531,26 +531,38 @@ install_kea_pkgs() {
             "ubuntu"|"debian")
                 # normal way apt install isc-kea-*=$pkg_version works just for the newest packages in the repo
                 # so we need to build exact list of packages to install
-                incus exec kea-"$node" -- apt install -y "${@/%/=$pkg_version}"
+                for pkg in "${@}"; do
+                    set -- "${@}" "${pkg}=${pkg_version}"
+                    shift
+                done
+                incus exec kea-"$node" -- apt install -y "${@}"
                 ;;
             "rockylinux"|"fedora")
                 local suffix="fc${osVersion}"
                 if [ "$usedSystem" = "rockylinux" ]; then
                     suffix="el${osVersion}"
                 fi
-                incus exec kea-"$node" -- dnf install -y "${@/%/-${pkg_version}.${suffix}}"
+                for pkg in "${@}"; do
+                    set -- "${@}" "${pkg}-${pkg_version}.${suffix}"
+                    shift
+                done
+                incus exec kea-"$node" -- dnf install -y "${@}"
                 ;;
             "alpine")
                 # this is bad, nexus do not provide alpine repo, just raw, we need to first download all pkgs and than install them
-                pkg_version=${pkg_version/isc/r}
-                local
+                isc_date_timestamp_version=$(echo "${pkg_version}" | cut -d '-' -f 2)
+                pkg_version=$(echo "${pkg_version}" | sed 's/isc/r/')
                 rm -rf alpine_pkgs
                 mkdir alpine_pkgs
-                for pkg in "${pkgs[@]}"; do
-                    wget -P alpine_pkgs https://packages.aws.isc.org/repository/kea-"$usedSystem"-"$osVersion"/isc"${pkg_version: -14}"/v"$osVersion"/"$arch"/"$pkg"-"$pkg_version".apk
+                for pkg in "${@}"; do
+                    wget -P alpine_pkgs "https://packages.aws.isc.org/repository/kea-${usedSystem}-${osVersion}/${isc_date_timestamp_version}/v${osVersion}/${arch}/${pkg}-${pkg_version}.apk"
                 done
                 incus file push -q -p -r alpine_pkgs kea-"$node"/tmp/.
-                incus exec kea-"$node" --cwd=/tmp/alpine_pkgs -- apk add --allow-untrusted "${@/%/-${pkg_version}.apk}"
+                for pkg in "${@}"; do
+                    set -- "${@}" "${pkg}-${pkg_version}.apk"
+                    shift
+                done
+                incus exec kea-"$node" --cwd=/tmp/alpine_pkgs -- apk add --allow-untrusted "${@}"
                 ;;
             *)
             printf "Not in the list"

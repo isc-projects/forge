@@ -33,7 +33,7 @@ if ! ip a s incusbr0 > /dev/null 2>&1; then
   # If "incus admin init --auto" failed with "Error: Failed generating auto config: Failed to automatically find an unused IPv6 subnet, manual configuration required":
   # v6 address needs to be from the same subnet as on the host so let us determine that automatically.
   internet_facing_interface=$(ip route | grep -E '^default' | grep -Eo 'dev [a-z0-9]*' | cut -d ' ' -f 2)
-  v6_network=$(ip a s "${internet_facing_interface}" | grep -E ' inet6 .* global ' | tr -s ' ' | cut -d ' ' -f 3)
+  v6_network=$(ip a s "${internet_facing_interface}" | grep -E ' inet6 .*/64 scope global ' | tr -s ' ' | cut -d ' ' -f 3)
   different_v6_address="$(echo "${v6_network}" | sed 's#:[0-9a-f]*/#:ffff/#')"
 
   sudo incus network create incusbr0 ipv4.address=192.168.100.1/24 "ipv6.address=${different_v6_address}" ipv4.nat=yes ipv6.nat=yes ipv4.dhcp=yes ipv4.dhcp.ranges=192.168.100.1-192.168.100.100 ipv4.dhcp.gateway=192.168.100.1
